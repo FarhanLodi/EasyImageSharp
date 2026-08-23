@@ -1,0 +1,344 @@
+# EditorConfig captures the house style already present in this repository.
+# https://editorconfig.org
+#
+# The IDE (IDExxxx) rules below are advisory: EnforceCodeStyleInBuild is deliberately NOT set, so
+# `dotnet build` stays free of style noise while the editor and `dotnet format` still see the rules.
+# The analyzer severities under "Analyzer severities" DO run during the build, and the repository
+# builds with TreatWarningsAsErrors=true, so anything raised to `warning` there is a hard failure.
+
+root = true
+
+# ---------------------------------------------------------------------------------------------------
+# All files
+# ---------------------------------------------------------------------------------------------------
+[*]
+charset = utf-8
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+insert_final_newline = true
+# Line endings are normalised to LF in the repository by .gitattributes (`* text=auto eol=lf`) and are
+# checked out as LF on every platform, so tooling agrees regardless of the host OS.
+end_of_line = lf
+
+[*.{yml,yaml,json,jsonc}]
+indent_size = 2
+
+[*.{md,markdown}]
+indent_size = 2
+# Two trailing spaces are a hard line break in Markdown.
+trim_trailing_whitespace = false
+
+[*.{csproj,props,targets,slnx,config,xml,nuspec}]
+indent_size = 2
+
+[*.py]
+indent_size = 4
+max_line_length = 120
+
+[*.sh]
+indent_size = 2
+
+# Binary fixtures and their ground-truth blobs: no whitespace handling at all.
+[*.{png,jpg,jpeg,gif,bmp,tif,tiff,ico,webp,qoi,tga,pbm,pgm,ppm,pam,onnx,rgba,bin}]
+insert_final_newline = false
+trim_trailing_whitespace = false
+
+# ---------------------------------------------------------------------------------------------------
+# C#
+# ---------------------------------------------------------------------------------------------------
+[*.cs]
+indent_size = 4
+max_line_length = 140
+
+# ----- Namespaces, usings and file layout -----
+
+# File-scoped namespaces everywhere: namespace EasyImageSharp.Formats;
+csharp_style_namespace_declarations = file_scoped:warning
+
+# `using` directives sit outside the namespace, System first, groups not separated.
+csharp_using_directive_placement = outside_namespace:warning
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = false
+
+# ImplicitUsings is enabled in Directory.Build.props; do not re-import what the SDK already provides.
+dotnet_diagnostic.IDE0005.severity = suggestion
+
+# ----- `this.` qualification (the most visible convention in this codebase) -----
+
+dotnet_style_qualification_for_field = true:warning
+dotnet_style_qualification_for_property = true:warning
+dotnet_style_qualification_for_method = true:warning
+dotnet_style_qualification_for_event = true:warning
+
+# ----- Braces and newlines -----
+
+# Allman braces; single-statement bodies still get braces.
+csharp_new_line_before_open_brace = all
+csharp_new_line_before_else = true
+csharp_new_line_before_catch = true
+csharp_new_line_before_finally = true
+csharp_new_line_before_members_in_object_initializers = true
+csharp_new_line_before_members_in_anonymous_types = true
+csharp_new_line_between_query_expression_clauses = true
+csharp_prefer_braces = true:warning
+
+# ----- Indentation -----
+
+csharp_indent_case_contents = true
+csharp_indent_case_contents_when_block = false
+csharp_indent_switch_labels = true
+csharp_indent_labels = one_less_than_current
+csharp_indent_block_contents = true
+csharp_indent_braces = false
+
+# ----- Spacing -----
+
+csharp_space_after_cast = false
+csharp_space_after_keywords_in_control_flow_statements = true
+csharp_space_between_method_declaration_parameter_list_parentheses = false
+csharp_space_between_method_declaration_empty_parameter_list_parentheses = false
+csharp_space_between_method_declaration_name_and_open_parenthesis = false
+csharp_space_between_method_call_parameter_list_parentheses = false
+csharp_space_between_method_call_empty_parameter_list_parentheses = false
+csharp_space_between_method_call_name_and_opening_parenthesis = false
+csharp_space_before_colon_in_inheritance_clause = true
+csharp_space_after_colon_in_inheritance_clause = true
+csharp_space_around_binary_operators = before_and_after
+csharp_space_before_open_square_brackets = false
+csharp_space_between_empty_square_brackets = false
+csharp_space_between_square_brackets = false
+
+# ----- Wrapping -----
+
+csharp_preserve_single_line_statements = false
+csharp_preserve_single_line_blocks = true
+
+# ----- var -----
+#
+# The codebase names the type when it is not obvious from the right-hand side
+# (Image<Rgb24> decoded = Image.Load<Rgb24>(...)) and uses var when it is
+# (var ms = new MemoryStream()).
+csharp_style_var_for_built_in_types = false:suggestion
+csharp_style_var_when_type_is_apparent = true:suggestion
+csharp_style_var_elsewhere = false:suggestion
+
+# ----- Expression-bodied members -----
+#
+# One-line forwarding members and simple accessors are expression bodied; anything with real work is a block.
+csharp_style_expression_bodied_methods = when_on_single_line:suggestion
+csharp_style_expression_bodied_constructors = when_on_single_line:suggestion
+csharp_style_expression_bodied_operators = when_on_single_line:suggestion
+csharp_style_expression_bodied_properties = when_on_single_line:suggestion
+csharp_style_expression_bodied_indexers = when_on_single_line:suggestion
+csharp_style_expression_bodied_accessors = when_on_single_line:suggestion
+csharp_style_expression_bodied_lambdas = when_on_single_line:suggestion
+csharp_style_expression_bodied_local_functions = when_on_single_line:suggestion
+
+# ----- Modern language features the codebase relies on -----
+
+csharp_prefer_static_local_function = true:warning
+csharp_prefer_static_anonymous_function = true:suggestion
+csharp_style_prefer_readonly_struct = true:suggestion
+csharp_style_prefer_readonly_struct_member = true:suggestion
+csharp_style_pattern_matching_over_is_with_cast_check = true:warning
+csharp_style_pattern_matching_over_as_with_null_check = true:warning
+csharp_style_prefer_switch_expression = true:suggestion
+csharp_style_prefer_pattern_matching = true:suggestion
+csharp_style_prefer_not_pattern = true:warning
+csharp_style_prefer_range_operator = true:suggestion
+csharp_style_prefer_index_operator = true:suggestion
+csharp_style_throw_expression = true:suggestion
+csharp_style_conditional_delegate_call = true:warning
+csharp_style_inlined_variable_declaration = true:suggestion
+csharp_style_deconstructed_variable_declaration = true:suggestion
+csharp_style_unused_value_assignment_preference = discard_variable:suggestion
+csharp_style_unused_value_expression_statement_preference = discard_variable:silent
+csharp_style_prefer_utf8_string_literals = true:suggestion
+csharp_style_prefer_primary_constructors = false:silent
+
+dotnet_style_object_initializer = true:suggestion
+dotnet_style_collection_initializer = true:suggestion
+dotnet_style_prefer_collection_expression = when_types_loosely_match:suggestion
+dotnet_style_coalesce_expression = true:warning
+dotnet_style_null_propagation = true:warning
+dotnet_style_prefer_is_null_check_over_reference_equality_method = true:warning
+dotnet_style_prefer_auto_properties = true:suggestion
+dotnet_style_prefer_conditional_expression_over_assignment = true:silent
+dotnet_style_prefer_conditional_expression_over_return = true:silent
+dotnet_style_prefer_compound_assignment = true:suggestion
+dotnet_style_prefer_simplified_boolean_expressions = true:suggestion
+dotnet_style_prefer_simplified_interpolation = true:suggestion
+dotnet_style_explicit_tuple_names = true:warning
+dotnet_style_prefer_inferred_tuple_names = true:suggestion
+dotnet_style_prefer_inferred_anonymous_type_member_names = true:suggestion
+dotnet_style_namespace_match_folder = true:suggestion
+
+# ----- readonly / accessibility -----
+
+dotnet_style_readonly_field = true:warning
+dotnet_style_require_accessibility_modifiers = for_non_interface_members:warning
+
+# ----- Parentheses -----
+
+dotnet_style_parentheses_in_arithmetic_binary_operators = always_for_clarity:suggestion
+dotnet_style_parentheses_in_relational_binary_operators = always_for_clarity:suggestion
+dotnet_style_parentheses_in_other_binary_operators = always_for_clarity:suggestion
+dotnet_style_parentheses_in_other_operators = never_if_unnecessary:suggestion
+
+# ---------------------------------------------------------------------------------------------------
+# Naming
+# ---------------------------------------------------------------------------------------------------
+
+# Interfaces: IPascalCase
+dotnet_naming_rule.interfaces_start_with_i.symbols = interface_symbols
+dotnet_naming_rule.interfaces_start_with_i.style = i_prefixed_pascal_case
+dotnet_naming_rule.interfaces_start_with_i.severity = warning
+dotnet_naming_symbols.interface_symbols.applicable_kinds = interface
+dotnet_naming_symbols.interface_symbols.applicable_accessibilities = *
+dotnet_naming_style.i_prefixed_pascal_case.capitalization = pascal_case
+dotnet_naming_style.i_prefixed_pascal_case.required_prefix = I
+
+# Type parameters: TPascalCase (TPixel, TSelf)
+dotnet_naming_rule.type_parameters_start_with_t.symbols = type_parameter_symbols
+dotnet_naming_rule.type_parameters_start_with_t.style = t_prefixed_pascal_case
+dotnet_naming_rule.type_parameters_start_with_t.severity = warning
+dotnet_naming_symbols.type_parameter_symbols.applicable_kinds = type_parameter
+dotnet_naming_style.t_prefixed_pascal_case.capitalization = pascal_case
+dotnet_naming_style.t_prefixed_pascal_case.required_prefix = T
+
+# Types and non-field members: PascalCase
+dotnet_naming_rule.types_are_pascal_case.symbols = type_symbols
+dotnet_naming_rule.types_are_pascal_case.style = pascal_case
+dotnet_naming_rule.types_are_pascal_case.severity = warning
+dotnet_naming_symbols.type_symbols.applicable_kinds = class,struct,enum,delegate
+dotnet_naming_symbols.type_symbols.applicable_accessibilities = *
+
+dotnet_naming_rule.members_are_pascal_case.symbols = member_symbols
+dotnet_naming_rule.members_are_pascal_case.style = pascal_case
+dotnet_naming_rule.members_are_pascal_case.severity = warning
+dotnet_naming_symbols.member_symbols.applicable_kinds = property,method,event,namespace
+dotnet_naming_symbols.member_symbols.applicable_accessibilities = *
+
+# Constants and static readonly fields: PascalCase (DefaultMaxPixels, InterestingValues).
+dotnet_naming_rule.constants_are_pascal_case.symbols = constant_symbols
+dotnet_naming_rule.constants_are_pascal_case.style = pascal_case
+dotnet_naming_rule.constants_are_pascal_case.severity = warning
+dotnet_naming_symbols.constant_symbols.applicable_kinds = field
+dotnet_naming_symbols.constant_symbols.applicable_accessibilities = *
+dotnet_naming_symbols.constant_symbols.required_modifiers = const
+
+dotnet_naming_rule.static_readonly_fields_are_pascal_case.symbols = static_readonly_field_symbols
+dotnet_naming_rule.static_readonly_fields_are_pascal_case.style = pascal_case
+dotnet_naming_rule.static_readonly_fields_are_pascal_case.severity = warning
+dotnet_naming_symbols.static_readonly_field_symbols.applicable_kinds = field
+dotnet_naming_symbols.static_readonly_field_symbols.applicable_accessibilities = *
+dotnet_naming_symbols.static_readonly_field_symbols.required_modifiers = static,readonly
+
+# Public, internal and protected instance fields: PascalCase.
+dotnet_naming_rule.visible_fields_are_pascal_case.symbols = visible_field_symbols
+dotnet_naming_rule.visible_fields_are_pascal_case.style = pascal_case
+dotnet_naming_rule.visible_fields_are_pascal_case.severity = warning
+dotnet_naming_symbols.visible_field_symbols.applicable_kinds = field
+dotnet_naming_symbols.visible_field_symbols.applicable_accessibilities = public,internal,protected,protected_internal
+
+# Private instance fields: camelCase, no underscore prefix (private readonly ITestOutputHelper output;).
+dotnet_naming_rule.private_fields_are_camel_case.symbols = private_field_symbols
+dotnet_naming_rule.private_fields_are_camel_case.style = camel_case
+dotnet_naming_rule.private_fields_are_camel_case.severity = warning
+dotnet_naming_symbols.private_field_symbols.applicable_kinds = field
+dotnet_naming_symbols.private_field_symbols.applicable_accessibilities = private,private_protected
+
+# Parameters and locals: camelCase.
+dotnet_naming_rule.parameters_are_camel_case.symbols = parameter_symbols
+dotnet_naming_rule.parameters_are_camel_case.style = camel_case
+dotnet_naming_rule.parameters_are_camel_case.severity = warning
+dotnet_naming_symbols.parameter_symbols.applicable_kinds = parameter,local
+
+dotnet_naming_style.pascal_case.capitalization = pascal_case
+dotnet_naming_style.camel_case.capitalization = camel_case
+
+# ---------------------------------------------------------------------------------------------------
+# Analyzer severities (these run during the build, where warnings are errors)
+# ---------------------------------------------------------------------------------------------------
+
+# XML documentation. GenerateDocumentationFile is on for both shipping projects and CS1591
+# ("missing XML comment for publicly visible type or member") is currently suppressed through NoWarn
+# in the two library csproj files while the remaining public members are documented. Do not lean on
+# that suppression for new public API: document it.
+dotnet_diagnostic.CS1573.severity = warning
+dotnet_diagnostic.CS1734.severity = warning
+
+# Public API surface. The PublicApiAnalyzers package tracks every public member in
+# PublicAPI.Shipped.txt / PublicAPI.Unshipped.txt next to each library project.
+#   RS0016  symbol is not part of the declared API   -> add it to PublicAPI.Unshipped.txt
+#   RS0017  symbol named in the API file is missing  -> it was removed or renamed
+#   RS0022/RS0024/RS0025/RS0026/RS0027  constructor and overload hazards for API consumers
+# The IDE code fix "Add to public API" writes the entries for you.
+dotnet_diagnostic.RS0016.severity = warning
+dotnet_diagnostic.RS0017.severity = warning
+dotnet_diagnostic.RS0022.severity = warning
+dotnet_diagnostic.RS0024.severity = warning
+dotnet_diagnostic.RS0025.severity = warning
+dotnet_diagnostic.RS0026.severity = warning
+dotnet_diagnostic.RS0027.severity = warning
+dotnet_diagnostic.RS0036.severity = warning
+dotnet_diagnostic.RS0037.severity = warning
+dotnet_diagnostic.RS0041.severity = suggestion
+
+# RS0051-RS0061 are the *internal* API equivalents of the rules above. They activate because both
+# libraries use InternalsVisibleTo for their test projects, and they would demand a second pair of
+# InternalAPI.Shipped.txt / InternalAPI.Unshipped.txt files. Internal surface is free to change
+# between releases, so it is deliberately not tracked.
+dotnet_diagnostic.RS0051.severity = none
+dotnet_diagnostic.RS0052.severity = none
+dotnet_diagnostic.RS0053.severity = none
+dotnet_diagnostic.RS0054.severity = none
+dotnet_diagnostic.RS0055.severity = none
+dotnet_diagnostic.RS0056.severity = none
+dotnet_diagnostic.RS0057.severity = none
+dotnet_diagnostic.RS0058.severity = none
+dotnet_diagnostic.RS0059.severity = none
+dotnet_diagnostic.RS0060.severity = none
+dotnet_diagnostic.RS0061.severity = none
+
+# Trimming and Native AOT: both libraries set IsAotCompatible, which turns the trim/AOT analyzers on.
+# Keep these at warning (= error) so an unannotated reflection call cannot slip into a shipping assembly.
+dotnet_diagnostic.IL2026.severity = warning
+dotnet_diagnostic.IL2091.severity = warning
+dotnet_diagnostic.IL3050.severity = warning
+
+# Nullable reference types are enabled repository-wide; a nullability hole is a build break.
+dotnet_diagnostic.CS8600.severity = warning
+dotnet_diagnostic.CS8602.severity = warning
+dotnet_diagnostic.CS8603.severity = warning
+dotnet_diagnostic.CS8604.severity = warning
+dotnet_diagnostic.CS8618.severity = warning
+dotnet_diagnostic.CS8625.severity = warning
+
+# ---------------------------------------------------------------------------------------------------
+# Per-directory relaxations
+# ---------------------------------------------------------------------------------------------------
+
+# Tests: xunit theory data and fixture helpers legitimately use large literal tables and long lines.
+[tests/**/*.cs]
+max_line_length = 200
+dotnet_diagnostic.RS0016.severity = none
+dotnet_diagnostic.RS0017.severity = none
+dotnet_style_readonly_field = true:suggestion
+
+# Benchmarks: BenchmarkDotNet requires public mutable fields and undocumented public methods.
+[benchmarks/**/*.cs]
+max_line_length = 200
+dotnet_diagnostic.RS0016.severity = none
+dotnet_diagnostic.RS0017.severity = none
+
+# Samples: top-level statements, deliberately undocumented, kept short and readable.
+[samples/**/*.cs]
+max_line_length = 160
+dotnet_diagnostic.RS0016.severity = none
+dotnet_diagnostic.RS0017.severity = none
+
+# Generated files never carry the house style.
+[*.{g,g.i,designer}.cs]
+generated_code = true

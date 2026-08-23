@@ -1,0 +1,21 @@
+<Project>
+
+  <!--
+    Build settings shared by every project under this repository (src/, tests/, samples/).
+    Package metadata lives in src/EasyImageSharp/EasyImageSharp.csproj.
+  -->
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Deterministic>true</Deterministic>
+    <Company>Farhan Lodi</Company>
+    <Product>EasyImageSharp</Product>
+    <Copyright>Copyright (c) 2026 Farhan Lodi</Copyright>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+</Project>

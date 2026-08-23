@@ -1,0 +1,127 @@
+name: Bug report
+description: Something the library does that it should not, or fails to do that it should.
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report.
+
+        **If a malformed or hostile file causes a crash, a hang, or a huge allocation, do not file it
+        here.** That is a decoder-contract issue with security impact — report it privately through
+        [private vulnerability reporting](https://github.com/FarhanLodi/EasyImageSharp/security/advisories/new).
+        See [SECURITY.md](https://github.com/FarhanLodi/EasyImageSharp/blob/main/SECURITY.md).
+
+  - type: textarea
+    id: what-happens
+    attributes:
+      label: What happens
+      description: What did you observe? Include the full exception and stack trace if there is one.
+      placeholder: |
+        Loading a 16-bit interlaced PNG produces an image whose green channel is off by one everywhere.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected instead
+      description: If another tool produces a different result, say which tool and what it produced.
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Minimal reproduction
+      description: >-
+        A short, complete program we can compile and run. Trim it to the smallest thing that still
+        shows the problem. Attach the input file if one is needed (drag it onto this box).
+      render: csharp
+      placeholder: |
+        using EasyImageSharp;
+        using EasyImageSharp.PixelFormats;
+
+        using Image<Rgba32> image = Image.Load<Rgba32>("input.png");
+        Console.WriteLine(image[0, 0]);
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Package version
+      placeholder: EasyImageSharp 1.0.0
+    validations:
+      required: true
+
+  - type: dropdown
+    id: package
+    attributes:
+      label: Which package
+      multiple: true
+      options:
+        - EasyImageSharp (core)
+        - EasyImageSharp.AI
+    validations:
+      required: true
+
+  - type: dropdown
+    id: tfm
+    attributes:
+      label: Target framework
+      multiple: true
+      options:
+        - net8.0
+        - net10.0
+        - other (say which below)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      multiple: true
+      options:
+        - Linux
+        - Windows
+        - macOS
+    validations:
+      required: true
+
+  - type: dropdown
+    id: publish-mode
+    attributes:
+      label: Publish mode
+      description: Only relevant if the problem appears in a published app and not under `dotnet run`.
+      options:
+        - Not relevant / normal build
+        - Trimmed (PublishTrimmed)
+        - Native AOT (PublishAot)
+        - Single file
+    validations:
+      required: false
+
+  - type: textarea
+    id: format-details
+    attributes:
+      label: Format and options
+      description: >-
+        For a codec problem: the format, and anything unusual about the file (bit depth, colour type,
+        subsampling, compression, interlacing, number of frames). The output of `Image.Identify` is
+        ideal. Also include the `DecoderOptions` or encoder settings you passed, if any.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues and this is not a duplicate.
+          required: true
+        - label: I reproduced this on the latest released version.
+          required: true
+        - label: This is not a crash, hang or memory blow-up caused by a malformed file (those go to private reporting).
+          required: true

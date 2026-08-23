@@ -1,0 +1,311 @@
+#nullable enable
+~override EasyImageSharp.AI.ModelDownloadProgress.Equals(object obj) -> bool
+~override EasyImageSharp.AI.ModelDownloadProgress.ToString() -> string
+const EasyImageSharp.AI.ImageAiOptions.BaseUrlEnvironmentVariable = "EASYIMAGESHARP_MODEL_BASE_URL" -> string!
+const EasyImageSharp.AI.ImageAiOptions.CacheEnvironmentVariable = "EASYIMAGESHARP_CACHE" -> string!
+const EasyImageSharp.AI.ModelRegistry.DefaultBaseUrl = "https://huggingface.co/EasyImageSharp/EasyImageSharp-models/resolve/main" -> string!
+const EasyImageSharp.AI.ModelRegistry.PaddleOcrNetBaseUrl = "https://huggingface.co/PaddleOcrNet/PaddleOcrNet-models/resolve/main" -> string!
+EasyImageSharp.AI.AiImageExtensions
+EasyImageSharp.AI.AiProcessingExtensions
+EasyImageSharp.AI.BackgroundRemovalOptions
+EasyImageSharp.AI.BackgroundRemovalOptions.BackgroundColor.get -> EasyImageSharp.Color?
+EasyImageSharp.AI.BackgroundRemovalOptions.BackgroundColor.set -> void
+EasyImageSharp.AI.BackgroundRemovalOptions.BackgroundRemovalOptions() -> void
+EasyImageSharp.AI.BackgroundRemovalOptions.CropPadding.get -> int
+EasyImageSharp.AI.BackgroundRemovalOptions.CropPadding.set -> void
+EasyImageSharp.AI.BackgroundRemovalOptions.CropToForeground.get -> bool
+EasyImageSharp.AI.BackgroundRemovalOptions.CropToForeground.set -> void
+EasyImageSharp.AI.BackgroundRemovalOptions.ForegroundThreshold.get -> float
+EasyImageSharp.AI.BackgroundRemovalOptions.ForegroundThreshold.set -> void
+EasyImageSharp.AI.ExecutionProvider
+EasyImageSharp.AI.ExecutionProvider.Auto = 0 -> EasyImageSharp.AI.ExecutionProvider
+EasyImageSharp.AI.ExecutionProvider.CoreML = 4 -> EasyImageSharp.AI.ExecutionProvider
+EasyImageSharp.AI.ExecutionProvider.Cpu = 1 -> EasyImageSharp.AI.ExecutionProvider
+EasyImageSharp.AI.ExecutionProvider.Cuda = 2 -> EasyImageSharp.AI.ExecutionProvider
+EasyImageSharp.AI.ExecutionProvider.DirectML = 3 -> EasyImageSharp.AI.ExecutionProvider
+EasyImageSharp.AI.IImageModel
+EasyImageSharp.AI.IImageModel.Contract.get -> EasyImageSharp.AI.ImageModelContract!
+EasyImageSharp.AI.IImageModel.Name.get -> string!
+EasyImageSharp.AI.IImageModel.ResolveModelPathAsync(EasyImageSharp.AI.ModelHub! hub, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<string!>!
+EasyImageSharp.AI.ImageAiException
+EasyImageSharp.AI.ImageAiException.ImageAiException(string! message) -> void
+EasyImageSharp.AI.ImageAiException.ImageAiException(string! message, System.Exception! innerException) -> void
+EasyImageSharp.AI.ImageAiOptions
+EasyImageSharp.AI.ImageAiOptions.AllowInsecureModelSource.get -> bool
+EasyImageSharp.AI.ImageAiOptions.AllowInsecureModelSource.set -> void
+EasyImageSharp.AI.ImageAiOptions.AllowUnverifiedModels.get -> bool
+EasyImageSharp.AI.ImageAiOptions.AllowUnverifiedModels.set -> void
+EasyImageSharp.AI.ImageAiOptions.BaseUrlOverride.get -> string?
+EasyImageSharp.AI.ImageAiOptions.BaseUrlOverride.set -> void
+EasyImageSharp.AI.ImageAiOptions.CachePath.get -> string?
+EasyImageSharp.AI.ImageAiOptions.CachePath.set -> void
+EasyImageSharp.AI.ImageAiOptions.DeviceId.get -> int
+EasyImageSharp.AI.ImageAiOptions.DeviceId.set -> void
+EasyImageSharp.AI.ImageAiOptions.ExecutionProvider.get -> EasyImageSharp.AI.ExecutionProvider
+EasyImageSharp.AI.ImageAiOptions.ExecutionProvider.set -> void
+EasyImageSharp.AI.ImageAiOptions.HttpClient.get -> System.Net.Http.HttpClient?
+EasyImageSharp.AI.ImageAiOptions.HttpClient.set -> void
+EasyImageSharp.AI.ImageAiOptions.HttpMessageHandler.get -> System.Net.Http.HttpMessageHandler?
+EasyImageSharp.AI.ImageAiOptions.HttpMessageHandler.set -> void
+EasyImageSharp.AI.ImageAiOptions.ImageAiOptions() -> void
+EasyImageSharp.AI.ImageAiOptions.InterOpNumThreads.get -> int?
+EasyImageSharp.AI.ImageAiOptions.InterOpNumThreads.set -> void
+EasyImageSharp.AI.ImageAiOptions.IntraOpNumThreads.get -> int?
+EasyImageSharp.AI.ImageAiOptions.IntraOpNumThreads.set -> void
+EasyImageSharp.AI.ImageAiOptions.Log.get -> System.Action<string!>?
+EasyImageSharp.AI.ImageAiOptions.Log.set -> void
+EasyImageSharp.AI.ImageAiOptions.MaxRetries.get -> int
+EasyImageSharp.AI.ImageAiOptions.MaxRetries.set -> void
+EasyImageSharp.AI.ImageAiOptions.ModelPathOverrides.get -> System.Collections.Generic.IDictionary<string!, string!>!
+EasyImageSharp.AI.ImageAiOptions.Offline.get -> bool
+EasyImageSharp.AI.ImageAiOptions.Offline.set -> void
+EasyImageSharp.AI.ImageAiOptions.Progress.get -> System.IProgress<EasyImageSharp.AI.ModelDownloadProgress>?
+EasyImageSharp.AI.ImageAiOptions.Progress.set -> void
+EasyImageSharp.AI.ImageAiOptions.Quantize.get -> bool
+EasyImageSharp.AI.ImageAiOptions.Quantize.set -> void
+EasyImageSharp.AI.ImageAiOptions.RetryBaseDelay.get -> System.TimeSpan
+EasyImageSharp.AI.ImageAiOptions.RetryBaseDelay.set -> void
+EasyImageSharp.AI.ImageAiSession
+EasyImageSharp.AI.ImageAiSession.ActiveProvider.get -> EasyImageSharp.AI.ExecutionProvider
+EasyImageSharp.AI.ImageAiSession.Dispose() -> void
+EasyImageSharp.AI.ImageAiSession.GetSession(EasyImageSharp.AI.ModelDescriptor! descriptor, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> Microsoft.ML.OnnxRuntime.InferenceSession!
+EasyImageSharp.AI.ImageAiSession.GetSession(string! modelPath, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> Microsoft.ML.OnnxRuntime.InferenceSession!
+EasyImageSharp.AI.ImageAiSession.GetSessionAsync(EasyImageSharp.AI.IImageModel! model, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Microsoft.ML.OnnxRuntime.InferenceSession!>!
+EasyImageSharp.AI.ImageAiSession.GetSessionAsync(EasyImageSharp.AI.ModelDescriptor! descriptor, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Microsoft.ML.OnnxRuntime.InferenceSession!>!
+EasyImageSharp.AI.ImageAiSession.GetSessionAsync(string! modelPath, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<Microsoft.ML.OnnxRuntime.InferenceSession!>!
+EasyImageSharp.AI.ImageAiSession.Hub.get -> EasyImageSharp.AI.ModelHub!
+EasyImageSharp.AI.ImageAiSession.ImageAiSession() -> void
+EasyImageSharp.AI.ImageAiSession.ImageAiSession(EasyImageSharp.AI.ImageAiOptions! options) -> void
+EasyImageSharp.AI.ImageAiSession.LoadedSessionCount.get -> int
+EasyImageSharp.AI.ImageAiSession.Options.get -> EasyImageSharp.AI.ImageAiOptions!
+EasyImageSharp.AI.ImageAiSession.RunImageToImage<TPixel>(EasyImageSharp.AI.IImageModel! model, EasyImageSharp.Image<TPixel>! image, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> EasyImageSharp.Image<TPixel>!
+EasyImageSharp.AI.ImageAiSession.RunImageToImage<TPixel>(string! modelPath, EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageModelContract! contract, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> EasyImageSharp.Image<TPixel>!
+EasyImageSharp.AI.ImageAiSession.RunImageToImageAsync<TPixel>(EasyImageSharp.AI.IImageModel! model, EasyImageSharp.Image<TPixel>! image, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<EasyImageSharp.Image<TPixel>!>!
+EasyImageSharp.AI.ImageAiSession.RunImageToImageAsync<TPixel>(string! modelPath, EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageModelContract! contract, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<EasyImageSharp.Image<TPixel>!>!
+EasyImageSharp.AI.ImageAiSession.WarmUpAsync(System.Collections.Generic.IEnumerable<EasyImageSharp.AI.ModelDescriptor!>! models, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+EasyImageSharp.AI.ImageAiSession.WarmUpAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+EasyImageSharp.AI.ImageModelContract
+EasyImageSharp.AI.ImageModelContract.<Clone>$() -> EasyImageSharp.AI.ImageModelContract!
+EasyImageSharp.AI.ImageModelContract.Equals(EasyImageSharp.AI.ImageModelContract? other) -> bool
+EasyImageSharp.AI.ImageModelContract.FixedInputSize.get -> EasyImageSharp.Size
+EasyImageSharp.AI.ImageModelContract.FixedInputSize.init -> void
+EasyImageSharp.AI.ImageModelContract.ImageModelContract() -> void
+EasyImageSharp.AI.ImageModelContract.InputChannels.get -> int
+EasyImageSharp.AI.ImageModelContract.InputChannels.init -> void
+EasyImageSharp.AI.ImageModelContract.InputName.get -> string?
+EasyImageSharp.AI.ImageModelContract.InputName.init -> void
+EasyImageSharp.AI.ImageModelContract.InputNormalization.get -> EasyImageSharp.AI.TensorNormalization!
+EasyImageSharp.AI.ImageModelContract.InputNormalization.init -> void
+EasyImageSharp.AI.ImageModelContract.OutputKind.get -> EasyImageSharp.AI.ImageModelOutputKind
+EasyImageSharp.AI.ImageModelContract.OutputKind.init -> void
+EasyImageSharp.AI.ImageModelContract.OutputName.get -> string?
+EasyImageSharp.AI.ImageModelContract.OutputName.init -> void
+EasyImageSharp.AI.ImageModelContract.OutputNormalization.get -> EasyImageSharp.AI.TensorNormalization!
+EasyImageSharp.AI.ImageModelContract.OutputNormalization.init -> void
+EasyImageSharp.AI.ImageModelContract.ScaleFactor.get -> int
+EasyImageSharp.AI.ImageModelContract.ScaleFactor.init -> void
+EasyImageSharp.AI.ImageModelContract.SizeMultiple.get -> int
+EasyImageSharp.AI.ImageModelContract.SizeMultiple.init -> void
+EasyImageSharp.AI.ImageModelContract.TileOverlap.get -> int
+EasyImageSharp.AI.ImageModelContract.TileOverlap.init -> void
+EasyImageSharp.AI.ImageModelContract.TileSize.get -> int
+EasyImageSharp.AI.ImageModelContract.TileSize.init -> void
+EasyImageSharp.AI.ImageModelContract.Validate() -> void
+EasyImageSharp.AI.ImageModelOutputKind
+EasyImageSharp.AI.ImageModelOutputKind.Image = 0 -> EasyImageSharp.AI.ImageModelOutputKind
+EasyImageSharp.AI.ImageModelOutputKind.Residual = 1 -> EasyImageSharp.AI.ImageModelOutputKind
+EasyImageSharp.AI.ImageModelRunner
+EasyImageSharp.AI.ImageModels
+EasyImageSharp.AI.ImageModelTask
+EasyImageSharp.AI.ImageModelTask.Binarization = 6 -> EasyImageSharp.AI.ImageModelTask
+EasyImageSharp.AI.ImageModelTask.Classification = 0 -> EasyImageSharp.AI.ImageModelTask
+EasyImageSharp.AI.ImageModelTask.Denoise = 4 -> EasyImageSharp.AI.ImageModelTask
+EasyImageSharp.AI.ImageModelTask.Dewarp = 2 -> EasyImageSharp.AI.ImageModelTask
+EasyImageSharp.AI.ImageModelTask.DocumentOrientation = 1 -> EasyImageSharp.AI.ImageModelTask
+EasyImageSharp.AI.ImageModelTask.ImageToImage = 7 -> EasyImageSharp.AI.ImageModelTask
+EasyImageSharp.AI.ImageModelTask.Saliency = 5 -> EasyImageSharp.AI.ImageModelTask
+EasyImageSharp.AI.ImageModelTask.SuperResolution = 3 -> EasyImageSharp.AI.ImageModelTask
+EasyImageSharp.AI.LocalImageModel
+EasyImageSharp.AI.LocalImageModel.Contract.get -> EasyImageSharp.AI.ImageModelContract!
+EasyImageSharp.AI.LocalImageModel.LocalImageModel(string! modelPath, EasyImageSharp.AI.ImageModelContract! contract, string? name = null) -> void
+EasyImageSharp.AI.LocalImageModel.ModelPath.get -> string!
+EasyImageSharp.AI.LocalImageModel.Name.get -> string!
+EasyImageSharp.AI.LocalImageModel.ResolveModelPathAsync(EasyImageSharp.AI.ModelHub! hub, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<string!>!
+EasyImageSharp.AI.ModelChecksumException
+EasyImageSharp.AI.ModelChecksumException.ModelChecksumException(string! message) -> void
+EasyImageSharp.AI.ModelContractException
+EasyImageSharp.AI.ModelContractException.ModelContractException(string! message) -> void
+EasyImageSharp.AI.ModelDescriptor
+EasyImageSharp.AI.ModelDescriptor.<Clone>$() -> EasyImageSharp.AI.ModelDescriptor!
+EasyImageSharp.AI.ModelDescriptor.BaseUrl.get -> string!
+EasyImageSharp.AI.ModelDescriptor.BaseUrl.init -> void
+EasyImageSharp.AI.ModelDescriptor.Equals(EasyImageSharp.AI.ModelDescriptor? other) -> bool
+EasyImageSharp.AI.ModelDescriptor.FileName.get -> string!
+EasyImageSharp.AI.ModelDescriptor.FileName.init -> void
+EasyImageSharp.AI.ModelDescriptor.HasPublishedInt8.get -> bool
+EasyImageSharp.AI.ModelDescriptor.InputName.get -> string?
+EasyImageSharp.AI.ModelDescriptor.InputName.init -> void
+EasyImageSharp.AI.ModelDescriptor.InputShape.get -> int[]!
+EasyImageSharp.AI.ModelDescriptor.InputShape.init -> void
+EasyImageSharp.AI.ModelDescriptor.Int8FileName.get -> string?
+EasyImageSharp.AI.ModelDescriptor.Int8FileName.init -> void
+EasyImageSharp.AI.ModelDescriptor.Int8Sha256.get -> string?
+EasyImageSharp.AI.ModelDescriptor.Int8Sha256.init -> void
+EasyImageSharp.AI.ModelDescriptor.Int8Url.get -> string?
+EasyImageSharp.AI.ModelDescriptor.IsPublished.get -> bool
+EasyImageSharp.AI.ModelDescriptor.License.get -> string!
+EasyImageSharp.AI.ModelDescriptor.License.init -> void
+EasyImageSharp.AI.ModelDescriptor.ModelDescriptor() -> void
+EasyImageSharp.AI.ModelDescriptor.Name.get -> string!
+EasyImageSharp.AI.ModelDescriptor.Name.init -> void
+EasyImageSharp.AI.ModelDescriptor.Normalization.get -> EasyImageSharp.AI.TensorNormalization!
+EasyImageSharp.AI.ModelDescriptor.Normalization.init -> void
+EasyImageSharp.AI.ModelDescriptor.Provenance.get -> string?
+EasyImageSharp.AI.ModelDescriptor.Provenance.init -> void
+EasyImageSharp.AI.ModelDescriptor.Sha256.get -> string?
+EasyImageSharp.AI.ModelDescriptor.Sha256.init -> void
+EasyImageSharp.AI.ModelDescriptor.SizeBytes.get -> long?
+EasyImageSharp.AI.ModelDescriptor.SizeBytes.init -> void
+EasyImageSharp.AI.ModelDescriptor.Task.get -> EasyImageSharp.AI.ImageModelTask
+EasyImageSharp.AI.ModelDescriptor.Task.init -> void
+EasyImageSharp.AI.ModelDescriptor.Url.get -> string!
+EasyImageSharp.AI.ModelDownloadException
+EasyImageSharp.AI.ModelDownloadException.ModelDownloadException(string! message) -> void
+EasyImageSharp.AI.ModelDownloadException.ModelDownloadException(string! message, System.Exception! innerException) -> void
+EasyImageSharp.AI.ModelDownloadProgress
+EasyImageSharp.AI.ModelDownloadProgress.BytesDownloaded.get -> long
+EasyImageSharp.AI.ModelDownloadProgress.BytesDownloaded.init -> void
+EasyImageSharp.AI.ModelDownloadProgress.Deconstruct(out string! FileName, out long BytesDownloaded, out long TotalBytes) -> void
+EasyImageSharp.AI.ModelDownloadProgress.Equals(EasyImageSharp.AI.ModelDownloadProgress other) -> bool
+EasyImageSharp.AI.ModelDownloadProgress.FileName.get -> string!
+EasyImageSharp.AI.ModelDownloadProgress.FileName.init -> void
+EasyImageSharp.AI.ModelDownloadProgress.Fraction.get -> double?
+EasyImageSharp.AI.ModelDownloadProgress.ModelDownloadProgress() -> void
+EasyImageSharp.AI.ModelDownloadProgress.ModelDownloadProgress(string! FileName, long BytesDownloaded, long TotalBytes) -> void
+EasyImageSharp.AI.ModelDownloadProgress.TotalBytes.get -> long
+EasyImageSharp.AI.ModelDownloadProgress.TotalBytes.init -> void
+EasyImageSharp.AI.ModelHub
+EasyImageSharp.AI.ModelHub.CacheDirectory.get -> string!
+EasyImageSharp.AI.ModelHub.CanResolve(EasyImageSharp.AI.ModelDescriptor! descriptor) -> bool
+EasyImageSharp.AI.ModelHub.Dispose() -> void
+EasyImageSharp.AI.ModelHub.EnsureModel(EasyImageSharp.AI.ModelDescriptor! descriptor, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> string!
+EasyImageSharp.AI.ModelHub.EnsureModelAsync(EasyImageSharp.AI.ModelDescriptor! descriptor, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<string!>!
+EasyImageSharp.AI.ModelHub.GetCachePath(EasyImageSharp.AI.ModelDescriptor! descriptor, bool int8 = false) -> string!
+EasyImageSharp.AI.ModelHub.IsAvailableLocally(EasyImageSharp.AI.ModelDescriptor! descriptor) -> bool
+EasyImageSharp.AI.ModelHub.ModelHub() -> void
+EasyImageSharp.AI.ModelHub.ModelHub(EasyImageSharp.AI.ImageAiOptions! options) -> void
+EasyImageSharp.AI.ModelHub.Options.get -> EasyImageSharp.AI.ImageAiOptions!
+EasyImageSharp.AI.ModelHub.ResolveAsync(EasyImageSharp.AI.ModelDescriptor! descriptor, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<EasyImageSharp.AI.ResolvedModel!>!
+EasyImageSharp.AI.ModelHub.ResolveUrl(EasyImageSharp.AI.ModelDescriptor! descriptor, bool int8 = false) -> string!
+EasyImageSharp.AI.ModelRegistry
+EasyImageSharp.AI.ModelSource
+EasyImageSharp.AI.ModelSource.Cache = 1 -> EasyImageSharp.AI.ModelSource
+EasyImageSharp.AI.ModelSource.Download = 2 -> EasyImageSharp.AI.ModelSource
+EasyImageSharp.AI.ModelSource.Override = 0 -> EasyImageSharp.AI.ModelSource
+EasyImageSharp.AI.OfflineModelMissingException
+EasyImageSharp.AI.OfflineModelMissingException.OfflineModelMissingException(string! message) -> void
+EasyImageSharp.AI.OrientationResult
+EasyImageSharp.AI.OrientationResult.Confidence.get -> float
+EasyImageSharp.AI.OrientationResult.Correction.get -> EasyImageSharp.Processing.RotateMode
+EasyImageSharp.AI.OrientationResult.DetectedAngle.get -> int
+EasyImageSharp.AI.OrientationResult.IsUpright.get -> bool
+EasyImageSharp.AI.OrientationResult.Probabilities.get -> System.Collections.Generic.IReadOnlyList<float>!
+EasyImageSharp.AI.RegistryImageModel
+EasyImageSharp.AI.RegistryImageModel.Contract.get -> EasyImageSharp.AI.ImageModelContract!
+EasyImageSharp.AI.RegistryImageModel.Descriptor.get -> EasyImageSharp.AI.ModelDescriptor!
+EasyImageSharp.AI.RegistryImageModel.Name.get -> string!
+EasyImageSharp.AI.RegistryImageModel.RegistryImageModel(EasyImageSharp.AI.ModelDescriptor! descriptor, EasyImageSharp.AI.ImageModelContract! contract) -> void
+EasyImageSharp.AI.RegistryImageModel.ResolveModelPathAsync(EasyImageSharp.AI.ModelHub! hub, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<string!>!
+EasyImageSharp.AI.ResolvedModel
+EasyImageSharp.AI.ResolvedModel.<Clone>$() -> EasyImageSharp.AI.ResolvedModel!
+EasyImageSharp.AI.ResolvedModel.Deconstruct(out string! Path, out string! FileName, out bool IsQuantized, out EasyImageSharp.AI.ModelSource Source) -> void
+EasyImageSharp.AI.ResolvedModel.Equals(EasyImageSharp.AI.ResolvedModel? other) -> bool
+EasyImageSharp.AI.ResolvedModel.FileName.get -> string!
+EasyImageSharp.AI.ResolvedModel.FileName.init -> void
+EasyImageSharp.AI.ResolvedModel.IsQuantized.get -> bool
+EasyImageSharp.AI.ResolvedModel.IsQuantized.init -> void
+EasyImageSharp.AI.ResolvedModel.Path.get -> string!
+EasyImageSharp.AI.ResolvedModel.Path.init -> void
+EasyImageSharp.AI.ResolvedModel.ResolvedModel(string! Path, string! FileName, bool IsQuantized, EasyImageSharp.AI.ModelSource Source) -> void
+EasyImageSharp.AI.ResolvedModel.Source.get -> EasyImageSharp.AI.ModelSource
+EasyImageSharp.AI.ResolvedModel.Source.init -> void
+EasyImageSharp.AI.TensorNormalization
+EasyImageSharp.AI.TensorNormalization.<Clone>$() -> EasyImageSharp.AI.TensorNormalization!
+EasyImageSharp.AI.TensorNormalization.Equals(EasyImageSharp.AI.TensorNormalization? other) -> bool
+EasyImageSharp.AI.TensorNormalization.Mean.get -> float[]!
+EasyImageSharp.AI.TensorNormalization.Mean.init -> void
+EasyImageSharp.AI.TensorNormalization.Std.get -> float[]!
+EasyImageSharp.AI.TensorNormalization.Std.init -> void
+EasyImageSharp.AI.TensorNormalization.TensorNormalization() -> void
+override EasyImageSharp.AI.ImageModelContract.Equals(object? obj) -> bool
+override EasyImageSharp.AI.ImageModelContract.GetHashCode() -> int
+override EasyImageSharp.AI.ImageModelContract.ToString() -> string!
+override EasyImageSharp.AI.ModelDescriptor.Equals(object? obj) -> bool
+override EasyImageSharp.AI.ModelDescriptor.GetHashCode() -> int
+override EasyImageSharp.AI.ModelDescriptor.ToString() -> string!
+override EasyImageSharp.AI.ModelDownloadProgress.GetHashCode() -> int
+override EasyImageSharp.AI.OrientationResult.ToString() -> string!
+override EasyImageSharp.AI.ResolvedModel.Equals(object? obj) -> bool
+override EasyImageSharp.AI.ResolvedModel.GetHashCode() -> int
+override EasyImageSharp.AI.ResolvedModel.ToString() -> string!
+override EasyImageSharp.AI.TensorNormalization.Equals(object? obj) -> bool
+override EasyImageSharp.AI.TensorNormalization.GetHashCode() -> int
+override EasyImageSharp.AI.TensorNormalization.ToString() -> string!
+static EasyImageSharp.AI.AiImageExtensions.AutoOrient<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageAiSession! ai, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> EasyImageSharp.Processing.RotateMode
+static EasyImageSharp.AI.AiImageExtensions.AutoOrientAsync<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageAiSession! ai, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<EasyImageSharp.Processing.RotateMode>!
+static EasyImageSharp.AI.AiImageExtensions.BinarizeAI<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageAiSession! ai, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> void
+static EasyImageSharp.AI.AiImageExtensions.BinarizeAIAsync<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageAiSession! ai, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+static EasyImageSharp.AI.AiImageExtensions.DenoiseAI<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageAiSession! ai, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> void
+static EasyImageSharp.AI.AiImageExtensions.DenoiseAIAsync<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageAiSession! ai, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+static EasyImageSharp.AI.AiImageExtensions.DetectOrientation<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageAiSession! ai, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> EasyImageSharp.AI.OrientationResult!
+static EasyImageSharp.AI.AiImageExtensions.DetectOrientationAsync<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageAiSession! ai, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<EasyImageSharp.AI.OrientationResult!>!
+static EasyImageSharp.AI.AiImageExtensions.DewarpDocument<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageAiSession! ai, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> void
+static EasyImageSharp.AI.AiImageExtensions.DewarpDocumentAsync<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageAiSession! ai, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+static EasyImageSharp.AI.AiImageExtensions.GetSaliencyMask<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageAiSession! ai, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> EasyImageSharp.Image<EasyImageSharp.PixelFormats.L8>!
+static EasyImageSharp.AI.AiImageExtensions.GetSaliencyMaskAsync<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageAiSession! ai, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<EasyImageSharp.Image<EasyImageSharp.PixelFormats.L8>!>!
+static EasyImageSharp.AI.AiImageExtensions.RemoveBackground<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageAiSession! ai, EasyImageSharp.AI.BackgroundRemovalOptions? options = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> void
+static EasyImageSharp.AI.AiImageExtensions.RemoveBackgroundAsync<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageAiSession! ai, EasyImageSharp.AI.BackgroundRemovalOptions? options = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+static EasyImageSharp.AI.AiImageExtensions.Upscale<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageAiSession! ai, int factor = 4, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> void
+static EasyImageSharp.AI.AiImageExtensions.UpscaleAsync<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageAiSession! ai, int factor = 4, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+static EasyImageSharp.AI.AiProcessingExtensions.AutoOrient(this EasyImageSharp.Processing.IImageProcessingContext! context, EasyImageSharp.AI.ImageAiSession! ai) -> EasyImageSharp.Processing.IImageProcessingContext!
+static EasyImageSharp.AI.AiProcessingExtensions.BinarizeAI(this EasyImageSharp.Processing.IImageProcessingContext! context, EasyImageSharp.AI.ImageAiSession! ai) -> EasyImageSharp.Processing.IImageProcessingContext!
+static EasyImageSharp.AI.AiProcessingExtensions.DenoiseAI(this EasyImageSharp.Processing.IImageProcessingContext! context, EasyImageSharp.AI.ImageAiSession! ai) -> EasyImageSharp.Processing.IImageProcessingContext!
+static EasyImageSharp.AI.AiProcessingExtensions.DewarpDocument(this EasyImageSharp.Processing.IImageProcessingContext! context, EasyImageSharp.AI.ImageAiSession! ai) -> EasyImageSharp.Processing.IImageProcessingContext!
+static EasyImageSharp.AI.AiProcessingExtensions.RemoveBackground(this EasyImageSharp.Processing.IImageProcessingContext! context, EasyImageSharp.AI.ImageAiSession! ai) -> EasyImageSharp.Processing.IImageProcessingContext!
+static EasyImageSharp.AI.AiProcessingExtensions.RemoveBackground(this EasyImageSharp.Processing.IImageProcessingContext! context, EasyImageSharp.AI.ImageAiSession! ai, EasyImageSharp.AI.BackgroundRemovalOptions! options) -> EasyImageSharp.Processing.IImageProcessingContext!
+static EasyImageSharp.AI.AiProcessingExtensions.Upscale(this EasyImageSharp.Processing.IImageProcessingContext! context, EasyImageSharp.AI.ImageAiSession! ai, int factor = 4) -> EasyImageSharp.Processing.IImageProcessingContext!
+static EasyImageSharp.AI.BackgroundRemovalOptions.Default.get -> EasyImageSharp.AI.BackgroundRemovalOptions!
+static EasyImageSharp.AI.ImageModelContract.operator !=(EasyImageSharp.AI.ImageModelContract? left, EasyImageSharp.AI.ImageModelContract? right) -> bool
+static EasyImageSharp.AI.ImageModelContract.operator ==(EasyImageSharp.AI.ImageModelContract? left, EasyImageSharp.AI.ImageModelContract? right) -> bool
+static EasyImageSharp.AI.ImageModelRunner.Run<TPixel>(Microsoft.ML.OnnxRuntime.InferenceSession! session, EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageModelContract! contract, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> EasyImageSharp.Image<TPixel>!
+static EasyImageSharp.AI.ImageModels.DenoiseGray.get -> EasyImageSharp.AI.RegistryImageModel!
+static EasyImageSharp.AI.ImageModels.DocumentDewarp.get -> EasyImageSharp.AI.RegistryImageModel!
+static EasyImageSharp.AI.ImageModels.SuperResolutionX4.get -> EasyImageSharp.AI.RegistryImageModel!
+static EasyImageSharp.AI.ModelDescriptor.operator !=(EasyImageSharp.AI.ModelDescriptor? left, EasyImageSharp.AI.ModelDescriptor? right) -> bool
+static EasyImageSharp.AI.ModelDescriptor.operator ==(EasyImageSharp.AI.ModelDescriptor? left, EasyImageSharp.AI.ModelDescriptor? right) -> bool
+static EasyImageSharp.AI.ModelDownloadProgress.operator !=(EasyImageSharp.AI.ModelDownloadProgress left, EasyImageSharp.AI.ModelDownloadProgress right) -> bool
+static EasyImageSharp.AI.ModelDownloadProgress.operator ==(EasyImageSharp.AI.ModelDownloadProgress left, EasyImageSharp.AI.ModelDownloadProgress right) -> bool
+static EasyImageSharp.AI.ModelHub.ComputeSha256Async(string! path, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<string!>!
+static EasyImageSharp.AI.ModelHub.DefaultCacheDirectory.get -> string!
+static EasyImageSharp.AI.ModelHub.ResolveCacheDirectory(string? cachePath) -> string!
+static EasyImageSharp.AI.ModelRegistry.All.get -> System.Collections.Generic.IReadOnlyList<EasyImageSharp.AI.ModelDescriptor!>!
+static EasyImageSharp.AI.ModelRegistry.Binarization.get -> EasyImageSharp.AI.ModelDescriptor!
+static EasyImageSharp.AI.ModelRegistry.DenoiseGray.get -> EasyImageSharp.AI.ModelDescriptor!
+static EasyImageSharp.AI.ModelRegistry.DocumentDewarp.get -> EasyImageSharp.AI.ModelDescriptor!
+static EasyImageSharp.AI.ModelRegistry.DocumentOrientation.get -> EasyImageSharp.AI.ModelDescriptor!
+static EasyImageSharp.AI.ModelRegistry.Find(string! nameOrFileName) -> EasyImageSharp.AI.ModelDescriptor?
+static EasyImageSharp.AI.ModelRegistry.GetChecksum(string! fileName) -> string?
+static EasyImageSharp.AI.ModelRegistry.Published.get -> System.Collections.Generic.IReadOnlyList<EasyImageSharp.AI.ModelDescriptor!>!
+static EasyImageSharp.AI.ModelRegistry.Saliency.get -> EasyImageSharp.AI.ModelDescriptor!
+static EasyImageSharp.AI.ModelRegistry.SuperResolutionX4.get -> EasyImageSharp.AI.ModelDescriptor!
+static EasyImageSharp.AI.OrientationResult.CorrectionFor(int classIndex) -> EasyImageSharp.Processing.RotateMode
+static EasyImageSharp.AI.OrientationResult.FromScores(System.ReadOnlySpan<float> scores) -> EasyImageSharp.AI.OrientationResult!
+static EasyImageSharp.AI.ResolvedModel.operator !=(EasyImageSharp.AI.ResolvedModel? left, EasyImageSharp.AI.ResolvedModel? right) -> bool
+static EasyImageSharp.AI.ResolvedModel.operator ==(EasyImageSharp.AI.ResolvedModel? left, EasyImageSharp.AI.ResolvedModel? right) -> bool
+static EasyImageSharp.AI.TensorNormalization.Byte.get -> EasyImageSharp.AI.TensorNormalization!
+static EasyImageSharp.AI.TensorNormalization.ImageNet.get -> EasyImageSharp.AI.TensorNormalization!
+static EasyImageSharp.AI.TensorNormalization.operator !=(EasyImageSharp.AI.TensorNormalization? left, EasyImageSharp.AI.TensorNormalization? right) -> bool
+static EasyImageSharp.AI.TensorNormalization.operator ==(EasyImageSharp.AI.TensorNormalization? left, EasyImageSharp.AI.TensorNormalization? right) -> bool
+static EasyImageSharp.AI.TensorNormalization.Symmetric.get -> EasyImageSharp.AI.TensorNormalization!
+static EasyImageSharp.AI.TensorNormalization.Unit.get -> EasyImageSharp.AI.TensorNormalization!
+static readonly EasyImageSharp.AI.OrientationResult.ClassAngles -> int[]!

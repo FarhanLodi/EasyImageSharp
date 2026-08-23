@@ -1,0 +1,447 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    # 03:17 UTC nightly. Only the `fuzz-nightly` job runs on this trigger.
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  # Deterministic, reproducible restore paths across jobs.
+  NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
+
+jobs:
+  # -------------------------------------------------------------------------------------------------
+  # Build and test the whole solution, on every OS, on both target frameworks.
+  # -------------------------------------------------------------------------------------------------
+  build-test:
+    name: Build & test (${{ matrix.os }})
+    if: github.event_name != 'schedule'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          # 10.0.x builds everything; 8.0.x supplies the runtime for the net8.0 test leg.
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.NUGET_PACKAGES }}
+          key: nuget-${{ matrix.os }}-${{ hashFiles('**/*.csproj', '**/Directory.Build.props') }}
+          restore-keys: nuget-${{ matrix.os }}-
+
+      - name: Restore
+        run: dotnet restore EasyImageSharp.slnx
+
+      - name: Build (warnings are errors)
+        run: dotnet build EasyImageSharp.slnx -c Release --no-restore
+
+      # The whole solution: core tests and AI tests, each on net8.0 and net10.0. The shipped net8.0
+      # build is exercised, not just the framework the SDK happens to default to.
+      - name: Test net8.0
+        run: dotnet test EasyImageSharp.slnx -c Release --no-build -f net8.0 --logger "trx;LogFileName=net8.trx" --results-directory TestResults
+
+      - name: Test net10.0
+        run: dotnet test EasyImageSharp.slnx -c Release --no-build -f net10.0 --logger "trx;LogFileName=net10.trx" --results-directory TestResults
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.os }}
+          path: TestResults
+          if-no-files-found: warn
+
+  # -------------------------------------------------------------------------------------------------
+  # The fixture corpus must be reproducible. Regenerate it from the Python generators and fail if any
+  # tracked fixture byte changes: that is what makes "the expected values came from somewhere other
+  # than this library" a checkable claim rather than a promise.
+  #
+  # Linux only, deliberately. The generators write manifests in Python text mode, so on Windows they
+  # come out CRLF while git stores LF, which would report every manifest as changed.
+  # -------------------------------------------------------------------------------------------------
+  fixture-determinism:
+    name: Fixture determinism
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # Pinned on purpose: Pillow and NumPy are the oracles for the corpus, so a version bump can
+      # legitimately change the expected bytes. If this step needs new pins, regenerate the corpus
+      # locally with the new versions and commit the result together with the pin change.
+      - name: Install the fixture toolchain
+        run: python -m pip install --disable-pip-version-check "pillow==11.3.0" "numpy==1.26.4"
+
+      - name: Regenerate every fixture
+        working-directory: tests/EasyImageSharp.Tests/Fixtures
+        run: python generate.py
+
+      # Only tracked files are compared. The generators also emit a few folders that are not part of
+      # the committed corpus (they run ahead of the tests that will consume them), and those are
+      # reported below for visibility rather than treated as a failure.
+      - name: Tracked fixtures must be byte-identical
+        run: |
+          if ! git diff --exit-code --stat -- tests/EasyImageSharp.Tests/Fixtures; then
+            echo "::error::Regenerating the fixtures changed tracked files. Either the generators are not deterministic, or the committed corpus is stale. Run tests/EasyImageSharp.Tests/Fixtures/generate.py locally and commit the result."
+            git diff -- tests/EasyImageSharp.Tests/Fixtures | head -200
+            exit 1
+          fi
+          echo "All tracked fixtures reproduced byte for byte."
+
+      - name: Report untracked generator output
+        if: always()
+        run: |
+          untracked=$(git ls-files --others --exclude-standard -- tests/EasyImageSharp.Tests/Fixtures | head -50)
+          if [ -n "$untracked" ]; then
+            echo "::notice::The generators produced files that are not committed:"
+            echo "$untracked"
+          fi
+
+  # -------------------------------------------------------------------------------------------------
+  # Native AOT: publish the smoke sample and run it. Publishing proves there is no reflection the
+  # trimmer cannot follow; running proves the codecs still work once statically compiled. The sample
+  # round-trips every format the library can both encode and decode and exits non-zero on failure.
+  # -------------------------------------------------------------------------------------------------
+  aot-smoke:
+    name: Native AOT smoke (${{ matrix.os }})
+    if: github.event_name != 'schedule'
+    needs: build-test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            rid: linux-x64
+            binary: ./aot-out/AotSmoke
+          - os: windows-latest
+            rid: win-x64
+            binary: ./aot-out/AotSmoke.exe
+          - os: macos-latest
+            rid: osx-arm64
+            binary: ./aot-out/AotSmoke
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      # The ILCompiler links with the system toolchain on Linux.
+      - name: Install the native toolchain
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y clang zlib1g-dev
+
+      - name: Publish with Native AOT
+        run: dotnet publish samples/AotSmoke -c Release -r ${{ matrix.rid }} -p:PublishAot=true -o aot-out
+
+      - name: Run the native binary
+        run: ${{ matrix.binary }}
+
+  # -------------------------------------------------------------------------------------------------
+  # Trimming: publish a sample with PublishTrimmed and assert the trimmer had nothing to complain
+  # about. TrimmerSingleWarn=false makes the analyzer report every site rather than one summary
+  # warning per assembly, and TreatWarningsAsErrors (from Directory.Build.props) turns any IL2xxx
+  # warning into a failed publish. The explicit grep is a backstop in case a warning ever escapes
+  # warnings-as-errors.
+  # -------------------------------------------------------------------------------------------------
+  trim-smoke:
+    name: Trimming smoke
+    if: github.event_name != 'schedule'
+    needs: build-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Publish trimmed
+        run: |
+          set -o pipefail
+          dotnet publish samples/Thumbnailer \
+            -c Release -r linux-x64 --self-contained true \
+            -p:PublishTrimmed=true \
+            -p:TrimmerSingleWarn=false \
+            -p:SuppressTrimAnalysisWarnings=false \
+            -o trim-out 2>&1 | tee trim.log
+
+      - name: No trim warnings
+        run: |
+          if grep -E "warning IL[0-9]{4}" trim.log; then
+            echo "::error::The trimmer reported warnings. A trimmed application cannot be trusted until these are resolved."
+            exit 1
+          fi
+          echo "Trimmed publish produced no IL warnings."
+
+      - name: Run the trimmed application
+        run: ./trim-out/Thumbnailer
+
+  # -------------------------------------------------------------------------------------------------
+  # Every sample must actually run, not merely compile. They take no arguments and synthesise their
+  # own input, so this is a genuine end-to-end exercise of load, process, save and the HTTP endpoint.
+  # -------------------------------------------------------------------------------------------------
+  samples:
+    name: Samples run
+    if: github.event_name != 'schedule'
+    needs: build-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Build the samples
+        run: |
+          for sample in Thumbnailer OcrPreprocessing Annotate WebImageApi AotSmoke; do
+            dotnet build "samples/$sample" -c Release
+          done
+
+      - name: Thumbnailer
+        run: dotnet run --project samples/Thumbnailer -c Release --no-build
+
+      - name: OcrPreprocessing
+        run: dotnet run --project samples/OcrPreprocessing -c Release --no-build
+
+      - name: Annotate
+        run: dotnet run --project samples/Annotate -c Release --no-build
+
+      - name: WebImageApi (self test)
+        run: dotnet run --project samples/WebImageApi -c Release --no-build -- --smoke
+
+      - name: AotSmoke (JIT)
+        run: dotnet run --project samples/AotSmoke -c Release --no-build
+
+  # -------------------------------------------------------------------------------------------------
+  # Pack validation for BOTH packages. A package that is missing its README, licence, icon or symbol
+  # file is a package that looks abandoned on NuGet, so the contents are asserted, not just listed.
+  # -------------------------------------------------------------------------------------------------
+  pack:
+    name: Pack validation
+    if: github.event_name != 'schedule'
+    needs: build-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      - name: Pack EasyImageSharp
+        run: dotnet pack src/EasyImageSharp -c Release -o artifacts -p:ContinuousIntegrationBuild=true
+
+      - name: Pack EasyImageSharp.AI
+        run: dotnet pack src/EasyImageSharp.AI -c Release -o artifacts -p:ContinuousIntegrationBuild=true
+
+      - name: Validate package contents
+        run: |
+          set -euo pipefail
+          fail=0
+
+          check() {
+            local pkg="$1" name="$2"
+            echo "== $name"
+            [ -f "$pkg" ] || { echo "::error::$name was not produced"; return 1; }
+
+            local listing
+            listing=$(unzip -Z1 "$pkg")
+            echo "$listing" | sed 's/^/    /'
+
+            for required in README.md LICENSE icon.png; do
+              echo "$listing" | grep -qx "$required" \
+                || { echo "::error::$name is missing $required"; fail=1; }
+            done
+
+            # Both target frameworks, with their XML documentation next to them.
+            for tfm in net8.0 net10.0; do
+              echo "$listing" | grep -q "^lib/$tfm/$name.dll$" \
+                || { echo "::error::$name is missing lib/$tfm/$name.dll"; fail=1; }
+              echo "$listing" | grep -q "^lib/$tfm/$name.xml$" \
+                || { echo "::error::$name is missing lib/$tfm/$name.xml (GenerateDocumentationFile)"; fail=1; }
+            done
+
+            # A symbol package, so stack traces from consumers are usable.
+            [ -f "${pkg%.nupkg}.snupkg" ] \
+              || { echo "::error::$name has no .snupkg symbol package"; fail=1; }
+          }
+
+          shopt -s nullglob
+          core=(artifacts/EasyImageSharp.[0-9]*.nupkg)
+          ai=(artifacts/EasyImageSharp.AI.[0-9]*.nupkg)
+
+          # With nullglob an empty glob would silently skip every assertion below, so a missing
+          # package must fail here rather than pass by default.
+          [ ${#core[@]} -gt 0 ] || { echo "::error::No EasyImageSharp nupkg was produced"; exit 1; }
+          [ ${#ai[@]} -gt 0 ] || { echo "::error::No EasyImageSharp.AI nupkg was produced"; exit 1; }
+
+          for pkg in "${core[@]}"; do check "$pkg" "EasyImageSharp"; done
+          for pkg in "${ai[@]}"; do check "$pkg" "EasyImageSharp.AI"; done
+
+          # The core package must stay dependency-free; the AI package must declare ONNX Runtime.
+          core_nuspec=$(unzip -p artifacts/EasyImageSharp.[0-9]*.nupkg EasyImageSharp.nuspec)
+          if echo "$core_nuspec" | grep -q "<dependency "; then
+            echo "::error::The core package gained a package dependency:"
+            echo "$core_nuspec" | grep "<dependency "
+            fail=1
+          fi
+
+          exit $fail
+
+      - name: Upload packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-packages
+          path: |
+            artifacts/*.nupkg
+            artifacts/*.snupkg
+          if-no-files-found: error
+
+  # -------------------------------------------------------------------------------------------------
+  # The documentation site. `docfx build --warningsAsErrors` fails on a broken cross-reference, so a
+  # renamed type cannot silently leave a dead <see cref> or a dangling article link behind.
+  # -------------------------------------------------------------------------------------------------
+  docs:
+    name: Documentation
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      - name: Install DocFX
+        run: dotnet tool install --global docfx --version 2.78.3
+
+      - name: Build the site
+        run: docfx docs/docfx.json --warningsAsErrors
+
+      - name: Upload the site
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-site
+          path: docs/_site
+          if-no-files-found: error
+
+  # -------------------------------------------------------------------------------------------------
+  # Nightly deep fuzzing.
+  #
+  # The harness in tests/EasyImageSharp.Tests/FuzzSmokeTests.cs fixes its seed and its mutation count
+  # as compile-time constants (`Seed`, `MutationsPerSeed`), so there is currently NO environment
+  # variable to raise the iteration count with. Until the harness reads one, this job widens the
+  # search the only way available from the outside: it runs the fuzz suite across all three operating
+  # systems and both target frameworks, which exercises different JIT output, different intrinsics
+  # paths and different allocator behaviour against the same corpus.
+  #
+  # When the harness learns to read an override, add it to `env:` below and drop this comment:
+  #     EASYIMAGESHARP_FUZZ_MUTATIONS: 20000
+  #     EASYIMAGESHARP_FUZZ_SEED: ${{ github.run_id }}
+  # A run-id seed is the more valuable half: a fixed seed re-tests the same 130,000 inputs every
+  # night, whereas a varying seed explores new ones and turns this job into a real fuzzing campaign.
+  # -------------------------------------------------------------------------------------------------
+  fuzz-nightly:
+    name: Fuzz (nightly, ${{ matrix.os }} ${{ matrix.tfm }})
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        tfm: [net8.0, net10.0]
+    env:
+      # Harmless today; picked up automatically once the harness reads them.
+      EASYIMAGESHARP_FUZZ_MUTATIONS: "20000"
+      EASYIMAGESHARP_FUZZ_SEED: ${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      - name: Build
+        run: dotnet build tests/EasyImageSharp.Tests -c Release
+
+      - name: Fuzz
+        run: >
+          dotnet test tests/EasyImageSharp.Tests -c Release --no-build -f ${{ matrix.tfm }}
+          --filter "FullyQualifiedName~FuzzSmokeTests"
+          --logger "console;verbosity=detailed"
+          --logger "trx;LogFileName=fuzz.trx"
+          --results-directory FuzzResults
+
+      # A failing input is written to the temp directory by the harness and named in the assertion
+      # message. Collect it so a nightly failure is reproducible without guessing.
+      - name: Collect failing inputs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fuzz-failures-${{ matrix.os }}-${{ matrix.tfm }}
+          path: |
+            ${{ runner.temp }}/EasyImageSharp-fuzz
+            FuzzResults
+          if-no-files-found: warn
+
+  # -------------------------------------------------------------------------------------------------
+  # A single required status check for branch protection.
+  # -------------------------------------------------------------------------------------------------
+  ci-passed:
+    name: CI passed
+    if: always() && github.event_name != 'schedule'
+    needs: [build-test, fixture-determinism, aot-smoke, trim-smoke, samples, pack, docs]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check that every job succeeded
+        run: |
+          results='${{ join(needs.*.result, " ") }}'
+          echo "job results: $results"
+          for result in $results; do
+            if [ "$result" != "success" ]; then
+              echo "::error::At least one CI job did not succeed."
+              exit 1
+            fi
+          done
+          echo "All CI jobs succeeded."

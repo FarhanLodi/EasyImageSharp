@@ -1,0 +1,302 @@
+[
+ {
+  "name": "pil_bmp32_single",
+  "file": "pil_bmp32_single.ico",
+  "writer": "pillow",
+  "notes": "single 32x32 entry stored as a 32-bit BMP DIB with alpha + (empty) AND mask",
+  "sha256": "c9124e2672896fed",
+  "size": 4158,
+  "width": 32,
+  "height": 32,
+  "frames": 1,
+  "entry_format": "bmp",
+  "entries": 1
+ },
+ {
+  "name": "pil_png_multi",
+  "file": "pil_png_multi.ico",
+  "writer": "pillow",
+  "notes": "three PNG entries (16, 24, 32 px) downscaled by Pillow",
+  "sha256": "f3591c3e28d31504",
+  "size": 3600,
+  "width": 16,
+  "height": 16,
+  "frames": 3,
+  "frame_sizes": [
+   [
+    16,
+    16
+   ],
+   [
+    24,
+    24
+   ],
+   [
+    32,
+    32
+   ]
+  ],
+  "entry_format": "png",
+  "entries": 3
+ },
+ {
+  "name": "pil_bmp_multi",
+  "file": "pil_bmp_multi.ico",
+  "writer": "pillow",
+  "notes": "three 32-bit BMP entries (16, 24, 32 px)",
+  "sha256": "0a2efd59a9ee1eda",
+  "size": 7598,
+  "width": 16,
+  "height": 16,
+  "frames": 3,
+  "frame_sizes": [
+   [
+    16,
+    16
+   ],
+   [
+    24,
+    24
+   ],
+   [
+    32,
+    32
+   ]
+  ],
+  "entry_format": "bmp",
+  "entries": 3
+ },
+ {
+  "name": "hand_bmp24_andmask",
+  "file": "hand_bmp24_andmask.ico",
+  "writer": "hand",
+  "notes": "24-bit DIB 20x13 (padded rows) with an AND mask marking transparent pixels",
+  "sha256": "ce6bd0308067f13e",
+  "size": 894,
+  "width": 20,
+  "height": 13,
+  "frames": 1,
+  "bpp": 24
+ },
+ {
+  "name": "hand_bmp8_pal_andmask",
+  "file": "hand_bmp8_pal_andmask.ico",
+  "writer": "hand",
+  "notes": "8-bit palette DIB (256 entries) with AND mask",
+  "sha256": "a7ce447867605ae8",
+  "size": 1398,
+  "width": 20,
+  "height": 13,
+  "frames": 1,
+  "bpp": 8
+ },
+ {
+  "name": "hand_bmp4_pal_andmask",
+  "file": "hand_bmp4_pal_andmask.ico",
+  "writer": "hand",
+  "notes": "4-bit palette DIB (odd width nibble packing) with AND mask",
+  "sha256": "1d23f3860efbd55e",
+  "size": 334,
+  "width": 20,
+  "height": 13,
+  "frames": 1,
+  "bpp": 4
+ },
+ {
+  "name": "hand_bmp1_pal_andmask",
+  "file": "hand_bmp1_pal_andmask.ico",
+  "writer": "hand",
+  "notes": "1-bit palette DIB (biClrUsed 2) with AND mask",
+  "sha256": "64a3881f2507431a",
+  "size": 174,
+  "width": 20,
+  "height": 13,
+  "frames": 1,
+  "bpp": 1
+ },
+ {
+  "name": "hand_bmp8_clrused10",
+  "file": "hand_bmp8_clrused10.ico",
+  "writer": "hand",
+  "notes": "8-bit DIB with biClrUsed 10 (short palette), all-opaque AND mask",
+  "sha256": "c0474f491351b744",
+  "size": 214,
+  "width": 9,
+  "height": 7,
+  "frames": 1,
+  "bpp": 8
+ },
+ {
+  "name": "hand_bmp16_555",
+  "file": "hand_bmp16_555.ico",
+  "writer": "hand",
+  "notes": "16-bit 5-5-5 DIB with the top row masked out",
+  "sha256": "00e9a90ff78aa8fa",
+  "size": 230,
+  "width": 11,
+  "height": 6,
+  "frames": 1,
+  "bpp": 16
+ },
+ {
+  "name": "hand_bmp32_alpha_maskignored",
+  "file": "hand_bmp32_alpha_maskignored.ico",
+  "writer": "hand",
+  "notes": "32-bit DIB with a real alpha channel: the (all-set) AND mask is ignored",
+  "sha256": "6bbf2888e87bab1b",
+  "size": 1154,
+  "width": 20,
+  "height": 13,
+  "frames": 1,
+  "bpp": 32
+ },
+ {
+  "name": "hand_bmp32_zeroalpha_andmask",
+  "file": "hand_bmp32_zeroalpha_andmask.ico",
+  "writer": "hand",
+  "notes": "32-bit DIB whose alpha bytes are all zero: treated as opaque and the AND mask decides transparency (Pillow reports alpha 0)",
+  "sha256": "15cd21c6ae0e556f",
+  "size": 1154,
+  "width": 20,
+  "height": 13,
+  "frames": 1,
+  "bpp": 32
+ },
+ {
+  "name": "hand_dir_size_mismatch",
+  "file": "hand_dir_size_mismatch.ico",
+  "writer": "hand",
+  "notes": "directory entry claims 16x16 while the DIB is 20x13; the embedded bitmap's size is used",
+  "sha256": "6951b98f5d2ab43f",
+  "size": 894,
+  "width": 20,
+  "height": 13,
+  "frames": 1,
+  "bpp": 24
+ },
+ {
+  "name": "hand_png_entry",
+  "file": "hand_png_entry.ico",
+  "writer": "hand",
+  "notes": "single PNG entry (24x24 RGBA)",
+  "sha256": "558b92f169635a38",
+  "size": 879,
+  "width": 24,
+  "height": 24,
+  "frames": 1,
+  "entry_format": "png"
+ },
+ {
+  "name": "hand_mixed_png_bmp",
+  "file": "hand_mixed_png_bmp.ico",
+  "writer": "hand",
+  "notes": "PNG entry followed by a 24-bit BMP entry; frames in directory order",
+  "sha256": "8ff335d784e9684a",
+  "size": 1767,
+  "width": 24,
+  "height": 24,
+  "frames": 2,
+  "frame_sizes": [
+   [
+    24,
+    24
+   ],
+   [
+    20,
+    13
+   ]
+  ],
+  "entry_format": "mixed"
+ },
+ {
+  "name": "hand_bmp24_nomask_singleheight",
+  "file": "hand_bmp24_nomask_singleheight.ico",
+  "writer": "hand",
+  "notes": "24-bit DIB with a single (non-doubled) height and no AND mask",
+  "sha256": "45a7dec091518fa1",
+  "size": 258,
+  "width": 9,
+  "height": 7,
+  "frames": 1,
+  "bpp": 24
+ },
+ {
+  "name": "hand_cur_hotspot",
+  "file": "hand_cur_hotspot.cur",
+  "writer": "hand",
+  "notes": "CUR (type 2) with hotspot (5,7); hotspots are not surfaced by the decoder yet",
+  "sha256": "e81e247dd37cccdf",
+  "size": 894,
+  "width": 20,
+  "height": 13,
+  "frames": 1,
+  "hotspot": [
+   5,
+   7
+  ]
+ },
+ {
+  "name": "hand_cur_png_hotspot",
+  "file": "hand_cur_png_hotspot.cur",
+  "writer": "hand",
+  "notes": "CUR with a PNG entry and hotspot (3,4)",
+  "sha256": "d8a5a72c36d749cd",
+  "size": 879,
+  "width": 24,
+  "height": 24,
+  "frames": 1,
+  "hotspot": [
+   3,
+   4
+  ],
+  "entry_format": "png"
+ },
+ {
+  "name": "hand_bitfields_unsupported",
+  "file": "hand_bitfields_unsupported.ico",
+  "writer": "hand",
+  "notes": "DIB with BI_BITFIELDS compression is not supported",
+  "sha256": "bf23144bf489a493",
+  "size": 318,
+  "width": 0,
+  "height": 0,
+  "frames": 0,
+  "expect": "NotSupportedException"
+ },
+ {
+  "name": "hand_truncated_dib",
+  "file": "hand_truncated_dib.ico",
+  "writer": "hand",
+  "notes": "24-bit DIB truncated in the XOR data",
+  "sha256": "558d3f53bbbb2835",
+  "size": 222,
+  "width": 0,
+  "height": 0,
+  "frames": 0,
+  "expect": "InvalidImageContentException"
+ },
+ {
+  "name": "hand_offset_out_of_range",
+  "file": "hand_offset_out_of_range.ico",
+  "writer": "hand",
+  "notes": "entry offset beyond the end of the file",
+  "sha256": "08c2613226c5e6f3",
+  "size": 22,
+  "width": 0,
+  "height": 0,
+  "frames": 0,
+  "expect": "InvalidImageContentException"
+ },
+ {
+  "name": "hand_png_entry_corrupt",
+  "file": "hand_png_entry_corrupt.ico",
+  "writer": "hand",
+  "notes": "PNG entry truncated after IHDR",
+  "sha256": "5896313e295420f9",
+  "size": 82,
+  "width": 0,
+  "height": 0,
+  "frames": 0,
+  "expect": "InvalidImageContentException"
+ }
+]

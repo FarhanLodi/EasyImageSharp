@@ -1,0 +1,1555 @@
+[
+ {
+  "name": "pil_gray8_raw",
+  "file": "pil_gray8_raw.tif",
+  "width": 23,
+  "height": 17,
+  "frames": 1,
+  "writer": "pillow",
+  "notes": "8-bit gray, compression raw",
+  "compression": 1,
+  "photometric": 1,
+  "bits_per_sample": [
+   8
+  ],
+  "predictor": 1,
+  "rows_per_strip": 17,
+  "frame_sizes": [
+   [
+    23,
+    17
+   ]
+  ]
+ },
+ {
+  "name": "pil_rgb8_raw",
+  "file": "pil_rgb8_raw.tif",
+  "width": 19,
+  "height": 13,
+  "frames": 1,
+  "writer": "pillow",
+  "notes": "8-bit RGB, compression raw",
+  "compression": 1,
+  "photometric": 2,
+  "bits_per_sample": [
+   8,
+   8,
+   8
+  ],
+  "predictor": 1,
+  "rows_per_strip": 13,
+  "frame_sizes": [
+   [
+    19,
+    13
+   ]
+  ]
+ },
+ {
+  "name": "pil_gray8_lzw",
+  "file": "pil_gray8_lzw.tif",
+  "width": 23,
+  "height": 17,
+  "frames": 1,
+  "writer": "pillow",
+  "notes": "8-bit gray, compression lzw",
+  "compression": 5,
+  "photometric": 1,
+  "bits_per_sample": [
+   8
+  ],
+  "predictor": 1,
+  "rows_per_strip": 17,
+  "frame_sizes": [
+   [
+    23,
+    17
+   ]
+  ]
+ },
+ {
+  "name": "pil_rgb8_lzw",
+  "file": "pil_rgb8_lzw.tif",
+  "width": 19,
+  "height": 13,
+  "frames": 1,
+  "writer": "pillow",
+  "notes": "8-bit RGB, compression lzw",
+  "compression": 5,
+  "photometric": 2,
+  "bits_per_sample": [
+   8,
+   8,
+   8
+  ],
+  "predictor": 1,
+  "rows_per_strip": 13,
+  "frame_sizes": [
+   [
+    19,
+    13
+   ]
+  ]
+ },
+ {
+  "name": "pil_gray8_packbits",
+  "file": "pil_gray8_packbits.tif",
+  "width": 23,
+  "height": 17,
+  "frames": 1,
+  "writer": "pillow",
+  "notes": "8-bit gray, compression packbits",
+  "compression": 32773,
+  "photometric": 1,
+  "bits_per_sample": [
+   8
+  ],
+  "predictor": 1,
+  "rows_per_strip": 17,
+  "frame_sizes": [
+   [
+    23,
+    17
+   ]
+  ]
+ },
+ {
+  "name": "pil_rgb8_packbits",
+  "file": "pil_rgb8_packbits.tif",
+  "width": 19,
+  "height": 13,
+  "frames": 1,
+  "writer": "pillow",
+  "notes": "8-bit RGB, compression packbits",
+  "compression": 32773,
+  "photometric": 2,
+  "bits_per_sample": [
+   8,
+   8,
+   8
+  ],
+  "predictor": 1,
+  "rows_per_strip": 13,
+  "frame_sizes": [
+   [
+    19,
+    13
+   ]
+  ]
+ },
+ {
+  "name": "pil_gray8_deflate",
+  "file": "pil_gray8_deflate.tif",
+  "width": 23,
+  "height": 17,
+  "frames": 1,
+  "writer": "pillow",
+  "notes": "8-bit gray, compression deflate",
+  "compression": 8,
+  "photometric": 1,
+  "bits_per_sample": [
+   8
+  ],
+  "predictor": 1,
+  "rows_per_strip": 17,
+  "frame_sizes": [
+   [
+    23,
+    17
+   ]
+  ]
+ },
+ {
+  "name": "pil_rgb8_deflate",
+  "file": "pil_rgb8_deflate.tif",
+  "width": 19,
+  "height": 13,
+  "frames": 1,
+  "writer": "pillow",
+  "notes": "8-bit RGB, compression deflate",
+  "compression": 8,
+  "photometric": 2,
+  "bits_per_sample": [
+   8,
+   8,
+   8
+  ],
+  "predictor": 1,
+  "rows_per_strip": 13,
+  "frame_sizes": [
+   [
+    19,
+    13
+   ]
+  ]
+ },
+ {
+  "name": "pil_rgba8_raw",
+  "file": "pil_rgba8_raw.tif",
+  "width": 13,
+  "height": 11,
+  "frames": 1,
+  "writer": "pillow",
+  "notes": "8-bit RGBA (ExtraSamples unassociated)",
+  "compression": 1,
+  "photometric": 2,
+  "bits_per_sample": [
+   8,
+   8,
+   8,
+   8
+  ],
+  "predictor": 1,
+  "rows_per_strip": 11,
+  "frame_sizes": [
+   [
+    13,
+    11
+   ]
+  ]
+ },
+ {
+  "name": "pil_rgba8_lzw",
+  "file": "pil_rgba8_lzw.tif",
+  "width": 13,
+  "height": 11,
+  "frames": 1,
+  "writer": "pillow",
+  "notes": "8-bit RGBA, LZW",
+  "compression": 5,
+  "photometric": 2,
+  "bits_per_sample": [
+   8,
+   8,
+   8,
+   8
+  ],
+  "predictor": 1,
+  "rows_per_strip": 11,
+  "frame_sizes": [
+   [
+    13,
+    11
+   ]
+  ]
+ },
+ {
+  "name": "pil_pal8_raw",
+  "file": "pil_pal8_raw.tif",
+  "width": 15,
+  "height": 12,
+  "frames": 1,
+  "writer": "pillow",
+  "notes": "8-bit palette (ColorMap 16-bit entries)",
+  "compression": 1,
+  "photometric": 3,
+  "bits_per_sample": [
+   8
+  ],
+  "predictor": 1,
+  "rows_per_strip": 12,
+  "frame_sizes": [
+   [
+    15,
+    12
+   ]
+  ]
+ },
+ {
+  "name": "pil_pal8_lzw",
+  "file": "pil_pal8_lzw.tif",
+  "width": 15,
+  "height": 12,
+  "frames": 1,
+  "writer": "pillow",
+  "notes": "8-bit palette, LZW",
+  "compression": 5,
+  "photometric": 3,
+  "bits_per_sample": [
+   8
+  ],
+  "predictor": 1,
+  "rows_per_strip": 12,
+  "frame_sizes": [
+   [
+    15,
+    12
+   ]
+  ]
+ },
+ {
+  "name": "pil_bilevel_raw",
+  "file": "pil_bilevel_raw.tif",
+  "width": 37,
+  "height": 11,
+  "frames": 1,
+  "writer": "pillow",
+  "notes": "1-bit bilevel min-is-black (BitsPerSample tag absent), width 37, compression raw",
+  "compression": 1,
+  "photometric": 1,
+  "bits_per_sample": [
+   1
+  ],
+  "predictor": 1,
+  "rows_per_strip": 11,
+  "frame_sizes": [
+   [
+    37,
+    11
+   ]
+  ]
+ },
+ {
+  "name": "pil_bilevel_packbits",
+  "file": "pil_bilevel_packbits.tif",
+  "width": 37,
+  "height": 11,
+  "frames": 1,
+  "writer": "pillow",
+  "notes": "1-bit bilevel min-is-black (BitsPerSample tag absent), width 37, compression packbits",
+  "compression": 32773,
+  "photometric": 1,
+  "bits_per_sample": [
+   1
+  ],
+  "predictor": 1,
+  "rows_per_strip": 11,
+  "frame_sizes": [
+   [
+    37,
+    11
+   ]
+  ]
+ },
+ {
+  "name": "pil_bilevel_lzw",
+  "file": "pil_bilevel_lzw.tif",
+  "width": 37,
+  "height": 11,
+  "frames": 1,
+  "writer": "pillow",
+  "notes": "1-bit bilevel min-is-black (BitsPerSample tag absent), width 37, compression lzw",
+  "compression": 5,
+  "photometric": 1,
+  "bits_per_sample": [
+   1
+  ],
+  "predictor": 1,
+  "rows_per_strip": 11,
+  "frame_sizes": [
+   [
+    37,
+    11
+   ]
+  ]
+ },
+ {
+  "name": "pil_bilevel_deflate",
+  "file": "pil_bilevel_deflate.tif",
+  "width": 37,
+  "height": 11,
+  "frames": 1,
+  "writer": "pillow",
+  "notes": "1-bit bilevel min-is-black (BitsPerSample tag absent), width 37, compression deflate",
+  "compression": 8,
+  "photometric": 1,
+  "bits_per_sample": [
+   1
+  ],
+  "predictor": 1,
+  "rows_per_strip": 11,
+  "frame_sizes": [
+   [
+    37,
+    11
+   ]
+  ]
+ },
+ {
+  "name": "pil_bilevel_group4",
+  "file": "pil_bilevel_group4.tif",
+  "width": 37,
+  "height": 11,
+  "frames": 1,
+  "writer": "pillow",
+  "notes": "1-bit bilevel min-is-black, CCITT Group 4 (ITU-T T.6), width 37",
+  "compression": 4,
+  "photometric": 1,
+  "bits_per_sample": [
+   1
+  ],
+  "predictor": 1,
+  "rows_per_strip": 11,
+  "frame_sizes": [
+   [
+    37,
+    11
+   ]
+  ]
+ },
+ {
+  "name": "pil_bilevel_group3",
+  "file": "pil_bilevel_group3.tif",
+  "width": 37,
+  "height": 11,
+  "frames": 1,
+  "writer": "pillow",
+  "notes": "1-bit bilevel min-is-black, CCITT Group 3 (ITU-T T.4) one-dimensional, width 37",
+  "compression": 3,
+  "photometric": 1,
+  "bits_per_sample": [
+   1
+  ],
+  "predictor": 1,
+  "rows_per_strip": 11,
+  "frame_sizes": [
+   [
+    37,
+    11
+   ]
+  ]
+ },
+ {
+  "name": "pil_rgb8_lzw_pred2",
+  "file": "pil_rgb8_lzw_pred2.tif",
+  "width": 21,
+  "height": 14,
+  "frames": 1,
+  "writer": "pillow",
+  "notes": "RGB LZW with horizontal predictor 2",
+  "compression": 5,
+  "photometric": 2,
+  "bits_per_sample": [
+   8,
+   8,
+   8
+  ],
+  "predictor": 2,
+  "rows_per_strip": 14,
+  "frame_sizes": [
+   [
+    21,
+    14
+   ]
+  ]
+ },
+ {
+  "name": "pil_gray8_deflate_pred2",
+  "file": "pil_gray8_deflate_pred2.tif",
+  "width": 23,
+  "height": 17,
+  "frames": 1,
+  "writer": "pillow",
+  "notes": "gray deflate with predictor 2",
+  "compression": 8,
+  "photometric": 1,
+  "bits_per_sample": [
+   8
+  ],
+  "predictor": 2,
+  "rows_per_strip": 17,
+  "frame_sizes": [
+   [
+    23,
+    17
+   ]
+  ]
+ },
+ {
+  "name": "pil_gray8_rps4",
+  "file": "pil_gray8_rps4.tif",
+  "width": 23,
+  "height": 17,
+  "frames": 1,
+  "writer": "pillow",
+  "notes": "RowsPerStrip 4 (5 strips for 17 rows)",
+  "compression": 1,
+  "photometric": 1,
+  "bits_per_sample": [
+   8
+  ],
+  "predictor": 1,
+  "rows_per_strip": 4,
+  "frame_sizes": [
+   [
+    23,
+    17
+   ]
+  ]
+ },
+ {
+  "name": "pil_rgb8_lzw_rps3",
+  "file": "pil_rgb8_lzw_rps3.tif",
+  "width": 21,
+  "height": 14,
+  "frames": 1,
+  "writer": "pillow",
+  "notes": "LZW with RowsPerStrip 3",
+  "compression": 5,
+  "photometric": 2,
+  "bits_per_sample": [
+   8,
+   8,
+   8
+  ],
+  "predictor": 1,
+  "rows_per_strip": 3,
+  "frame_sizes": [
+   [
+    21,
+    14
+   ]
+  ]
+ },
+ {
+  "name": "pil_gray16_raw",
+  "file": "pil_gray16_raw.tif",
+  "width": 14,
+  "height": 9,
+  "frames": 1,
+  "writer": "pillow",
+  "notes": "16-bit gray, high byte kept",
+  "compression": 1,
+  "photometric": 1,
+  "bits_per_sample": [
+   16
+  ],
+  "predictor": 1,
+  "rows_per_strip": 9,
+  "frame_sizes": [
+   [
+    14,
+    9
+   ]
+  ]
+ },
+ {
+  "name": "pil_gray16_lzw",
+  "file": "pil_gray16_lzw.tif",
+  "width": 14,
+  "height": 9,
+  "frames": 1,
+  "writer": "pillow",
+  "notes": "16-bit gray LZW",
+  "compression": 5,
+  "photometric": 1,
+  "bits_per_sample": [
+   16
+  ],
+  "predictor": 1,
+  "rows_per_strip": 9,
+  "frame_sizes": [
+   [
+    14,
+    9
+   ]
+  ]
+ },
+ {
+  "name": "pil_gray16_lzw_pred2",
+  "file": "pil_gray16_lzw_pred2.tif",
+  "width": 14,
+  "height": 9,
+  "frames": 1,
+  "writer": "pillow",
+  "notes": "16-bit gray LZW predictor 2",
+  "compression": 5,
+  "photometric": 1,
+  "bits_per_sample": [
+   16
+  ],
+  "predictor": 2,
+  "rows_per_strip": 9,
+  "frame_sizes": [
+   [
+    14,
+    9
+   ]
+  ]
+ },
+ {
+  "name": "pil_graya8_raw",
+  "file": "pil_graya8_raw.tif",
+  "width": 11,
+  "height": 8,
+  "frames": 1,
+  "writer": "pillow",
+  "notes": "8-bit gray + alpha (spp 2)",
+  "compression": 1,
+  "photometric": 1,
+  "bits_per_sample": [
+   8,
+   8
+  ],
+  "predictor": 1,
+  "rows_per_strip": 8,
+  "frame_sizes": [
+   [
+    11,
+    8
+   ]
+  ]
+ },
+ {
+  "name": "pil_gray8_lzw_noise64",
+  "file": "pil_gray8_lzw_noise64.tif",
+  "width": 64,
+  "height": 64,
+  "frames": 1,
+  "writer": "pillow",
+  "notes": "incompressible 64x64 noise: LZW table fills, widens to 12 bits and resets",
+  "compression": 5,
+  "photometric": 1,
+  "bits_per_sample": [
+   8
+  ],
+  "predictor": 1,
+  "rows_per_strip": 64,
+  "frame_sizes": [
+   [
+    64,
+    64
+   ]
+  ]
+ },
+ {
+  "name": "pil_rgb8_lzw_noise",
+  "file": "pil_rgb8_lzw_noise.tif",
+  "width": 60,
+  "height": 40,
+  "frames": 1,
+  "writer": "pillow",
+  "notes": "incompressible RGB noise, LZW with predictor 2",
+  "compression": 5,
+  "photometric": 2,
+  "bits_per_sample": [
+   8,
+   8,
+   8
+  ],
+  "predictor": 2,
+  "rows_per_strip": 40,
+  "frame_sizes": [
+   [
+    60,
+    40
+   ]
+  ]
+ },
+ {
+  "name": "pil_multipage3",
+  "file": "pil_multipage3.tif",
+  "width": 12,
+  "height": 8,
+  "frames": 3,
+  "writer": "pillow",
+  "notes": "3 pages of different sizes and modes (gray8, rgb8, bilevel)",
+  "compression": 5,
+  "photometric": 1,
+  "bits_per_sample": [
+   8
+  ],
+  "predictor": 1,
+  "rows_per_strip": 8,
+  "frame_sizes": [
+   [
+    12,
+    8
+   ],
+   [
+    10,
+    6
+   ],
+   [
+    9,
+    7
+   ]
+  ]
+ },
+ {
+  "name": "pil_float32",
+  "file": "pil_float32.tif",
+  "width": 8,
+  "height": 8,
+  "frames": 1,
+  "writer": "pillow",
+  "notes": "32-bit float samples (SampleFormat 3) scaled from 0..1",
+  "compression": 1,
+  "photometric": 1,
+  "bits_per_sample": [
+   32
+  ],
+  "predictor": 1,
+  "rows_per_strip": 8,
+  "frame_sizes": [
+   [
+    8,
+    8
+   ]
+  ]
+ },
+ {
+  "name": "pil_int32",
+  "file": "pil_int32.tif",
+  "width": 8,
+  "height": 8,
+  "frames": 1,
+  "writer": "pillow",
+  "notes": "32-bit signed samples (SampleFormat 2) shifted into the unsigned range",
+  "compression": 1,
+  "photometric": 1,
+  "bits_per_sample": [
+   32
+  ],
+  "predictor": 1,
+  "rows_per_strip": 8,
+  "frame_sizes": [
+   [
+    8,
+    8
+   ]
+  ]
+ },
+ {
+  "name": "hand_gray8_mm",
+  "file": "hand_gray8_mm.tif",
+  "width": 17,
+  "height": 11,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "big-endian (MM) 8-bit gray, uncompressed",
+  "compression": 1,
+  "photometric": 1,
+  "bits_per_sample": [
+   8
+  ],
+  "predictor": 1,
+  "byte_order": "MM",
+  "frame_sizes": [
+   [
+    17,
+    11
+   ]
+  ]
+ },
+ {
+  "name": "hand_rgb8_mm_lzw",
+  "file": "hand_rgb8_mm_lzw.tif",
+  "width": 15,
+  "height": 12,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "big-endian RGB, LZW, RowsPerStrip 5",
+  "compression": 5,
+  "photometric": 2,
+  "bits_per_sample": [
+   8,
+   8,
+   8
+  ],
+  "predictor": 1,
+  "byte_order": "MM",
+  "frame_sizes": [
+   [
+    15,
+    12
+   ]
+  ]
+ },
+ {
+  "name": "hand_rgb8_raw_pred2",
+  "file": "hand_rgb8_raw_pred2.tif",
+  "width": 15,
+  "height": 12,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "uncompressed RGB carrying Predictor=2: like libtiff, the predictor only applies to LZW/Deflate codecs, so the samples are stored (and decoded) undifferenced",
+  "compression": 1,
+  "photometric": 2,
+  "bits_per_sample": [
+   8,
+   8,
+   8
+  ],
+  "predictor": 2,
+  "byte_order": "II",
+  "frame_sizes": [
+   [
+    15,
+    12
+   ]
+  ]
+ },
+ {
+  "name": "hand_rgb8_packbits_pred2",
+  "file": "hand_rgb8_packbits_pred2.tif",
+  "width": 15,
+  "height": 12,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "PackBits carrying Predictor=2: ignored (libtiff semantics)",
+  "compression": 32773,
+  "photometric": 2,
+  "bits_per_sample": [
+   8,
+   8,
+   8
+  ],
+  "predictor": 2,
+  "byte_order": "II",
+  "frame_sizes": [
+   [
+    15,
+    12
+   ]
+  ]
+ },
+ {
+  "name": "hand_rgb8_lzw_pred2",
+  "file": "hand_rgb8_lzw_pred2.tif",
+  "width": 15,
+  "height": 12,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "hand LZW + predictor 2, RowsPerStrip 4",
+  "compression": 5,
+  "photometric": 2,
+  "bits_per_sample": [
+   8,
+   8,
+   8
+  ],
+  "predictor": 2,
+  "byte_order": "II",
+  "frame_sizes": [
+   [
+    15,
+    12
+   ]
+  ]
+ },
+ {
+  "name": "hand_rgb8_packbits",
+  "file": "hand_rgb8_packbits.tif",
+  "width": 15,
+  "height": 12,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "hand PackBits RGB, RowsPerStrip 1",
+  "compression": 32773,
+  "photometric": 2,
+  "bits_per_sample": [
+   8,
+   8,
+   8
+  ],
+  "predictor": 1,
+  "byte_order": "II",
+  "frame_sizes": [
+   [
+    15,
+    12
+   ]
+  ]
+ },
+ {
+  "name": "hand_gray8_deflate_mm",
+  "file": "hand_gray8_deflate_mm.tif",
+  "width": 17,
+  "height": 11,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "big-endian gray with zlib-wrapped deflate (8)",
+  "compression": 8,
+  "photometric": 1,
+  "bits_per_sample": [
+   8
+  ],
+  "predictor": 1,
+  "byte_order": "MM",
+  "frame_sizes": [
+   [
+    17,
+    11
+   ]
+  ]
+ },
+ {
+  "name": "hand_gray8_deflate_32946",
+  "file": "hand_gray8_deflate_32946.tif",
+  "width": 17,
+  "height": 11,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "deflate using the legacy compression code 32946",
+  "compression": 32946,
+  "photometric": 1,
+  "bits_per_sample": [
+   8
+  ],
+  "predictor": 1,
+  "byte_order": "II",
+  "frame_sizes": [
+   [
+    17,
+    11
+   ]
+  ]
+ },
+ {
+  "name": "hand_gray16_mm",
+  "file": "hand_gray16_mm.tif",
+  "width": 13,
+  "height": 10,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "big-endian 16-bit gray (byte order matters for the high byte)",
+  "compression": 1,
+  "photometric": 1,
+  "bits_per_sample": [
+   16
+  ],
+  "predictor": 1,
+  "byte_order": "MM",
+  "frame_sizes": [
+   [
+    13,
+    10
+   ]
+  ]
+ },
+ {
+  "name": "hand_gray16_ii_lzw_pred2",
+  "file": "hand_gray16_ii_lzw_pred2.tif",
+  "width": 13,
+  "height": 10,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "little-endian 16-bit gray, LZW, predictor 2 on 16-bit samples",
+  "compression": 5,
+  "photometric": 1,
+  "bits_per_sample": [
+   16
+  ],
+  "predictor": 2,
+  "byte_order": "II",
+  "frame_sizes": [
+   [
+    13,
+    10
+   ]
+  ]
+ },
+ {
+  "name": "hand_gray16_mm_pred2",
+  "file": "hand_gray16_mm_pred2.tif",
+  "width": 13,
+  "height": 10,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "big-endian 16-bit gray with predictor 2",
+  "compression": 1,
+  "photometric": 1,
+  "bits_per_sample": [
+   16
+  ],
+  "predictor": 2,
+  "byte_order": "MM",
+  "frame_sizes": [
+   [
+    13,
+    10
+   ]
+  ]
+ },
+ {
+  "name": "hand_rgb16_raw",
+  "file": "hand_rgb16_raw.tif",
+  "width": 11,
+  "height": 8,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "16-bit RGB uncompressed",
+  "compression": 1,
+  "photometric": 2,
+  "bits_per_sample": [
+   16,
+   16,
+   16
+  ],
+  "predictor": 1,
+  "byte_order": "II",
+  "frame_sizes": [
+   [
+    11,
+    8
+   ]
+  ]
+ },
+ {
+  "name": "hand_rgb16_mm_lzw_pred2",
+  "file": "hand_rgb16_mm_lzw_pred2.tif",
+  "width": 11,
+  "height": 8,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "big-endian 16-bit RGB, LZW, predictor 2",
+  "compression": 5,
+  "photometric": 2,
+  "bits_per_sample": [
+   16,
+   16,
+   16
+  ],
+  "predictor": 2,
+  "byte_order": "MM",
+  "frame_sizes": [
+   [
+    11,
+    8
+   ]
+  ]
+ },
+ {
+  "name": "hand_rgba16_raw",
+  "file": "hand_rgba16_raw.tif",
+  "width": 9,
+  "height": 7,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "16-bit RGBA uncompressed",
+  "compression": 1,
+  "photometric": 2,
+  "bits_per_sample": [
+   16,
+   16,
+   16,
+   16
+  ],
+  "predictor": 1,
+  "byte_order": "II",
+  "frame_sizes": [
+   [
+    9,
+    7
+   ]
+  ]
+ },
+ {
+  "name": "hand_graya16_raw",
+  "file": "hand_graya16_raw.tif",
+  "width": 8,
+  "height": 6,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "16-bit gray + alpha",
+  "compression": 1,
+  "photometric": 1,
+  "bits_per_sample": [
+   16,
+   16
+  ],
+  "predictor": 1,
+  "byte_order": "II",
+  "frame_sizes": [
+   [
+    8,
+    6
+   ]
+  ]
+ },
+ {
+  "name": "hand_gray8_minwhite",
+  "file": "hand_gray8_minwhite.tif",
+  "width": 13,
+  "height": 9,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "8-bit WhiteIsZero (photometric 0): inverted",
+  "compression": 1,
+  "photometric": 0,
+  "bits_per_sample": [
+   8
+  ],
+  "predictor": 1,
+  "byte_order": "II",
+  "frame_sizes": [
+   [
+    13,
+    9
+   ]
+  ]
+ },
+ {
+  "name": "hand_bilevel_minwhite",
+  "file": "hand_bilevel_minwhite.tif",
+  "width": 29,
+  "height": 7,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "1-bit WhiteIsZero: bit 1 is black",
+  "compression": 32773,
+  "photometric": 0,
+  "bits_per_sample": [
+   1
+  ],
+  "predictor": 1,
+  "byte_order": "II",
+  "frame_sizes": [
+   [
+    29,
+    7
+   ]
+  ]
+ },
+ {
+  "name": "hand_bilevel_minblack_lzw",
+  "file": "hand_bilevel_minblack_lzw.tif",
+  "width": 29,
+  "height": 7,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "1-bit BlackIsZero LZW, RowsPerStrip 2",
+  "compression": 5,
+  "photometric": 1,
+  "bits_per_sample": [
+   1
+  ],
+  "predictor": 1,
+  "byte_order": "II",
+  "frame_sizes": [
+   [
+    29,
+    7
+   ]
+  ]
+ },
+ {
+  "name": "hand_gray8_no_stripbytecounts",
+  "file": "hand_gray8_no_stripbytecounts.tif",
+  "width": 17,
+  "height": 11,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "uncompressed with the StripByteCounts tag absent",
+  "compression": 1,
+  "photometric": 1,
+  "bits_per_sample": [
+   8
+  ],
+  "predictor": 1,
+  "byte_order": "II",
+  "frame_sizes": [
+   [
+    17,
+    11
+   ]
+  ]
+ },
+ {
+  "name": "hand_gray8_ifd_before_data",
+  "file": "hand_gray8_ifd_before_data.tif",
+  "width": 17,
+  "height": 11,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "IFD stored before the strip data (offsets point forward)",
+  "compression": 5,
+  "photometric": 1,
+  "bits_per_sample": [
+   8
+  ],
+  "predictor": 1,
+  "byte_order": "II",
+  "frame_sizes": [
+   [
+    17,
+    11
+   ]
+  ]
+ },
+ {
+  "name": "hand_rgb8_rps1",
+  "file": "hand_rgb8_rps1.tif",
+  "width": 15,
+  "height": 12,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "one strip per row (12 strips)",
+  "compression": 1,
+  "photometric": 2,
+  "bits_per_sample": [
+   8,
+   8,
+   8
+  ],
+  "predictor": 1,
+  "byte_order": "II",
+  "frame_sizes": [
+   [
+    15,
+    12
+   ]
+  ]
+ },
+ {
+  "name": "hand_rgb8_last_strip_short",
+  "file": "hand_rgb8_last_strip_short.tif",
+  "width": 15,
+  "height": 12,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "RowsPerStrip 5 over 12 rows: last strip has 2 rows",
+  "compression": 32773,
+  "photometric": 2,
+  "bits_per_sample": [
+   8,
+   8,
+   8
+  ],
+  "predictor": 1,
+  "byte_order": "II",
+  "frame_sizes": [
+   [
+    15,
+    12
+   ]
+  ]
+ },
+ {
+  "name": "hand_rgba8_assoc_alpha",
+  "file": "hand_rgba8_assoc_alpha.tif",
+  "width": 9,
+  "height": 8,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "RGBA with ExtraSamples=1 (associated alpha); samples are passed through unchanged (no un-premultiplication)",
+  "compression": 1,
+  "photometric": 2,
+  "bits_per_sample": [
+   8,
+   8,
+   8,
+   8
+  ],
+  "predictor": 1,
+  "byte_order": "II",
+  "frame_sizes": [
+   [
+    9,
+    8
+   ]
+  ]
+ },
+ {
+  "name": "hand_rgba8_lzw_pred2",
+  "file": "hand_rgba8_lzw_pred2.tif",
+  "width": 9,
+  "height": 8,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "RGBA LZW with predictor 2 (spp 4)",
+  "compression": 5,
+  "photometric": 2,
+  "bits_per_sample": [
+   8,
+   8,
+   8,
+   8
+  ],
+  "predictor": 2,
+  "byte_order": "II",
+  "frame_sizes": [
+   [
+    9,
+    8
+   ]
+  ]
+ },
+ {
+  "name": "hand_pal8_mm_packbits",
+  "file": "hand_pal8_mm_packbits.tif",
+  "width": 12,
+  "height": 9,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "big-endian palette, PackBits",
+  "compression": 32773,
+  "photometric": 3,
+  "bits_per_sample": [
+   8
+  ],
+  "predictor": 1,
+  "byte_order": "MM",
+  "frame_sizes": [
+   [
+    12,
+    9
+   ]
+  ]
+ },
+ {
+  "name": "hand_pal4",
+  "file": "hand_pal4.tif",
+  "width": 15,
+  "height": 8,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "4-bit palette (16-entry ColorMap)",
+  "compression": 1,
+  "photometric": 3,
+  "bits_per_sample": [
+   4
+  ],
+  "predictor": 1,
+  "byte_order": "II",
+  "frame_sizes": [
+   [
+    15,
+    8
+   ]
+  ]
+ },
+ {
+  "name": "hand_pal1",
+  "file": "hand_pal1.tif",
+  "width": 21,
+  "height": 5,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "1-bit palette (2-entry ColorMap), width 21",
+  "compression": 1,
+  "photometric": 3,
+  "bits_per_sample": [
+   1
+  ],
+  "predictor": 1,
+  "byte_order": "II",
+  "frame_sizes": [
+   [
+    21,
+    5
+   ]
+  ]
+ },
+ {
+  "name": "hand_gray4",
+  "file": "hand_gray4.tif",
+  "width": 19,
+  "height": 7,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "4-bit grayscale BlackIsZero (scaled x17)",
+  "compression": 1,
+  "photometric": 1,
+  "bits_per_sample": [
+   4
+  ],
+  "predictor": 1,
+  "byte_order": "II",
+  "frame_sizes": [
+   [
+    19,
+    7
+   ]
+  ]
+ },
+ {
+  "name": "hand_gray2_minwhite",
+  "file": "hand_gray2_minwhite.tif",
+  "width": 13,
+  "height": 6,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "2-bit grayscale WhiteIsZero (scaled x85, inverted)",
+  "compression": 1,
+  "photometric": 0,
+  "bits_per_sample": [
+   2
+  ],
+  "predictor": 1,
+  "byte_order": "II",
+  "frame_sizes": [
+   [
+    13,
+    6
+   ]
+  ]
+ },
+ {
+  "name": "hand_rgb8_tiled_raw",
+  "file": "hand_rgb8_tiled_raw.tif",
+  "width": 20,
+  "height": 12,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "tiled RGB 20x12 with 16x16 tiles (partial tiles)",
+  "compression": 1,
+  "photometric": 2,
+  "bits_per_sample": [
+   8,
+   8,
+   8
+  ],
+  "tile_size": [
+   16,
+   16
+  ],
+  "predictor": 1,
+  "byte_order": "II",
+  "frame_sizes": [
+   [
+    20,
+    12
+   ]
+  ]
+ },
+ {
+  "name": "hand_rgb8_tiled_lzw_pred2",
+  "file": "hand_rgb8_tiled_lzw_pred2.tif",
+  "width": 20,
+  "height": 12,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "tiled RGB, LZW + predictor 2, MM",
+  "compression": 5,
+  "photometric": 2,
+  "bits_per_sample": [
+   8,
+   8,
+   8
+  ],
+  "tile_size": [
+   16,
+   16
+  ],
+  "predictor": 2,
+  "byte_order": "MM",
+  "frame_sizes": [
+   [
+    20,
+    12
+   ]
+  ]
+ },
+ {
+  "name": "hand_gray8_tiled_packbits",
+  "file": "hand_gray8_tiled_packbits.tif",
+  "width": 37,
+  "height": 21,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "tiled gray 37x21, PackBits, 3x2 tiles",
+  "compression": 32773,
+  "photometric": 1,
+  "bits_per_sample": [
+   8
+  ],
+  "tile_size": [
+   16,
+   16
+  ],
+  "predictor": 1,
+  "byte_order": "II",
+  "frame_sizes": [
+   [
+    37,
+    21
+   ]
+  ]
+ },
+ {
+  "name": "hand_gray16_tiled_deflate",
+  "file": "hand_gray16_tiled_deflate.tif",
+  "width": 13,
+  "height": 10,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "tiled 16-bit gray, deflate",
+  "compression": 8,
+  "photometric": 1,
+  "bits_per_sample": [
+   16
+  ],
+  "tile_size": [
+   16,
+   16
+  ],
+  "predictor": 1,
+  "byte_order": "II",
+  "frame_sizes": [
+   [
+    13,
+    10
+   ]
+  ]
+ },
+ {
+  "name": "hand_bilevel_tiled_raw",
+  "file": "hand_bilevel_tiled_raw.tif",
+  "width": 29,
+  "height": 7,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "tiled 1-bit 29x7 (row bytes per tile)",
+  "compression": 1,
+  "photometric": 1,
+  "bits_per_sample": [
+   1
+  ],
+  "tile_size": [
+   16,
+   16
+  ],
+  "predictor": 1,
+  "byte_order": "II",
+  "frame_sizes": [
+   [
+    29,
+    7
+   ]
+  ]
+ },
+ {
+  "name": "hand_planar2_rgb8",
+  "file": "hand_planar2_rgb8.tif",
+  "width": 15,
+  "height": 12,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "PlanarConfiguration 2: each sample in its own strip",
+  "compression": 1,
+  "photometric": 2,
+  "planar": 2,
+  "frame_sizes": [
+   [
+    15,
+    12
+   ]
+  ]
+ },
+ {
+  "name": "hand_multipage_mm",
+  "file": "hand_multipage_mm.tif",
+  "width": 8,
+  "height": 6,
+  "frames": 3,
+  "writer": "hand",
+  "notes": "3 big-endian pages: gray8 raw 8x6, rgb8 lzw 7x5, bilevel min-is-white packbits 9x4",
+  "byte_order": "MM",
+  "frame_sizes": [
+   [
+    8,
+    6
+   ],
+   [
+    7,
+    5
+   ],
+   [
+    9,
+    4
+   ]
+  ]
+ }
+]

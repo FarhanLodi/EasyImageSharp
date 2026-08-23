@@ -1,0 +1,93 @@
+name: Format or feature not supported
+description: A file the library refuses to decode, or a format feature it does not implement.
+labels: ["codec", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this when a file **fails cleanly** — a `NotSupportedException`, an
+        `UnknownImageFormatException`, or a correct-but-incomplete decode.
+
+        If the file causes a crash, a hang, an unexpected exception type, or a huge allocation, that
+        is a decoder-contract issue: report it privately through
+        [private vulnerability reporting](https://github.com/FarhanLodi/EasyImageSharp/security/advisories/new)
+        instead.
+
+  - type: dropdown
+    id: format
+    attributes:
+      label: Format
+      options:
+        - PNG
+        - JPEG
+        - GIF
+        - BMP
+        - TIFF
+        - TGA
+        - Netpbm (PBM/PGM/PPM/PAM)
+        - QOI
+        - ICO / CUR
+        - A format the library does not know at all
+    validations:
+      required: true
+
+  - type: dropdown
+    id: direction
+    attributes:
+      label: Decode or encode
+      options:
+        - Decode
+        - Encode
+        - Both
+    validations:
+      required: true
+
+  - type: textarea
+    id: identify
+    attributes:
+      label: What Image.Identify reports
+      description: >-
+        Run `Image.Identify(path)` and paste the result, plus the exception if it throws. If the
+        library does not recognise the file at all, paste the first 32 bytes in hex instead.
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: file-facts
+    attributes:
+      label: What is unusual about the file
+      description: >-
+        Bit depth, colour type, chroma subsampling, compression scheme, predictor, interlacing, frame
+        count, colour profile — whatever the producing tool reports. Naming the tool that wrote the
+        file helps a lot.
+    validations:
+      required: true
+
+  - type: textarea
+    id: sample
+    attributes:
+      label: Sample file
+      description: >-
+        Attach the smallest file that shows the problem (drag it onto this box; zip it if GitHub
+        refuses the extension). Only attach files you have the right to share — they may end up in
+        the public fixture corpus. If you cannot share the file, say so and describe how to produce
+        an equivalent one.
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Package version
+      placeholder: EasyImageSharp 1.0.0
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: licensing
+    attributes:
+      label: Sample file licensing
+      options:
+        - label: I have the right to share this file, and it may be added to the test corpus under the repository's licence.
+          required: false

@@ -1,0 +1,440 @@
+[
+ {
+  "name": "ccitt_g4_37x11",
+  "file": "ccitt_g4_37x11.tif",
+  "width": 37,
+  "height": 11,
+  "frames": 1,
+  "feature": "ccitt",
+  "match": "exact",
+  "notes": "Group 4 (T.6), width 37 is not a multiple of 8"
+ },
+ {
+  "name": "ccitt_g4_64x24",
+  "file": "ccitt_g4_64x24.tif",
+  "width": 64,
+  "height": 24,
+  "frames": 1,
+  "feature": "ccitt",
+  "match": "exact",
+  "notes": "Group 4 (T.6), width 64"
+ },
+ {
+  "name": "ccitt_g3_1d",
+  "file": "ccitt_g3_1d.tif",
+  "width": 37,
+  "height": 11,
+  "frames": 1,
+  "feature": "ccitt",
+  "match": "exact",
+  "notes": "Group 3 one-dimensional, EOL separated"
+ },
+ {
+  "name": "ccitt_g3_2d",
+  "file": "ccitt_g3_2d.tif",
+  "width": 64,
+  "height": 24,
+  "frames": 1,
+  "feature": "ccitt",
+  "match": "exact",
+  "notes": "Group 3 with T4Options bit 0: 2D coding"
+ },
+ {
+  "name": "ccitt_g3_fill",
+  "file": "ccitt_g3_fill.tif",
+  "width": 64,
+  "height": 24,
+  "frames": 1,
+  "feature": "ccitt",
+  "match": "exact",
+  "notes": "Group 3 with T4Options bit 2: fill bits before EOL"
+ },
+ {
+  "name": "ccitt_g3_2d_fill",
+  "file": "ccitt_g3_2d_fill.tif",
+  "width": 64,
+  "height": 24,
+  "frames": 1,
+  "feature": "ccitt",
+  "match": "exact",
+  "notes": "Group 3, 2D coding with fill bits"
+ },
+ {
+  "name": "ccitt_mh",
+  "file": "ccitt_mh.tif",
+  "width": 37,
+  "height": 11,
+  "frames": 1,
+  "feature": "ccitt",
+  "match": "exact",
+  "notes": "Modified Huffman (compression 2), rows padded to byte boundaries"
+ },
+ {
+  "name": "ccitt_g4_strips",
+  "file": "ccitt_g4_strips.tif",
+  "width": 64,
+  "height": 24,
+  "frames": 1,
+  "feature": "ccitt",
+  "match": "exact",
+  "notes": "Group 4 in 12 strips of 2 rows"
+ },
+ {
+  "name": "ccitt_g4_whiteiszero",
+  "file": "ccitt_g4_whiteiszero.tif",
+  "width": 37,
+  "height": 11,
+  "frames": 1,
+  "feature": "ccitt",
+  "match": "exact",
+  "notes": "Group 4 with PhotometricInterpretation 0 (WhiteIsZero), the usual fax tagging"
+ },
+ {
+  "name": "ccitt_g4_fillorder2",
+  "file": "ccitt_g4_fillorder2.tif",
+  "width": 37,
+  "height": 11,
+  "frames": 1,
+  "feature": "ccitt",
+  "match": "exact",
+  "notes": "Group 4 with FillOrder 2: every coded byte holds its bits least significant first"
+ },
+ {
+  "name": "ccitt_g4_bigendian",
+  "file": "ccitt_g4_bigendian.tif",
+  "width": 37,
+  "height": 11,
+  "frames": 1,
+  "feature": "ccitt",
+  "match": "exact",
+  "notes": "Group 4 in a big-endian (MM) file"
+ },
+ {
+  "name": "ccitt_g4_tiled",
+  "file": "ccitt_g4_tiled.tif",
+  "width": 40,
+  "height": 28,
+  "frames": 1,
+  "feature": "ccitt",
+  "match": "exact",
+  "notes": "Group 4 in 32x16 tiles over a 40x28 page"
+ },
+ {
+  "name": "layout_chunky_raw",
+  "file": "layout_chunky_raw.tif",
+  "width": 40,
+  "height": 28,
+  "frames": 1,
+  "feature": "layout",
+  "match": "exact",
+  "notes": "8-bit RGB, chunky, one uncompressed strip: the reference for this group"
+ },
+ {
+  "name": "layout_tiled_raw",
+  "file": "layout_tiled_raw.tif",
+  "width": 40,
+  "height": 28,
+  "frames": 1,
+  "feature": "layout",
+  "match": "exact",
+  "notes": "8-bit RGB, 16x16 tiles, uncompressed"
+ },
+ {
+  "name": "layout_tiled_deflate",
+  "file": "layout_tiled_deflate.tif",
+  "width": 40,
+  "height": 28,
+  "frames": 1,
+  "feature": "layout",
+  "match": "exact",
+  "notes": "8-bit RGB, 16x16 tiles, Deflate"
+ },
+ {
+  "name": "layout_tiled_wide",
+  "file": "layout_tiled_wide.tif",
+  "width": 40,
+  "height": 28,
+  "frames": 1,
+  "feature": "layout",
+  "match": "exact",
+  "notes": "8-bit RGB, tiles wider than the page (48x16), so every tile is padded"
+ },
+ {
+  "name": "layout_tiled_deflate_predictor",
+  "file": "layout_tiled_deflate_predictor.tif",
+  "width": 40,
+  "height": 28,
+  "frames": 1,
+  "feature": "layout",
+  "match": "exact",
+  "notes": "8-bit RGB, 16x16 Deflate tiles with horizontal differencing"
+ },
+ {
+  "name": "layout_planar_raw",
+  "file": "layout_planar_raw.tif",
+  "width": 40,
+  "height": 28,
+  "frames": 1,
+  "feature": "layout",
+  "match": "exact",
+  "notes": "8-bit RGB, PlanarConfiguration 2, one strip per plane"
+ },
+ {
+  "name": "layout_planar_strips",
+  "file": "layout_planar_strips.tif",
+  "width": 40,
+  "height": 28,
+  "frames": 1,
+  "feature": "layout",
+  "match": "exact",
+  "notes": "8-bit RGB, PlanarConfiguration 2, four 8-row strips per plane"
+ },
+ {
+  "name": "layout_planar_deflate",
+  "file": "layout_planar_deflate.tif",
+  "width": 40,
+  "height": 28,
+  "frames": 1,
+  "feature": "layout",
+  "match": "exact",
+  "notes": "8-bit RGB, PlanarConfiguration 2 with Deflate strips"
+ },
+ {
+  "name": "layout_planar_tiled",
+  "file": "layout_planar_tiled.tif",
+  "width": 40,
+  "height": 28,
+  "frames": 1,
+  "feature": "layout",
+  "match": "exact",
+  "notes": "8-bit RGB, PlanarConfiguration 2 in 16x16 tiles"
+ },
+ {
+  "name": "layout_planar_rgb16_mm",
+  "file": "layout_planar_rgb16_mm.tif",
+  "width": 40,
+  "height": 28,
+  "frames": 1,
+  "feature": "layout",
+  "match": "exact",
+  "notes": "16-bit RGB, PlanarConfiguration 2, big-endian"
+ },
+ {
+  "name": "layout_planar_rgba",
+  "file": "layout_planar_rgba.tif",
+  "width": 40,
+  "height": 28,
+  "frames": 1,
+  "feature": "layout",
+  "match": "exact",
+  "notes": "8-bit RGBA, PlanarConfiguration 2, unassociated alpha in its own plane"
+ },
+ {
+  "name": "sample_gray32_uint",
+  "file": "sample_gray32_uint.tif",
+  "width": 17,
+  "height": 11,
+  "frames": 1,
+  "feature": "samples",
+  "match": "exact",
+  "notes": "32-bit unsigned samples reduced to their most significant byte"
+ },
+ {
+  "name": "sample_gray32_int",
+  "file": "sample_gray32_int.tif",
+  "width": 17,
+  "height": 11,
+  "frames": 1,
+  "feature": "samples",
+  "match": "exact",
+  "notes": "32-bit signed samples (Pillow mode I) shifted into the unsigned range"
+ },
+ {
+  "name": "sample_gray32_float",
+  "file": "sample_gray32_float.tif",
+  "width": 17,
+  "height": 11,
+  "frames": 1,
+  "feature": "samples",
+  "match": "exact",
+  "notes": "32-bit floating-point samples (Pillow mode F) scaled from 0..1"
+ },
+ {
+  "name": "sample_gray16_int",
+  "file": "sample_gray16_int.tif",
+  "width": 17,
+  "height": 11,
+  "frames": 1,
+  "feature": "samples",
+  "match": "exact",
+  "notes": "16-bit signed samples shifted into the unsigned range"
+ },
+ {
+  "name": "sample_gray16_half",
+  "file": "sample_gray16_half.tif",
+  "width": 17,
+  "height": 11,
+  "frames": 1,
+  "feature": "samples",
+  "match": "exact",
+  "notes": "16-bit half-precision floating-point samples scaled from 0..1"
+ },
+ {
+  "name": "sample_rgb32_float",
+  "file": "sample_rgb32_float.tif",
+  "width": 17,
+  "height": 11,
+  "frames": 1,
+  "feature": "samples",
+  "match": "exact",
+  "notes": "32-bit floating-point RGB"
+ },
+ {
+  "name": "sample_rgb32_float_planar_mm",
+  "file": "sample_rgb32_float_planar_mm.tif",
+  "width": 17,
+  "height": 11,
+  "frames": 1,
+  "feature": "samples",
+  "match": "exact",
+  "notes": "32-bit floating-point RGB, planar, big-endian"
+ },
+ {
+  "name": "photometric_cmyk8",
+  "file": "photometric_cmyk8.tif",
+  "width": 15,
+  "height": 9,
+  "frames": 1,
+  "feature": "photometric",
+  "match": "exact",
+  "notes": "Separated (CMYK), 8-bit, uncompressed"
+ },
+ {
+  "name": "photometric_cmyk8_lzw",
+  "file": "photometric_cmyk8_lzw.tif",
+  "width": 15,
+  "height": 9,
+  "frames": 1,
+  "feature": "photometric",
+  "match": "exact",
+  "notes": "Separated (CMYK), 8-bit, LZW"
+ },
+ {
+  "name": "photometric_cmyk8_alpha",
+  "file": "photometric_cmyk8_alpha.tif",
+  "width": 15,
+  "height": 9,
+  "frames": 1,
+  "feature": "photometric",
+  "match": "exact",
+  "notes": "Separated (CMYK) with a fifth unassociated alpha sample"
+ },
+ {
+  "name": "photometric_cmyk16",
+  "file": "photometric_cmyk16.tif",
+  "width": 15,
+  "height": 9,
+  "frames": 1,
+  "feature": "photometric",
+  "match": "exact",
+  "notes": "Separated (CMYK), 16-bit"
+ },
+ {
+  "name": "photometric_ycbcr444",
+  "file": "photometric_ycbcr444.tif",
+  "width": 15,
+  "height": 9,
+  "frames": 1,
+  "feature": "photometric",
+  "match": "tolerance",
+  "notes": "YCbCr with 1x1 subsampling, full-range BT.601",
+  "tolerance": 1
+ },
+ {
+  "name": "photometric_cielab8",
+  "file": "photometric_cielab8.tif",
+  "width": 15,
+  "height": 9,
+  "frames": 1,
+  "feature": "photometric",
+  "match": "tolerance",
+  "notes": "CIE L*a*b* with signed a and b samples, D50 white point",
+  "tolerance": 2
+ },
+ {
+  "name": "photometric_icclab8",
+  "file": "photometric_icclab8.tif",
+  "width": 15,
+  "height": 9,
+  "frames": 1,
+  "feature": "photometric",
+  "match": "tolerance",
+  "notes": "ICC L*a*b*, whose a and b samples carry an offset of 128",
+  "tolerance": 2
+ },
+ {
+  "name": "photometric_mask_g4",
+  "file": "photometric_mask_g4.tif",
+  "width": 15,
+  "height": 9,
+  "frames": 1,
+  "feature": "photometric",
+  "match": "exact",
+  "notes": "Transparency mask (photometric 4), Group 4 coded, imaged like WhiteIsZero"
+ },
+ {
+  "name": "jpeg_rgb",
+  "file": "jpeg_rgb.tif",
+  "width": 48,
+  "height": 32,
+  "frames": 1,
+  "feature": "jpeg",
+  "match": "psnr",
+  "notes": "RGB stored as YCbCr JPEG (compression 7) with shared JPEGTables",
+  "psnr": 40
+ },
+ {
+  "name": "jpeg_gray",
+  "file": "jpeg_gray.tif",
+  "width": 48,
+  "height": 32,
+  "frames": 1,
+  "feature": "jpeg",
+  "match": "psnr",
+  "notes": "Greyscale JPEG-in-TIFF with shared JPEGTables",
+  "psnr": 40
+ },
+ {
+  "name": "jpeg_strips",
+  "file": "jpeg_strips.tif",
+  "width": 48,
+  "height": 32,
+  "frames": 1,
+  "feature": "jpeg",
+  "match": "psnr",
+  "notes": "RGB JPEG-in-TIFF split over 4 strip(s), each its own JPEG stream",
+  "psnr": 40
+ },
+ {
+  "name": "jpeg_selfcontained",
+  "file": "jpeg_selfcontained.tif",
+  "width": 48,
+  "height": 32,
+  "frames": 1,
+  "feature": "jpeg",
+  "match": "psnr",
+  "notes": "One strip holding a complete JPEG stream, no JPEGTables tag",
+  "psnr": 40
+ },
+ {
+  "name": "jpeg_tiled",
+  "file": "jpeg_tiled.tif",
+  "width": 48,
+  "height": 32,
+  "frames": 1,
+  "feature": "jpeg",
+  "match": "psnr",
+  "notes": "RGB JPEG-in-TIFF in 16x16 tiles sharing one JPEGTables block",
+  "psnr": 40
+ }
+]

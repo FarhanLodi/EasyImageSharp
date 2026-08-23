@@ -1,0 +1,8 @@
+# Fixture files are byte-exact decoder inputs and reference pixel dumps. Several of them contain no NUL byte
+# in their first 8 KB, so git's heuristics would otherwise treat them as text and rewrite 0x0A/0x0D bytes on
+# checkout with core.autocrlf. Force binary handling for everything except the human-readable files.
+* binary
+*.py text
+*.json text
+*.md text
+.gitattributes text
