@@ -84,13 +84,21 @@ public class ModelRegistryTests
             ModelRegistry.Published.ToArray());
         Assert.All(ModelRegistry.Published, d => Assert.True(d.IsPublished));
 
-        // The two document models are published today; the rest are documented placeholders.
+        // Anything without a pinned checksum cannot be downloaded, so it must also be reachable by an
+        // override: the operation names below are what a caller passes to ImageAiOptions.ModelPathOverrides.
+        foreach (ModelDescriptor descriptor in ModelRegistry.All.Where(d => !d.IsPublished))
+        {
+            Assert.False(string.IsNullOrWhiteSpace(descriptor.Name));
+            Assert.False(string.IsNullOrWhiteSpace(descriptor.FileName));
+        }
+
+        // Published today. This list grows as models are exported and pinned; it is asserted so that
+        // pinning a checksum without also making the model reachable is caught here.
         Assert.True(ModelRegistry.DocumentOrientation.IsPublished);
         Assert.True(ModelRegistry.DocumentDewarp.IsPublished);
-        Assert.False(ModelRegistry.SuperResolutionX4.IsPublished);
-        Assert.False(ModelRegistry.DenoiseGray.IsPublished);
-        Assert.False(ModelRegistry.Saliency.IsPublished);
-        Assert.False(ModelRegistry.Binarization.IsPublished);
+        Assert.True(ModelRegistry.SuperResolutionX4.IsPublished);
+        Assert.True(ModelRegistry.DenoiseGray.IsPublished);
+        Assert.True(ModelRegistry.Saliency.IsPublished);
     }
 
     [Fact]
