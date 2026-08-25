@@ -1,0 +1,59 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+    <RootNamespace>EasyImageSharp.AI</RootNamespace>
+    <AssemblyName>EasyImageSharp.AI</AssemblyName>
+    <!--
+      Our own code is trim/AOT-analyzer clean (the analyzers run on this project). The ONNX Runtime
+      managed wrapper is not itself annotated as AOT compatible; NativeAOT publishing works in
+      practice because it is a thin P/Invoke layer over the native onnxruntime library, but the app
+      must ship the matching native runtime for its RID (the base package does that for win/linux/osx).
+    -->
+    <IsAotCompatible>true</IsAotCompatible>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <NeutralLanguage>en-US</NeutralLanguage>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Package">
+    <PackageId>EasyImageSharp.AI</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Farhan Lodi</Authors>
+    <Title>EasyImageSharp.AI</Title>
+    <Description>Optional ONNX Runtime add-on for EasyImageSharp: document orientation (PP-LCNet), page dewarp (UVDoc), super-resolution (Real-ESRGAN contract), learned denoise (DnCNN contract), background removal / saliency (U2-Net-p contract), learned binarisation (SauvolaNet contract) and a generic tiled image-to-image runner for your own ONNX models. Models are fetched on demand from Hugging Face with pinned SHA-256 checksums (fail-closed), cached locally, resumable, and usable fully offline; CPU by default with opt-in CUDA / DirectML / CoreML execution providers.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageProjectUrl>https://github.com/FarhanLodi/EasyImageSharp</PackageProjectUrl>
+    <PackageTags>image;imaging;ai;onnx;onnxruntime;machine-learning;super-resolution;denoise;background-removal;dewarp;orientation;binarization;ocr;document;huggingface;managed;aot</PackageTags>
+    <PackageReleaseNotes>1.0.0: first stable release of the AI add-on. ModelHub (HTTPS-only, resumable, SHA-256 fail-closed, offline mode, int8 variants, local overrides) fetching from the first-party EasyImageSharp model repository; ImageAiSession with CPU/CUDA/DirectML/CoreML provider selection; DetectOrientation/AutoOrient, DewarpDocument, Upscale, DenoiseAI, RemoveBackground/GetSaliencyMask, BinarizeAI; and a generic tiled image-to-image runner for your own ONNX models. See CHANGELOG.md.</PackageReleaseNotes>
+    <RepositoryUrl>https://github.com/FarhanLodi/EasyImageSharp</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="" />
+    <None Include="../../LICENSE" Pack="true" PackagePath="" />
+    <None Include="../EasyImageSharp/Assets/icon.png" Pack="true" PackagePath="" Visible="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.29.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../EasyImageSharp/EasyImageSharp.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="EasyImageSharp.AI.Tests" />
+  </ItemGroup>
+
+</Project>

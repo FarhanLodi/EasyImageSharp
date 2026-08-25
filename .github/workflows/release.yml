@@ -1,0 +1,320 @@
+name: Release
+
+# Tag-driven. The tag is the single source of truth for the version:
+#
+#     git tag v1.0.0 && git push origin v1.0.0
+#
+# A hyphen in the version makes it a prerelease on both NuGet and GitHub, so `v1.0.0` is a stable
+# release and `v1.0.0-rc.1` is not. Everything is verified before anything is published: the version
+# is parsed, the changelog section is located, and the full test suite runs on both target
+# frameworks. Only then are the packages built and pushed.
+#
+# ---------------------------------------------------------------------------------------------------
+# REQUIRED REPOSITORY SECRET
+# ---------------------------------------------------------------------------------------------------
+#   NUGET_API_KEY   An API key from https://www.nuget.org/account/apikeys with the "Push" scope,
+#                   globbed to `EasyImageSharp*` so it covers both packages and any future add-on.
+#                   Add it under Settings > Secrets and variables > Actions > New repository secret.
+#                   Prefer a key scoped to those package IDs with the shortest workable expiry, and
+#                   set a calendar reminder: an expired key fails this workflow after the GitHub
+#                   release has already been created, which is a confusing state to debug.
+#
+# No other secret is needed. GITHUB_TOKEN is provided automatically and is used only to create the
+# release, which is why `contents: write` is granted below.
+# ---------------------------------------------------------------------------------------------------
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to release (for example v1.0.0)"
+        required: true
+        type: string
+      dry_run:
+        description: "Build, test and pack, but do not push to NuGet or create a release"
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+
+jobs:
+  # -------------------------------------------------------------------------------------------------
+  # Work out what is being released, and refuse to go further if the answer is not sound.
+  # -------------------------------------------------------------------------------------------------
+  prepare:
+    name: Resolve version and release notes
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      tag: ${{ steps.version.outputs.tag }}
+      prerelease: ${{ steps.version.outputs.prerelease }}
+      dry_run: ${{ steps.version.outputs.dry_run }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref }}
+          fetch-depth: 0
+
+      - name: Derive the version from the tag
+        id: version
+        run: |
+          set -euo pipefail
+          tag="${{ inputs.tag || github.ref_name }}"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+          # v1.2.3, v1.2.3-preview.1, v1.2.3-rc.2 ... but not v1.2 or 1.2.3.
+          if [[ ! "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "::error::Tag '$tag' is not a release tag. Expected vMAJOR.MINOR.PATCH with an optional prerelease suffix, for example v1.0.0."
+            exit 1
+          fi
+
+          version="${tag#v}"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+          # A hyphen means a prerelease, on NuGet and on GitHub alike.
+          if [[ "$version" == *-* ]]; then
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "prerelease=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          echo "dry_run=${{ inputs.dry_run || false }}" >> "$GITHUB_OUTPUT"
+          echo "Releasing $version from $tag"
+
+      # The release body is the changelog section for this version. If it is missing, the release
+      # would go out with an empty description, so stop here instead.
+      - name: Extract the changelog section
+        run: |
+          set -euo pipefail
+          version="${{ steps.version.outputs.version }}"
+
+          # From the "## [<version>]" heading up to (but not including) the next "## " heading.
+          # index($0, header) == 1 is a literal prefix test, so the dots and hyphens in a version
+          # such as 1.0.0 cannot be reinterpreted as regular-expression metacharacters.
+          awk -v header="## [$version]" '
+            index($0, header) == 1 { found = 1; next }
+            found && /^## / { exit }
+            found { print }
+          ' CHANGELOG.md > release-notes.md
+
+          # Trim leading and trailing blank lines.
+          sed -i -e '/./,$!d' release-notes.md
+          tac release-notes.md | sed -e '/./,$!d' | tac > release-notes.trimmed && mv release-notes.trimmed release-notes.md
+
+          if [ ! -s release-notes.md ]; then
+            echo "::error::CHANGELOG.md has no '## [$version]' section. Add one (move the Unreleased entries into it) before tagging."
+            exit 1
+          fi
+
+          echo "Release notes ($(wc -l < release-notes.md) lines):"
+          cat release-notes.md
+
+      # A mismatch is not fatal (the tag wins, and the packed version comes from it), but it almost
+      # always means someone forgot to bump the csproj, so make it visible in the run summary.
+      - name: Compare the tag against the project version
+        run: |
+          version="${{ steps.version.outputs.version }}"
+          for proj in src/EasyImageSharp/EasyImageSharp.csproj src/EasyImageSharp.AI/EasyImageSharp.AI.csproj; do
+            declared=$(grep -oPm1 '(?<=<Version>)[^<]+' "$proj" || echo "")
+            if [ "$declared" != "$version" ]; then
+              echo "::warning file=$proj::Declared version '$declared' does not match the tag version '$version'. The tag wins; consider bumping the csproj so local packs match."
+            fi
+          done
+
+      - name: Upload the release notes
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-notes
+          path: release-notes.md
+          if-no-files-found: error
+
+  # -------------------------------------------------------------------------------------------------
+  # Never publish something that was not tested. The full suite, on every OS, on both frameworks.
+  # -------------------------------------------------------------------------------------------------
+  verify:
+    name: Build & test (${{ matrix.os }})
+    needs: prepare
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.tag }}
+          fetch-depth: 0
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      - name: Build (warnings are errors)
+        run: dotnet build EasyImageSharp.slnx -c Release -p:Version=${{ needs.prepare.outputs.version }}
+
+      - name: Test net8.0
+        run: dotnet test EasyImageSharp.slnx -c Release --no-build -f net8.0
+
+      - name: Test net10.0
+        run: dotnet test EasyImageSharp.slnx -c Release --no-build -f net10.0
+
+  # -------------------------------------------------------------------------------------------------
+  # Pack both packages at the tag version, with symbols and a deterministic, source-linked build.
+  # -------------------------------------------------------------------------------------------------
+  pack:
+    name: Pack
+    needs: [prepare, verify]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.tag }}
+          # Full history so SourceLink can resolve the commit the packages were built from.
+          fetch-depth: 0
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      - name: Pack both packages
+        run: |
+          set -euo pipefail
+          for project in src/EasyImageSharp src/EasyImageSharp.AI; do
+            dotnet pack "$project" \
+              -c Release \
+              -o artifacts \
+              -p:Version=${{ needs.prepare.outputs.version }} \
+              -p:ContinuousIntegrationBuild=true \
+              -p:IncludeSymbols=true \
+              -p:SymbolPackageFormat=snupkg
+          done
+          ls -la artifacts
+
+      # Publishing a package that is missing its symbols or its readme is not recoverable: the
+      # version number is burned on NuGet forever. Check before pushing, not after.
+      - name: Verify what is about to be published
+        run: |
+          set -euo pipefail
+          version="${{ needs.prepare.outputs.version }}"
+          fail=0
+
+          for name in EasyImageSharp EasyImageSharp.AI; do
+            nupkg="artifacts/$name.$version.nupkg"
+            snupkg="artifacts/$name.$version.snupkg"
+
+            [ -f "$nupkg" ] || { echo "::error::$nupkg was not produced"; fail=1; continue; }
+            [ -f "$snupkg" ] || { echo "::error::$snupkg was not produced"; fail=1; }
+
+            listing=$(unzip -Z1 "$nupkg")
+            for required in README.md LICENSE icon.png; do
+              echo "$listing" | grep -qx "$required" || { echo "::error::$nupkg is missing $required"; fail=1; }
+            done
+            for tfm in net8.0 net10.0; do
+              echo "$listing" | grep -q "^lib/$tfm/$name.dll$" || { echo "::error::$nupkg is missing lib/$tfm/$name.dll"; fail=1; }
+              echo "$listing" | grep -q "^lib/$tfm/$name.xml$" || { echo "::error::$nupkg is missing lib/$tfm/$name.xml"; fail=1; }
+            done
+          done
+
+          exit $fail
+
+      - name: Upload the packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages
+          path: |
+            artifacts/*.nupkg
+            artifacts/*.snupkg
+          if-no-files-found: error
+
+  # -------------------------------------------------------------------------------------------------
+  # Push to NuGet, then create the GitHub release. In that order: if the push fails, no release is
+  # created claiming a version that is not on NuGet.
+  #
+  # --skip-duplicate makes the push idempotent, so re-running a partially failed release (for example
+  # when the core package pushed and the AI package did not) succeeds instead of erroring on the half
+  # that already went out.
+  # -------------------------------------------------------------------------------------------------
+  publish:
+    name: Publish
+    needs: [prepare, pack]
+    if: needs.prepare.outputs.dry_run != 'true'
+    runs-on: ubuntu-latest
+    environment: nuget
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.tag }}
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: packages
+          path: artifacts
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-notes
+          path: notes
+
+      - name: Push to NuGet
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${NUGET_API_KEY:-}" ]; then
+            echo "::error::The NUGET_API_KEY repository secret is not set. See the header of this workflow file."
+            exit 1
+          fi
+
+          dotnet nuget push "artifacts/*.nupkg" \
+            --source https://api.nuget.org/v3/index.json \
+            --api-key "$NUGET_API_KEY" \
+            --skip-duplicate
+
+      - name: Create the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          prerelease=""
+          if [ "${{ needs.prepare.outputs.prerelease }}" = "true" ]; then
+            prerelease="--prerelease"
+          fi
+
+          gh release create "${{ needs.prepare.outputs.tag }}" \
+            --title "${{ needs.prepare.outputs.tag }}" \
+            --notes-file notes/release-notes.md \
+            --verify-tag \
+            $prerelease \
+            artifacts/*.nupkg artifacts/*.snupkg
+
+      - name: Summary
+        run: |
+          {
+            echo "### Released ${{ needs.prepare.outputs.tag }}"
+            echo
+            echo "- Version: \`${{ needs.prepare.outputs.version }}\`"
+            echo "- Prerelease: ${{ needs.prepare.outputs.prerelease }}"
+            echo "- Packages: EasyImageSharp, EasyImageSharp.AI (with .snupkg symbols)"
+            echo
+            echo "https://www.nuget.org/packages/EasyImageSharp/${{ needs.prepare.outputs.version }}"
+          } >> "$GITHUB_STEP_SUMMARY"

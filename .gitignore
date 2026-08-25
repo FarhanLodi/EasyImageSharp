@@ -1,0 +1,131 @@
+# ---------------------------------------------------------------------------------------------------
+# Build output
+# ---------------------------------------------------------------------------------------------------
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+build/
+artifacts/
+publish/
+*.dll
+*.exe
+*.pdb
+*.so
+*.dylib
+
+# NuGet
+*.nupkg
+*.snupkg
+*.nuget.props
+*.nuget.targets
+packages/
+!packages/build/
+.nuget/
+
+# ---------------------------------------------------------------------------------------------------
+# Test and benchmark output
+# ---------------------------------------------------------------------------------------------------
+TestResults/
+[Tt]est[Rr]esult*/
+*.trx
+*.coverage
+*.coverex
+coverage*.json
+coverage*.xml
+coverage*.info
+BenchmarkDotNet.Artifacts/
+
+# Benchmark result tables are committed deliberately (benchmarks/results/*.md);
+# the raw BenchmarkDotNet run output is not.
+
+# ---------------------------------------------------------------------------------------------------
+# IDE and editor
+# ---------------------------------------------------------------------------------------------------
+.vs/
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.user
+*.suo
+*.userprefs
+*.sln.docstates
+*.swp
+*.swo
+*~
+.fleet/
+
+# ---------------------------------------------------------------------------------------------------
+# Operating system
+# ---------------------------------------------------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+[Tt]humbs.db
+[Tt]humbs.db:encryptable
+ehthumbs.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+# ---------------------------------------------------------------------------------------------------
+# Python (fixture generators under tests/**/Fixtures)
+# ---------------------------------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+
+# ---------------------------------------------------------------------------------------------------
+# Secrets and local configuration — never commit these
+# ---------------------------------------------------------------------------------------------------
+*.pfx
+*.p12
+*.snk
+*.key
+*.pem
+.env
+.env.*
+!.env.example
+appsettings.*.local.json
+secrets.json
+nuget.config.local
+*.publishsettings
+
+# ---------------------------------------------------------------------------------------------------
+# ONNX model weights
+#
+# Real weights are fetched at run time into the user's cache and must never enter the repository. The
+# rule targets the weight files themselves rather than any directory called "models" — an earlier
+# `models/` pattern also matched src/EasyImageSharp.AI/Models/, which holds source code, and silently
+# excluded it from the repository (git matches ignore patterns case-insensitively on Windows).
+#
+# The synthetic stubs under tests/EasyImageSharp.AI.Tests/Models/ are committed on purpose: they are a
+# few hundred bytes each and the AI test suite has to run offline.
+# ---------------------------------------------------------------------------------------------------
+*.onnx
+*.onnx.data
+!tests/EasyImageSharp.AI.Tests/Models/*.onnx
+
+# ---------------------------------------------------------------------------------------------------
+# Scratch and tooling
+# ---------------------------------------------------------------------------------------------------
+.claude/
+*.log
+*.tmp
+*.bak
+*.orig
+*.rej
+scratch/
+tmp/
+
+# ---------------------------------------------------------------------------------------------------
+# Local planning notes — kept out of version control deliberately
+# ---------------------------------------------------------------------------------------------------
+ROADMAP.md

@@ -1,0 +1,218 @@
+[
+ {
+  "name": "resize_box_40x30",
+  "kind": "resize",
+  "filter": "box",
+  "width": 40,
+  "height": 30,
+  "notes": "Image.resize(40x30, BOX)"
+ },
+ {
+  "name": "resize_bilinear_40x30",
+  "kind": "resize",
+  "filter": "bilinear",
+  "width": 40,
+  "height": 30,
+  "notes": "Image.resize(40x30, BILINEAR)"
+ },
+ {
+  "name": "resize_bilinear_112x72",
+  "kind": "resize",
+  "filter": "bilinear",
+  "width": 112,
+  "height": 72,
+  "notes": "Image.resize(112x72, BILINEAR)"
+ },
+ {
+  "name": "resize_bicubic_40x30",
+  "kind": "resize",
+  "filter": "bicubic",
+  "width": 40,
+  "height": 30,
+  "notes": "Image.resize(40x30, BICUBIC)"
+ },
+ {
+  "name": "resize_bicubic_112x72",
+  "kind": "resize",
+  "filter": "bicubic",
+  "width": 112,
+  "height": 72,
+  "notes": "Image.resize(112x72, BICUBIC)"
+ },
+ {
+  "name": "resize_lanczos_40x30",
+  "kind": "resize",
+  "filter": "lanczos",
+  "width": 40,
+  "height": 30,
+  "notes": "Image.resize(40x30, LANCZOS)"
+ },
+ {
+  "name": "resize_lanczos_112x72",
+  "kind": "resize",
+  "filter": "lanczos",
+  "width": 112,
+  "height": 72,
+  "notes": "Image.resize(112x72, LANCZOS)"
+ },
+ {
+  "name": "affine_nearest_exact",
+  "kind": "affine",
+  "filter": "nearest",
+  "width": 96,
+  "height": 64,
+  "coeffs": [
+   0.75,
+   0.5,
+   0.25,
+   -0.25,
+   1.25,
+   0.125
+  ],
+  "fill": [
+   0,
+   0,
+   0,
+   255
+  ],
+  "notes": "scale/shear/translate with dyadic coefficients; NEAREST; exact match expected"
+ },
+ {
+  "name": "affine_rot30_bilinear",
+  "kind": "affine",
+  "filter": "bilinear",
+  "width": 116,
+  "height": 104,
+  "coeffs": [
+   0.8660254037844387,
+   0.49999999999999994,
+   -28.22947341949744,
+   -0.49999999999999994,
+   0.8660254037844387,
+   15.966679003209187
+  ],
+  "fill": [
+   0,
+   0,
+   0,
+   255
+  ],
+  "notes": "clockwise 30 degree rotation about the centre, BILINEAR"
+ },
+ {
+  "name": "affine_rot30_bicubic",
+  "kind": "affine",
+  "filter": "bicubic",
+  "width": 116,
+  "height": 104,
+  "coeffs": [
+   0.8660254037844387,
+   0.49999999999999994,
+   -28.22947341949744,
+   -0.49999999999999994,
+   0.8660254037844387,
+   15.966679003209187
+  ],
+  "fill": [
+   0,
+   0,
+   0,
+   255
+  ],
+  "notes": "clockwise 30 degree rotation about the centre, BICUBIC"
+ },
+ {
+  "name": "affine_rot30_nearest",
+  "kind": "affine",
+  "filter": "nearest",
+  "width": 116,
+  "height": 104,
+  "coeffs": [
+   0.8660254037844387,
+   0.49999999999999994,
+   -28.22947341949744,
+   -0.49999999999999994,
+   0.8660254037844387,
+   15.966679003209187
+  ],
+  "fill": [
+   0,
+   0,
+   0,
+   255
+  ],
+  "notes": "clockwise 30 degree rotation about the centre, NEAREST"
+ },
+ {
+  "name": "perspective_bilinear",
+  "kind": "perspective",
+  "filter": "bilinear",
+  "width": 96,
+  "height": 64,
+  "coeffs": [
+   1.1,
+   0.15,
+   -4.0,
+   -0.05,
+   1.2,
+   2.0,
+   0.002,
+   0.001
+  ],
+  "fill": [
+   0,
+   0,
+   0,
+   255
+  ],
+  "notes": "mild perspective (g=0.002, h=0.001), BILINEAR"
+ },
+ {
+  "name": "perspective_bicubic",
+  "kind": "perspective",
+  "filter": "bicubic",
+  "width": 96,
+  "height": 64,
+  "coeffs": [
+   1.1,
+   0.15,
+   -4.0,
+   -0.05,
+   1.2,
+   2.0,
+   0.002,
+   0.001
+  ],
+  "fill": [
+   0,
+   0,
+   0,
+   255
+  ],
+  "notes": "mild perspective (g=0.002, h=0.001), BICUBIC"
+ },
+ {
+  "name": "perspective_nearest",
+  "kind": "perspective",
+  "filter": "nearest",
+  "width": 96,
+  "height": 64,
+  "coeffs": [
+   1.1,
+   0.15,
+   -4.0,
+   -0.05,
+   1.2,
+   2.0,
+   0.002,
+   0.001
+  ],
+  "fill": [
+   0,
+   0,
+   0,
+   255
+  ],
+  "notes": "mild perspective (g=0.002, h=0.001), NEAREST"
+ }
+]

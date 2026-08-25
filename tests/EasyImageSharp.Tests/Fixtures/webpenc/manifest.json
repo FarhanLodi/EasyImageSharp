@@ -1,0 +1,152 @@
+{
+ "images": [
+  {
+   "colors": 4,
+   "file": "bars.png",
+   "hasAlpha": true,
+   "height": 48,
+   "libwebp": {
+    "0": 134,
+    "4": 126,
+    "6": 94
+   },
+   "name": "bars",
+   "width": 64
+  },
+  {
+   "colors": 1,
+   "file": "flat.png",
+   "hasAlpha": false,
+   "height": 24,
+   "libwebp": {
+    "0": 38,
+    "4": 38,
+    "6": 32
+   },
+   "name": "flat",
+   "width": 32
+  },
+  {
+   "colors": 6144,
+   "file": "gradient.png",
+   "hasAlpha": false,
+   "height": 64,
+   "libwebp": {
+    "0": 374,
+    "4": 66,
+    "6": 58
+   },
+   "name": "gradient",
+   "width": 96
+  },
+  {
+   "colors": 200,
+   "file": "gray_ramp.png",
+   "hasAlpha": false,
+   "height": 60,
+   "libwebp": {
+    "0": 4050,
+    "4": 1150,
+    "6": 1112
+   },
+   "name": "gray_ramp",
+   "width": 80
+  },
+  {
+   "colors": 1728,
+   "file": "noise.png",
+   "hasAlpha": false,
+   "height": 36,
+   "libwebp": {
+    "0": 5308,
+    "4": 5314,
+    "6": 5310
+   },
+   "name": "noise",
+   "width": 48
+  },
+  {
+   "colors": 1728,
+   "file": "noise_alpha.png",
+   "hasAlpha": true,
+   "height": 36,
+   "libwebp": {
+    "0": 7070,
+    "4": 7062,
+    "6": 7062
+   },
+   "name": "noise_alpha",
+   "width": 48
+  },
+  {
+   "colors": 851,
+   "file": "odd.png",
+   "hasAlpha": true,
+   "height": 23,
+   "libwebp": {
+    "0": 688,
+    "4": 180,
+    "6": 184
+   },
+   "name": "odd",
+   "width": 37
+  },
+  {
+   "colors": 256,
+   "file": "palette256.png",
+   "hasAlpha": false,
+   "height": 48,
+   "libwebp": {
+    "0": 554,
+    "4": 116,
+    "6": 68
+   },
+   "name": "palette256",
+   "width": 64
+  },
+  {
+   "colors": 6876,
+   "file": "photo.png",
+   "hasAlpha": false,
+   "height": 72,
+   "libwebp": {
+    "0": 11436,
+    "4": 9846,
+    "6": 10046
+   },
+   "name": "photo",
+   "width": 96
+  },
+  {
+   "colors": 1120,
+   "file": "sprite.png",
+   "hasAlpha": true,
+   "height": 40,
+   "libwebp": {
+    "0": 448,
+    "4": 368,
+    "6": 276
+   },
+   "name": "sprite",
+   "width": 40
+  },
+  {
+   "colors": 2,
+   "file": "two_color.png",
+   "hasAlpha": false,
+   "height": 18,
+   "libwebp": {
+    "0": 52,
+    "4": 52,
+    "6": 48
+   },
+   "name": "two_color",
+   "width": 24
+  }
+ ],
+ "methods": [
+  0,
+  4,
+  6
+ ]
+}

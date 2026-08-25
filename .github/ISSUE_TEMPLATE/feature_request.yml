@@ -1,0 +1,89 @@
+name: Feature request
+description: Propose a new operation, codec option, or API.
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Proposals that add **public API** are cheap to discuss and expensive to unwind, so thank you
+        for opening this before writing the code. See
+        [CONTRIBUTING.md](https://github.com/FarhanLodi/EasyImageSharp/blob/main/CONTRIBUTING.md)
+        for the extension points a change like this usually touches.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Codec (decode or encode a format)
+        - Processing operation (filters, transforms, effects)
+        - Document imaging / OCR preprocessing
+        - Drawing and annotation
+        - Metadata (EXIF, ICC, XMP, format-specific)
+        - Pixel formats and tensors
+        - AI add-on (ONNX models)
+        - Packaging, configuration, or performance
+        - Documentation
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: >-
+        What are you trying to do that you cannot do today, or can only do awkwardly? Describe the
+        situation, not the solution you have in mind — that comes next.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed API
+      description: >-
+        Sketch the call as you would want to write it. Method signatures and an example call site are
+        more useful than prose.
+      render: csharp
+      placeholder: |
+        image.Mutate(ctx => ctx.RemoveStamps(new StampRemovalOptions { MinSaturation = 0.3f }));
+    validations:
+      required: false
+
+  - type: textarea
+    id: workaround
+    attributes:
+      label: What you do today instead
+      description: The workaround you currently use, if any, and why it is not good enough.
+    validations:
+      required: false
+
+  - type: textarea
+    id: correctness
+    attributes:
+      label: How would this be verified
+      description: >-
+        Every operation in this library is tested against expected values produced somewhere other
+        than this library. Is there a reference implementation, a specification, or a published
+        algorithm the result can be checked against?
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: constraints
+    attributes:
+      label: Constraints this proposal respects
+      description: >-
+        The core package is fully managed, trim- and AOT-clean, and has no native dependencies.
+      options:
+        - label: This needs no native dependency in the core package.
+        - label: This works under trimming and Native AOT (no reflection a trimmer cannot see).
+        - label: This would require a new package reference (say which, and its licence, above).
+        - label: This would be a breaking change to existing API or output bytes.
+
+  - type: checkboxes
+    id: offer
+    attributes:
+      label: Would you like to implement it?
+      options:
+        - label: I am willing to open a pull request for this.

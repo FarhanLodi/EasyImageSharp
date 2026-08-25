@@ -1,0 +1,33 @@
+version: 2
+
+updates:
+  # Keep the Actions used by CI and release pinned to current major versions.
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: "ci"
+    labels:
+      - dependencies
+      - ci
+
+  # NuGet references. The core library has none; this covers the AI add-on, the test projects
+  # and the benchmark project.
+  - package-ecosystem: nuget
+    directory: "/"
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps"
+    labels:
+      - dependencies
+    groups:
+      test-tooling:
+        patterns:
+          - "xunit*"
+          - "Microsoft.NET.Test.Sdk"
+      analyzers:
+        patterns:
+          - "Microsoft.CodeAnalysis.*"
