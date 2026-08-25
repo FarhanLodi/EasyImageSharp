@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/EasyImageSharp/EasyImageSharp.csproj" />
+    <Project Path="src/EasyImageSharp.AI/EasyImageSharp.AI.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/EasyImageSharp.Tests/EasyImageSharp.Tests.csproj" />
+    <Project Path="tests/EasyImageSharp.AI.Tests/EasyImageSharp.AI.Tests.csproj" />
+  </Folder>
+</Solution>

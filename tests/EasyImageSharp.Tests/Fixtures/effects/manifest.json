@@ -1,0 +1,83 @@
+{
+  "size": [
+    64,
+    48
+  ],
+  "overlay_size": [
+    32,
+    24
+  ],
+  "overlay_location": [
+    8,
+    6
+  ],
+  "kernel3": {
+    "values": [
+      0,
+      -1,
+      0,
+      -1,
+      6,
+      -1,
+      0,
+      -1,
+      0
+    ],
+    "scale": 2,
+    "offset": 0,
+    "note": "Pillow applies sum(k*p)/scale + offset; border pixels are copied unchanged"
+  },
+  "conv5": [
+    [
+      0.0,
+      0.009,
+      0.018,
+      0.009,
+      0.0
+    ],
+    [
+      0.009,
+      0.045,
+      0.09,
+      0.045,
+      0.009
+    ],
+    [
+      0.018,
+      0.09,
+      0.252,
+      0.09,
+      0.018
+    ],
+    [
+      0.009,
+      0.045,
+      0.09,
+      0.045,
+      0.009
+    ],
+    [
+      0.0,
+      0.009,
+      0.018,
+      0.009,
+      0.1
+    ]
+  ],
+  "boxblur_radius": 2,
+  "eq_exact": {
+    "size": [
+      256,
+      256
+    ],
+    "max_level_pixels": 1,
+    "step": 257
+  },
+  "eq_general": {
+    "size": [
+      256,
+      256
+    ],
+    "tolerance": 1
+  }
+}

@@ -1,0 +1,113 @@
+{
+  "canvas": [
+    40,
+    30
+  ],
+  "background": [
+    255,
+    255,
+    255
+  ],
+  "entries": [
+    {
+      "name": "rect_fill",
+      "file": "rect_fill.png",
+      "width": 40,
+      "height": 30,
+      "op": "FillRectangle",
+      "color": [
+        255,
+        0,
+        0
+      ],
+      "rect": [
+        5,
+        4,
+        16,
+        12
+      ],
+      "thickness": 0,
+      "notes": "ImageDraw.rectangle([5,4,20,15], fill=red)"
+    },
+    {
+      "name": "rect_outline_w1",
+      "file": "rect_outline_w1.png",
+      "width": 40,
+      "height": 30,
+      "op": "DrawRectangle",
+      "color": [
+        0,
+        0,
+        0
+      ],
+      "rect": [
+        5,
+        4,
+        16,
+        12
+      ],
+      "thickness": 1,
+      "notes": "ImageDraw.rectangle([5,4,20,15], outline=black, width=1)"
+    },
+    {
+      "name": "rect_outline_w3",
+      "file": "rect_outline_w3.png",
+      "width": 40,
+      "height": 30,
+      "op": "DrawRectangle",
+      "color": [
+        0,
+        0,
+        255
+      ],
+      "rect": [
+        5,
+        4,
+        16,
+        12
+      ],
+      "thickness": 3,
+      "notes": "ImageDraw.rectangle([5,4,20,15], outline=blue, width=3)"
+    },
+    {
+      "name": "rect_outline_clipped",
+      "file": "rect_outline_clipped.png",
+      "width": 40,
+      "height": 30,
+      "op": "DrawRectangle",
+      "color": [
+        0,
+        128,
+        0
+      ],
+      "rect": [
+        -4,
+        20,
+        17,
+        21
+      ],
+      "thickness": 2,
+      "notes": "ImageDraw.rectangle([-4,20,12,40], outline=(0,128,0), width=2); box crosses the left and bottom edges"
+    },
+    {
+      "name": "rect_fill_corner",
+      "file": "rect_fill_corner.png",
+      "width": 40,
+      "height": 30,
+      "op": "FillRectangle",
+      "color": [
+        10,
+        20,
+        30
+      ],
+      "rect": [
+        30,
+        22,
+        10,
+        8
+      ],
+      "thickness": 0,
+      "notes": "ImageDraw.rectangle([30,22,39,29], fill=(10,20,30)); flush with the bottom-right corner"
+    }
+  ]
+}

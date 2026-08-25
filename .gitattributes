@@ -1,0 +1,13 @@
+# Normalise line endings to LF in the repository; check out as LF on every platform.
+* text=auto eol=lf
+
+# Binary image fixtures and assets: never normalise, never diff as text.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.bmp binary
+*.tif binary
+*.tiff binary
+*.ico binary
+*.webp binary

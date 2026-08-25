@@ -1,0 +1,14 @@
+# Fixture files are byte-exact decoder inputs and reference pixel dumps. Several contain no NUL byte in
+# their first 8 KB, so git's heuristics would otherwise treat them as text and rewrite 0x0A/0x0D bytes on
+# checkout where core.autocrlf is set, corrupting them.
+#
+# `-text` disables end-of-line conversion without the `binary` macro, which also implies `-diff -merge`
+# and would make the generators and manifests below show up as unreadable binary blobs in review.
+* -text
+
+# Human-readable files: normalised to LF in the repository and on checkout, so a corpus regenerated on
+# Windows is byte-identical to one regenerated on Linux. The determinism check in CI depends on this.
+*.py    text eol=lf
+*.json  text eol=lf
+*.md    text eol=lf
+.gitattributes text eol=lf

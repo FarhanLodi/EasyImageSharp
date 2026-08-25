@@ -1,0 +1,20 @@
+# These are supported funding model platforms
+# (GitHub only accepts platform handles and up to four custom URLs here — UPI and bank-transfer
+#  details live in Donation.md, linked below and in the README's Support section.)
+
+github: []
+patreon:
+open_collective:
+ko_fi:
+tidelift:
+community_bridge:
+liberapay:
+issuehunt:
+lfx_crowdfunding:
+polar:
+buy_me_a_coffee:
+thanks_dev:
+
+custom:
+  - https://www.paypal.com/paypalme/FarhanLodi
+  - https://github.com/FarhanLodi/EasyImageSharp/blob/main/Donation.md

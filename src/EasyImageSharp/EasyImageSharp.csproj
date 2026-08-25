@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+    <RootNamespace>EasyImageSharp</RootNamespace>
+    <AssemblyName>EasyImageSharp</AssemblyName>
+    <IsAotCompatible>true</IsAotCompatible>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <NeutralLanguage>en-US</NeutralLanguage>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Package">
+    <PackageId>EasyImageSharp</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Farhan Lodi</Authors>
+    <Title>EasyImageSharp</Title>
+    <Description>A fully managed imaging library for .NET: PNG, JPEG (incl. progressive and CMYK), WebP, GIF, BMP, TIFF, TGA, Netpbm, QOI and ICO codecs, an Image&lt;TPixel&gt; processing pipeline (resize, crop, rotate, blur/sharpen, thresholding incl. Otsu/Sauvola/Bradley, deskew) and image-to-tensor bridges for ONNX and other ML runtimes. AOT and trimming friendly.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageProjectUrl>https://github.com/FarhanLodi/EasyImageSharp</PackageProjectUrl>
+    <PackageTags>image;imaging;png;jpeg;jpg;webp;gif;bmp;tiff;tga;qoi;ico;exif;metadata;decode;encode;resize;crop;rotate;threshold;otsu;sauvola;deskew;ocr;tensor;onnx;managed;aot</PackageTags>
+    <PackageReleaseNotes>1.0.0: first stable release. Ten codecs (PNG, JPEG incl. progressive and CMYK, WebP incl. lossy/lossless/animated encode and decode, GIF, BMP, TIFF incl. CCITT G3/G4 and JPEG-in-TIFF, TGA, Netpbm, QOI, ICO/CUR); EXIF/ICC/XMP metadata with AutoOrient; high-precision pixel formats; affine and projective transforms with 15 resamplers; colour matrices, convolution, blend modes and CLAHE; quantisation and dithering; a document-imaging toolkit (Sauvola/Niblack/Wolf/NICK, morphology, connected components, deskew, page detection and perspective correction, line and word segmentation); annotation drawing with an embedded bitmap font; DecoderOptions resource limits with a closed exception contract; and a SIMD and parallelism pass (JPEG decode 4.7x faster, resize up to 15x, up to 25x fewer allocations). See CHANGELOG.md.</PackageReleaseNotes>
+    <RepositoryUrl>https://github.com/FarhanLodi/EasyImageSharp</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../../README.md" Pack="true" PackagePath="" />
+    <None Include="../../LICENSE" Pack="true" PackagePath="" />
+    <None Include="Assets/icon.png" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="EasyImageSharp.Tests" />
+  </ItemGroup>
+
+</Project>

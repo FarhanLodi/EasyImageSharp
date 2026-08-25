@@ -1,0 +1,312 @@
+[
+ {
+  "name": "pil_rgb24",
+  "file": "pil_rgb24.bmp",
+  "width": 23,
+  "height": 17,
+  "frames": 1,
+  "writer": "pillow",
+  "notes": "24-bit BI_RGB, odd width (row padding)",
+  "bpp": 24
+ },
+ {
+  "name": "pil_gray8_pal",
+  "file": "pil_gray8_pal.bmp",
+  "width": 19,
+  "height": 13,
+  "frames": 1,
+  "writer": "pillow",
+  "notes": "8-bit with a 256-entry gray palette",
+  "bpp": 8
+ },
+ {
+  "name": "pil_pal8",
+  "file": "pil_pal8.bmp",
+  "width": 21,
+  "height": 14,
+  "frames": 1,
+  "writer": "pillow",
+  "notes": "8-bit palette",
+  "bpp": 8
+ },
+ {
+  "name": "pil_bw1",
+  "file": "pil_bw1.bmp",
+  "width": 37,
+  "height": 9,
+  "frames": 1,
+  "writer": "pillow",
+  "notes": "1-bit, 37 pixels wide",
+  "bpp": 1
+ },
+ {
+  "name": "pil_rgba32_birgb",
+  "file": "pil_rgba32_birgb.bmp",
+  "width": 11,
+  "height": 9,
+  "frames": 1,
+  "writer": "pillow",
+  "notes": "32-bit BI_RGB written by Pillow with alpha in the reserved byte; per the format the 4th byte is ignored (A=255)",
+  "bpp": 32
+ },
+ {
+  "name": "rgb24_topdown",
+  "file": "rgb24_topdown.bmp",
+  "width": 7,
+  "height": 5,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "24-bit top-down (negative height), width 7",
+  "bpp": 24
+ },
+ {
+  "name": "rgb24_gap_and_trailer",
+  "file": "rgb24_gap_and_trailer.bmp",
+  "width": 13,
+  "height": 6,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "DataOffset points past 37 junk bytes; 64 trailing bytes after the pixel data",
+  "bpp": 24
+ },
+ {
+  "name": "rgb24_v5header",
+  "file": "rgb24_v5header.bmp",
+  "width": 9,
+  "height": 7,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "24-bit with a 124-byte BITMAPV5HEADER",
+  "bpp": 24
+ },
+ {
+  "name": "rgb16_555",
+  "file": "rgb16_555.bmp",
+  "width": 11,
+  "height": 8,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "16-bit BI_RGB (implicit 5-5-5 masks); channels scaled to 0..255 with rounding",
+  "bpp": 16
+ },
+ {
+  "name": "rgb16_565_bitfields40",
+  "file": "rgb16_565_bitfields40.bmp",
+  "width": 11,
+  "height": 8,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "16-bit BI_BITFIELDS 5-6-5, masks stored after the 40-byte header",
+  "bpp": 16
+ },
+ {
+  "name": "rgba16_4444_v3header",
+  "file": "rgba16_4444_v3header.bmp",
+  "width": 10,
+  "height": 6,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "16-bit BI_BITFIELDS 4-4-4-4 with alpha mask in a 56-byte header",
+  "bpp": 16
+ },
+ {
+  "name": "rgb32_birgb",
+  "file": "rgb32_birgb.bmp",
+  "width": 6,
+  "height": 9,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "32-bit BI_RGB; the 4th byte (0x7F here) is reserved and must be ignored",
+  "bpp": 32
+ },
+ {
+  "name": "rgba32_bitfields_v4",
+  "file": "rgba32_bitfields_v4.bmp",
+  "width": 9,
+  "height": 9,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "32-bit BI_BITFIELDS BGRA with alpha, 108-byte BITMAPV4HEADER",
+  "bpp": 32
+ },
+ {
+  "name": "rgba32_bitfields_v5_rgba_order",
+  "file": "rgba32_bitfields_v5_rgba_order.bmp",
+  "width": 9,
+  "height": 9,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "32-bit BI_BITFIELDS with R in the low byte (non-BGRA mask order), 124-byte header",
+  "bpp": 32
+ },
+ {
+  "name": "rgb32_101010_bitfields40",
+  "file": "rgb32_101010_bitfields40.bmp",
+  "width": 8,
+  "height": 7,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "32-bit BI_BITFIELDS 10-10-10 (no alpha), masks after 40-byte header",
+  "bpp": 32
+ },
+ {
+  "name": "pal4",
+  "file": "pal4.bmp",
+  "width": 13,
+  "height": 7,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "4-bit palette, 16 entries, width 13",
+  "bpp": 4
+ },
+ {
+  "name": "pal4_colorsused5",
+  "file": "pal4_colorsused5.bmp",
+  "width": 9,
+  "height": 6,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "4-bit palette with biClrUsed=5 (only 5 palette entries stored)",
+  "bpp": 4
+ },
+ {
+  "name": "pal1_topdown",
+  "file": "pal1_topdown.bmp",
+  "width": 29,
+  "height": 5,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "1-bit palette, top-down, width 29",
+  "bpp": 1
+ },
+ {
+  "name": "pal8_topdown_v4",
+  "file": "pal8_topdown_v4.bmp",
+  "width": 10,
+  "height": 7,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "8-bit palette, top-down, palette after a 108-byte header",
+  "bpp": 8
+ },
+ {
+  "name": "rle8_runs",
+  "file": "rle8_runs.bmp",
+  "width": 21,
+  "height": 9,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "RLE8 using only encoded runs, end-of-line and end-of-bitmap escapes",
+  "bpp": 8,
+  "compression": 1
+ },
+ {
+  "name": "rle8_absolute",
+  "file": "rle8_absolute.bmp",
+  "width": 19,
+  "height": 8,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "RLE8 mixing absolute-mode segments (with word padding) and encoded runs",
+  "bpp": 8,
+  "compression": 1
+ },
+ {
+  "name": "rle8_delta_eob",
+  "file": "rle8_delta_eob.bmp",
+  "width": 10,
+  "height": 6,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "RLE8 with delta escapes and early end-of-bitmap; unwritten pixels use palette[0]",
+  "bpp": 8,
+  "compression": 1
+ },
+ {
+  "name": "rle4_runs",
+  "file": "rle4_runs.bmp",
+  "width": 15,
+  "height": 7,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "RLE4 using only encoded runs (alternating nibble pairs)",
+  "bpp": 4,
+  "compression": 2
+ },
+ {
+  "name": "rle4_absolute",
+  "file": "rle4_absolute.bmp",
+  "width": 17,
+  "height": 6,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "RLE4 mixing absolute-mode segments (odd counts, word padding) and encoded runs; not cross-checked with Pillow, whose RLE4 reader drops the last nibble of odd-count absolute runs",
+  "bpp": 4,
+  "compression": 2
+ },
+ {
+  "name": "rle4_delta_eob",
+  "file": "rle4_delta_eob.bmp",
+  "width": 9,
+  "height": 4,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "RLE4 with a delta escape and early end-of-bitmap; unwritten pixels use palette[0]",
+  "bpp": 4,
+  "compression": 2
+ },
+ {
+  "name": "os2_core24",
+  "file": "os2_core24.bmp",
+  "width": 7,
+  "height": 6,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "OS/2 BITMAPCOREHEADER 24-bit",
+  "bpp": 24,
+  "header_size": 12
+ },
+ {
+  "name": "os2_core8",
+  "file": "os2_core8.bmp",
+  "width": 11,
+  "height": 5,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "OS/2 BITMAPCOREHEADER 8-bit with 3-byte palette entries",
+  "bpp": 8,
+  "header_size": 12
+ },
+ {
+  "name": "os2_core1",
+  "file": "os2_core1.bmp",
+  "width": 19,
+  "height": 4,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "OS/2 BITMAPCOREHEADER 1-bit",
+  "bpp": 1,
+  "header_size": 12
+ },
+ {
+  "name": "os2_core4",
+  "file": "os2_core4.bmp",
+  "width": 6,
+  "height": 6,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "OS/2 BITMAPCOREHEADER 4-bit",
+  "bpp": 4,
+  "header_size": 12
+ },
+ {
+  "name": "rgb24_1x1",
+  "file": "rgb24_1x1.bmp",
+  "width": 1,
+  "height": 1,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "single pixel 24-bit (row padded to 4 bytes)",
+  "bpp": 24
+ }
+]

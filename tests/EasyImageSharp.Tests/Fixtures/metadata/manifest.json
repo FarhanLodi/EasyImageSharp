@@ -1,0 +1,251 @@
+{
+ "comment_q75.jpg": {
+  "comments": [
+   "First comment"
+  ],
+  "progressive": false,
+  "quality": 75
+ },
+ "corrupt_exif_garbage.jpg": {
+  "exif": null
+ },
+ "corrupt_exif_truncated.jpg": {
+  "exif": {
+   "Orientation": 6
+  },
+  "note": "IFD claims 500 entries; only Orientation is intact"
+ },
+ "dpi_150x100.png": {
+  "dpi": [
+   150,
+   100
+  ],
+  "phys_ppm": [
+   5906,
+   3937
+  ]
+ },
+ "dpi_200.tif": {
+  "dpi": [
+   200,
+   200
+  ]
+ },
+ "dpi_300.jpg": {
+  "dpi": [
+   300,
+   300
+  ],
+  "jfif_units": 1
+ },
+ "dpi_96x120.bmp": {
+  "dpi": [
+   96,
+   120
+  ],
+  "ppm": [
+   3780,
+   4724
+  ]
+ },
+ "dpi_none.png": {
+  "dpi": null
+ },
+ "exif_alltypes.jpg": {
+  "byte_order": "II",
+  "user_comment": "Hello EXIF"
+ },
+ "exif_alltypes_be.png": {
+  "byte_order": "MM",
+  "user_comment": "H\u00e9llo \u65e5\u672c"
+ },
+ "exif_pillow.jpg": {
+  "byte_order": "MM",
+  "dpi": [
+   300,
+   300
+  ]
+ },
+ "exif_pillow.png": {
+  "byte_order": "MM",
+  "dpi": [
+   150,
+   100
+  ],
+  "phys_ppm": [
+   5906,
+   3937
+  ]
+ },
+ "exif_pillow.tif": {
+  "dpi": [
+   200,
+   200
+  ],
+  "ifd0_only": true
+ },
+ "gif_meta.gif": {
+  "comment": "EasyImageSharp GIF metadata fixture",
+  "delays_cs": [
+   10,
+   20,
+   30
+  ],
+  "disposal": [
+   2,
+   1,
+   3
+  ],
+  "global_table": 4,
+  "local_tables": [
+   0,
+   4,
+   4
+  ],
+  "loop": 3,
+  "transparency": 1
+ },
+ "icc.jpg": {
+  "icc_bytes": 216,
+  "icc_description": "EasyImageSharp Test Profile"
+ },
+ "icc.png": {
+  "icc_bytes": 216,
+  "icc_description": "EasyImageSharp Test Profile"
+ },
+ "icc.tif": {
+  "icc_bytes": 216,
+  "icc_description": "EasyImageSharp Test Profile"
+ },
+ "multipage_meta.tif": {
+  "byte_order": "MM",
+  "pages": [
+   {
+    "description": "Page 1",
+    "dpi": 100,
+    "size": [
+     12,
+     8
+    ]
+   },
+   {
+    "description": "Page 2",
+    "dpi": 250,
+    "size": [
+     9,
+     7
+    ]
+   }
+  ]
+ },
+ "orient_1.jpg": {
+  "orientation": 1,
+  "size": [
+   64,
+   48
+  ],
+  "upright_size": [
+   64,
+   48
+  ]
+ },
+ "orient_2.jpg": {
+  "orientation": 2,
+  "size": [
+   64,
+   48
+  ],
+  "upright_size": [
+   64,
+   48
+  ]
+ },
+ "orient_3.jpg": {
+  "orientation": 3,
+  "size": [
+   64,
+   48
+  ],
+  "upright_size": [
+   64,
+   48
+  ]
+ },
+ "orient_4.jpg": {
+  "orientation": 4,
+  "size": [
+   64,
+   48
+  ],
+  "upright_size": [
+   64,
+   48
+  ]
+ },
+ "orient_5.jpg": {
+  "orientation": 5,
+  "size": [
+   64,
+   48
+  ],
+  "upright_size": [
+   48,
+   64
+  ]
+ },
+ "orient_6.jpg": {
+  "orientation": 6,
+  "size": [
+   64,
+   48
+  ],
+  "upright_size": [
+   48,
+   64
+  ]
+ },
+ "orient_7.jpg": {
+  "orientation": 7,
+  "size": [
+   64,
+   48
+  ],
+  "upright_size": [
+   48,
+   64
+  ]
+ },
+ "orient_8.jpg": {
+  "orientation": 8,
+  "size": [
+   64,
+   48
+  ],
+  "upright_size": [
+   48,
+   64
+  ]
+ },
+ "q50_progressive.jpg": {
+  "progressive": true,
+  "quality": 50
+ },
+ "text.png": {
+  "gamma": 0.45455,
+  "texts": {
+   "Author": "EasyImageSharp",
+   "Comment": "Gr\u00fc\u00dfe \u65e5\u672c (de, Kommentar)",
+   "Description": "z*300",
+   "Title": "Metadata fixture"
+  }
+ },
+ "xmp.jpg": {
+  "xmp_bytes": 396
+ },
+ "xmp.png": {
+  "xmp_bytes": 396
+ },
+ "xmp.tif": {
+  "xmp_bytes": 396
+ }
+}
