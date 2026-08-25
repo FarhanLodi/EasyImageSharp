@@ -34,7 +34,8 @@ authoritative terms and copyright notices.
 | `UVDoc.onnx` | Page dewarping | 31 MB | MIT | [tanguymagne/UVDoc](https://github.com/tanguymagne/UVDoc) |
 | `realesrgan_general_x4v3.onnx` | Super-resolution ×4 | 4.9 MB | **BSD-3-Clause** | [xinntao/Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN) `realesr-general-x4v3` |
 | `dncnn_gray_blind.onnx` | Grayscale denoising | 2.7 MB | MIT | [cszn/KAIR](https://github.com/cszn/KAIR) `dncnn_gray_blind` |
-| `u2netp.onnx` | Saliency / background removal | 4.6 MB | Apache-2.0 | [xuebinqin/U-2-Net](https://github.com/xuebinqin/U-2-Net) `u2netp` |
+| `u2net.onnx` | Saliency / background removal (default) | 176 MB | Apache-2.0 | [xuebinqin/U-2-Net](https://github.com/xuebinqin/U-2-Net) `u2net` |
+| `u2netp.onnx` | Saliency, small and fast variant | 4.6 MB | Apache-2.0 | [xuebinqin/U-2-Net](https://github.com/xuebinqin/U-2-Net) `u2netp` |
 | `sauvolanet.onnx` | Learned document binarisation | 0.3 MB | MIT | [Leedeng/SauvolaNet](https://github.com/Leedeng/SauvolaNet) |
 
 `realesrgan_general_x4v3.onnx` is BSD-3-Clause: redistribution must retain the copyright notice and the
@@ -52,6 +53,7 @@ match will run and produce wrong results, so the contract is part of the publish
 | `UVDoc.onnx` | `image` `[1,3,712,488]` RGB | 0–1 | `[1,3,712,488]` rectified image in 0–1 |
 | `realesrgan_general_x4v3.onnx` | `input` `[1,3,H,W]` RGB, **dynamic H/W** | 0–1 | `[1,3,4H,4W]` in 0–1 |
 | `dncnn_gray_blind.onnx` | `input` `[1,1,H,W]` luminance, **dynamic H/W** | 0–1 | `[1,1,H,W]` **noise residual**; clean = input − output |
+| `u2net.onnx` | `input.1` `[1,3,320,320]` RGB | ImageNet mean/std | `[1,1,320,320]` saliency mask in 0–1 |
 | `u2netp.onnx` | `input` `[1,3,320,320]` RGB | ImageNet mean/std | `[1,1,320,320]` saliency mask in 0–1 |
 | `sauvolanet.onnx` | `input` `[1,1,H,W]` luminance, **dynamic H/W** | 0–1 | `[1,1,H,W]` per-pixel **threshold map**; white where luminance ≥ threshold |
 
@@ -64,6 +66,7 @@ PP-LCNet_x1_0_doc_ori.onnx     D85B3185075AFCA1A83157F73EAC2E52B598D72E9D47DD19C
 UVDoc.onnx                     7E54E917AD9CA8F6CFFE606C7C311AAD3B6EEE457D4D9776F99F175D0CA86835
 realesrgan_general_x4v3.onnx   AAA2B465D2258BDCC30D51076BC358DA00D1595D2FA05697979E782F97DE325A
 dncnn_gray_blind.onnx          A0A21D0677EA5FB83A66D922EBFB22BC81926C79044B08778F4A6D740FA7864F
+u2net.onnx                     8D10D2F3BB75AE3B6D527C77944FC5E7DCD94B29809D47A739A7A728A912B491
 u2netp.onnx                    2B5D0563269555FC84FFCA01B24AF5081581D38614F858ECF913331DF0E2ED88
 sauvolanet.onnx                948AAEA4882D4D6734C0FEC4739381857BE97F62526AD8BA8CA067A353106160
 ```

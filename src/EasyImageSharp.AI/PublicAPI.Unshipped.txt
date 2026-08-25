@@ -1,1 +1,2 @@
 #nullable enable
+static EasyImageSharp.AI.ModelRegistry.SaliencyFast.get -> EasyImageSharp.AI.ModelDescriptor!
