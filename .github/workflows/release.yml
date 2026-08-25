@@ -132,7 +132,7 @@ jobs:
           done
 
       - name: Upload the release notes
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: release-notes
           path: release-notes.md
@@ -232,7 +232,7 @@ jobs:
           exit $fail
 
       - name: Upload the packages
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: packages
           path: |

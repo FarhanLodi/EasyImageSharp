@@ -70,7 +70,7 @@ jobs:
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-results-${{ matrix.os }}
           path: TestResults
@@ -325,7 +325,7 @@ jobs:
           exit $fail
 
       - name: Upload packages
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: nuget-packages
           path: |
@@ -357,7 +357,7 @@ jobs:
         run: docfx docs/docfx.json --warningsAsErrors
 
       - name: Upload the site
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: docs-site
           path: docs/_site
@@ -417,7 +417,7 @@ jobs:
       # message. Collect it so a nightly failure is reproducible without guessing.
       - name: Collect failing inputs
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: fuzz-failures-${{ matrix.os }}-${{ matrix.tfm }}
           path: |
