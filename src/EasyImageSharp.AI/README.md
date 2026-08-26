@@ -1,6 +1,6 @@
 <div align="center">
 
-![EasyImageSharp](https://raw.githubusercontent.com/FarhanLodi/EasyImageSharp/main/src/EasyImageSharp/Assets/icon.png)
+<img src="https://raw.githubusercontent.com/FarhanLodi/EasyImageSharp/main/src/EasyImageSharp/Assets/icon.png" alt="EasyImageSharp" width="128" height="128" />
 
 # EasyImageSharp.AI
 

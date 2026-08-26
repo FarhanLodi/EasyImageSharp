@@ -5,6 +5,30 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2026-08-26
+
+Packaging and documentation only. **No library code changed**, so there is nothing to gain by upgrading
+except a tidier package page; `1.0.0` remains functionally identical.
+
+### Changed
+
+- The README header logo is now constrained to 128×128 with an `<img>` tag. The image itself is unchanged
+  at 512×512 and remains the package icon, which nuget.org shows in the page sidebar regardless of the
+  README. Note that nuget.org renders READMEs with HTML disabled, so the header image is dropped there;
+  the package icon in the sidebar is unaffected.
+
+### Fixed
+
+- The README no longer advertises verification that is not performed. It claimed the public API surface is
+  tracked in `PublicAPI.Shipped.txt` (the analyzer and its baselines were removed before 1.0.0), that CI
+  regenerates the fixture corpus and fails on a byte change, and that CI runs Native AOT and trimming
+  smoke publishes. The corresponding CI jobs have been removed — the fixture job compared zlib-ng
+  compression output rather than fixture content, and the AOT, trimming and samples jobs ran against a
+  `samples/` directory that no longer exists.
+- `CONTRIBUTING.md` no longer documents a `benchmarks/` project, a `samples/` directory or a `docs/` site
+  that are not in the repository, and no longer tells contributors that regenerating fixtures must leave
+  `git status` clean.
+
 ## [1.0.0] - 2026-08-23
 
 First public release. `EasyImageSharp` is a fully managed 2D imaging library for .NET; `EasyImageSharp.AI`
