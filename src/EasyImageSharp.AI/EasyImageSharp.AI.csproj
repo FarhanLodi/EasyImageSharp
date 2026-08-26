@@ -18,7 +18,7 @@
 
   <PropertyGroup Label="Package">
     <PackageId>EasyImageSharp.AI</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <Authors>Farhan Lodi</Authors>
     <Title>EasyImageSharp.AI</Title>
     <Description>Optional ONNX Runtime add-on for EasyImageSharp: document orientation (PP-LCNet), page dewarp (UVDoc), super-resolution (Real-ESRGAN contract), learned denoise (DnCNN contract), background removal / saliency (U2-Net-p contract), learned binarisation (SauvolaNet contract) and a generic tiled image-to-image runner for your own ONNX models. Models are fetched on demand from Hugging Face with pinned SHA-256 checksums (fail-closed), cached locally, resumable, and usable fully offline; CPU by default with opt-in CUDA / DirectML / CoreML execution providers.</Description>
@@ -27,7 +27,7 @@
     <PackageIcon>icon.png</PackageIcon>
     <PackageProjectUrl>https://github.com/FarhanLodi/EasyImageSharp</PackageProjectUrl>
     <PackageTags>image;imaging;ai;onnx;onnxruntime;machine-learning;super-resolution;denoise;background-removal;dewarp;orientation;binarization;ocr;document;huggingface;managed;aot</PackageTags>
-    <PackageReleaseNotes>1.0.0: first stable release of the AI add-on. ModelHub (HTTPS-only, resumable, SHA-256 fail-closed, offline mode, int8 variants, local overrides) fetching from the first-party EasyImageSharp model repository; ImageAiSession with CPU/CUDA/DirectML/CoreML provider selection; DetectOrientation/AutoOrient, DewarpDocument, Upscale, DenoiseAI, RemoveBackground/GetSaliencyMask, BinarizeAI; and a generic tiled image-to-image runner for your own ONNX models. See CHANGELOG.md.</PackageReleaseNotes>
+    <PackageReleaseNotes>1.0.1: documentation only — no library code changed and the package icon is unchanged. The README header logo is now constrained to 128x128. 1.0.0: first stable release of the AI add-on. ModelHub (HTTPS-only, resumable, SHA-256 fail-closed, offline mode, int8 variants, local overrides) fetching from the first-party EasyImageSharp model repository; ImageAiSession with CPU/CUDA/DirectML/CoreML provider selection; DetectOrientation/AutoOrient, DewarpDocument, Upscale, DenoiseAI, RemoveBackground/GetSaliencyMask, BinarizeAI; and a generic tiled image-to-image runner for your own ONNX models. See CHANGELOG.md.</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/FarhanLodi/EasyImageSharp</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
