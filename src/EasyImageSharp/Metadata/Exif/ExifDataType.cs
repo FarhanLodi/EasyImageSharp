@@ -44,6 +44,15 @@ public enum ExifDataType : ushort
 
     /// <summary>32-bit offset of a sub-directory (TIFF technical note 1); read like <see cref="Long"/>.</summary>
     Ifd = 13,
+
+    /// <summary>64-bit unsigned integer (BigTIFF); never produced by the encoder.</summary>
+    Long8 = 16,
+
+    /// <summary>64-bit signed integer (BigTIFF); never produced by the encoder.</summary>
+    SignedLong8 = 17,
+
+    /// <summary>64-bit offset of a sub-directory (BigTIFF); read like <see cref="Long8"/>.</summary>
+    Ifd8 = 18,
 }
 
 /// <summary>The image file directory an EXIF tag belongs to.</summary>
@@ -75,6 +84,7 @@ internal static class ExifDataTypes
         ExifDataType.Short or ExifDataType.SignedShort => 2,
         ExifDataType.Long or ExifDataType.SignedLong or ExifDataType.SingleFloat or ExifDataType.Ifd => 4,
         ExifDataType.Rational or ExifDataType.SignedRational or ExifDataType.DoubleFloat => 8,
+        ExifDataType.Long8 or ExifDataType.SignedLong8 or ExifDataType.Ifd8 => 8,
         _ => 0,
     };
 }

@@ -1,0 +1,63 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <!--
+      Both shipped target frameworks. The README table is quoted for .NET 10, so that is the framework the
+      committed numbers come from. The second framework is here for InflateBenchmarks: the PNG inflate backend
+      is chosen per framework, because .NET 8 and .NET 10 ship different zlib implementations, and that choice
+      can only be re-checked when both frameworks can be measured. Pass -f net10.0 or -f net8.0 to dotnet run.
+    -->
+    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+    <RootNamespace>EasyImageSharp.Benchmarks</RootNamespace>
+    <AssemblyName>EasyImageSharp.Benchmarks</AssemblyName>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <Optimize>true</Optimize>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <!--
+      Workstation GC, which is what a consumer gets by default, so the Allocated column means what the
+      README says it means.
+    -->
+    <ServerGarbageCollection>false</ServerGarbageCollection>
+    <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <!--
+      CS0649 is suppressed for one reason only: SimdConfig.ForceScalarFallback, one of the linked library
+      sources below, is written by the test project through InternalsVisibleTo. Roslyn suppresses CS0649 for
+      internal fields in an assembly that grants InternalsVisibleTo, which this one does not, so the field
+      looks unassigned here and nowhere else. Everything hand-written in this project keeps every warning.
+    -->
+    <NoWarn>$(NoWarn);CS1591;CS0649</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.15.8" />
+  </ItemGroup>
+
+  <!--
+    Only the core package. EasyImageSharp.AI is deliberately absent: the README's Performance table has no AI
+    rows and the ONNX dependency would drag a native runtime into every benchmark run.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\EasyImageSharp\EasyImageSharp.csproj" />
+  </ItemGroup>
+
+  <!--
+    InflateBenchmarks compares the library's managed inflater against the runtime's ZLibStream. Inflater and
+    the three files it needs are internal to EasyImageSharp and only EasyImageSharp.Tests sees its internals,
+    so those source files are compiled into this assembly as well. Compiling the same sources - rather than
+    copying them - is what makes the comparison honest: the benchmark can never drift from the shipped
+    implementation. The types are internal, so the copy here is invisible outside this assembly and does not
+    collide with the referenced assembly's own copy, which stays inaccessible.
+  -->
+  <ItemGroup>
+    <Compile Include="..\..\src\EasyImageSharp\Internal\SimdConfig.cs" Link="Linked\SimdConfig.cs" />
+    <Compile Include="..\..\src\EasyImageSharp\Internal\Adler32.cs" Link="Linked\Adler32.cs" />
+    <Compile Include="..\..\src\EasyImageSharp\Internal\InflateTables.cs" Link="Linked\InflateTables.cs" />
+    <Compile Include="..\..\src\EasyImageSharp\Internal\Inflate.cs" Link="Linked\Inflate.cs" />
+  </ItemGroup>
+
+</Project>

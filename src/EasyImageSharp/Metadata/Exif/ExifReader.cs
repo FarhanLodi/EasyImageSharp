@@ -67,12 +67,12 @@ internal static class ExifReader
         byteOrder = bigEndian ? ByteOrder.BigEndian : ByteOrder.LittleEndian;
         long ifd0 = ReadU32(data, 4, bigEndian);
         var state = new State(data.Length);
-        ReadDirectory(data, ifd0, bigEndian, ExifIfd.Ifd0, values, state, out uint next, 0);
+        ReadDirectory(data, ifd0, bigEndian, bigTiff: false, ExifIfd.Ifd0, values, state, out long next, 0);
 
         if (next != 0)
         {
             var ifd1 = new List<IExifValue>();
-            ReadDirectory(data, next, bigEndian, ExifIfd.Ifd1, ifd1, state, out _, 0);
+            ReadDirectory(data, next, bigEndian, bigTiff: false, ExifIfd.Ifd1, ifd1, state, out _, 0);
             thumbnail = ExtractThumbnail(data, ifd1);
             if (thumbnail is not null)
             {
@@ -93,10 +93,18 @@ internal static class ExifReader
     /// Reads one directory (with its Exif/GPS/Interop sub-directories) at <paramref name="ifdOffset"/> of a TIFF
     /// file whose values are already validated by the caller to lie inside <paramref name="data"/>.
     /// </summary>
-    public static List<IExifValue> ReadDirectoryTree(ReadOnlySpan<byte> data, long ifdOffset, bool bigEndian)
+    /// <param name="data">The whole buffered file.</param>
+    /// <param name="ifdOffset">The offset of the directory to read.</param>
+    /// <param name="bigEndian">True when the file is big-endian.</param>
+    /// <param name="bigTiff">
+    /// True when the file is BigTIFF (version 43), so the directory uses an 8-byte entry count, 20-byte entries,
+    /// 8-byte value offsets and the 64-bit field types. Defaults to false, the classic version-42 layout that
+    /// every standalone EXIF payload (JPEG APP1, PNG eXIf) uses.
+    /// </param>
+    public static List<IExifValue> ReadDirectoryTree(ReadOnlySpan<byte> data, long ifdOffset, bool bigEndian, bool bigTiff = false)
     {
         var values = new List<IExifValue>();
-        ReadDirectory(data, ifdOffset, bigEndian, ExifIfd.Ifd0, values, new State(data.Length), out _, 0);
+        ReadDirectory(data, ifdOffset, bigEndian, bigTiff, ExifIfd.Ifd0, values, new State(data.Length), out _, 0);
         return values;
     }
 
@@ -119,46 +127,82 @@ internal static class ExifReader
         }
     }
 
+    /// <summary>
+    /// Reads one directory and its sub-directories. The container's directory layout is resolved into locals
+    /// before the entry loop starts, so a classic directory is walked exactly as it was before BigTIFF was
+    /// understood and neither loop ever tests which container version is being read.
+    /// </summary>
     private static void ReadDirectory(
-        ReadOnlySpan<byte> data, long offset, bool bigEndian, ExifIfd part, List<IExifValue> values, State state, out uint nextIfd, int depth)
+        ReadOnlySpan<byte> data, long offset, bool bigEndian, bool bigTiff, ExifIfd part, List<IExifValue> values,
+        State state, out long nextIfd, int depth)
     {
+        // Classic TIFF: a 2-byte entry count, 12-byte entries and a 4-byte value field at +8 holding values of
+        // up to 4 bytes. BigTIFF: an 8-byte count, 20-byte entries and an 8-byte value field at +12.
+        int countBytes = bigTiff ? 8 : 2;
+        int entryBytes = bigTiff ? 20 : 12;
+        int offsetBytes = bigTiff ? 8 : 4;
+        int inlineMax = offsetBytes;
+        int valueField = 4 + offsetBytes;
+
         nextIfd = 0;
-        if (offset < 0 || offset + 2 > data.Length || !state.Visited.Add(offset))
+        if (offset < 0 || offset + countBytes > data.Length || !state.Visited.Add(offset))
         {
             return;
         }
 
-        int count = (int)ReadU16(data, (int)offset, bigEndian);
-        long entriesStart = offset + 2;
-        long available = (data.Length - entriesStart) / 12;
-        if (count > available)
+        long entryCount = countBytes == 2
+            ? ReadU16(data, (int)offset, bigEndian)
+            : (long)ReadU64(data, (int)offset, bigEndian);
+        long entriesStart = offset + countBytes;
+        long available = (data.Length - entriesStart) / entryBytes;
+        if (entryCount < 0)
         {
-            count = (int)available; // Truncated directory: read the entries that fit.
+            entryCount = 0; // A 64-bit count with the sign bit set is not a count: the directory holds nothing.
+        }
+        else if (entryCount > available)
+        {
+            entryCount = available; // Truncated directory: read the entries that fit.
         }
 
-        count = Math.Min(count, MaxEntriesPerDirectory);
+        int count = (int)Math.Min(entryCount, MaxEntriesPerDirectory);
         var seen = new HashSet<ushort>();
         for (int i = 0; i < count; i++)
         {
-            int entry = (int)(entriesStart + (i * 12L));
+            int entry = (int)(entriesStart + (i * (long)entryBytes));
             ushort tag = (ushort)ReadU16(data, entry, bigEndian);
             var type = (ExifDataType)ReadU16(data, entry + 2, bigEndian);
-            uint elementCount = ReadU32(data, entry + 4, bigEndian);
+            long elementCount = offsetBytes == 4
+                ? ReadU32(data, entry + 4, bigEndian)
+                : (long)ReadU64(data, entry + 4, bigEndian);
             int size = ExifDataTypes.SizeOf(type);
             if (size == 0 || !seen.Add(tag))
             {
                 continue;
             }
 
-            long total = (long)size * elementCount;
-            long valueOffset = total <= 4 ? entry + 8 : ReadU32(data, entry + 8, bigEndian);
+            // An element count larger than the whole payload cannot describe a value that fits inside it, so the
+            // entry is skipped either way; rejecting it here keeps the size multiplication well inside long.
+            if (elementCount < 0 || elementCount > data.Length)
+            {
+                continue;
+            }
+
+            long total = size * elementCount;
+            long valueOffset = total <= inlineMax
+                ? entry + valueField
+                : offsetBytes == 4
+                    ? ReadU32(data, entry + valueField, bigEndian)
+                    : (long)ReadU64(data, entry + valueField, bigEndian);
             if (valueOffset < 0 || valueOffset + total > data.Length)
             {
                 continue;
             }
 
-            // Sub-directory pointers are followed rather than stored.
-            if (depth < MaxDirectoryDepth && total == 4)
+            // Sub-directory pointers are followed rather than stored. A pointer is one offset wide, so it is a
+            // LONG or IFD in a classic directory and a LONG8 or IFD8 in a BigTIFF one; a BigTIFF writer that
+            // keeps the classic 4-byte form for these three tags is followed as well, rather than having its
+            // sub-directory read as an ordinary integer value.
+            if (depth < MaxDirectoryDepth && (total == offsetBytes || (bigTiff && total == 4)))
             {
                 ExifIfd? subPart = (part, tag) switch
                 {
@@ -169,8 +213,10 @@ internal static class ExifReader
                 };
                 if (subPart is not null)
                 {
-                    uint subOffset = ReadU32(data, (int)valueOffset, bigEndian);
-                    ReadDirectory(data, subOffset, bigEndian, subPart.Value, values, state, out _, depth + 1);
+                    long subOffset = total == 4
+                        ? ReadU32(data, (int)valueOffset, bigEndian)
+                        : (long)ReadU64(data, (int)valueOffset, bigEndian);
+                    ReadDirectory(data, subOffset, bigEndian, bigTiff, subPart.Value, values, state, out _, depth + 1);
                     continue;
                 }
             }
@@ -182,7 +228,7 @@ internal static class ExifReader
             }
 
             state.Budget -= total;
-            object? raw = Decode(type, elementCount, data.Slice((int)valueOffset, (int)total), bigEndian);
+            object? raw = Decode(type, (uint)elementCount, data.Slice((int)valueOffset, (int)total), bigEndian);
             if (raw is null)
             {
                 continue;
@@ -191,10 +237,18 @@ internal static class ExifReader
             values.Add(CreateValue(tag, part, type, raw, bigEndian));
         }
 
-        long nextPointer = entriesStart + (count * 12L);
-        if (nextPointer + 4 <= data.Length)
+        long nextPointer = entriesStart + (count * (long)entryBytes);
+        if (nextPointer + offsetBytes <= data.Length)
         {
-            nextIfd = ReadU32(data, (int)nextPointer, bigEndian);
+            if (offsetBytes == 4)
+            {
+                nextIfd = ReadU32(data, (int)nextPointer, bigEndian);
+            }
+            else
+            {
+                ulong wide = ReadU64(data, (int)nextPointer, bigEndian);
+                nextIfd = wide > long.MaxValue ? 0 : (long)wide;
+            }
         }
     }
 
@@ -267,6 +321,10 @@ internal static class ExifReader
         if (type == typeof(uint[])) { return new ExifTag<uint[]>(id, part); }
         if (type == typeof(int)) { return new ExifTag<int>(id, part); }
         if (type == typeof(int[])) { return new ExifTag<int[]>(id, part); }
+        if (type == typeof(ulong)) { return new ExifTag<ulong>(id, part); }
+        if (type == typeof(ulong[])) { return new ExifTag<ulong[]>(id, part); }
+        if (type == typeof(long)) { return new ExifTag<long>(id, part); }
+        if (type == typeof(long[])) { return new ExifTag<long[]>(id, part); }
         if (type == typeof(Rational)) { return new ExifTag<Rational>(id, part); }
         if (type == typeof(Rational[])) { return new ExifTag<Rational[]>(id, part); }
         if (type == typeof(SignedRational)) { return new ExifTag<SignedRational>(id, part); }
@@ -432,6 +490,39 @@ internal static class ExifReader
                 for (int i = 0; i < n; i++)
                 {
                     result[i] = BitConverter.Int64BitsToDouble((long)ReadU64(bytes, i * 8, bigEndian));
+                }
+
+                return result;
+            }
+
+            case ExifDataType.Long8:
+            case ExifDataType.Ifd8:
+            {
+                if (n == 1)
+                {
+                    return ReadU64(bytes, 0, bigEndian);
+                }
+
+                var result = new ulong[n];
+                for (int i = 0; i < n; i++)
+                {
+                    result[i] = ReadU64(bytes, i * 8, bigEndian);
+                }
+
+                return result;
+            }
+
+            case ExifDataType.SignedLong8:
+            {
+                if (n == 1)
+                {
+                    return (long)ReadU64(bytes, 0, bigEndian);
+                }
+
+                var result = new long[n];
+                for (int i = 0; i < n; i++)
+                {
+                    result[i] = (long)ReadU64(bytes, i * 8, bigEndian);
                 }
 
                 return result;

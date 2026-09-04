@@ -33,8 +33,9 @@ image.SaveAsWebp("thumbnail.webp");
 
 ## Highlights
 
-- **Ten codecs, decode and encode.** PNG, JPEG (baseline, progressive, CMYK), WebP (lossy, lossless,
-  animated), GIF, BMP, TIFF (multi-page, CCITT G3/G4, JPEG-in-TIFF), TGA, Netpbm, QOI and ICO/CUR.
+- **Ten codecs, decode and encode.** PNG and APNG, JPEG (baseline, progressive, CMYK), WebP (lossy,
+  lossless, animated), GIF, BMP, TIFF (multi-page, CCITT G3/G4, JPEG-in-TIFF, and BigTIFF on read),
+  TGA, Netpbm, QOI and ICO/CUR.
 - **One managed assembly.** No native binaries and no per-architecture packages, so the same package
   publishes to Native AOT, trimmed, single-file, Alpine and ARM64 targets without a RID matrix.
 - **A fluent pipeline.** Resize with 16 resamplers, crop, rotate, affine and projective transforms,
@@ -47,8 +48,9 @@ image.SaveAsWebp("thumbnail.webp");
   `AutoOrient()`.
 - **Hardened against untrusted input.** Size limits enforced before allocation, a closed exception
   contract, around 150 corrupt-input tests and a fuzz pass on every build.
-- **Fast.** SIMD kernels, pooled buffers, copy-on-write clones and row-parallel execution: a 3032×2008
-  JPEG decodes in 85 ms and half-resizes in 15 ms.
+- **Fast, and checkable.** SIMD kernels, pooled buffers, copy-on-write clones, row-parallel execution
+  and — on .NET 8 — a managed DEFLATE decoder for PNG. Every figure in [Performance](#performance) is
+  produced by a benchmark in `benchmarks/` against a corpus a script rebuilds.
 - **ONNX-ready.** Image-to-tensor bridges in the core, plus an optional `EasyImageSharp.AI` package with
   six pre-wired models and a checksum-verified model hub.
 - **MIT, permanently.** No revenue threshold, no commercial tier, no licence key.
@@ -233,7 +235,40 @@ for (int i = 0; i < document.Frames.Count; i++)
 }
 ```
 
-Animated GIF and WebP frames are delivered fully composited, with disposal and blending applied.
+Animated GIF, WebP and APNG frames are delivered fully composited, with disposal and blending applied.
+
+### Animated PNG
+
+```csharp
+using EasyImageSharp.Formats.Png;
+using EasyImageSharp.Metadata;
+
+// APNG frames decode fully composited, one image frame per animation frame.
+using Image<Rgba32> animation = Image.Load<Rgba32>("loop.png");
+
+PngFrameMetadata first = animation.Frames[0].Metadata.GetPngMetadata();
+Console.WriteLine($"{animation.Frames.Count} frames, first delay {first.FrameDelay} s");
+
+animation.Metadata.GetPngMetadata().RepeatCount = 0;      // 0 plays forever
+animation.SaveAsPng("out.png", new PngEncoder { FrameDelay = 50 });
+
+// A multi-frame image is written as an APNG. Export a frame for a still PNG.
+using Image<Rgba32> still = animation.Frames.ExportFrame(0);
+still.SaveAsPng("still.png");
+```
+
+Two limits are worth knowing before you encode one:
+
+- **`SaveAsPng` on a multi-frame image writes an APNG** rather than silently dropping every frame after
+  the first. That is a behaviour change in 1.1.0; `image.Frames.ExportFrame(0)` is the opt-out, and a
+  single-frame image is still written exactly as it was, with no animation chunks at all.
+- **Animated output is truecolour or grayscale at 8 or 16 bits.** A palette or sub-8-bit grayscale
+  `ColorType` on an animated image throws `NotSupportedException`, because every frame would have to
+  share one palette while the quantizer runs per frame.
+
+Delay and disposal come from each frame's `PngFrameMetadata`, and `PngEncoder.FrameDelay` overrides
+them for every frame. `PngMetadata.AnimateRootFrame = false` keeps the first frame out of the
+animation, which is the still image an APNG-unaware reader shows.
 
 ### Fast pixel access
 
@@ -259,21 +294,27 @@ The `image[x, y]` indexer bounds-checks every access; prefer `ProcessPixelRows` 
 |---|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
 | Decode | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ |
 | Encode | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ |
-| Animation | | | ✔ | ✔ | | | | | | |
+| Animation | ✔ | | ✔ | ✔ | | | | | | |
 | Multi-page | | | | | | ✔ | | | | ✔ |
 
 | Format | Decode | Encode |
 |---|---|---|
-| **PNG** | All colour types, bit depths 1/2/4/8/16, Adam7 interlacing, palette and colour-key transparency | All colour types and bit depths, palette output via quantisation, Adam7, selectable filtering |
+| **PNG** | All colour types, bit depths 1/2/4/8/16, Adam7 interlacing, palette and colour-key transparency, and APNG animation with per-frame offsets, delays, disposal and blending | All colour types and bit depths, palette output via quantisation, Adam7, selectable filtering, and APNG output (truecolour or grayscale at 8/16 bits) |
 | **JPEG** | Baseline, extended sequential and progressive; all chroma subsampling with triangle upsampling for 4:2:2 and 4:2:0; restart markers; grayscale, YCbCr, RGB, Adobe CMYK and YCCK | Baseline and progressive, quality 1–100, 4:4:4 / 4:2:2 / 4:2:0 / 4:1:1 / 4:1:0, grayscale, RGB, CMYK, YCCK, optimised Huffman tables, restart intervals |
 | **WebP** | Lossy (VP8), lossless (VP8L), alpha, animation with offsets, blending and disposal | Lossy and lossless, near-lossless, alpha, animation, quality and effort levels |
 | **GIF** | GIF87a/89a, global and local palettes, interlacing, transparency, animation with disposal | LZW, global or per-frame palettes, transparency, delays, loop count |
 | **BMP** | 1/4/8-bit palette, 16/24/32-bit, bitfields and alpha bitfields, RLE8/RLE4, OS/2 headers, both row orders | 1/4/8-bit palette, 16-bit, 24-bit, 32-bit with alpha |
-| **TIFF** | Multi-page, both byte orders, strips and tiles, chunky and planar, None / LZW / Deflate / PackBits / CCITT G3 & G4 / JPEG, horizontal predictor, 1–32-bit samples (unsigned, signed, floating point), WhiteIsZero / BlackIsZero / palette / RGB(A) / CMYK / YCbCr / CIELab | Multi-page, None / LZW / Deflate / PackBits / CCITT G3 & G4, selectable bit depth, photometric and predictor |
+| **TIFF** | Classic TIFF and BigTIFF, multi-page, both byte orders, strips and tiles, chunky and planar, None / LZW / Deflate / PackBits / CCITT G3 & G4 / JPEG, horizontal predictor, 1–32-bit samples (unsigned, signed, floating point), WhiteIsZero / BlackIsZero / palette / RGB(A) / CMYK / YCbCr / CIELab | Multi-page, None / LZW / Deflate / PackBits / CCITT G3 & G4, selectable bit depth, photometric and predictor |
 | **TGA** | Types 1/2/3 and RLE variants, 8/15/16/24/32-bit, colour maps, either origin | 8/16/24/32-bit, raw or run-length |
 | **PNM** | P1–P6 (ASCII and binary) and P7 PAM, 8- and 16-bit | PBM / PGM / PPM, plain or binary |
 | **QOI** | Full specification | Byte-identical to the reference encoder |
 | **ICO / CUR** | Multi-image icons with embedded BMP or PNG entries | PNG or 32-bit BMP entries, cursors with hotspots |
+
+**BigTIFF is read, not written.** A version-43 file — 8-byte offsets, 64-bit directory entry counts,
+20-byte entries and the `LONG8` / `SLONG8` / `IFD8` field types — decodes like any other TIFF, with EXIF
+and the rest of the metadata read at 64 bits. The encoder always writes classic TIFF. Because a file is
+buffered whole before decoding, a BigTIFF must still be under 2 GiB; the point of the support is
+compatibility with files written in the larger container, not multi-gigabyte imagery.
 
 **Not implemented**, and reported as `NotSupportedException` with a message naming the feature:
 arithmetic-coded, lossless and 12-bit JPEG; old-style JPEG-in-TIFF (compression 6); JBIG. HEIC/HEIF is
@@ -361,21 +402,39 @@ Vulnerability reports: see [SECURITY.md](https://github.com/FarhanLodi/EasyImage
 
 ## Performance
 
-BenchmarkDotNet, 6-core Ryzen 5 4600H, .NET 10, Release.
+BenchmarkDotNet v0.15.8, 6-core AMD Ryzen 5 4600H, .NET 10.0.11, Release.
 
 | Operation | Input | Time | Allocated |
 |---|---|---:|---:|
-| JPEG decode | 3032×2008 → Rgba32 | 85.2 ms | 41.4 MB |
-| PNG decode | 3032×2008 → Rgba32 | 89.4 ms | 25.9 MB |
-| Resize, bicubic ×0.5 | 3032×2008 Rgba32 | 14.9 ms | 7.4 MB |
-| Resize, bicubic ×0.5 | 3032×2008 L8 | 5.1 ms | 1.9 MB |
-| Grayscale, in place | A4 at 300 DPI, L8 | 3.2 ms | 4.8 KB |
-| Otsu threshold, in place | A4 at 300 DPI, L8 | 8.0 ms | 268 KB |
-| Load → resize → save | 20 JPEGs | 19.6 ms each (51 img/s) | 9.4 MB |
+| JPEG decode | 3032×2008 → Rgba32 | 78.9 ms | 32.3 MB |
+| PNG decode | 3032×2008 → Rgba32 | 131.3 ms | 27.2 MB |
+| Resize, bicubic ×0.5 | 3032×2008 Rgba32 | 31.2 ms | 7.2 MB |
+| Resize, bicubic ×0.5 | 3032×2008 L8 | 15.2 ms | 1.8 MB |
+| Grayscale, in place | A4 at 300 DPI, L8 | 1.9 ms | 4.6 KB |
+| Otsu threshold, in place | A4 at 300 DPI, L8 | 4.9 ms | 12 KB |
+| Load → resize → save | 20 JPEGs | 52.6 ms each (19 img/s) | 16.5 MB |
+
+Every row comes from a named benchmark in `benchmarks/EasyImageSharp.Benchmarks`, measured against a
+corpus that a script rebuilds from nothing, so the table is a claim anyone can check:
+
+```bash
+python benchmarks/corpus/generate.py
+dotnet run -c Release -f net10.0 --project benchmarks/EasyImageSharp.Benchmarks -- --filter "*"
+dotnet run -c Release -f net10.0 --project benchmarks/EasyImageSharp.Benchmarks -- --readme-table
+```
+
+The last command reads the reports the run left behind and regenerates this table. Absolute
+milliseconds belong to the machine that produced them; the corpus, the operations measured and the
+Allocated column do not. What maps each row to its benchmark, and what you will and will not reproduce,
+is in
+[benchmarks/README.md](https://github.com/FarhanLodi/EasyImageSharp/blob/main/benchmarks/README.md).
 
 Hot paths use SIMD pixel kernels, pooled buffers and copy-on-write cloning. PNG decode is dominated by
-the runtime's `ZLibStream` inflating IDAT data rather than by this library's code, which is why it
-benefits less from the surrounding optimisation than JPEG does.
+inflating the IDAT stream rather than by the pixel code around it, and which inflater does that work
+depends on the target framework: on .NET 8 it is this library's own managed DEFLATE decoder, 1.27–1.49×
+faster end to end than the runtime's `ZLibStream` over native zlib; on .NET 10 `ZLibStream` is backed by
+zlib-ng with hand-written SIMD, beats a managed implementation, and is kept. The decoded pixels are
+identical either way, and there is nothing to configure.
 
 ## AI operations
 
@@ -485,6 +544,12 @@ when none is present. Full details in the
 | **EasyImageSharp** | Codecs, `Image<TPixel>`, processing pipeline, document operators, drawing, metadata, pixel formats, tensor bridges | None beyond the framework |
 | **EasyImageSharp.AI** | ONNX-powered orientation, dewarping, super-resolution, denoising, background removal and binarisation; model hub | `Microsoft.ML.OnnxRuntime` |
 
+**Planned, and not in this release.** A separate `EasyImageSharp.Drawing` package (vector geometry, a
+rasteriser, brushes and pens, and text rendering from real glyph outlines), colour-space converters for
+Lab, LCh, HSL, HSV and XYZ, and int8 variants of the AI models are designed but not implemented. Nothing
+described above depends on them, and nothing in 1.1.0 provides them: today's drawing is the annotation
+API listed in [Processing](#processing), and today's colour work is the `ColorMatrix` family.
+
 **Dependency policy.** The core package uses framework APIs only, and CI fails if it ever gains a
 package dependency. Free, managed, permissively-licensed dependencies may be added where they provide
 clear value; native binaries are confined to optional add-on packages; paid, split-licensed and copyleft
@@ -507,17 +572,25 @@ pixel-accessing member throws `ObjectDisposedException`.
 
 ## How it is verified
 
-- **Independent fixtures.** Codecs are tested against a corpus of over 1,100 files encoded by other
-  tools, with pixel-exact ground truth, so decode paths this library's own encoders never produce are
-  still exercised.
+- **Independent fixtures.** Codecs are tested against a corpus of more than 500 files encoded by other
+  tools, each with pixel-exact ground truth alongside it, so decode paths this library's own encoders
+  never produce are still exercised. `check_determinism.py` regenerates the whole corpus into a scratch
+  directory and compares **decoded pixels** rather than file bytes, so a real change is visible where
+  recompression noise is not.
 - **Reference comparisons.** JPEG decoding matches a reference decoder at ≥ 61 dB PSNR; WebP output —
   lossy included — decodes byte-identically in the reference decoder; QOI output is byte-identical to the
   reference encoder.
 - **Hostile input.** Around 150 crafted corrupt-input cases and a seeded byte-mutation fuzz pass run on
-  every build, with a deeper nightly fuzz run across three operating systems and both frameworks.
+  every build, over seeds drawn from every fixture folder — including 15 deliberately malformed APNGs —
+  with a deeper nightly run across three operating systems and both frameworks.
+- **Deployment shapes.** `samples/AotSmoke` publishes with `PublishAot` and exercises every codec,
+  metadata path and processing stage in the published binary; `samples/Thumbnailer` publishes
+  self-contained and trimmed and must produce no `IL####` warning at all.
+- **Reproducible performance.** The benchmark suite and its corpus generator are in the repository, so
+  the [Performance](#performance) table can be regenerated rather than taken on trust.
 - **Documentation that cannot drift.** Every code sample in this file is transcribed into the test suite
   and compiled, so a rename breaks the build rather than the docs.
-- **Scale.** 2,387 tests for the core library and 162 for the AI package, run on Ubuntu, Windows and
+- **Scale.** 8,290 tests for the core library and 162 for the AI package, run on Ubuntu, Windows and
   macOS on both target frameworks, plus pack validation for both packages.
 
 ## Building from source
@@ -531,6 +604,22 @@ cd EasyImageSharp
 dotnet build EasyImageSharp.slnx -c Release
 dotnet test  EasyImageSharp.slnx -c Release
 dotnet pack  src/EasyImageSharp  -c Release -o artifacts
+```
+
+The samples and the benchmark suite are deliberately outside `EasyImageSharp.slnx` — they single-target
+`net10.0`, which a solution-wide `net8.0` test leg cannot build — so they are run by path:
+
+```bash
+# Native AOT and trimming smoke publishes.
+dotnet publish samples/AotSmoke   -c Release -p:PublishAot=true
+dotnet publish samples/Thumbnailer -c Release -r linux-x64 --self-contained \
+  -p:PublishTrimmed=true -p:TrimmerSingleWarn=false
+
+# Benchmarks: see benchmarks/README.md.
+dotnet run -c Release -f net10.0 --project benchmarks/EasyImageSharp.Benchmarks -- --filter "*" --job Dry
+
+# Fixture corpus: regenerate, then check it by decoded pixels.
+cd tests/EasyImageSharp.Tests/Fixtures && python generate.py && python check_determinism.py
 ```
 
 Tagging `vX.Y.Z` runs the full suite on every OS and publishes both packages to NuGet. See

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Globalization;
 using EasyImageSharp.Formats;
 using EasyImageSharp.Formats.Tiff;
 using EasyImageSharp.PixelFormats;
@@ -23,13 +24,18 @@ public class FuzzSmokeTests
     /// </summary>
     private static readonly bool IncludeJpeg = true;
 
-    private const int Seed = 12345;
+    /// <summary>
+    /// RNG seed for the mutation stream. Overridden by <c>EASYIMAGESHARP_FUZZ_SEED</c>; the nightly workflow
+    /// passes the GitHub run id so each run explores new inputs instead of re-testing the same ones.
+    /// </summary>
+    private static readonly int Seed = EnvSeed("EASYIMAGESHARP_FUZZ_SEED", 12345);
 
     /// <summary>
-    /// Mutations per seed file. With ~160 seeds this is ~130,000 decoder calls, which take a few seconds per
-    /// target framework; raise it (or change <see cref="Seed"/>) for a deeper local run.
+    /// Mutations per seed file. With ~290 seeds this is ~230,000 decoder calls, which take a few seconds per
+    /// target framework; raise it via <c>EASYIMAGESHARP_FUZZ_MUTATIONS</c> (or vary <see cref="Seed"/>) for a
+    /// deeper run. The nightly workflow sets both, which is why neither is a compile-time constant.
     /// </summary>
-    private const int MutationsPerSeed = 400;
+    private static readonly int MutationsPerSeed = EnvInt("EASYIMAGESHARP_FUZZ_MUTATIONS", 400);
 
     private const long MaxAllocationPerCall = 100L * 1024 * 1024;
 
@@ -39,6 +45,39 @@ public class FuzzSmokeTests
 
     private static readonly DecoderOptions FuzzOptions = new() { MaxPixels = 4_000_000 };
 
+    private static int EnvInt(string name, int fallback)
+        => int.TryParse(Environment.GetEnvironmentVariable(name), NumberStyles.Integer, CultureInfo.InvariantCulture, out int value) && value > 0
+            ? value
+            : fallback;
+
+    // GitHub's run_id is ~1.5e10 and overflows Int32, so parse as long and narrow deliberately.
+    // int.TryParse would fail silently and every nightly run would re-test the same 12345 corpus.
+    private static int EnvSeed(string name, int fallback)
+        => long.TryParse(Environment.GetEnvironmentVariable(name), NumberStyles.Integer, CultureInfo.InvariantCulture, out long value)
+            ? unchecked((int)value)
+            : fallback;
+
+    /// <summary>
+    /// Whether <paramref name="name"/> supplied the value in use, so a nightly failure records whether it came
+    /// from the workflow or from the compiled-in default. A value that is set but unusable is reported as
+    /// ignored rather than as honoured: silently reading "from EASYIMAGESHARP_FUZZ_SEED=..." next to the
+    /// default seed is exactly the confusion this line exists to prevent.
+    /// </summary>
+    /// <param name="name">The environment variable to describe.</param>
+    /// <param name="applied">Whether the variable's value was actually parsed and used.</param>
+    private static string Describe(string name, bool applied)
+        => Environment.GetEnvironmentVariable(name) is { Length: > 0 } raw
+            ? applied ? $"from {name}={raw}" : $"default; ignored unusable {name}={raw}"
+            : "default";
+
+    /// <summary>Whether the variable holds a value <see cref="EnvSeed"/> would accept.</summary>
+    private static bool SeedApplied(string name)
+        => long.TryParse(Environment.GetEnvironmentVariable(name), NumberStyles.Integer, CultureInfo.InvariantCulture, out _);
+
+    /// <summary>Whether the variable holds a value <see cref="EnvInt"/> would accept.</summary>
+    private static bool IntApplied(string name)
+        => int.TryParse(Environment.GetEnvironmentVariable(name), NumberStyles.Integer, CultureInfo.InvariantCulture, out int value) && value > 0;
+
     private readonly ITestOutputHelper output;
 
     public FuzzSmokeTests(ITestOutputHelper output) => this.output = output;
@@ -46,6 +85,10 @@ public class FuzzSmokeTests
     [Fact]
     public async Task MutatedInputs_NeverEscapeTheDecoderContract()
     {
+        this.output.WriteLine(
+            $"Fuzz configuration: seed={Seed} ({Describe("EASYIMAGESHARP_FUZZ_SEED", SeedApplied("EASYIMAGESHARP_FUZZ_SEED"))}), " +
+            $"mutations={MutationsPerSeed} ({Describe("EASYIMAGESHARP_FUZZ_MUTATIONS", IntApplied("EASYIMAGESHARP_FUZZ_MUTATIONS"))}).");
+
         List<(string Name, byte[] Bytes)> seeds = CollectSeeds();
         Assert.NotEmpty(seeds);
 
@@ -112,7 +155,7 @@ public class FuzzSmokeTests
     private static List<(string Name, byte[] Bytes)> CollectSeeds()
     {
         var seeds = new List<(string, byte[])>();
-        foreach (string format in new[] { "png", "bmp", "tiff", "smallformats/tga", "smallformats/pbm", "smallformats/qoi", "smallformats/ico" })
+        foreach (string format in new[] { "png", "apng", "bmp", "tiff", "smallformats/tga", "smallformats/pbm", "smallformats/qoi", "smallformats/ico" })
         {
             foreach (FixtureDecodeTests.FixtureEntry entry in FixtureDecodeTests.Manifest.Load(format))
             {
@@ -304,13 +347,16 @@ public class FuzzSmokeTests
     {
         try
         {
-            string dir = Path.Combine(Path.GetTempPath(), "EasyImageSharp-fuzz");
+            // The nightly workflow uploads ${{ runner.temp }}/EasyImageSharp-fuzz, which is not always the
+            // same directory as Path.GetTempPath() on every runner OS.
+            string root = Environment.GetEnvironmentVariable("RUNNER_TEMP") is { Length: > 0 } runnerTemp ? runnerTemp : Path.GetTempPath();
+            string dir = Path.Combine(root, "EasyImageSharp-fuzz");
             Directory.CreateDirectory(dir);
             string path = Path.Combine(dir, $"{seedName.Replace('/', '_')}-{mutation}.bin");
             File.WriteAllBytes(path, data);
             return path;
         }
-        catch (IOException)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or NotSupportedException)
         {
             return "(could not save)";
         }

@@ -49,9 +49,16 @@ public sealed partial class ImageFormat
 
     public static ImageFormat Tiff { get; } = new(
         "TIFF", "image/tiff", new[] { "tif", "tiff" },
-        static data => data.Length >= 4
-            && ((data[0] == 0x49 && data[1] == 0x49 && data[2] == 0x2A && data[3] == 0x00)
-                || (data[0] == 0x4D && data[1] == 0x4D && data[2] == 0x00 && data[3] == 0x2A)),
+        // Classic TIFF is the byte-order mark plus version 42; BigTIFF is version 43 followed by the offset size
+        // (always 8) and a zero reserved word, both of which are checked so a stray 0x2B does not claim the file.
+        static data => (data.Length >= 4
+                && ((data[0] == 0x49 && data[1] == 0x49 && data[2] == 0x2A && data[3] == 0x00)
+                    || (data[0] == 0x4D && data[1] == 0x4D && data[2] == 0x00 && data[3] == 0x2A)))
+            || (data.Length >= 8
+                && ((data[0] == 0x49 && data[1] == 0x49 && data[2] == 0x2B && data[3] == 0x00
+                        && data[4] == 0x08 && data[5] == 0x00 && data[6] == 0x00 && data[7] == 0x00)
+                    || (data[0] == 0x4D && data[1] == 0x4D && data[2] == 0x00 && data[3] == 0x2B
+                        && data[4] == 0x00 && data[5] == 0x08 && data[6] == 0x00 && data[7] == 0x00))),
         static () => new TiffDecoder(), static () => new TiffEncoder());
 
     public static ImageFormat Gif { get; } = new(
