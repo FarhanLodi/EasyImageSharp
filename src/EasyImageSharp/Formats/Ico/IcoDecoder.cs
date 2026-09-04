@@ -98,6 +98,7 @@ public sealed class IcoDecoder : IImageDecoder
     {
         Entry[] entries = ReadDirectory(data);
         var frames = new List<ImageFrame<TPixel>>(entries.Length);
+        DecoderOptions.FrameBudget budget = options.CreateBudget();
         foreach (Entry entry in entries)
         {
             if (frames.Count >= options.MaxFrames)
@@ -108,11 +109,15 @@ public sealed class IcoDecoder : IImageDecoder
             ReadOnlySpan<byte> bytes = EntryData(data, entry);
             if (IsPng(bytes))
             {
-                frames.Add(new PngDecoder().Decode<TPixel>(bytes, options).Frames.RootFrame);
+                // A PNG-compressed entry is bounded per frame by the PNG decoder's own MaxPixels check, so the
+                // cumulative budget is charged once its real size is known - one frame late at the very most.
+                ImageFrame<TPixel> decoded = new PngDecoder().Decode<TPixel>(bytes, options).Frames.RootFrame;
+                budget.Add(decoded.Width, decoded.Height, "ICO");
+                frames.Add(decoded);
             }
             else
             {
-                frames.Add(DecodeDib<TPixel>(bytes, entry, options));
+                frames.Add(DecodeDib<TPixel>(bytes, entry, ref budget));
             }
         }
 
@@ -246,13 +251,14 @@ public sealed class IcoDecoder : IImageDecoder
         return new DibHeader(headerSize, width, height, bitsPerPixel, hasMask, paletteEntries);
     }
 
-    private static ImageFrame<TPixel> DecodeDib<TPixel>(ReadOnlySpan<byte> dib, in Entry entry, DecoderOptions options)
+    private static ImageFrame<TPixel> DecodeDib<TPixel>(
+        scoped ReadOnlySpan<byte> dib, in Entry entry, ref DecoderOptions.FrameBudget budget)
         where TPixel : unmanaged, IPixel<TPixel>
     {
         DibHeader header = ParseDibHeader(dib, entry);
         int width = header.Width;
         int height = header.Height;
-        options.EnsureFrameWithinLimits(width, height, "ICO");
+        budget.Add(width, height, "ICO");
 
         long pos = header.HeaderSize;
         Rgba32[]? palette = null;
@@ -285,6 +291,8 @@ public sealed class IcoDecoder : IImageDecoder
         bool maskPresent = header.HasMask && maskOffset + (maskStride * height) <= dib.Length;
 
         var frame = new ImageFrame<TPixel>(width, height);
+
+        // The budget check above is what guarantees width * height fits an int; do not remove it.
         var pixels = new Rgba32[width * height];
         bool anyAlpha = false;
         for (int y = 0; y < height; y++)

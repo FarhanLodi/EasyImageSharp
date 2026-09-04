@@ -1,0 +1,19 @@
+#nullable enable
+EasyImageSharp.Formats.DecoderOptions.MaxTotalPixels.get -> long
+EasyImageSharp.Formats.DecoderOptions.MaxTotalPixels.init -> void
+EasyImageSharp.Formats.Png.PngEncoder.FrameDelay.get -> int
+EasyImageSharp.Formats.Png.PngEncoder.FrameDelay.init -> void
+EasyImageSharp.Formats.Png.PngEncoder.RepeatCount.get -> int
+EasyImageSharp.Formats.Png.PngEncoder.RepeatCount.init -> void
+EasyImageSharp.Metadata.Exif.ExifDataType.Ifd8 = 18 -> EasyImageSharp.Metadata.Exif.ExifDataType
+EasyImageSharp.Metadata.Exif.ExifDataType.Long8 = 16 -> EasyImageSharp.Metadata.Exif.ExifDataType
+EasyImageSharp.Metadata.Exif.ExifDataType.SignedLong8 = 17 -> EasyImageSharp.Metadata.Exif.ExifDataType
+EasyImageSharp.Metadata.PngMetadata.AnimateRootFrame.get -> bool
+EasyImageSharp.Metadata.PngMetadata.AnimateRootFrame.set -> void
+EasyImageSharp.Metadata.PngMetadata.IsAnimated.get -> bool
+EasyImageSharp.Metadata.PngMetadata.IsAnimated.set -> void
+EasyImageSharp.Metadata.PngMetadata.RepeatCount.get -> uint
+EasyImageSharp.Metadata.PngMetadata.RepeatCount.set -> void
+EasyImageSharp.Metadata.TiffMetadata.BigTiff.get -> bool
+EasyImageSharp.Metadata.TiffMetadata.BigTiff.set -> void
+const EasyImageSharp.Formats.DecoderOptions.DefaultMaxTotalPixels = 1073741824 -> long

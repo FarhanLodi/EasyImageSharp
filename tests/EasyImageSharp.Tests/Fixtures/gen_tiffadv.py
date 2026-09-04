@@ -35,6 +35,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 # ----------------------------------------------------------------------------------------------------
 
 BYTE, ASCII, SHORT, LONG, RATIONAL, SBYTE, UNDEFINED = 1, 2, 3, 4, 5, 6, 7
+LONG8 = 16                      # BigTIFF's 64-bit offset type (17 and 18 are SLONG8 and IFD8)
 
 TAG_WIDTH = 256
 TAG_LENGTH = 257
@@ -69,20 +70,48 @@ def _pack(kind: int, values, big: bool) -> bytes:
         return struct.pack(f"{end}{len(values)}H", *values)
     if kind == LONG:
         return struct.pack(f"{end}{len(values)}I", *values)
+    if kind == LONG8:
+        return struct.pack(f"{end}{len(values)}Q", *values)
     if kind == RATIONAL:
         return b"".join(struct.pack(f"{end}II", n, d) for n, d in values)
     raise ValueError(f"unsupported TIFF type {kind}")
 
 
-def tiff_write(pages: list[dict], big: bool = False) -> bytes:
+def _shape(data: bytes) -> tuple[str, bool, int, int, int, str, str]:
+    """The directory geometry of a file: byte order, BigTIFF flag, and the widths that follow from it.
+
+    Returns ``(end, bigtiff, wide, count_size, entry_size, count_fmt, ptr_fmt)`` where ``wide`` is at once the
+    value-field width, the pointer width and the largest value that still fits inside an entry.
+    """
+    end = ">" if data[0] == 0x4D else "<"
+    bigtiff = struct.unpack_from(f"{end}H", data, 2)[0] == 43
+    wide = 8 if bigtiff else 4
+    return (end, bigtiff, wide, 8 if bigtiff else 2, 20 if bigtiff else 12,
+            f"{end}{'Q' if bigtiff else 'H'}", f"{end}{'Q' if bigtiff else 'I'}")
+
+
+def tiff_write(pages: list[dict], big: bool = False, bigtiff: bool = False) -> bytes:
     """Assembles one file from pages of ``{"tags": {tag: (type, values)}, "blocks": [bytes], "tiled": bool}``.
 
-    The strip/tile offset and byte-count tags are filled in from the blocks actually written.
+    The strip/tile offset and byte-count tags are filled in from the blocks actually written. ``big`` is the BYTE
+    ORDER; ``bigtiff`` is the CONTAINER version and is independent of it - version 43 means a 16-byte header, an
+    8-byte entry count, 20-byte entries whose element count and value field are both 8 bytes, an 8-byte
+    next-directory pointer, and offsets and byte counts written as LONG8 rather than LONG.
     """
     end = ">" if big else "<"
-    out = bytearray(b"MM\x00\x2a" if big else b"II\x2a\x00")
-    out += b"\0\0\0\0"
-    link = 4  # position of the pointer that must be made to point at the next directory
+    wide = 8 if bigtiff else 4
+    count_size = 8 if bigtiff else 2
+    entry_size = 20 if bigtiff else 12
+    count_fmt = f"{end}{'Q' if bigtiff else 'H'}"
+    ptr_fmt = f"{end}{'Q' if bigtiff else 'I'}"
+    offset_kind = LONG8 if bigtiff else LONG
+    if bigtiff:
+        out = bytearray(b"MM\x00\x2b" if big else b"II\x2b\x00")
+        out += struct.pack(f"{end}HH", 8, 0)     # offset size, reserved
+    else:
+        out = bytearray(b"MM\x00\x2a" if big else b"II\x2a\x00")
+    link = len(out)  # position of the pointer that must be made to point at the next directory
+    out += b"\0" * wide
 
     for page in pages:
         offsets, counts = [], []
@@ -95,30 +124,30 @@ def tiff_write(pages: list[dict], big: bool = False) -> bytes:
 
         tags = dict(page["tags"])
         tiled = page.get("tiled", False)
-        tags[TAG_TILE_OFFSETS if tiled else TAG_STRIP_OFFSETS] = (LONG, offsets)
-        tags[TAG_TILE_COUNTS if tiled else TAG_STRIP_COUNTS] = (LONG, counts)
+        tags[TAG_TILE_OFFSETS if tiled else TAG_STRIP_OFFSETS] = (offset_kind, offsets)
+        tags[TAG_TILE_COUNTS if tiled else TAG_STRIP_COUNTS] = (offset_kind, counts)
 
         if len(out) % 2:
             out += b"\0"
         ifd = len(out)
-        struct.pack_into(f"{end}I", out, link, ifd)
+        struct.pack_into(ptr_fmt, out, link, ifd)
 
         items = sorted(tags.items())
-        external_base = ifd + 2 + (12 * len(items)) + 4
-        body = bytearray(struct.pack(f"{end}H", len(items)))
+        external_base = ifd + count_size + (entry_size * len(items)) + wide
+        body = bytearray(struct.pack(count_fmt, len(items)))
         external = bytearray()
         for tag, (kind, values) in items:
             data = _pack(kind, values, big)
-            body += struct.pack(f"{end}HHI", tag, kind, len(values))
-            if len(data) <= 4:
-                body += data + (b"\0" * (4 - len(data)))
+            body += struct.pack(f"{end}HH", tag, kind) + struct.pack(ptr_fmt, len(values))
+            if len(data) <= wide:
+                body += data + (b"\0" * (wide - len(data)))
             else:
-                body += struct.pack(f"{end}I", external_base + len(external))
+                body += struct.pack(ptr_fmt, external_base + len(external))
                 external += data
                 if len(external) % 2:
                     external += b"\0"
-        link = ifd + 2 + (12 * len(items))
-        body += b"\0\0\0\0"
+        link = ifd + count_size + (entry_size * len(items))
+        body += b"\0" * wide
         out += body + external
 
     return bytes(out)
@@ -126,23 +155,27 @@ def tiff_write(pages: list[dict], big: bool = False) -> bytes:
 
 def tiff_tags(data: bytes) -> dict:
     """Reads the first directory of a TIFF into ``{tag: (type, [values])}`` (offsets resolved)."""
-    big = data[0] == 0x4D
-    end = ">" if big else "<"
-    (offset,) = struct.unpack_from(f"{end}I", data, 4)
-    (count,) = struct.unpack_from(f"{end}H", data, offset)
-    sizes = {1: 1, 2: 1, 3: 2, 4: 4, 5: 8, 6: 1, 7: 1, 8: 2, 9: 4, 10: 8, 11: 4, 12: 8}
+    end, _, wide, count_size, entry_size, count_fmt, ptr_fmt = _shape(data)
+    (offset,) = struct.unpack_from(ptr_fmt, data, 8 if wide == 8 else 4)
+    (count,) = struct.unpack_from(count_fmt, data, offset)
+    sizes = {1: 1, 2: 1, 3: 2, 4: 4, 5: 8, 6: 1, 7: 1, 8: 2, 9: 4, 10: 8, 11: 4, 12: 8, 13: 4, 16: 8, 17: 8, 18: 8}
     tags = {}
     for i in range(count):
-        entry = offset + 2 + (12 * i)
-        tag, kind, n = struct.unpack_from(f"{end}HHI", data, entry)
+        entry = offset + count_size + (entry_size * i)
+        tag, kind = struct.unpack_from(f"{end}HH", data, entry)
+        (n,) = struct.unpack_from(ptr_fmt, data, entry + 4)
         size = sizes.get(kind, 0) * n
-        where = entry + 8 if size <= 4 else struct.unpack_from(f"{end}I", data, entry + 8)[0]
+        where = entry + 4 + wide if size <= wide else struct.unpack_from(ptr_fmt, data, entry + 4 + wide)[0]
         if kind in (1, 2, 6, 7):
             values = list(data[where:where + n])
         elif kind in (3, 8):
             values = list(struct.unpack_from(f"{end}{n}H", data, where))
-        elif kind in (4, 9):
+        elif kind in (4, 9, 13):
             values = list(struct.unpack_from(f"{end}{n}I", data, where))
+        elif kind in (16, 18):
+            values = list(struct.unpack_from(f"{end}{n}Q", data, where))
+        elif kind == 17:
+            values = list(struct.unpack_from(f"{end}{n}q", data, where))
         else:
             values = []
         tags[tag] = (kind, values)
@@ -158,24 +191,24 @@ def tiff_segments(data: bytes) -> list[bytes]:
 
 
 def tiff_probe(data: bytes) -> tuple[int, int, int]:
-    big = data[0] == 0x4D
-    end = ">" if big else "<"
-    (offset,) = struct.unpack_from(f"{end}I", data, 4)
+    end, _, wide, count_size, entry_size, count_fmt, ptr_fmt = _shape(data)
+    (offset,) = struct.unpack_from(ptr_fmt, data, 8 if wide == 8 else 4)
     width = height = frames = 0
     while offset:
-        (count,) = struct.unpack_from(f"{end}H", data, offset)
+        (count,) = struct.unpack_from(count_fmt, data, offset)
         if frames == 0:
             for i in range(count):
-                tag, kind, _ = struct.unpack_from(f"{end}HHI", data, offset + 2 + (12 * i))
+                entry = offset + count_size + (entry_size * i)
+                tag, kind = struct.unpack_from(f"{end}HH", data, entry)
                 if tag in (TAG_WIDTH, TAG_LENGTH):
-                    value = (struct.unpack_from(f"{end}H", data, offset + 10 + (12 * i))[0] if kind == SHORT
-                             else struct.unpack_from(f"{end}I", data, offset + 10 + (12 * i))[0])
+                    fmt = {SHORT: f"{end}H", LONG8: f"{end}Q"}.get(kind, f"{end}I")
+                    value = struct.unpack_from(fmt, data, entry + 4 + wide)[0]
                     if tag == TAG_WIDTH:
                         width = value
                     else:
                         height = value
         frames += 1
-        (offset,) = struct.unpack_from(f"{end}I", data, offset + 2 + (12 * count))
+        (offset,) = struct.unpack_from(ptr_fmt, data, offset + count_size + (entry_size * count))
     return width, height, frames
 
 
@@ -274,6 +307,41 @@ def pillow_decodes_to(data: bytes, expected: np.ndarray, name: str) -> None:
     with Image.open(io.BytesIO(data)) as im:
         got = np.array(im.convert("RGB"))
     assert np.array_equal(got, expected[..., :3]), f"{name}: Pillow disagrees with the ground truth"
+
+
+def bigtiff_decodes_to(data: bytes, expected: np.ndarray, name: str) -> None:
+    """Asserts a fixture really is a version-43 BigTIFF and that an independent reader agrees with its pixels.
+
+    The version word is checked explicitly because Pillow accepts ``big_tiff=True`` on save and then silently
+    ignores it for everything it routes through libtiff (LZW, Deflate and PackBits all come back as version 42).
+    Pillow 11.3 also detects BigTIFF with ``ifh[2] == 43``, an index that only lands on the version word in the
+    little-endian layout, so it cannot open a big-endian BigTIFF at all; tifffile reads both byte orders and is
+    used whenever it is installed, though without the optional ``imagecodecs`` package it can parse but not
+    decode an LZW or PackBits page. At least one independent reader must confirm the pixels of every fixture.
+    """
+    end = ">" if data[0] == 0x4D else "<"
+    assert struct.unpack_from(f"{end}HHH", data, 2) == (43, 8, 0), f"{name}: this is not a BigTIFF header"
+    checked = False
+    try:
+        import tifffile
+    except ImportError:
+        print(f"  note: tifffile is not installed; {name} was not cross-checked against a second BigTIFF reader.")
+    else:
+        with tifffile.TiffFile(io.BytesIO(data)) as handle:
+            assert handle.is_bigtiff, f"{name}: tifffile does not read this file as a BigTIFF"
+            page = handle.pages[0]
+            assert (page.imagelength, page.imagewidth) == expected.shape[:2], f"{name}: tifffile reads other dimensions"
+            try:
+                got = np.asarray(page.asarray())
+            except ValueError as ex:                       # a codec tifffile needs imagecodecs to run
+                print(f"  note: tifffile parsed {name} but cannot decode it: {ex}")
+            else:
+                assert np.array_equal(got, expected[..., :3]), f"{name}: tifffile disagrees with the ground truth"
+                checked = True
+    if data[0] != 0x4D:
+        pillow_decodes_to(data, expected, name)
+        checked = True
+    assert checked, f"{name}: no independent reader could decode this fixture"
 
 
 # ----------------------------------------------------------------------------------------------------
@@ -707,8 +775,64 @@ def _jpeg(rec: Recorder) -> None:
 
 
 # ----------------------------------------------------------------------------------------------------
+# BigTIFF containers
+# ----------------------------------------------------------------------------------------------------
 
-SECTIONS = (_ccitt, _layouts, _samples, _photometrics, _jpeg)
+def _bigtiff(rec: Recorder) -> None:
+    """The same page as ``layout_chunky_raw`` re-containered as BigTIFF, once per compression this corpus uses.
+
+    Because the raster is the one the layout group already decodes correctly, a decoder that misreads the 64-bit
+    directory disagrees with a file of its own rather than only with this generator. The codestreams are produced
+    independently of the container: raw and Deflate strips are plain bytes, while the LZW and PackBits strips are
+    lifted out of a classic TIFF written by Pillow/libtiff and re-wrapped, since Pillow cannot be made to write
+    those as BigTIFF at all (``big_tiff=True`` is ignored on the libtiff path).
+    """
+    import zlib
+
+    width, height = 40, 28
+    rows_per_strip = 7
+    rgb = _rgb_page(width, height, seed=4100)
+    expected = rgba_from_rgb(rgb)
+    chunky = np.ascontiguousarray(rgb).tobytes()
+    base = {TAG_WIDTH: (LONG, [width]), TAG_LENGTH: (LONG, [height]), TAG_BITS: (SHORT, [8, 8, 8]),
+            TAG_PHOTOMETRIC: (SHORT, [2]), TAG_SAMPLES: (SHORT, [3]), TAG_PLANAR: (SHORT, [1])}
+
+    def libtiff_strips(compression: str) -> tuple[int, list[bytes]]:
+        """Compresses the page with Pillow/libtiff into a classic TIFF and hands back its compression code and strips."""
+        data = pillow_tiff(Image.fromarray(rgb, "RGB"), compression=compression,
+                           tiffinfo={TAG_ROWS_PER_STRIP: rows_per_strip})
+        tags = tiff_tags(data)
+        assert tags[TAG_ROWS_PER_STRIP][1] == [rows_per_strip], (compression, tags[TAG_ROWS_PER_STRIP])
+        return tags[TAG_COMPRESSION][1][0], tiff_segments(data)
+
+    cases = [("bigtiff_none", 1, _strip_blocks(chunky, height, rows_per_strip),
+              "uncompressed strips, hand-assembled"),
+             ("bigtiff_deflate", 8, _strip_blocks(chunky, height, rows_per_strip, zlib.compress),
+              "Deflate strips, hand-assembled")]
+    for name, pillow_name, label in (("bigtiff_lzw", "tiff_lzw", "LZW"), ("bigtiff_packbits", "packbits", "PackBits")):
+        code, blocks = libtiff_strips(pillow_name)
+        cases.append((name, code, blocks, f"{label} strips written by libtiff and re-containered here"))
+
+    for name, code, blocks, notes in cases:
+        data = tiff_write([{"tags": {**base, TAG_COMPRESSION: (SHORT, [code]),
+                                     TAG_ROWS_PER_STRIP: (LONG, [rows_per_strip])}, "blocks": blocks}], bigtiff=True)
+        bigtiff_decodes_to(data, expected, name)
+        rec.add(name, data, [expected], "bigtiff",
+                f"BigTIFF (version 43), little-endian, {rows_per_strip}-row {notes}; StripOffsets and "
+                f"StripByteCounts are LONG8 (type 16)")
+
+    data = tiff_write([{"tags": {**base, TAG_COMPRESSION: (SHORT, [8]),
+                                 TAG_TILE_WIDTH: (LONG, [16]), TAG_TILE_LENGTH: (LONG, [16])},
+                        "blocks": _tile_blocks(rgb, 16, 16, zlib.compress), "tiled": True}], big=True, bigtiff=True)
+    bigtiff_decodes_to(data, expected, "bigtiff_mm_tiled")
+    rec.add("bigtiff_mm_tiled", data, [expected], "bigtiff",
+            "BigTIFF (version 43) in big-endian (MM) byte order: 16x16 Deflate tiles whose TileOffsets and "
+            "TileByteCounts are LONG8. Pillow cannot open this arm at all, so tifffile verifies it")
+
+
+# ----------------------------------------------------------------------------------------------------
+
+SECTIONS = (_ccitt, _layouts, _samples, _photometrics, _jpeg, _bigtiff)
 
 
 def gen_tiffadv(out_dir: str) -> None:

@@ -61,9 +61,13 @@ public sealed class PbmDecoder : IImageDecoder
         int pos = 0;
         PbmHeader header = ReadHeader(data, ref pos);
         var frames = new List<ImageFrame<TPixel>>();
+
+        // A concatenated stream costs about fifteen bytes per extra declared image, so the per-frame limit
+        // alone leaves total allocation unbounded; charge every raster to the cumulative budget as well.
+        DecoderOptions.FrameBudget budget = options.CreateBudget();
         while (true)
         {
-            options.EnsureFrameWithinLimits(header.Width, header.Height, "PBM");
+            budget.Add(header.Width, header.Height, "PBM");
             frames.Add(DecodeRaster<TPixel>(data, header, ref pos));
             if (frames.Count >= options.MaxFrames || !TryReadNextHeader(data, ref pos, out header))
             {

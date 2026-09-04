@@ -90,6 +90,10 @@ public sealed class GifDecoder : IImageDecoder
         int pendingX0 = 0, pendingY0 = 0, pendingX1 = 0, pendingY1 = 0;
         Rgba32[]? savedRegion = null;
 
+        // Every frame is snapshotted at the full logical screen size, so a file declaring many frames costs
+        // screen-sized allocations regardless of how small its image descriptors are. Charge each one.
+        DecoderOptions.FrameBudget budget = options.CreateBudget();
+
         try
         {
             bool finished = false;
@@ -162,6 +166,7 @@ public sealed class GifDecoder : IImageDecoder
 
                         // The pixel limit also bounds the per-frame index buffer.
                         options.EnsureFrameWithinLimits(width, height, "GIF");
+                        budget.Add(screenWidth, screenHeight, "GIF");
 
                         int minCodeSize = reader.ReadByte();
                         if (minCodeSize > 8)

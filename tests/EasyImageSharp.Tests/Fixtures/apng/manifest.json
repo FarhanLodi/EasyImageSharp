@@ -1,0 +1,2100 @@
+[
+ {
+  "name": "dispose_none_blend_source",
+  "file": "dispose_none_blend_source.png",
+  "writer": "hand-assembled",
+  "notes": "APNG_DISPOSE_OP_NONE x APNG_BLEND_OP_SOURCE: the rectangle is left as it is, so the frames accumulate. Frame 0 is a full-canvas backdrop that is opaque on the left and transparent on the right; frames 1..3 are overlapping opaque 6x5 rectangles at differing offsets, and only frames 1 and 2 carry the disposal so the restore is observable against a populated canvas",
+  "sha256": "0b2852e7c3c30ed9",
+  "size": 717,
+  "width": 16,
+  "height": 12,
+  "frames": 4,
+  "is_animated": true,
+  "animate_root_frame": true,
+  "repeat_count": 1,
+  "delays": [
+   [
+    10,
+    100
+   ],
+   [
+    15,
+    100
+   ],
+   [
+    20,
+    100
+   ],
+   [
+    25,
+    100
+   ]
+  ],
+  "disposals": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "blends": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "rects": [
+   [
+    0,
+    0,
+    16,
+    12
+   ],
+   [
+    2,
+    1,
+    6,
+    5
+   ],
+   [
+    6,
+    3,
+    6,
+    5
+   ],
+   [
+    4,
+    5,
+    6,
+    5
+   ]
+  ],
+  "color_type": 6,
+  "bit_depth": 8,
+  "interlaced": false,
+  "pillow_verified": true
+ },
+ {
+  "name": "dispose_none_blend_over",
+  "file": "dispose_none_blend_over.png",
+  "writer": "hand-assembled",
+  "notes": "APNG_DISPOSE_OP_NONE x APNG_BLEND_OP_OVER: the rectangle is left as it is, so the frames accumulate. Frame 0 is a full-canvas backdrop that is opaque on the left and transparent on the right; frames 1..3 are overlapping opaque 6x5 rectangles at differing offsets, and only frames 1 and 2 carry the disposal so the restore is observable against a populated canvas",
+  "sha256": "6a8b191e687b4213",
+  "size": 717,
+  "width": 16,
+  "height": 12,
+  "frames": 4,
+  "is_animated": true,
+  "animate_root_frame": true,
+  "repeat_count": 1,
+  "delays": [
+   [
+    10,
+    100
+   ],
+   [
+    15,
+    100
+   ],
+   [
+    20,
+    100
+   ],
+   [
+    25,
+    100
+   ]
+  ],
+  "disposals": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "blends": [
+   1,
+   1,
+   1,
+   1
+  ],
+  "rects": [
+   [
+    0,
+    0,
+    16,
+    12
+   ],
+   [
+    2,
+    1,
+    6,
+    5
+   ],
+   [
+    6,
+    3,
+    6,
+    5
+   ],
+   [
+    4,
+    5,
+    6,
+    5
+   ]
+  ],
+  "color_type": 6,
+  "bit_depth": 8,
+  "interlaced": false,
+  "pillow_verified": true
+ },
+ {
+  "name": "dispose_background_blend_source",
+  "file": "dispose_background_blend_source.png",
+  "writer": "hand-assembled",
+  "notes": "APNG_DISPOSE_OP_BACKGROUND x APNG_BLEND_OP_SOURCE: the rectangle is cleared to transparent black before the next frame. Frame 0 is a full-canvas backdrop that is opaque on the left and transparent on the right; frames 1..3 are overlapping opaque 6x5 rectangles at differing offsets, and only frames 1 and 2 carry the disposal so the restore is observable against a populated canvas",
+  "sha256": "750ef9b9c46e747e",
+  "size": 717,
+  "width": 16,
+  "height": 12,
+  "frames": 4,
+  "is_animated": true,
+  "animate_root_frame": true,
+  "repeat_count": 1,
+  "delays": [
+   [
+    10,
+    100
+   ],
+   [
+    15,
+    100
+   ],
+   [
+    20,
+    100
+   ],
+   [
+    25,
+    100
+   ]
+  ],
+  "disposals": [
+   0,
+   1,
+   1,
+   0
+  ],
+  "blends": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "rects": [
+   [
+    0,
+    0,
+    16,
+    12
+   ],
+   [
+    2,
+    1,
+    6,
+    5
+   ],
+   [
+    6,
+    3,
+    6,
+    5
+   ],
+   [
+    4,
+    5,
+    6,
+    5
+   ]
+  ],
+  "color_type": 6,
+  "bit_depth": 8,
+  "interlaced": false,
+  "pillow_verified": true
+ },
+ {
+  "name": "dispose_background_blend_over",
+  "file": "dispose_background_blend_over.png",
+  "writer": "hand-assembled",
+  "notes": "APNG_DISPOSE_OP_BACKGROUND x APNG_BLEND_OP_OVER: the rectangle is cleared to transparent black before the next frame. Frame 0 is a full-canvas backdrop that is opaque on the left and transparent on the right; frames 1..3 are overlapping opaque 6x5 rectangles at differing offsets, and only frames 1 and 2 carry the disposal so the restore is observable against a populated canvas",
+  "sha256": "987939062f1670a9",
+  "size": 717,
+  "width": 16,
+  "height": 12,
+  "frames": 4,
+  "is_animated": true,
+  "animate_root_frame": true,
+  "repeat_count": 1,
+  "delays": [
+   [
+    10,
+    100
+   ],
+   [
+    15,
+    100
+   ],
+   [
+    20,
+    100
+   ],
+   [
+    25,
+    100
+   ]
+  ],
+  "disposals": [
+   0,
+   1,
+   1,
+   0
+  ],
+  "blends": [
+   1,
+   1,
+   1,
+   1
+  ],
+  "rects": [
+   [
+    0,
+    0,
+    16,
+    12
+   ],
+   [
+    2,
+    1,
+    6,
+    5
+   ],
+   [
+    6,
+    3,
+    6,
+    5
+   ],
+   [
+    4,
+    5,
+    6,
+    5
+   ]
+  ],
+  "color_type": 6,
+  "bit_depth": 8,
+  "interlaced": false,
+  "pillow_verified": true
+ },
+ {
+  "name": "dispose_previous_blend_source",
+  "file": "dispose_previous_blend_source.png",
+  "writer": "hand-assembled",
+  "notes": "APNG_DISPOSE_OP_PREVIOUS x APNG_BLEND_OP_SOURCE: the canvas is restored to what it held before the frame was drawn. Frame 0 is a full-canvas backdrop that is opaque on the left and transparent on the right; frames 1..3 are overlapping opaque 6x5 rectangles at differing offsets, and only frames 1 and 2 carry the disposal so the restore is observable against a populated canvas",
+  "sha256": "6eeab4f33531e684",
+  "size": 717,
+  "width": 16,
+  "height": 12,
+  "frames": 4,
+  "is_animated": true,
+  "animate_root_frame": true,
+  "repeat_count": 1,
+  "delays": [
+   [
+    10,
+    100
+   ],
+   [
+    15,
+    100
+   ],
+   [
+    20,
+    100
+   ],
+   [
+    25,
+    100
+   ]
+  ],
+  "disposals": [
+   0,
+   2,
+   2,
+   0
+  ],
+  "blends": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "rects": [
+   [
+    0,
+    0,
+    16,
+    12
+   ],
+   [
+    2,
+    1,
+    6,
+    5
+   ],
+   [
+    6,
+    3,
+    6,
+    5
+   ],
+   [
+    4,
+    5,
+    6,
+    5
+   ]
+  ],
+  "color_type": 6,
+  "bit_depth": 8,
+  "interlaced": false,
+  "pillow_verified": true
+ },
+ {
+  "name": "dispose_previous_blend_over",
+  "file": "dispose_previous_blend_over.png",
+  "writer": "hand-assembled",
+  "notes": "APNG_DISPOSE_OP_PREVIOUS x APNG_BLEND_OP_OVER: the canvas is restored to what it held before the frame was drawn. Frame 0 is a full-canvas backdrop that is opaque on the left and transparent on the right; frames 1..3 are overlapping opaque 6x5 rectangles at differing offsets, and only frames 1 and 2 carry the disposal so the restore is observable against a populated canvas",
+  "sha256": "df1905109ce241d3",
+  "size": 717,
+  "width": 16,
+  "height": 12,
+  "frames": 4,
+  "is_animated": true,
+  "animate_root_frame": true,
+  "repeat_count": 1,
+  "delays": [
+   [
+    10,
+    100
+   ],
+   [
+    15,
+    100
+   ],
+   [
+    20,
+    100
+   ],
+   [
+    25,
+    100
+   ]
+  ],
+  "disposals": [
+   0,
+   2,
+   2,
+   0
+  ],
+  "blends": [
+   1,
+   1,
+   1,
+   1
+  ],
+  "rects": [
+   [
+    0,
+    0,
+    16,
+    12
+   ],
+   [
+    2,
+    1,
+    6,
+    5
+   ],
+   [
+    6,
+    3,
+    6,
+    5
+   ],
+   [
+    4,
+    5,
+    6,
+    5
+   ]
+  ],
+  "color_type": 6,
+  "bit_depth": 8,
+  "interlaced": false,
+  "pillow_verified": true
+ },
+ {
+  "name": "over_alpha_exact",
+  "file": "over_alpha_exact.png",
+  "writer": "hand-assembled",
+  "notes": "APNG_BLEND_OP_OVER restricted to the degenerate cases, which are exact under any rounding: half-transparent green over the empty canvas must come back verbatim (source-over onto a transparent destination is the identity), a 0/255 alpha checkerboard must punch holes rather than blend, and an opaque rectangle over the half-transparent one must overwrite it; Pillow composites APNG_BLEND_OP_OVER as a straight lerp that also lerps alpha, so it disagrees with the specification wherever a source pixel is partly transparent",
+  "sha256": "5374d2e23550ed1c",
+  "size": 376,
+  "width": 16,
+  "height": 12,
+  "frames": 4,
+  "is_animated": true,
+  "animate_root_frame": true,
+  "repeat_count": 1,
+  "delays": [
+   [
+    10,
+    100
+   ],
+   [
+    10,
+    100
+   ],
+   [
+    10,
+    100
+   ],
+   [
+    10,
+    100
+   ]
+  ],
+  "disposals": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "blends": [
+   0,
+   1,
+   1,
+   1
+  ],
+  "rects": [
+   [
+    0,
+    0,
+    16,
+    12
+   ],
+   [
+    2,
+    1,
+    6,
+    5
+   ],
+   [
+    8,
+    4,
+    6,
+    5
+   ],
+   [
+    4,
+    2,
+    6,
+    5
+   ]
+  ],
+  "color_type": 6,
+  "bit_depth": 8,
+  "interlaced": false,
+  "pillow_verified": false
+ },
+ {
+  "name": "over_alpha_general",
+  "file": "over_alpha_general.png",
+  "writer": "hand-assembled",
+  "notes": "real source-over arithmetic: an alpha ramp over an opaque backdrop, then 254 at alpha 128 over an opaque black patch, then a full-canvas 25% white wash. That middle blend is (128*254 + 127*0)/255 = 127.498, only 0.002 from a rounding boundary, so this is the one fixture the exactness gate refuses and the one that carries a tolerance; Pillow composites APNG_BLEND_OP_OVER as a straight lerp that also lerps alpha, so it disagrees with the specification wherever a source pixel is partly transparent",
+  "sha256": "0d951e98cf59a215",
+  "size": 1145,
+  "width": 16,
+  "height": 12,
+  "frames": 5,
+  "is_animated": true,
+  "animate_root_frame": true,
+  "repeat_count": 1,
+  "delays": [
+   [
+    10,
+    100
+   ],
+   [
+    10,
+    100
+   ],
+   [
+    10,
+    100
+   ],
+   [
+    10,
+    100
+   ],
+   [
+    10,
+    100
+   ]
+  ],
+  "disposals": [
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "blends": [
+   0,
+   1,
+   0,
+   1,
+   1
+  ],
+  "rects": [
+   [
+    0,
+    0,
+    16,
+    12
+   ],
+   [
+    2,
+    1,
+    6,
+    5
+   ],
+   [
+    8,
+    4,
+    6,
+    5
+   ],
+   [
+    8,
+    4,
+    6,
+    5
+   ],
+   [
+    0,
+    0,
+    16,
+    12
+   ]
+  ],
+  "color_type": 6,
+  "bit_depth": 8,
+  "interlaced": false,
+  "pillow_verified": false,
+  "tolerance": 1
+ },
+ {
+  "name": "over_noop_alpha_zero",
+  "file": "over_noop_alpha_zero.png",
+  "writer": "hand-assembled",
+  "notes": "a fully transparent full-canvas frame blended with APNG_BLEND_OP_OVER must leave the canvas exactly as it was. An implementation that treats OVER as SOURCE wipes the picture here",
+  "sha256": "e056e6f0066da7de",
+  "size": 903,
+  "width": 16,
+  "height": 12,
+  "frames": 3,
+  "is_animated": true,
+  "animate_root_frame": true,
+  "repeat_count": 1,
+  "delays": [
+   [
+    10,
+    100
+   ],
+   [
+    10,
+    100
+   ],
+   [
+    10,
+    100
+   ]
+  ],
+  "disposals": [
+   0,
+   0,
+   0
+  ],
+  "blends": [
+   0,
+   1,
+   1
+  ],
+  "rects": [
+   [
+    0,
+    0,
+    16,
+    12
+   ],
+   [
+    0,
+    0,
+    16,
+    12
+   ],
+   [
+    5,
+    4,
+    6,
+    5
+   ]
+  ],
+  "color_type": 6,
+  "bit_depth": 8,
+  "interlaced": false,
+  "pillow_verified": true
+ },
+ {
+  "name": "offsets_edges",
+  "file": "offsets_edges.png",
+  "writer": "hand-assembled",
+  "notes": "frame rectangles on all four corners, all four edges and one exactly equal to the canvas: a mis-signed or transposed offset moves a rectangle off the edge it belongs on",
+  "sha256": "c42fce8378081e76",
+  "size": 1432,
+  "width": 16,
+  "height": 12,
+  "frames": 10,
+  "is_animated": true,
+  "animate_root_frame": true,
+  "repeat_count": 1,
+  "delays": [
+   [
+    10,
+    100
+   ],
+   [
+    10,
+    100
+   ],
+   [
+    10,
+    100
+   ],
+   [
+    10,
+    100
+   ],
+   [
+    10,
+    100
+   ],
+   [
+    10,
+    100
+   ],
+   [
+    10,
+    100
+   ],
+   [
+    10,
+    100
+   ],
+   [
+    10,
+    100
+   ],
+   [
+    10,
+    100
+   ]
+  ],
+  "disposals": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "blends": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "rects": [
+   [
+    0,
+    0,
+    16,
+    12
+   ],
+   [
+    0,
+    0,
+    2,
+    2
+   ],
+   [
+    14,
+    0,
+    2,
+    2
+   ],
+   [
+    0,
+    10,
+    2,
+    2
+   ],
+   [
+    14,
+    10,
+    2,
+    2
+   ],
+   [
+    6,
+    0,
+    4,
+    1
+   ],
+   [
+    6,
+    11,
+    4,
+    1
+   ],
+   [
+    0,
+    4,
+    1,
+    4
+   ],
+   [
+    15,
+    4,
+    1,
+    4
+   ],
+   [
+    0,
+    0,
+    16,
+    12
+   ]
+  ],
+  "color_type": 6,
+  "bit_depth": 8,
+  "interlaced": false,
+  "pillow_verified": true
+ },
+ {
+  "name": "frame_1x1",
+  "file": "frame_1x1.png",
+  "writer": "hand-assembled",
+  "notes": "single-pixel frames in the corners, the middle and off-centre: the smallest legal rectangle",
+  "sha256": "9b17524106cc4816",
+  "size": 1025,
+  "width": 16,
+  "height": 12,
+  "frames": 5,
+  "is_animated": true,
+  "animate_root_frame": true,
+  "repeat_count": 1,
+  "delays": [
+   [
+    10,
+    100
+   ],
+   [
+    10,
+    100
+   ],
+   [
+    10,
+    100
+   ],
+   [
+    10,
+    100
+   ],
+   [
+    10,
+    100
+   ]
+  ],
+  "disposals": [
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "blends": [
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "rects": [
+   [
+    0,
+    0,
+    16,
+    12
+   ],
+   [
+    0,
+    0,
+    1,
+    1
+   ],
+   [
+    15,
+    11,
+    1,
+    1
+   ],
+   [
+    8,
+    6,
+    1,
+    1
+   ],
+   [
+    3,
+    9,
+    1,
+    1
+   ]
+  ],
+  "color_type": 6,
+  "bit_depth": 8,
+  "interlaced": false,
+  "pillow_verified": true
+ },
+ {
+  "name": "single_frame",
+  "file": "single_frame.png",
+  "writer": "hand-assembled",
+  "notes": "acTL num_frames 1, one fcTL before IDAT and no fdAT chunk at all: a legal animation whose only frame is the still image",
+  "sha256": "233974bc36cd34fa",
+  "size": 757,
+  "width": 16,
+  "height": 12,
+  "frames": 1,
+  "is_animated": true,
+  "animate_root_frame": true,
+  "repeat_count": 1,
+  "delays": [
+   [
+    1,
+    2
+   ]
+  ],
+  "disposals": [
+   0
+  ],
+  "blends": [
+   0
+  ],
+  "rects": [
+   [
+    0,
+    0,
+    16,
+    12
+   ]
+  ],
+  "color_type": 6,
+  "bit_depth": 8,
+  "interlaced": false,
+  "pillow_verified": true
+ },
+ {
+  "name": "hidden_first_frame",
+  "file": "hidden_first_frame.png",
+  "writer": "hand-assembled",
+  "notes": "the IDAT image is a still fallback that is NOT part of the animation - it is solid magenta (255,0,255,255), a colour no animation frame uses, so a decoder that emits it is caught. The first fcTL follows IDAT, the animation is the three fdAT frames only, and the canvas those three composite onto starts fully transparent; Pillow starts a hidden-default-image animation from the still image instead of the fully transparent black output buffer the specification mandates, and the first animation frame does not cover it opaquely",
+  "sha256": "ccb1860668cc0cec",
+  "size": 354,
+  "width": 16,
+  "height": 12,
+  "frames": 3,
+  "is_animated": true,
+  "animate_root_frame": false,
+  "repeat_count": 2,
+  "delays": [
+   [
+    10,
+    100
+   ],
+   [
+    10,
+    100
+   ],
+   [
+    10,
+    100
+   ]
+  ],
+  "disposals": [
+   0,
+   1,
+   0
+  ],
+  "blends": [
+   0,
+   0,
+   0
+  ],
+  "rects": [
+   [
+    3,
+    2,
+    8,
+    6
+   ],
+   [
+    8,
+    5,
+    6,
+    5
+   ],
+   [
+    0,
+    0,
+    16,
+    12
+   ]
+  ],
+  "color_type": 6,
+  "bit_depth": 8,
+  "interlaced": false,
+  "pillow_verified": false
+ },
+ {
+  "name": "hidden_first_frame_single",
+  "file": "hidden_first_frame_single.png",
+  "writer": "pillow",
+  "notes": "Pillow/libpng writing a hidden default image with exactly one animation frame after it: acTL num_frames 1 with no fcTL before IDAT",
+  "sha256": "f565a4adfcb5e32d",
+  "size": 203,
+  "width": 16,
+  "height": 12,
+  "frames": 1,
+  "is_animated": true,
+  "animate_root_frame": false,
+  "repeat_count": 1,
+  "delays": [
+   [
+    40,
+    1000
+   ]
+  ],
+  "disposals": [
+   0
+  ],
+  "blends": [
+   0
+  ],
+  "rects": [
+   [
+    0,
+    0,
+    16,
+    12
+   ]
+  ],
+  "color_type": 6,
+  "bit_depth": 8,
+  "interlaced": false,
+  "pillow_verified": true
+ },
+ {
+  "name": "multi_fdat",
+  "file": "multi_fdat.png",
+  "writer": "hand-assembled",
+  "notes": "frame 2's compressed data is split across three consecutive fdAT chunks, so the decoder must concatenate the payloads after stripping each 4-byte sequence number",
+  "sha256": "c705ef84314de4dc",
+  "size": 749,
+  "width": 16,
+  "height": 12,
+  "frames": 4,
+  "is_animated": true,
+  "animate_root_frame": true,
+  "repeat_count": 1,
+  "delays": [
+   [
+    10,
+    100
+   ],
+   [
+    15,
+    100
+   ],
+   [
+    20,
+    100
+   ],
+   [
+    25,
+    100
+   ]
+  ],
+  "disposals": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "blends": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "rects": [
+   [
+    0,
+    0,
+    16,
+    12
+   ],
+   [
+    2,
+    1,
+    6,
+    5
+   ],
+   [
+    6,
+    3,
+    6,
+    5
+   ],
+   [
+    4,
+    5,
+    6,
+    5
+   ]
+  ],
+  "color_type": 6,
+  "bit_depth": 8,
+  "interlaced": false,
+  "pillow_verified": true
+ },
+ {
+  "name": "multi_idat_frame0",
+  "file": "multi_idat_frame0.png",
+  "writer": "hand-assembled",
+  "notes": "frame 0 (the IDAT image, which is part of the animation) is split across three IDAT chunks",
+  "sha256": "ba7f98872a0c410d",
+  "size": 661,
+  "width": 16,
+  "height": 12,
+  "frames": 3,
+  "is_animated": true,
+  "animate_root_frame": true,
+  "repeat_count": 1,
+  "delays": [
+   [
+    10,
+    100
+   ],
+   [
+    15,
+    100
+   ],
+   [
+    20,
+    100
+   ]
+  ],
+  "disposals": [
+   0,
+   0,
+   0
+  ],
+  "blends": [
+   0,
+   0,
+   0
+  ],
+  "rects": [
+   [
+    0,
+    0,
+    16,
+    12
+   ],
+   [
+    2,
+    1,
+    6,
+    5
+   ],
+   [
+    6,
+    3,
+    6,
+    5
+   ]
+  ],
+  "color_type": 6,
+  "bit_depth": 8,
+  "interlaced": false,
+  "pillow_verified": true
+ },
+ {
+  "name": "loop_forever",
+  "file": "loop_forever.png",
+  "writer": "pillow",
+  "notes": "acTL num_plays 0, which means loop forever. Written by Pillow/libpng, which cropped frames 1 and 2 to the rectangle that actually changed",
+  "sha256": "468d33b0eec23c2e",
+  "size": 303,
+  "width": 16,
+  "height": 12,
+  "frames": 3,
+  "is_animated": true,
+  "animate_root_frame": true,
+  "repeat_count": 0,
+  "delays": [
+   [
+    100,
+    1000
+   ],
+   [
+    120,
+    1000
+   ],
+   [
+    140,
+    1000
+   ]
+  ],
+  "disposals": [
+   0,
+   0,
+   0
+  ],
+  "blends": [
+   0,
+   0,
+   0
+  ],
+  "rects": [
+   [
+    0,
+    0,
+    16,
+    12
+   ],
+   [
+    2,
+    1,
+    6,
+    5
+   ],
+   [
+    6,
+    3,
+    6,
+    5
+   ]
+  ],
+  "color_type": 6,
+  "bit_depth": 8,
+  "interlaced": false,
+  "pillow_verified": true
+ },
+ {
+  "name": "loop_three",
+  "file": "loop_three.png",
+  "writer": "pillow",
+  "notes": "acTL num_plays 3: the animation runs three times and stops. Written by Pillow/libpng",
+  "sha256": "707b3786cc3b4093",
+  "size": 303,
+  "width": 16,
+  "height": 12,
+  "frames": 3,
+  "is_animated": true,
+  "animate_root_frame": true,
+  "repeat_count": 3,
+  "delays": [
+   [
+    100,
+    1000
+   ],
+   [
+    120,
+    1000
+   ],
+   [
+    140,
+    1000
+   ]
+  ],
+  "disposals": [
+   0,
+   0,
+   0
+  ],
+  "blends": [
+   0,
+   0,
+   0
+  ],
+  "rects": [
+   [
+    0,
+    0,
+    16,
+    12
+   ],
+   [
+    2,
+    1,
+    6,
+    5
+   ],
+   [
+    6,
+    3,
+    6,
+    5
+   ]
+  ],
+  "color_type": 6,
+  "bit_depth": 8,
+  "interlaced": false,
+  "pillow_verified": true
+ },
+ {
+  "name": "delay_den_zero",
+  "file": "delay_den_zero.png",
+  "writer": "hand-assembled",
+  "notes": "delay_den 0 means 1/100 s by specification, so these frames must report 5/100 and 7/100 - a Rational with a zero denominator would make ToDouble() return NaN",
+  "sha256": "951c8c42be686bf7",
+  "size": 837,
+  "width": 16,
+  "height": 12,
+  "frames": 2,
+  "is_animated": true,
+  "animate_root_frame": true,
+  "repeat_count": 1,
+  "delays": [
+   [
+    5,
+    100
+   ],
+   [
+    7,
+    100
+   ]
+  ],
+  "disposals": [
+   0,
+   0
+  ],
+  "blends": [
+   0,
+   0
+  ],
+  "rects": [
+   [
+    0,
+    0,
+    16,
+    12
+   ],
+   [
+    2,
+    1,
+    6,
+    5
+   ]
+  ],
+  "color_type": 6,
+  "bit_depth": 8,
+  "interlaced": false,
+  "pillow_verified": true,
+  "raw_delays": [
+   [
+    5,
+    0
+   ],
+   [
+    7,
+    0
+   ]
+  ]
+ },
+ {
+  "name": "delay_exotic",
+  "file": "delay_exotic.png",
+  "writer": "hand-assembled",
+  "notes": "film (1/24), NTSC (1001/30000) and an explicit zero delay: the numerator and denominator must be kept verbatim rather than collapsed into milliseconds",
+  "sha256": "2e3cbb2e81eb5703",
+  "size": 917,
+  "width": 16,
+  "height": 12,
+  "frames": 3,
+  "is_animated": true,
+  "animate_root_frame": true,
+  "repeat_count": 1,
+  "delays": [
+   [
+    1,
+    24
+   ],
+   [
+    1001,
+    30000
+   ],
+   [
+    0,
+    1
+   ]
+  ],
+  "disposals": [
+   0,
+   0,
+   0
+  ],
+  "blends": [
+   0,
+   0,
+   0
+  ],
+  "rects": [
+   [
+    0,
+    0,
+    16,
+    12
+   ],
+   [
+    6,
+    3,
+    6,
+    5
+   ],
+   [
+    4,
+    5,
+    6,
+    5
+   ]
+  ],
+  "color_type": 6,
+  "bit_depth": 8,
+  "interlaced": false,
+  "pillow_verified": true
+ },
+ {
+  "name": "ancillary_between_frames",
+  "file": "ancillary_between_frames.png",
+  "writer": "hand-assembled",
+  "notes": "tEXt and pHYs chunks sit between each fcTL and its fdAT. They must be skipped without disturbing the frame sequence numbering",
+  "sha256": "39d823ed84e44563",
+  "size": 853,
+  "width": 16,
+  "height": 12,
+  "frames": 4,
+  "is_animated": true,
+  "animate_root_frame": true,
+  "repeat_count": 1,
+  "delays": [
+   [
+    10,
+    100
+   ],
+   [
+    15,
+    100
+   ],
+   [
+    20,
+    100
+   ],
+   [
+    25,
+    100
+   ]
+  ],
+  "disposals": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "blends": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "rects": [
+   [
+    0,
+    0,
+    16,
+    12
+   ],
+   [
+    2,
+    1,
+    6,
+    5
+   ],
+   [
+    6,
+    3,
+    6,
+    5
+   ],
+   [
+    4,
+    5,
+    6,
+    5
+   ]
+  ],
+  "color_type": 6,
+  "bit_depth": 8,
+  "interlaced": false,
+  "pillow_verified": true
+ },
+ {
+  "name": "interlaced_adam7",
+  "file": "interlaced_adam7.png",
+  "writer": "hand-assembled",
+  "notes": "every frame is Adam7 interlaced over its own rectangle, so the seven-pass loop has to run per frame and on sub-canvas dimensions where several passes are empty; Pillow 11.3 raises TypeError from its zip decoder when it seeks to an interlaced fdAT frame, so it cannot read this file at all",
+  "sha256": "a5a2478966e5d6b2",
+  "size": 1001,
+  "width": 16,
+  "height": 12,
+  "frames": 3,
+  "is_animated": true,
+  "animate_root_frame": true,
+  "repeat_count": 1,
+  "delays": [
+   [
+    10,
+    100
+   ],
+   [
+    10,
+    100
+   ],
+   [
+    10,
+    100
+   ]
+  ],
+  "disposals": [
+   0,
+   0,
+   1
+  ],
+  "blends": [
+   0,
+   0,
+   0
+  ],
+  "rects": [
+   [
+    0,
+    0,
+    16,
+    12
+   ],
+   [
+    2,
+    1,
+    6,
+    5
+   ],
+   [
+    5,
+    3,
+    9,
+    7
+   ]
+  ],
+  "color_type": 6,
+  "bit_depth": 8,
+  "interlaced": true,
+  "pillow_verified": false
+ },
+ {
+  "name": "palette_animated",
+  "file": "palette_animated.png",
+  "writer": "hand-assembled",
+  "notes": "colour type 3 at 8 bits with a shared PLTE and a tRNS that makes entry 0 transparent: the frames share one palette, use offsets and disposal, and frame 2 paints the transparent entry",
+  "sha256": "f6ab3555dae3ee44",
+  "size": 424,
+  "width": 16,
+  "height": 12,
+  "frames": 4,
+  "is_animated": true,
+  "animate_root_frame": true,
+  "repeat_count": 1,
+  "delays": [
+   [
+    10,
+    100
+   ],
+   [
+    10,
+    100
+   ],
+   [
+    10,
+    100
+   ],
+   [
+    10,
+    100
+   ]
+  ],
+  "disposals": [
+   0,
+   1,
+   0,
+   0
+  ],
+  "blends": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "rects": [
+   [
+    0,
+    0,
+    16,
+    12
+   ],
+   [
+    2,
+    1,
+    6,
+    5
+   ],
+   [
+    6,
+    3,
+    6,
+    5
+   ],
+   [
+    4,
+    5,
+    6,
+    5
+   ]
+  ],
+  "color_type": 3,
+  "bit_depth": 8,
+  "interlaced": false,
+  "pillow_verified": true
+ },
+ {
+  "name": "gray_alpha",
+  "file": "gray_alpha.png",
+  "writer": "hand-assembled",
+  "notes": "colour type 4 (grey + alpha) at 8 bits, including a fully transparent frame that must overwrite - not blend into - the canvas because its blend op is APNG_BLEND_OP_SOURCE",
+  "sha256": "b8300c6374526fb5",
+  "size": 430,
+  "width": 16,
+  "height": 12,
+  "frames": 3,
+  "is_animated": true,
+  "animate_root_frame": true,
+  "repeat_count": 1,
+  "delays": [
+   [
+    10,
+    100
+   ],
+   [
+    10,
+    100
+   ],
+   [
+    10,
+    100
+   ]
+  ],
+  "disposals": [
+   0,
+   0,
+   0
+  ],
+  "blends": [
+   0,
+   0,
+   0
+  ],
+  "rects": [
+   [
+    0,
+    0,
+    16,
+    12
+   ],
+   [
+    2,
+    1,
+    6,
+    5
+   ],
+   [
+    6,
+    3,
+    6,
+    5
+   ]
+  ],
+  "color_type": 4,
+  "bit_depth": 8,
+  "interlaced": false,
+  "pillow_verified": true
+ },
+ {
+  "name": "gray16",
+  "file": "gray16.png",
+  "writer": "hand-assembled",
+  "notes": "colour type 0 at 16 bits. An animated PNG composites in an Rgba32 canvas, so unlike a still 16-bit PNG loaded into Rgba64 the samples are narrowed to their high byte - the .rgba holds that narrowed value, which is the documented fidelity asymmetry of the animated path; Pillow scales 16-bit samples to 8 bits where the library narrows them to the high byte, so its decode is not the expected image",
+  "sha256": "3cb9d44c082d2cd2",
+  "size": 667,
+  "width": 16,
+  "height": 12,
+  "frames": 3,
+  "is_animated": true,
+  "animate_root_frame": true,
+  "repeat_count": 1,
+  "delays": [
+   [
+    10,
+    100
+   ],
+   [
+    10,
+    100
+   ],
+   [
+    10,
+    100
+   ]
+  ],
+  "disposals": [
+   0,
+   0,
+   0
+  ],
+  "blends": [
+   0,
+   0,
+   0
+  ],
+  "rects": [
+   [
+    0,
+    0,
+    16,
+    12
+   ],
+   [
+    2,
+    1,
+    6,
+    5
+   ],
+   [
+    6,
+    3,
+    6,
+    5
+   ]
+  ],
+  "color_type": 0,
+  "bit_depth": 16,
+  "interlaced": false,
+  "pillow_verified": false
+ },
+ {
+  "name": "bad_seq_gap",
+  "file": "bad_seq_gap.png",
+  "writer": "hand-assembled",
+  "notes": "frame 2's fcTL carries sequence number 7 where 3 was due: the series must have no gaps",
+  "sha256": "b4f9e67ee030c5b0",
+  "size": 917,
+  "width": 0,
+  "height": 0,
+  "frames": 0,
+  "is_animated": false,
+  "animate_root_frame": false,
+  "repeat_count": 0,
+  "delays": [],
+  "disposals": [],
+  "blends": [],
+  "rects": [],
+  "color_type": 0,
+  "bit_depth": 0,
+  "interlaced": false,
+  "expect": "InvalidImageContentException",
+  "pillow_rejects": true
+ },
+ {
+  "name": "bad_seq_reordered",
+  "file": "bad_seq_reordered.png",
+  "writer": "hand-assembled",
+  "notes": "frame 2's fcTL and fdAT sequence numbers are swapped, so the series runs 0,1,2,4,3",
+  "sha256": "4e0435fa22f90905",
+  "size": 917,
+  "width": 0,
+  "height": 0,
+  "frames": 0,
+  "is_animated": false,
+  "animate_root_frame": false,
+  "repeat_count": 0,
+  "delays": [],
+  "disposals": [],
+  "blends": [],
+  "rects": [],
+  "color_type": 0,
+  "bit_depth": 0,
+  "interlaced": false,
+  "expect": "InvalidImageContentException",
+  "pillow_rejects": true
+ },
+ {
+  "name": "bad_seq_duplicate",
+  "file": "bad_seq_duplicate.png",
+  "writer": "hand-assembled",
+  "notes": "frame 2's fcTL repeats sequence number 2, which frame 1's fdAT already used",
+  "sha256": "7c92ff89468603e5",
+  "size": 917,
+  "width": 0,
+  "height": 0,
+  "frames": 0,
+  "is_animated": false,
+  "animate_root_frame": false,
+  "repeat_count": 0,
+  "delays": [],
+  "disposals": [],
+  "blends": [],
+  "rects": [],
+  "color_type": 0,
+  "bit_depth": 0,
+  "interlaced": false,
+  "expect": "InvalidImageContentException",
+  "pillow_rejects": true
+ },
+ {
+  "name": "bad_fctl_after_last",
+  "file": "bad_fctl_after_last.png",
+  "writer": "hand-assembled",
+  "notes": "acTL declares 2 frames but a third fcTL follows the second frame's data; Pillow accepts it: Pillow stops after acTL's num_frames frames and never looks at the chunks that follow, so a surplus fcTL is simply never read",
+  "sha256": "96faf11f7a5727f0",
+  "size": 917,
+  "width": 0,
+  "height": 0,
+  "frames": 0,
+  "is_animated": false,
+  "animate_root_frame": false,
+  "repeat_count": 0,
+  "delays": [],
+  "disposals": [],
+  "blends": [],
+  "rects": [],
+  "color_type": 0,
+  "bit_depth": 0,
+  "interlaced": false,
+  "expect": "InvalidImageContentException",
+  "pillow_rejects": false
+ },
+ {
+  "name": "bad_frame_exceeds_canvas",
+  "file": "bad_frame_exceeds_canvas.png",
+  "writer": "hand-assembled",
+  "notes": "frame 2's rectangle starts at x=12 and is 6 wide, so it runs 2 pixels past the 16-pixel canvas",
+  "sha256": "182d674a343e23f7",
+  "size": 917,
+  "width": 0,
+  "height": 0,
+  "frames": 0,
+  "is_animated": false,
+  "animate_root_frame": false,
+  "repeat_count": 0,
+  "delays": [],
+  "disposals": [],
+  "blends": [],
+  "rects": [],
+  "color_type": 0,
+  "bit_depth": 0,
+  "interlaced": false,
+  "expect": "InvalidImageContentException",
+  "pillow_rejects": true
+ },
+ {
+  "name": "bad_frame_zero_size",
+  "file": "bad_frame_zero_size.png",
+  "writer": "hand-assembled",
+  "notes": "frame 2's fcTL declares a 0x0 rectangle; the specification requires both to be > 0",
+  "sha256": "907084e9bb7c8d03",
+  "size": 917,
+  "width": 0,
+  "height": 0,
+  "frames": 0,
+  "is_animated": false,
+  "animate_root_frame": false,
+  "repeat_count": 0,
+  "delays": [],
+  "disposals": [],
+  "blends": [],
+  "rects": [],
+  "color_type": 0,
+  "bit_depth": 0,
+  "interlaced": false,
+  "expect": "InvalidImageContentException",
+  "pillow_rejects": true
+ },
+ {
+  "name": "bad_fdat_without_fctl",
+  "file": "bad_fdat_without_fctl.png",
+  "writer": "hand-assembled",
+  "notes": "the third frame's data arrives as an fdAT with no fcTL introducing it; Pillow accepts it: acTL declares 2 frames, so Pillow reads 2 and never reaches the third frame's unintroduced fdAT",
+  "sha256": "abe5db11869987cc",
+  "size": 879,
+  "width": 0,
+  "height": 0,
+  "frames": 0,
+  "is_animated": false,
+  "animate_root_frame": false,
+  "repeat_count": 0,
+  "delays": [],
+  "disposals": [],
+  "blends": [],
+  "rects": [],
+  "color_type": 0,
+  "bit_depth": 0,
+  "interlaced": false,
+  "expect": "InvalidImageContentException",
+  "pillow_rejects": false
+ },
+ {
+  "name": "bad_fdat_orphan_after_frame",
+  "file": "bad_fdat_orphan_after_frame.png",
+  "writer": "hand-assembled",
+  "notes": "a stray fdAT with the next sequence number follows the final frame, which is already complete; Pillow accepts it: Pillow reads the 3 declared frames and stops, never reaching the stray trailing fdAT",
+  "sha256": "82a3312a7343913a",
+  "size": 944,
+  "width": 0,
+  "height": 0,
+  "frames": 0,
+  "is_animated": false,
+  "animate_root_frame": false,
+  "repeat_count": 0,
+  "delays": [],
+  "disposals": [],
+  "blends": [],
+  "rects": [],
+  "color_type": 0,
+  "bit_depth": 0,
+  "interlaced": false,
+  "expect": "InvalidImageContentException",
+  "pillow_rejects": false
+ },
+ {
+  "name": "bad_first_fctl_offset",
+  "file": "bad_first_fctl_offset.png",
+  "writer": "hand-assembled",
+  "notes": "the fcTL that precedes IDAT describes a 14x11 rectangle at (2,1); the fcTL for the default image must be the whole canvas at the origin",
+  "sha256": "81c0ad739f48b981",
+  "size": 917,
+  "width": 0,
+  "height": 0,
+  "frames": 0,
+  "is_animated": false,
+  "animate_root_frame": false,
+  "repeat_count": 0,
+  "delays": [],
+  "disposals": [],
+  "blends": [],
+  "rects": [],
+  "color_type": 0,
+  "bit_depth": 0,
+  "interlaced": false,
+  "expect": "InvalidImageContentException",
+  "pillow_rejects": true
+ },
+ {
+  "name": "bad_num_frames_mismatch",
+  "file": "bad_num_frames_mismatch.png",
+  "writer": "hand-assembled",
+  "notes": "acTL declares 5 frames but the file only holds 3",
+  "sha256": "1ed37b1074c1bde7",
+  "size": 917,
+  "width": 0,
+  "height": 0,
+  "frames": 0,
+  "is_animated": false,
+  "animate_root_frame": false,
+  "repeat_count": 0,
+  "delays": [],
+  "disposals": [],
+  "blends": [],
+  "rects": [],
+  "color_type": 0,
+  "bit_depth": 0,
+  "interlaced": false,
+  "expect": "InvalidImageContentException",
+  "pillow_rejects": true
+ },
+ {
+  "name": "bad_dispose_op",
+  "file": "bad_dispose_op.png",
+  "writer": "hand-assembled",
+  "notes": "frame 1's dispose_op is 9; only 0, 1 and 2 are defined; Pillow accepts it: Pillow keeps dispose_op verbatim and only compares it against its own three constants, so an out-of-range value silently behaves like APNG_DISPOSE_OP_NONE",
+  "sha256": "e7472158450ed3d1",
+  "size": 917,
+  "width": 0,
+  "height": 0,
+  "frames": 0,
+  "is_animated": false,
+  "animate_root_frame": false,
+  "repeat_count": 0,
+  "delays": [],
+  "disposals": [],
+  "blends": [],
+  "rects": [],
+  "color_type": 0,
+  "bit_depth": 0,
+  "interlaced": false,
+  "expect": "InvalidImageContentException",
+  "pillow_rejects": false
+ },
+ {
+  "name": "bad_blend_op",
+  "file": "bad_blend_op.png",
+  "writer": "hand-assembled",
+  "notes": "frame 1's blend_op is 7; only 0 and 1 are defined; Pillow accepts it: Pillow tests `blend_op == OP_SOURCE` and treats every other value as OP_OVER, so an out-of-range value is silently accepted",
+  "sha256": "6da0d90092294c04",
+  "size": 917,
+  "width": 0,
+  "height": 0,
+  "frames": 0,
+  "is_animated": false,
+  "animate_root_frame": false,
+  "repeat_count": 0,
+  "delays": [],
+  "disposals": [],
+  "blends": [],
+  "rects": [],
+  "color_type": 0,
+  "bit_depth": 0,
+  "interlaced": false,
+  "expect": "InvalidImageContentException",
+  "pillow_rejects": false
+ },
+ {
+  "name": "bad_actl_after_idat",
+  "file": "bad_actl_after_idat.png",
+  "writer": "hand-assembled",
+  "notes": "acTL follows IDAT, so the fcTL before IDAT arrives while the file is not yet declared animated; acTL must precede the first IDAT; Pillow accepts it: Pillow only honours an acTL seen before IDAT; a later one is ignored and the file decodes as a still PNG with n_frames 1 instead of raising",
+  "sha256": "4ea4716f6b731539",
+  "size": 917,
+  "width": 0,
+  "height": 0,
+  "frames": 0,
+  "is_animated": false,
+  "animate_root_frame": false,
+  "repeat_count": 0,
+  "delays": [],
+  "disposals": [],
+  "blends": [],
+  "rects": [],
+  "color_type": 0,
+  "bit_depth": 0,
+  "interlaced": false,
+  "expect": "InvalidImageContentException",
+  "pillow_rejects": false
+ },
+ {
+  "name": "bad_two_actl",
+  "file": "bad_two_actl.png",
+  "writer": "hand-assembled",
+  "notes": "two acTL chunks; the specification allows exactly one; Pillow accepts it: Pillow warns 'Invalid APNG, will use default PNG image if possible' and falls back to the still image rather than raising",
+  "sha256": "7f1dd94f75df214e",
+  "size": 937,
+  "width": 0,
+  "height": 0,
+  "frames": 0,
+  "is_animated": false,
+  "animate_root_frame": false,
+  "repeat_count": 0,
+  "delays": [],
+  "disposals": [],
+  "blends": [],
+  "rects": [],
+  "color_type": 0,
+  "bit_depth": 0,
+  "interlaced": false,
+  "expect": "InvalidImageContentException",
+  "pillow_rejects": false
+ },
+ {
+  "name": "bad_fdat_short",
+  "file": "bad_fdat_short.png",
+  "writer": "hand-assembled",
+  "notes": "the last fdAT chunk's payload is cut short, so the frame's zlib stream ends mid-way through",
+  "sha256": "6e1f8a12e13c234c",
+  "size": 909,
+  "width": 0,
+  "height": 0,
+  "frames": 0,
+  "is_animated": false,
+  "animate_root_frame": false,
+  "repeat_count": 0,
+  "delays": [],
+  "disposals": [],
+  "blends": [],
+  "rects": [],
+  "color_type": 0,
+  "bit_depth": 0,
+  "interlaced": false,
+  "expect": "InvalidImageContentException",
+  "pillow_rejects": true
+ }
+]

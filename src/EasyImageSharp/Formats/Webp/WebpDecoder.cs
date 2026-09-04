@@ -92,8 +92,13 @@ public sealed class WebpDecoder : IImageDecoder
         var frames = new List<ImageFrame<TPixel>>();
         int frameCount = Math.Min(file.Frames.Count, options.MaxFrames);
         bool previousDisposed = false;
+
+        // Every animation frame is materialised at the full canvas size, whatever its ANMF rectangle says,
+        // so the cumulative budget is charged the canvas once per frame.
+        DecoderOptions.FrameBudget budget = options.CreateBudget();
         for (int i = 0; i < frameCount; i++)
         {
+            budget.Add(file.Width, file.Height, "WebP");
             WebpFrame frame = file.Frames[i];
             Rgba32[] pixels = DecodeFrame(data, frame, options, out int width, out int height);
             if (width != frame.Width || height != frame.Height)

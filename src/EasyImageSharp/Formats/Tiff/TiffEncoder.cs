@@ -109,23 +109,24 @@ public sealed class TiffEncoder : IImageEncoder
         }
 
         // Compute the file layout: [header][data0][ifd0 + its values/sub-IFDs][data1][ifd1]...
+        // Every position is accumulated as a long and narrowed only through CheckedOffset, so an oversized
+        // encode is reported as the size limit it is instead of escaping as an OverflowException.
         var dataOffsets = new int[frameCount];
         var ifdOffsets = new int[frameCount];
         long cursor = 8;
         for (int f = 0; f < frameCount; f++)
         {
             cursor = (cursor + 1) & ~1L; // Word-align.
-            dataOffsets[f] = checked((int)cursor);
+            dataOffsets[f] = CheckedOffset(cursor);
             cursor += frameData[f].Length;
             cursor = (cursor + 1) & ~1L;
-            ifdOffsets[f] = checked((int)cursor);
+            ifdOffsets[f] = CheckedOffset(cursor);
             cursor += directories[f].Measure();
         }
 
-        if (cursor > uint.MaxValue)
-        {
-            throw new NotSupportedException("The TIFF file would exceed the format's 4 GiB offset limit.");
-        }
+        // The last directory's own bytes still have to land inside the addressable range, and the write loop
+        // below tracks the stream position in an int.
+        _ = CheckedOffset(cursor);
 
         // Header
         Span<byte> scratch = stackalloc byte[4];
@@ -150,6 +151,21 @@ public sealed class TiffEncoder : IImageEncoder
             position += block.Length;
         }
     }
+
+    /// <summary>
+    /// Reported when a page's data or the file layout runs past what the encoder's 32-bit offsets can address.
+    /// </summary>
+    private const string SizeLimitMessage =
+        "The TIFF file would exceed the format's 4 GiB offset limit; this encoder writes 32-bit offsets and stops at 2 GiB.";
+
+    /// <summary>
+    /// Narrows a layout position to the offset a directory entry stores it in, reporting the encoder's size
+    /// limit rather than letting an <see cref="OverflowException"/> escape.
+    /// </summary>
+    /// <param name="position">The absolute file position to narrow.</param>
+    /// <returns>The position as an <see cref="int"/>.</returns>
+    private static int CheckedOffset(long position)
+        => position <= int.MaxValue ? (int)position : throw new NotSupportedException(SizeLimitMessage);
 
     /// <summary>
     /// Tags never copied from a source EXIF profile into a page directory: the sample layout and data pointers
@@ -368,8 +384,20 @@ public sealed class TiffEncoder : IImageEncoder
         int width = frame.Width;
         int height = frame.Height;
         int spp = layout.SamplesPerPixel;
-        int rowBytes = ((width * spp * layout.BitsPerSample) + 7) / 8;
-        var raw = new byte[rowBytes * height];
+
+        // A page is buffered as one strip, so its uncompressed bytes have to fit a single array: the row
+        // stride and the total are measured as longs first, because both products overflow an int well
+        // inside the dimensions an image can legitimately have.
+        long rowBytesLong = (((long)width * spp * layout.BitsPerSample) + 7) / 8;
+        long rawLength = rowBytesLong * height;
+        if (rawLength > int.MaxValue)
+        {
+            throw new NotSupportedException(
+                $"TIFF cannot represent a {width}x{height} image at {layout.BitsPerSample * spp} bits per pixel; " + SizeLimitMessage);
+        }
+
+        int rowBytes = (int)rowBytesLong;
+        var raw = new byte[(int)rawLength];
         var rgbaRow = new Rgba32[width];
 
         // A WhiteIsZero page stores the complement of the grey level, which also lets a bilevel scan code its

@@ -26,24 +26,48 @@ internal static class PngFilters
     /// <summary>Per-byte low seven bits of a 32-bit word.</summary>
     private const uint LowBits = 0x7F7F7F7Fu;
 
-    /// <summary>Reconstructs <paramref name="row"/> in place from its filter type.</summary>
+    /// <summary>
+    /// Reconstructs <paramref name="row"/> in place from its filter type, with <paramref name="previous"/> the
+    /// already-reconstructed row above (empty for the first scanline).
+    /// </summary>
     public static void Unfilter(byte filterType, Span<byte> row, ReadOnlySpan<byte> previous, int bpp)
+        => Unfilter(filterType, row, row, previous, bpp);
+
+    /// <summary>
+    /// Reconstructs the filtered scanline <paramref name="source"/> into <paramref name="destination"/>, with
+    /// <paramref name="previous"/> the already-reconstructed row above (empty for the first scanline).
+    /// <paramref name="destination"/> must be at least as long as <paramref name="source"/>; only its first
+    /// <c>source.Length</c> bytes are written.
+    /// <para>
+    /// Aliasing contract. Every predictor reads <paramref name="source"/> at index <c>i</c> before writing
+    /// <paramref name="destination"/> at index <c>i</c>, and otherwise reads only already-written destination
+    /// bytes at <c>i - bpp</c> and bytes of the row above. So the two spans may be one and the same - which is
+    /// exactly what the in-place overload passes - and more generally may alias a single backing buffer
+    /// provided <paramref name="destination"/> does not start after <paramref name="source"/>: a write then
+    /// only ever lands on source bytes that have already been consumed. <paramref name="previous"/> may sit in
+    /// that buffer too, at any offset that does not overlap the written region of <paramref name="destination"/>.
+    /// That is the shape an inflate window produces, where a decompressed row is unfiltered straight out of the
+    /// window while the row above is still resident in it.
+    /// </para>
+    /// </summary>
+    public static void Unfilter(byte filterType, ReadOnlySpan<byte> source, Span<byte> destination, ReadOnlySpan<byte> previous, int bpp)
     {
         switch (filterType)
         {
             case 0:
+                CopyIfDistinct(source, destination[..source.Length]);
                 break;
             case 1:
-                UnfilterSub(row, bpp);
+                UnfilterSub(source, destination, bpp);
                 break;
             case 2:
-                UnfilterUp(row, previous);
+                UnfilterUp(source, destination, previous);
                 break;
             case 3:
-                UnfilterAverage(row, previous, bpp);
+                UnfilterAverage(source, destination, previous, bpp);
                 break;
             case 4:
-                UnfilterPaeth(row, previous, bpp);
+                UnfilterPaeth(source, destination, previous, bpp);
                 break;
             default:
                 throw new InvalidImageContentException($"Invalid PNG filter type: {filterType}.");
@@ -58,10 +82,27 @@ internal static class PngFilters
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static uint AverageBytes(uint a, uint b) => (a & b) + (((a ^ b) >> 1) & LowBits);
 
-    private static void UnfilterSub(Span<byte> row, int bpp)
+    /// <summary>
+    /// Copies <paramref name="source"/> over <paramref name="destination"/> unless the two already begin at the
+    /// same address, which keeps the in-place overload free of a self-copy.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void CopyIfDistinct(ReadOnlySpan<byte> source, Span<byte> destination)
     {
-        int length = row.Length;
-        ref byte data = ref MemoryMarshal.GetReference(row);
+        if (!Unsafe.AreSame(ref MemoryMarshal.GetReference(source), ref MemoryMarshal.GetReference(destination)))
+        {
+            source.CopyTo(destination);
+        }
+    }
+
+    private static void UnfilterSub(ReadOnlySpan<byte> source, Span<byte> destination, int bpp)
+    {
+        int length = source.Length;
+        ref byte input = ref MemoryMarshal.GetReference(source);
+        ref byte data = ref MemoryMarshal.GetReference(destination);
+
+        // The leading pixel has no left neighbour and carries across unchanged.
+        CopyIfDistinct(source[..Math.Min(bpp, length)], destination);
         int i = bpp;
 
         if (bpp == 4 && !SimdConfig.ForceScalarFallback && BitConverter.IsLittleEndian)
@@ -69,7 +110,7 @@ internal static class PngFilters
             for (; i + 4 <= length; i += 4)
             {
                 uint value = AddBytes(
-                    Unsafe.ReadUnaligned<uint>(ref Unsafe.Add(ref data, (uint)i)),
+                    Unsafe.ReadUnaligned<uint>(ref Unsafe.Add(ref input, (uint)i)),
                     Unsafe.ReadUnaligned<uint>(ref Unsafe.Add(ref data, (uint)(i - 4))));
                 Unsafe.WriteUnaligned(ref Unsafe.Add(ref data, (uint)i), value);
             }
@@ -77,19 +118,22 @@ internal static class PngFilters
 
         for (; i < length; i++)
         {
-            Unsafe.Add(ref data, (uint)i) += Unsafe.Add(ref data, (uint)(i - bpp));
+            Unsafe.Add(ref data, (uint)i) =
+                (byte)(Unsafe.Add(ref input, (uint)i) + Unsafe.Add(ref data, (uint)(i - bpp)));
         }
     }
 
-    private static void UnfilterUp(Span<byte> row, ReadOnlySpan<byte> previous)
+    private static void UnfilterUp(ReadOnlySpan<byte> source, Span<byte> destination, ReadOnlySpan<byte> previous)
     {
+        int length = source.Length;
         if (previous.IsEmpty)
         {
+            CopyIfDistinct(source, destination[..length]);
             return;
         }
 
-        int length = row.Length;
-        ref byte data = ref MemoryMarshal.GetReference(row);
+        ref byte input = ref MemoryMarshal.GetReference(source);
+        ref byte data = ref MemoryMarshal.GetReference(destination);
         ref byte above = ref MemoryMarshal.GetReference(previous);
         int i = 0;
 
@@ -97,7 +141,7 @@ internal static class PngFilters
         {
             for (; i <= length - Vector256<byte>.Count; i += Vector256<byte>.Count)
             {
-                (Vector256.LoadUnsafe(ref data, (nuint)i) + Vector256.LoadUnsafe(ref above, (nuint)i))
+                (Vector256.LoadUnsafe(ref input, (nuint)i) + Vector256.LoadUnsafe(ref above, (nuint)i))
                     .StoreUnsafe(ref data, (nuint)i);
             }
         }
@@ -106,37 +150,40 @@ internal static class PngFilters
         {
             for (; i <= length - Vector128<byte>.Count; i += Vector128<byte>.Count)
             {
-                (Vector128.LoadUnsafe(ref data, (nuint)i) + Vector128.LoadUnsafe(ref above, (nuint)i))
+                (Vector128.LoadUnsafe(ref input, (nuint)i) + Vector128.LoadUnsafe(ref above, (nuint)i))
                     .StoreUnsafe(ref data, (nuint)i);
             }
         }
 
         for (; i < length; i++)
         {
-            Unsafe.Add(ref data, (uint)i) += Unsafe.Add(ref above, (uint)i);
+            Unsafe.Add(ref data, (uint)i) = (byte)(Unsafe.Add(ref input, (uint)i) + Unsafe.Add(ref above, (uint)i));
         }
     }
 
-    private static void UnfilterAverage(Span<byte> row, ReadOnlySpan<byte> previous, int bpp)
+    private static void UnfilterAverage(ReadOnlySpan<byte> source, Span<byte> destination, ReadOnlySpan<byte> previous, int bpp)
     {
-        int length = row.Length;
-        ref byte data = ref MemoryMarshal.GetReference(row);
+        int length = source.Length;
+        ref byte input = ref MemoryMarshal.GetReference(source);
+        ref byte data = ref MemoryMarshal.GetReference(destination);
+        int limit = Math.Min(bpp, length);
 
         if (previous.IsEmpty)
         {
+            CopyIfDistinct(source[..limit], destination);
             for (int i = bpp; i < length; i++)
             {
-                Unsafe.Add(ref data, (uint)i) += (byte)(Unsafe.Add(ref data, (uint)(i - bpp)) >> 1);
+                Unsafe.Add(ref data, (uint)i) =
+                    (byte)(Unsafe.Add(ref input, (uint)i) + (Unsafe.Add(ref data, (uint)(i - bpp)) >> 1));
             }
 
             return;
         }
 
         ref byte above = ref MemoryMarshal.GetReference(previous);
-        int limit = Math.Min(bpp, length);
         for (int i = 0; i < limit; i++)
         {
-            Unsafe.Add(ref data, (uint)i) += (byte)(Unsafe.Add(ref above, (uint)i) >> 1);
+            Unsafe.Add(ref data, (uint)i) = (byte)(Unsafe.Add(ref input, (uint)i) + (Unsafe.Add(ref above, (uint)i) >> 1));
         }
 
         int j = bpp;
@@ -147,42 +194,43 @@ internal static class PngFilters
                 uint mean = AverageBytes(
                     Unsafe.ReadUnaligned<uint>(ref Unsafe.Add(ref data, (uint)(j - 4))),
                     Unsafe.ReadUnaligned<uint>(ref Unsafe.Add(ref above, (uint)j)));
-                uint value = AddBytes(Unsafe.ReadUnaligned<uint>(ref Unsafe.Add(ref data, (uint)j)), mean);
+                uint value = AddBytes(Unsafe.ReadUnaligned<uint>(ref Unsafe.Add(ref input, (uint)j)), mean);
                 Unsafe.WriteUnaligned(ref Unsafe.Add(ref data, (uint)j), value);
             }
         }
 
         for (; j < length; j++)
         {
-            Unsafe.Add(ref data, (uint)j) +=
-                (byte)((Unsafe.Add(ref data, (uint)(j - bpp)) + Unsafe.Add(ref above, (uint)j)) >> 1);
+            Unsafe.Add(ref data, (uint)j) = (byte)(Unsafe.Add(ref input, (uint)j)
+                + ((Unsafe.Add(ref data, (uint)(j - bpp)) + Unsafe.Add(ref above, (uint)j)) >> 1));
         }
     }
 
-    private static void UnfilterPaeth(Span<byte> row, ReadOnlySpan<byte> previous, int bpp)
+    private static void UnfilterPaeth(ReadOnlySpan<byte> source, Span<byte> destination, ReadOnlySpan<byte> previous, int bpp)
     {
         if (previous.IsEmpty)
         {
             // With no row above, the Paeth predictor degenerates to Sub.
-            UnfilterSub(row, bpp);
+            UnfilterSub(source, destination, bpp);
             return;
         }
 
-        int length = row.Length;
-        ref byte data = ref MemoryMarshal.GetReference(row);
+        int length = source.Length;
+        ref byte input = ref MemoryMarshal.GetReference(source);
+        ref byte data = ref MemoryMarshal.GetReference(destination);
         ref byte above = ref MemoryMarshal.GetReference(previous);
         int limit = Math.Min(bpp, length);
         for (int i = 0; i < limit; i++)
         {
-            Unsafe.Add(ref data, (uint)i) += Unsafe.Add(ref above, (uint)i);
+            Unsafe.Add(ref data, (uint)i) = (byte)(Unsafe.Add(ref input, (uint)i) + Unsafe.Add(ref above, (uint)i));
         }
 
         for (int i = bpp; i < length; i++)
         {
-            Unsafe.Add(ref data, (uint)i) += (byte)Paeth(
+            Unsafe.Add(ref data, (uint)i) = (byte)(Unsafe.Add(ref input, (uint)i) + Paeth(
                 Unsafe.Add(ref data, (uint)(i - bpp)),
                 Unsafe.Add(ref above, (uint)i),
-                Unsafe.Add(ref above, (uint)(i - bpp)));
+                Unsafe.Add(ref above, (uint)(i - bpp))));
         }
     }
 

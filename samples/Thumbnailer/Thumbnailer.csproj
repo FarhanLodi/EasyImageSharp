@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    The trimming smoke sample. CI publishes it for linux-x64 as a self-contained, trimmed application with
+    PublishTrimmed=true, TrimmerSingleWarn=false and SuppressTrimAnalysisWarnings=false, fails the job on a
+    single "warning IL####" line in the publish log, and then runs the published binary. (The literal command
+    lives in the trim-smoke job in .github/workflows/ci.yml; an XML comment cannot quote it, because it cannot
+    contain a double hyphen.)
+
+    PublishTrimmed, SelfContained and RuntimeIdentifier are therefore deliberately absent from this file: they
+    belong to the publish job. Pinning a RID here would break the plain "dotnet run" against this project that
+    the samples job, and any developer on Windows or macOS, performs.
+
+    Single-target net10.0 on purpose. The publish passes no target framework and the job installs only the
+    10.0.x SDK, so a multi-targeting project would fail immediately with the "project has multiple target
+    frameworks" publish error. That single TFM is also why this project is not a member of EasyImageSharp.slnx:
+    the test legs run against net8.0 as well, which fails for any solution project without a net8.0 build.
+
+    InvariantGlobalization is deliberately NOT set. This job exists to catch trim warnings, and leaving
+    globalization in the published closure keeps it closer to what a real consumer actually ships.
+
+    Only EasyImageSharp is referenced. EasyImageSharp.AI must never be added: the ONNX Runtime managed wrapper
+    is not annotated as AOT compatible, and its IL2026/IL3050 warnings would become publish errors under the
+    TreatWarningsAsErrors inherited from the root Directory.Build.props.
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>Thumbnailer</AssemblyName>
+    <RootNamespace>Thumbnailer</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <IsAotCompatible>true</IsAotCompatible>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\EasyImageSharp\EasyImageSharp.csproj" />
+  </ItemGroup>
+
+</Project>

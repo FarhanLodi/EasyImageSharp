@@ -21,8 +21,9 @@ By participating you agree to abide by the [Code of Conduct](CODE_OF_CONDUCT.md)
 7. [Adding a codec](#adding-a-codec)
 8. [Adding a processing operation](#adding-a-processing-operation)
 9. [Public API changes](#public-api-changes)
-10. [Benchmarks](#benchmarks)
-11. [Submitting a pull request](#submitting-a-pull-request)
+10. [Samples and deployment smokes](#samples-and-deployment-smokes)
+11. [Benchmarks](#benchmarks)
+12. [Submitting a pull request](#submitting-a-pull-request)
 
 ---
 
@@ -49,10 +50,21 @@ dotnet restore EasyImageSharp.slnx
 
 ```
 src/EasyImageSharp/            the core library: codecs, pixel formats, processing, metadata, tensors
+src/EasyImageSharp/PublicAPI/  tracked public API baselines, one pair of files per target framework
 src/EasyImageSharp.AI/         optional ONNX Runtime add-on (models fetched on demand, checksum-pinned)
 tests/EasyImageSharp.Tests/    core tests, including the fixture corpus and the fuzz harness
 tests/EasyImageSharp.AI.Tests/ AI add-on tests, running against tiny generated ONNX graphs
+samples/AotSmoke/              Native AOT smoke: every codec, metadata path and processing stage
+samples/Thumbnailer/           trimming smoke, shaped like a real thumbnail service
+benchmarks/EasyImageSharp.Benchmarks/   the BenchmarkDotNet suite behind the README Performance table
+benchmarks/corpus/             the script that generates the benchmark inputs; the inputs are not committed
 ```
+
+`samples/` and `benchmarks/` are deliberately **not** in `EasyImageSharp.slnx`. They single-target
+`net10.0` — `PublishAot` and `PublishTrimmed` have no meaning on a multi-targeted project, and the
+benchmark host picks its own runtime — and a single-TFM project inside the solution breaks the
+solution-wide `dotnet test -f net8.0` leg. They are built and run by path instead, as shown in
+[Samples and deployment smokes](#samples-and-deployment-smokes) and [Benchmarks](#benchmarks).
 
 ---
 
@@ -188,27 +200,43 @@ pixels. CI does not check this, for the same reason.
 cd tests/EasyImageSharp.Tests/Fixtures
 python -m pip install "pillow>=11" "numpy>=2"
 python generate.py
-git status --porcelain
+python check_determinism.py
 ```
 
-So read `git status` with judgement rather than expecting it to be empty. A file whose **size barely
-moves** is almost certainly just recompressed; a file whose size jumps, or that appears or disappears,
-is a real change. When in doubt, compare decoded pixels rather than bytes:
+**`check_determinism.py` is the check, not `git status`.** It copies `generate.py` and every
+`gen_*.py` into a scratch directory, regenerates the whole corpus there from nothing, and compares the
+result against the corpus on disk by the strongest rule that is stable for each kind of file: **decoded
+pixels** for anything Pillow can open (mode, size, palette, frame count, the per-frame delay, dispose,
+blend, rect and loop keys, and every frame's pixel array — every frame, not only the first), exact
+bytes for `.rgba` ground truth and hand-assembled blobs, and a structural comparison for
+`manifest.json` with the keys that hash or measure *encoded* bytes removed. It exits 0 when the corpus
+agrees, 1 when it differs, and 2 when the check itself could not run. Over the corpus as it stands —
+a little over 1,250 files — it takes about ten seconds.
 
 ```bash
-python -c "from PIL import Image; import sys; import numpy as np; \
-a=np.array(Image.open(sys.argv[1]).convert('RGBA')); b=np.array(Image.open(sys.argv[2]).convert('RGBA')); \
-print('identical pixels' if a.shape==b.shape and (a==b).all() else 'DIFFERENT')" old.png new.png
+python check_determinism.py --verbose            # name every file it compared
+python check_determinism.py --json report.json   # machine-readable result, for CI
+python check_determinism.py --scratch /tmp/fx    # keep the regenerated corpus for inspection
 ```
 
-Commit only the fixtures you actually meant to change; reverting incidental recompression keeps the
-diff readable and the history honest.
+A dirty `git status` after `python generate.py` is **not** a determinism signal, and you should not try
+to make it clean. It is recompression noise: Pillow's wheels deflate through zlib-ng, whose output
+depends on the zlib-ng version and on the SIMD path chosen at run time from the host CPU, so hundreds
+of pixel-identical files get rewritten. The earlier byte-comparing CI job flagged about 330 such files
+and had to be deleted, which is exactly why the checker exists.
+
+If `check_determinism.py` fails on a file nobody touched, suspect the toolchain — a Pillow major
+version that changed a *decode* — before suspecting the corpus. Commit only the fixtures you actually
+meant to change; reverting incidental recompression keeps the diff readable and the history honest.
 
 `generate.py` is the entry point; it discovers and calls the per-area generators:
 
 | Script | Produces |
 |---|---|
 | `generate.py` | PNG, BMP, TIFF, JPEG, GIF fixtures, and it drives all the others |
+| `gen_apng.py` | APNG: 25 well-formed animations and 15 deliberately malformed ones, with per-frame RGBA |
+| `gen_tiffadv.py` | advanced TIFF: CCITT, JPEG-in-TIFF, planar, tiled, the wide sample formats, BigTIFF |
+| `gen_webp.py`, `gen_webpenc.py`, `gen_vp8enc.py` | WebP decode fixtures, plus source images for the encoder and VP8 tests |
 | `gen_smallformats.py` | TGA, Netpbm (PBM/PGM/PPM/PAM), QOI, ICO/CUR |
 | `gen_metadata.py` | EXIF, orientation, DPI, ICC, XMP, PNG text chunks, GIF frame facts |
 | `gen_document.py` | synthetic text pages for skew, orientation, page detection, cleanup, layout |
@@ -238,7 +266,7 @@ fixed-seed mutation fuzzer over every fixture file plus the library's own encode
 - throw `ImageFormatException` (any subclass), or
 - throw `NotSupportedException`;
 
-and each call must finish inside a 2-second timeout and allocate under 100 MB. Anything else — an
+and each call must finish inside a 30-second timeout and allocate under 100 MB. Anything else — an
 `IndexOutOfRangeException` escaping, an infinite loop, a multi-gigabyte allocation — is a failure.
 That is the decoder contract, enforced mechanically.
 
@@ -252,10 +280,28 @@ counts live.
 that file, add a decoder test to `CorruptInputTests.cs` asserting the correct exception, then fix the
 decoder. Growing `CorruptInputTests` is how a fuzz finding becomes a permanent regression test.
 
-**Running it deeper.** The seed and the mutation count are compile-time constants (`Seed`,
-`MutationsPerSeed`) at the top of the file. For a deeper local run, edit them, run, and revert before
-committing — there is no environment-variable override today. If you add one, wire it into the
-nightly workflow, which is set up to pass it.
+**Running it deeper.** Two environment variables override the defaults; no source edit is needed.
+
+| Variable | Default | Effect |
+|---|---|---|
+| `EASYIMAGESHARP_FUZZ_MUTATIONS` | `400` | mutations generated per seed file |
+| `EASYIMAGESHARP_FUZZ_SEED` | `12345` | RNG seed for the mutation stream |
+
+```bash
+EASYIMAGESHARP_FUZZ_MUTATIONS=20000 EASYIMAGESHARP_FUZZ_SEED=$RANDOM \
+  dotnet test tests/EasyImageSharp.Tests -c Release -f net10.0 --filter FuzzSmokeTests
+```
+
+The seed is parsed as a `long` and narrowed, so a CI run identifier — GitHub's `run_id` overflows
+`Int32` — can be passed straight through instead of silently falling back to the default. The test
+writes its effective configuration to the test output, saying for each value whether it came from the
+environment or from the default, so a run that quietly ignored your variable is visible in the log. The
+nightly workflow passes both.
+
+The seed corpus is drawn from the PNG, APNG, BMP, TIFF, TGA, Netpbm, QOI and ICO manifests — the
+deliberately malformed APNGs included — plus a handful of images this library's own encoders produce,
+which reach filter and compression paths no third-party fixture does. The run prints the seed count and
+a per-format outcome breakdown to the test output.
 
 ---
 
@@ -380,20 +426,116 @@ indefinitely. Public members need XML documentation — the packages ship a docu
 default are all breaking. Say so explicitly in the pull request and in `CHANGELOG.md`, and expect it to
 wait for the next major version.
 
+**How it is enforced.** `Microsoft.CodeAnalysis.PublicApiAnalyzers` tracks the surface as text files in
+the repository, one pair per target framework:
+
+```
+src/EasyImageSharp/PublicAPI/net8.0/PublicAPI.Shipped.txt      the surface that has already shipped
+src/EasyImageSharp/PublicAPI/net8.0/PublicAPI.Unshipped.txt    additions since the last release
+src/EasyImageSharp/PublicAPI/net10.0/...                       the same pair for the other framework
+src/EasyImageSharp.AI/PublicAPI/...                            and the same four files for the add-on
+```
+
+Every public member must appear in one of them. `RS0016` fails the build on a member that appears in
+neither, so this is enforced by the compiler rather than by review: add your new members to
+`PublicAPI.Unshipped.txt` **for both target frameworks**, unless the member genuinely exists on only
+one. The analyzer ships a code fix (`Add to public API`, with `Fix All` over the project), or:
+
+```bash
+dotnet format analyzers src/EasyImageSharp/EasyImageSharp.csproj --diagnostics RS0016 --severity warn
+```
+
+A removal is a `*REMOVED*` line carrying the old signature, and is breaking. At release time the
+unshipped entries are promoted into `PublicAPI.Shipped.txt`, in the same commit as the version bump and
+the `CHANGELOG.md` section. The full generation and verification procedure — including how to prove a
+baseline really matches the assemblies that were published, with `apicompat --enable-strict-mode`
+against the previous `.nupkg` — is in
+[`src/EasyImageSharp/PublicAPI/README.md`](src/EasyImageSharp/PublicAPI/README.md).
+
 **In review**, call out any diff that adds a `public` type or member so the decision is conscious. The
-XML documentation file produced by the build is a useful reference for what the surface currently is.
+`PublicAPI.Unshipped.txt` diff is the shortest description of what a pull request adds to the contract.
+
+---
+
+## Samples and deployment smokes
+
+Two sample projects exist to prove claims an ordinary `dotnet build` cannot. Both take no arguments,
+synthesise their own input, print one line per check and exit non-zero if any check fails, so CI only
+has to look at the exit code. Run them from the repository root.
+
+**Native AOT.** `samples/AotSmoke` walks every codec, every metadata path and every processing stage,
+because AOT failures surface as a missing metadata token at run time rather than as a build error:
+
+```bash
+dotnet run     --project samples/AotSmoke -c Release
+dotnet publish samples/AotSmoke -c Release -p:PublishAot=true -o artifacts/aot-smoke
+./artifacts/aot-smoke/AotSmoke          # the published native binary must also exit 0
+```
+
+The publish must emit no `IL2xxx` or `IL3xxx` warning. Running the *published* binary is the part that
+matters: an unpublished run proves only that the code works on the JIT.
+
+**Trimming.** `samples/Thumbnailer` publishes self-contained and trimmed with the SDK's default
+suppressions turned off, which is stricter than any ordinary build:
+
+```bash
+dotnet publish samples/Thumbnailer -c Release -r linux-x64 --self-contained true \
+  -p:PublishTrimmed=true -p:TrimmerSingleWarn=false -p:SuppressTrimAnalysisWarnings=false \
+  -o artifacts/trim-smoke
+./artifacts/trim-smoke/Thumbnailer
+```
+
+A single `warning IL####` line fails it, because `TreatWarningsAsErrors` is inherited from the root
+`Directory.Build.props`. Substitute your own RID for `linux-x64`.
+
+If you add a public entry point that reflects, serialises, or parses an enum by name, add a check to
+`samples/AotSmoke` in the same pull request. That is where such a change gets caught.
 
 ---
 
 ## Benchmarks
 
-There is no benchmark project in the repository at present. The BenchmarkDotNet suite that produced the
-figures quoted in the README was removed in the pre-1.0.0 cleanup and has not been restored, so those
-numbers cannot currently be reproduced from a clean checkout.
+`benchmarks/EasyImageSharp.Benchmarks` is a BenchmarkDotNet suite, and it is the only source of the
+figures in the README's Performance table. Its corpus is **generated, not committed**: a script rebuilds
+it from nothing, so every row is a claim a reviewer can check on their own hardware.
 
-If you are optimising something, bring your own harness, include a before/after in the pull request, and
-say what hardware and runtime you measured on. Restoring a committed suite is on the roadmap; if you are
-doing performance work more than once, restoring it first is worth the effort.
+```bash
+python -m pip install "pillow>=11" "numpy>=2"
+python benchmarks/corpus/generate.py
+dotnet run -c Release -f net10.0 --project benchmarks/EasyImageSharp.Benchmarks -- --filter "*"
+dotnet run -c Release -f net10.0 --project benchmarks/EasyImageSharp.Benchmarks -- --readme-table
+```
+
+The last command runs nothing. It reads the JSON reports the previous run left under
+`benchmarks/BenchmarkDotNet.Artifacts/` and regenerates `benchmarks/results/README-performance.md`,
+which is the table the README carries. If a benchmark a README row maps to has been renamed, it exits
+non-zero naming the missing benchmark, so a row cannot go missing quietly.
+
+While iterating, narrow the run — the arguments are BenchmarkDotNet's own:
+
+```bash
+# one class, or one method and parameter value
+dotnet run -c Release -f net10.0 --project benchmarks/EasyImageSharp.Benchmarks -- --filter "*DecodeBenchmarks*"
+
+# every benchmark runs exactly once: proves the suite executes, and the timings mean nothing
+dotnet run -c Release -f net10.0 --project benchmarks/EasyImageSharp.Benchmarks -- --filter "*" --job Dry
+```
+
+`--job Dry` is what CI runs, and it is the right thing to run locally after adding a benchmark, before
+spending twenty minutes on a real measurement.
+
+**What is reproducible and what is not.** Absolute milliseconds belong to the machine that produced
+them and will not match yours. The corpus definition, the set of operations measured and the
+`Allocated` column are reproducible, and a ratio between two runs on the same machine is the only
+performance claim worth putting in a pull request. Quote the hardware and the runtime version alongside
+any number you report. What each README row maps to is documented in
+[`benchmarks/README.md`](benchmarks/README.md).
+
+Some questions are per-target-framework and have to be measured on both. `InflateBenchmarks` exists
+because .NET 8's `ZLibStream` wraps classic native zlib while .NET 10's wraps zlib-ng, and the library's
+managed inflater is the right choice on the first and the wrong one on the second. If you touch a path
+where the runtime's own implementation may differ between the two, run `-f net8.0` and `-f net10.0`
+before concluding anything.
 
 ---
 
@@ -404,8 +546,9 @@ Before you open it:
 - [ ] `dotnet build EasyImageSharp.slnx -c Release` is **warning-free**
 - [ ] `dotnet test EasyImageSharp.slnx -c Release` is green on **net8.0 and net10.0**
 - [ ] New behaviour has a test whose expected values came from somewhere other than this library
-- [ ] Public API additions are deliberate and carry XML documentation
-- [ ] Fixtures, if touched, were regenerated by their script, and only the ones you meant to change are staged
+- [ ] Public API additions are in `PublicAPI.Unshipped.txt` for **both** target frameworks and carry XML documentation
+- [ ] Fixtures, if touched, were regenerated by their script and `python check_determinism.py` reports no differences
+- [ ] A new C# block in `README.md` was transcribed into `tests/EasyImageSharp.Tests/ReadmeSamplesCompileTests.cs`
 - [ ] `CHANGELOG.md` has an entry under `## [Unreleased]` for anything user-visible
 
 Keep commits focused; a codec, a set of fixtures and a refactor belong in separate commits. Write

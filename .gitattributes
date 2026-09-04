@@ -11,3 +11,17 @@
 *.tiff binary
 *.ico binary
 *.webp binary
+*.qoi binary
+*.tga binary
+*.pbm binary
+*.pgm binary
+*.ppm binary
+*.pam binary
+
+# Ground-truth pixel dumps, opaque blobs and ONNX weights. These carry no text at all, but git's
+# heuristic only inspects the first 8000 bytes, so an .rgba that happens to open with printable
+# bytes would otherwise be EOL-mangled on checkout and silently corrupt what every fixture
+# assertion compares against.
+*.rgba binary
+*.bin binary
+*.onnx binary

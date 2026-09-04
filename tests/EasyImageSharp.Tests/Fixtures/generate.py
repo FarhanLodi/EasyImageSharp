@@ -5,6 +5,9 @@ Requires Python 3.11 + Pillow 11 + numpy. Run from this directory:
 
     python generate.py
 
+``tifffile`` is optional but recommended: it is the only reader here that can open a big-endian BigTIFF, so
+without it one arm of the tiff/ corpus is written but not cross-checked (see ``bigtiff_verify``).
+
 Layout per format folder (png/, bmp/, tiff/, ...):
   <name>.<ext>          the fixture (written by Pillow or hand-assembled byte by byte)
   <name>.rgba           ground truth: width*height*4 bytes of RGBA, row-major, top-left origin;
@@ -480,6 +483,31 @@ def pil_verify(path: str, expected: np.ndarray, what: str, strict: bool = True, 
 
 PNG_SIG = b"\x89PNG\r\n\x1a\n"
 ADAM7 = [(0, 0, 8, 8), (4, 0, 8, 8), (0, 4, 4, 8), (2, 0, 4, 4), (0, 2, 2, 4), (1, 0, 2, 2), (0, 1, 1, 2)]
+
+
+def bigtiff_verify(path: str, expected: np.ndarray, what: str) -> None:
+    """Cross-checks a BigTIFF fixture against tifffile, a second independent reader.
+
+    Pillow 11.3 decides a file is BigTIFF with ``ifh[2] == 43`` (TiffImagePlugin lines 611 and 1183), a byte index
+    that only lands on the version word in the little-endian layout, so it cannot open a big-endian (MM) BigTIFF
+    at all - and MM is the arm a decoder is most likely to get wrong. tifffile reads both byte orders. It is not
+    part of this generator's required toolchain, so the check degrades to a printed note when it is missing;
+    Pillow still verifies every fixture it is able to open.
+    """
+    try:
+        import tifffile
+    except ImportError:
+        print(f"  note: tifffile is not installed; {what} was not cross-checked against a second BigTIFF reader.")
+        return
+    with tifffile.TiffFile(path) as handle:
+        assert handle.is_bigtiff, f"{what}: tifffile does not read this file as a BigTIFF"
+        got = np.asarray(handle.pages[0].asarray())
+    if got.ndim == 2:
+        got = np.dstack([got, got, got, np.full(got.shape, 255, np.uint8)])
+    elif got.shape[2] == 3:
+        got = np.dstack([got, np.full(got.shape[:2], 255, np.uint8)])
+    assert got.shape == expected.shape and np.array_equal(got, expected), (
+        f"tifffile disagrees with the expected pixels for {what}: shape {got.shape} vs {expected.shape}")
 
 
 def png_chunk(kind: bytes, data: bytes) -> bytes:
@@ -1190,9 +1218,10 @@ def gen_bmp(out_dir: str) -> None:
 # TIFF
 # --------------------------------------------------------------------------------------------------
 
-TIFF_TYPE_SIZE = {1: 1, 2: 1, 3: 2, 4: 4, 5: 8}
+TIFF_TYPE_SIZE = {1: 1, 2: 1, 3: 2, 4: 4, 5: 8, 6: 1, 7: 1, 13: 4, 16: 8, 17: 8, 18: 8}
 PREDICTOR_CODECS = (5, 8, 32946)   # libtiff only wires the predictor into LZW/Deflate; PackBits/raw ignore tag 317
-TIFF_TYPE_FMT = {1: "B", 3: "H", 4: "I"}
+# 13/16/17/18 are IFD, LONG8, SLONG8 and IFD8: the 64-bit types BigTIFF (version 43) adds to the classic set.
+TIFF_TYPE_FMT = {1: "B", 2: "B", 3: "H", 4: "I", 6: "b", 7: "B", 13: "I", 16: "Q", 17: "q", 18: "Q"}
 
 
 def tiff_lzw_encode(data: bytes) -> bytes:
@@ -1275,20 +1304,78 @@ class TiffPage:
     """One IFD: tags plus the strip/tile payloads referenced by it."""
 
     def __init__(self, width: int, height: int, tags: dict[int, tuple[int, list[int]]], strips: list[bytes] | None = None,
-                 tiles: list[bytes] | None = None, ascii_tags: dict[int, bytes] | None = None):
+                 tiles: list[bytes] | None = None, ascii_tags: dict[int, bytes] | None = None,
+                 sub_ifds: dict[int, tuple[int, dict[int, tuple[int, list]]]] | None = None):
         self.width = width
         self.height = height
         self.tags = dict(tags)
         self.strips = strips or []
         self.tiles = tiles or []
         self.ascii = ascii_tags or {}
+        # {pointer tag: (pointer type, sub-directory tags)}, e.g. {34665: (4, {33434: (5, [(1, 125)])})} for EXIF.
+        self.sub_ifds = sub_ifds or {}
+
+
+def tiff_pack_values(typ: int, values, big_endian: bool) -> bytes:
+    """Packs one tag's values in the file's byte order. Type 5 (RATIONAL) takes (numerator, denominator) pairs."""
+    e = ">" if big_endian else "<"
+    if typ == 5:
+        return b"".join(struct.pack(e + "II", v[0], v[1]) for v in values)
+    return struct.pack(e + TIFF_TYPE_FMT[typ] * len(values), *values)
+
+
+def tiff_ifd(tags: dict[int, tuple[int, list]], at: int, big_endian: bool, bigtiff: bool) -> bytes:
+    """Encodes one standalone directory placed at file offset ``at``: the entry count, the entries, a zero
+    next-directory pointer, then the values too large to sit inside an entry.
+
+    Used for the sub-directories a page points at (EXIF, GPS), which are never part of the page chain.
+    """
+    e = ">" if big_endian else "<"
+    wide = 8 if bigtiff else 4                    # value-field width, pointer width and the inline threshold
+    entry_size = 20 if bigtiff else 12
+    ptr_fmt = e + ("Q" if bigtiff else "I")
+    head = struct.pack(e + ("Q" if bigtiff else "H"), len(tags))
+    body = bytearray()
+    ext = bytearray()
+    ext_base = at + len(head) + len(tags) * entry_size + wide
+    for tag in sorted(tags):
+        typ, values = tags[tag]
+        packed = tiff_pack_values(typ, values, big_endian)
+        body += struct.pack(e + "HH", tag, typ) + struct.pack(ptr_fmt, len(values))
+        if len(packed) <= wide:
+            body += packed + b"\x00" * (wide - len(packed))
+        else:
+            if len(ext) % 2:
+                ext += b"\x00"
+            body += struct.pack(ptr_fmt, ext_base + len(ext))
+            ext += packed
+    return head + bytes(body) + (b"\x00" * wide) + bytes(ext)
 
 
 def tiff_write(pages: list[TiffPage], big_endian: bool = False, ifd_first: bool = False,
-               strip_bytecounts: bool = True) -> bytes:
+               strip_bytecounts: bool = True, bigtiff: bool = False) -> bytes:
+    """Assembles a classic (version 42) or a BigTIFF (version 43) file.
+
+    ``big_endian`` selects the BYTE ORDER; ``bigtiff`` selects the CONTAINER version - the two are independent.
+    A BigTIFF has a 16-byte header (byte order, version 43, offset size 8, reserved 0, then an 8-byte pointer to
+    the first directory), an 8-byte entry count, 20-byte entries whose element count and value field are both
+    8 bytes wide, an 8-byte next-directory pointer, and it carries the strip and tile offsets and byte counts as
+    LONG8 (type 16) rather than LONG.
+    """
     e = ">" if big_endian else "<"
-    out = bytearray(b"MM\x00\x2A" if big_endian else b"II\x2A\x00")
-    out += b"\x00\x00\x00\x00"           # first IFD offset (patched below)
+    wide = 8 if bigtiff else 4                    # value-field width, pointer width and the inline threshold
+    count_size = 8 if bigtiff else 2
+    entry_size = 20 if bigtiff else 12
+    count_fmt = e + ("Q" if bigtiff else "H")
+    ptr_fmt = e + ("Q" if bigtiff else "I")
+    offset_type = 16 if bigtiff else 4            # LONG8 vs LONG for the offset and byte-count tags
+    if bigtiff:
+        out = bytearray(b"MM\x00\x2B" if big_endian else b"II\x2B\x00")
+        out += struct.pack(e + "HH", 8, 0)   # offset size, reserved
+    else:
+        out = bytearray(b"MM\x00\x2A" if big_endian else b"II\x2A\x00")
+    first_ifd_at = len(out)
+    out += b"\x00" * wide                   # first IFD offset (patched below)
     ifd_offsets = []
     for page in pages:
         payloads = page.strips or page.tiles
@@ -1302,15 +1389,21 @@ def tiff_write(pages: list[TiffPage], big_endian: bool = False, ifd_first: bool 
                 counts.append(len(blob))
                 out += blob
         tags = dict(page.tags)
+        for tag, (ptr_type, sub_tags) in page.sub_ifds.items():
+            if len(out) % 2:
+                out += b"\x00"
+            sub_at = len(out)
+            out += tiff_ifd(sub_tags, sub_at, big_endian, bigtiff)
+            tags[tag] = (ptr_type, [sub_at])
         tags[256] = (4, [page.width])
         tags[257] = (4, [page.height])
         if page.strips:
-            tags[273] = (4, offsets if not ifd_first else [0] * len(payloads))
+            tags[273] = (offset_type, offsets if not ifd_first else [0] * len(payloads))
             if strip_bytecounts:
-                tags[279] = (4, counts if not ifd_first else [0] * len(payloads))
+                tags[279] = (offset_type, counts if not ifd_first else [0] * len(payloads))
         elif page.tiles:
-            tags[324] = (4, offsets if not ifd_first else [0] * len(payloads))
-            tags[325] = (4, counts if not ifd_first else [0] * len(payloads))
+            tags[324] = (offset_type, offsets if not ifd_first else [0] * len(payloads))
+            tags[325] = (offset_type, counts if not ifd_first else [0] * len(payloads))
         for tag, text in page.ascii.items():
             tags[tag] = (2, list(text + b"\x00"))
         # IFD
@@ -1320,32 +1413,27 @@ def tiff_write(pages: list[TiffPage], big_endian: bool = False, ifd_first: bool 
         ifd_offsets.append(ifd_offset)
         keys = sorted(tags)
         n = len(keys)
-        ifd = bytearray(struct.pack(e + "H", n))
+        ifd = bytearray(struct.pack(count_fmt, n))
         ext = bytearray()
-        ext_base = ifd_offset + 2 + n * 12 + 4
+        ext_base = ifd_offset + count_size + n * entry_size + wide
         patch = {}
         for tag in keys:
             typ, values = tags[tag]
-            size = TIFF_TYPE_SIZE[typ]
-            if typ == 5:
-                packed = b"".join(struct.pack(e + "II", v[0], v[1]) for v in values)
-                count = len(values)
-            else:
-                packed = struct.pack(e + TIFF_TYPE_FMT[typ] * len(values), *values)
-                count = len(values)
-            if len(packed) <= 4:
-                value_field = packed + b"\x00" * (4 - len(packed))
+            packed = tiff_pack_values(typ, values, big_endian)
+            count = len(values)
+            if len(packed) <= wide:
+                value_field = packed + b"\x00" * (wide - len(packed))
                 if tag in (273, 324) and ifd_first:
-                    patch[tag] = ("inline", ifd_offset + 2 + keys.index(tag) * 12 + 8)
+                    patch[tag] = ("inline", ifd_offset + count_size + keys.index(tag) * entry_size + 4 + wide)
             else:
                 if len(ext) % 2:
                     ext += b"\x00"
                 if tag in (273, 279, 324, 325) and ifd_first:
                     patch[tag] = ("ext", ext_base + len(ext))
-                value_field = struct.pack(e + "I", ext_base + len(ext))
+                value_field = struct.pack(ptr_fmt, ext_base + len(ext))
                 ext += packed
-            ifd += struct.pack(e + "HHI", tag, typ, count) + value_field
-        ifd += b"\x00\x00\x00\x00"       # next IFD (patched)
+            ifd += struct.pack(e + "HH", tag, typ) + struct.pack(ptr_fmt, count) + value_field
+        ifd += b"\x00" * wide               # next IFD (patched)
         out += ifd + ext
         if ifd_first:
             for blob in payloads:
@@ -1356,36 +1444,45 @@ def tiff_write(pages: list[TiffPage], big_endian: bool = False, ifd_first: bool 
                 out += blob
             for tag, (where, pos) in patch.items():
                 vals = offsets if tag in (273, 324) else counts
-                packed = struct.pack(e + "I" * len(vals), *vals)
+                packed = struct.pack(e + ("Q" if bigtiff else "I") * len(vals), *vals)
                 out[pos:pos + len(packed)] = packed
     # link IFDs
-    struct.pack_into(e + "I", out, 4, ifd_offsets[0])
+    struct.pack_into(ptr_fmt, out, first_ifd_at, ifd_offsets[0])
     for i in range(len(pages) - 1):
-        n = struct.unpack_from(e + "H", out, ifd_offsets[i])[0]
-        struct.pack_into(e + "I", out, ifd_offsets[i] + 2 + n * 12, ifd_offsets[i + 1])
+        n = struct.unpack_from(count_fmt, out, ifd_offsets[i])[0]
+        struct.pack_into(ptr_fmt, out, ifd_offsets[i] + count_size + n * entry_size, ifd_offsets[i + 1])
     return bytes(out)
 
 
 def tiff_probe(data: bytes) -> tuple[int, int, int]:
-    """Minimal IFD walk: (width, height) of the first page and the page count."""
+    """Minimal IFD walk over either container version: (width, height) of the first page and the page count."""
     e = ">" if data[:2] == b"MM" else "<"
-    offset = struct.unpack_from(e + "I", data, 4)[0]
+    bigtiff = struct.unpack_from(e + "H", data, 2)[0] == 43
+    wide = 8 if bigtiff else 4
+    count_size = 8 if bigtiff else 2
+    entry_size = 20 if bigtiff else 12
+    count_fmt = e + ("Q" if bigtiff else "H")
+    ptr_fmt = e + ("Q" if bigtiff else "I")
+    value_fmt = {3: e + "H", 4: e + "I", 16: e + "Q"}
+    offset = struct.unpack_from(ptr_fmt, data, 8 if bigtiff else 4)[0]
     width = height = 0
     pages = 0
     seen = set()
-    while offset and offset not in seen and offset + 2 <= len(data):
+    while offset and offset not in seen and offset + count_size <= len(data):
         seen.add(offset)
-        n = struct.unpack_from(e + "H", data, offset)[0]
+        n = struct.unpack_from(count_fmt, data, offset)[0]
         if pages == 0:
             for i in range(n):
-                tag, typ, count = struct.unpack_from(e + "HHI", data, offset + 2 + i * 12)
-                value = struct.unpack_from(e + ("H" if typ == 3 else "I"), data, offset + 2 + i * 12 + 8)[0]
-                if tag == 256:
-                    width = value
-                elif tag == 257:
-                    height = value
+                entry = offset + count_size + i * entry_size
+                tag, typ = struct.unpack_from(e + "HH", data, entry)
+                if tag in (256, 257):
+                    value = struct.unpack_from(value_fmt.get(typ, ptr_fmt), data, entry + 4 + wide)[0]
+                    if tag == 256:
+                        width = value
+                    else:
+                        height = value
         pages += 1
-        offset = struct.unpack_from(e + "I", data, offset + 2 + n * 12)[0]
+        offset = struct.unpack_from(ptr_fmt, data, offset + count_size + n * entry_size)[0]
     return width, height, pages
 
 
@@ -1523,7 +1620,7 @@ def gen_tiff(out_dir: str) -> None:
 
     def hand(name: str, arr: np.ndarray, bits: int, spp: int, photometric: int, expected, notes: str, *, compression=1,
              rows_per_strip=None, predictor=1, big_endian=False, extra=None, verify=True, expect=None, strip_bytecounts=True,
-             ifd_first=False, **facts):
+             ifd_first=False, bigtiff=False, sub_ifds=None, **facts):
         h, w = arr.shape[:2]
         rows = raw_rows(arr if arr.ndim == 3 else arr[..., None], bits, big_endian)
         raw = b"".join(rows)
@@ -1533,8 +1630,9 @@ def gen_tiff(out_dir: str) -> None:
             rows = [raw[i:i + row_len] for i in range(0, len(raw), row_len)]
         rps = rows_per_strip or h
         strips = tiff_strips(rows, rps, compressor(compression))
-        page = TiffPage(w, h, base_tags(bits, spp, photometric, compression, rows_per_strip, predictor, extra), strips=strips)
-        data = tiff_write([page], big_endian, ifd_first=ifd_first, strip_bytecounts=strip_bytecounts)
+        page = TiffPage(w, h, base_tags(bits, spp, photometric, compression, rows_per_strip, predictor, extra),
+                        strips=strips, sub_ifds=sub_ifds)
+        data = tiff_write([page], big_endian, ifd_first=ifd_first, strip_bytecounts=strip_bytecounts, bigtiff=bigtiff)
         record(name, data, [expected] if expected is not None else None, notes, "hand", verify, expect,
                compression=compression, photometric=photometric, bits_per_sample=[bits] * spp, predictor=predictor,
                byte_order="MM" if big_endian else "II", **facts)
@@ -1618,7 +1716,7 @@ def gen_tiff(out_dir: str) -> None:
 
     # Tiled layouts
     def tiled(name, arr, bits, spp, photometric, expected, tw, th, compression, notes, big_endian=False, predictor=1,
-              verify=True):
+              verify=True, bigtiff=False, **facts):
         h, w = arr.shape[:2]
         a = arr if arr.ndim == 3 else arr[..., None]
         tiles = []
@@ -1634,9 +1732,9 @@ def gen_tiff(out_dir: str) -> None:
                 tiles.append(compressor(compression)(raw))
         tags = base_tags(bits, spp, photometric, compression, None, predictor, {322: (4, [tw]), 323: (4, [th])})
         page = TiffPage(w, h, tags, tiles=tiles)
-        record(name, tiff_write([page], big_endian), [expected], notes, "hand", verify=verify, compression=compression,
-               photometric=photometric, bits_per_sample=[bits] * spp, tile_size=[tw, th], predictor=predictor,
-               byte_order="MM" if big_endian else "II")
+        record(name, tiff_write([page], big_endian, bigtiff=bigtiff), [expected], notes, "hand", verify=verify,
+               compression=compression, photometric=photometric, bits_per_sample=[bits] * spp, tile_size=[tw, th],
+               predictor=predictor, byte_order="MM" if big_endian else "II", **facts)
 
     rgbt = gradient_rgb(20, 12, seed=340)
     tiled("hand_rgb8_tiled_raw", rgbt, 8, 3, 2, rgba_from_rgb(rgbt), 16, 16, 1, "tiled RGB 20x12 with 16x16 tiles (partial tiles)")
@@ -1665,6 +1763,134 @@ def gen_tiff(out_dir: str) -> None:
     record("hand_multipage_mm", tiff_write(pages, big_endian=True),
            [rgba_from_gray(p1), rgba_from_rgb(p2), rgba_from_gray((1 - p3) * 255)],
            "3 big-endian pages: gray8 raw 8x6, rgb8 lzw 7x5, bilevel min-is-white packbits 9x4", "hand", byte_order="MM")
+
+    # BigTIFF (version 43)
+    # Each case is written twice from the same raster, once in each container, and the pair is cross-linked in the
+    # manifest through "twin"/"container": a decoder that reads the 64-bit directory layout wrongly then disagrees
+    # with its own classic result rather than merely with this generator. Pillow accepts big_tiff=True on save but
+    # silently ignores it whenever it routes through libtiff (LZW, Deflate and PackBits all come back as version
+    # 42), so every BigTIFF below is hand-assembled and the pass after this loop asserts the version word really
+    # is 43. The independent readers are Pillow and, for the arm Pillow cannot open at all, tifffile.
+    bt_rgb = gradient_rgb(24, 16, seed=360)
+    bt_rgba = np.dstack([gradient_rgb(20, 14, seed=361), noise((14, 20), seed=362)])
+    bt_gray = gradient_gray(21, 13, seed=363).astype(np.uint8)
+    bt_page1 = gradient_gray(12, 9, seed=364).astype(np.uint8)
+    bt_page2 = gradient_rgb(10, 7, seed=365)
+    bt_xmp = (b'<?xpacket begin="\xef\xbb\xbf" id="W5M0MpCehiHzreSzNTczkc9d"?>'
+              b'<x:xmpmeta xmlns:x="adobe:ns:meta/"><rdf:RDF '
+              b'xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">'
+              b'<rdf:Description rdf:about="" xmlns:dc="http://purl.org/dc/elements/1.1/">'
+              b'<dc:title><rdf:Alt><rdf:li xml:lang="x-default">BigTIFF fixture</rdf:li></rdf:Alt></dc:title>'
+              b'</rdf:Description></rdf:RDF></x:xmpmeta><?xpacket end="w"?>')
+    bt_icc = bytearray(132)                              # a 128-byte ICC header plus an empty (zero) tag table
+    bt_icc[0:4] = struct.pack(">I", 132)                 # profile size
+    bt_icc[4:8] = b"none"                                # preferred CMM
+    bt_icc[8:12] = struct.pack(">I", 0x02100000)         # version 2.1.0
+    bt_icc[12:16] = b"mntr"                              # device class: display
+    bt_icc[16:20] = b"RGB "
+    bt_icc[20:24] = b"XYZ "
+    bt_icc[24:36] = struct.pack(">6H", 2026, 1, 1, 0, 0, 0)
+    bt_icc[36:40] = b"acsp"
+    bt_icc[68:80] = struct.pack(">3I", 0x0000F6D6, 0x00010000, 0x0000D32D)   # the D50 illuminant
+    bt_icc = bytes(bt_icc)
+    bt_exif = {33434: (5, [(1, 125)]),                   # ExposureTime 1/125 s
+               33437: (5, [(28, 10)]),                   # FNumber f/2.8
+               34855: (3, [200]),                        # ISOSpeedRatings
+               36864: (7, list(b"0230")),                # ExifVersion
+               42016: (2, list(b"bigtiff-fixture\x00"))}  # ImageUniqueID
+    bt_ifd0 = {271: (2, list(b"EasyImageSharp\x00")),     # Make
+               272: (2, list(b"Fixture Camera\x00")),     # Model
+               274: (3, [1]),                            # Orientation
+               282: (5, [(72, 1)]), 283: (5, [(72, 1)]), 296: (3, [2]),
+               305: (2, list(b"generate.py\x00")),        # Software
+               700: (1, list(bt_xmp)),                   # XMP packet
+               34675: (7, list(bt_icc))}                 # ICC profile
+
+    for prefix, is_big in (("classic", False), ("bigtiff", True)):
+        twin = "bigtiff" if prefix == "classic" else "classic"
+        shape = ("BigTIFF (version 43): 16-byte header, 8-byte entry count, 20-byte entries, 8-byte offsets"
+                 if is_big else
+                 "classic TIFF (version 42): 8-byte header, 2-byte entry count, 12-byte entries, 4-byte offsets")
+        hand(f"{prefix}_le_rgb", bt_rgb, 8, 3, 2, rgba_from_rgb(bt_rgb),
+             f"{shape}; little-endian 8-bit RGB in one uncompressed strip",
+             bigtiff=is_big, container=prefix, twin=f"{twin}_le_rgb")
+        # Pillow cannot open a big-endian BigTIFF (see bigtiff_verify), so that one file relaxes to a soft
+        # check here and is verified by tifffile in the pass below instead.
+        hand(f"{prefix}_be_rgb", bt_rgb, 8, 3, 2, rgba_from_rgb(bt_rgb),
+             f"{shape}; big-endian (MM) 8-bit RGB: byte order and container version are independent",
+             big_endian=True, bigtiff=is_big, verify="soft" if is_big else True,
+             container=prefix, twin=f"{twin}_be_rgb")
+        hand(f"{prefix}_long8_offsets", bt_rgb, 8, 3, 2, rgba_from_rgb(bt_rgb),
+             f"{shape}; six Deflate strips, so StripOffsets and StripByteCounts are arrays too large for a value "
+             f"field and are read from an external {'LONG8 (type 16)' if is_big else 'LONG (type 4)'} block",
+             compression=8, rows_per_strip=3, bigtiff=is_big, container=prefix, twin=f"{twin}_long8_offsets")
+        hand(f"{prefix}_inline8", bt_rgba, 8, 4, 2, bt_rgba,
+             f"{shape}; RGBA whose BitsPerSample (four SHORTs) and RATIONAL resolution tags are exactly eight bytes, "
+             f"so they sit {'inside the widened value field' if is_big else 'in an external value block'}",
+             extra={338: (3, [2]), 282: (5, [(72, 1)]), 283: (5, [(72, 1)]), 296: (3, [2])},
+             bigtiff=is_big, container=prefix, twin=f"{twin}_inline8")
+        hand(f"{prefix}_exif", bt_gray, 8, 1, 1, rgba_from_gray(bt_gray),
+             f"{shape}; the EXIF sub-directory hangs off tag 34665 as "
+             f"{'IFD8 (type 18)' if is_big else 'LONG (type 4)'}, beside an ICC profile (34675) and an XMP packet (700)",
+             extra=bt_ifd0, sub_ifds={34665: (18 if is_big else 4, bt_exif)},
+             bigtiff=is_big, container=prefix, twin=f"{twin}_exif")
+        tiled(f"{prefix}_tiled", bt_rgb, 8, 3, 2, rgba_from_rgb(bt_rgb), 16, 16, 8,
+              f"{shape}; 16x16 Deflate tiles over a 24x16 page, so both tiles are padded",
+              bigtiff=is_big, container=prefix, twin=f"{twin}_tiled")
+        record(f"{prefix}_multipage",
+               tiff_write([TiffPage(12, 9, base_tags(8, 1, 1, 1),
+                                    strips=[b"".join(raw_rows(bt_page1[..., None], 8, False))]),
+                           TiffPage(10, 7, base_tags(8, 3, 2, 8),
+                                    strips=[zlib.compress(b"".join(raw_rows(bt_page2, 8, False)), 6)])],
+                          bigtiff=is_big),
+               [rgba_from_gray(bt_page1), rgba_from_rgb(bt_page2)],
+               f"{shape}; two pages of different sizes chained through "
+               f"{'8-byte' if is_big else '4-byte'} next-directory pointers",
+               "hand", container=prefix, twin=f"{twin}_multipage", byte_order="II")
+
+    def bigtiff_value_field(data: bytes, tag: int) -> int:
+        """The file offset of the value field of ``tag`` in a little-endian BigTIFF's first directory."""
+        ifd = struct.unpack_from("<Q", data, 8)[0]
+        for i in range(struct.unpack_from("<Q", data, ifd)[0]):
+            entry = ifd + 8 + i * 20
+            if struct.unpack_from("<H", data, entry)[0] == tag:
+                return entry + 12
+        raise KeyError(tag)
+
+    # A LONG8 strip offset whose HIGH word is set. The strip is then more than 4 GiB past the end of a 1 KiB
+    # file, so the page must be rejected as truncated; a decoder that dispatches on the 8-byte value size but
+    # then reads only the low 32 bits finds the strip exactly where it has always been and decodes happily.
+    # Identify still succeeds, because nothing in the directory itself is wrong.
+    past_eof = bytearray(tiff_write([TiffPage(24, 16, base_tags(8, 3, 2, 1),
+                                              strips=[b"".join(raw_rows(bt_rgb, 8, False))])], bigtiff=True))
+    at = bigtiff_value_field(past_eof, 273)
+    struct.pack_into("<Q", past_eof, at, struct.unpack_from("<Q", past_eof, at)[0] | (1 << 32))
+    record("bigtiff_long8_offset_past_eof", bytes(past_eof), None,
+           "BigTIFF whose single LONG8 StripOffsets value carries a non-zero HIGH word, putting the strip over "
+           "4 GiB beyond the end of a one-kilobyte file: the page must be rejected rather than read from the low "
+           "32 bits of the offset", "hand", expect="InvalidImageContentException", container="bigtiff")
+
+    # The container each pair member claims must be the container it actually has, and every twin must exist.
+    recorded = {entry["name"] for entry in entries}
+    for entry in entries:
+        if "container" not in entry:
+            continue
+        with open(os.path.join(out_dir, entry["file"]), "rb") as fh:
+            head = fh.read(16)
+        order = ">" if head[:2] == b"MM" else "<"
+        version = struct.unpack_from(order + "H", head, 2)[0]
+        assert version == (43 if entry["container"] == "bigtiff" else 42), (entry["name"], version)
+        if "twin" in entry:
+            assert entry["twin"] in recorded, (entry["name"], entry["twin"])
+        if version != 43:
+            continue
+        assert struct.unpack_from(order + "HH", head, 4) == (8, 0), (entry["name"], head[:16])
+        if "expect" in entry:                       # a fixture with no ground truth to cross-check
+            continue
+        pixels = entry["width"] * entry["height"] * 4
+        with open(os.path.join(out_dir, entry["name"] + ".rgba"), "rb") as fh:
+            first = np.frombuffer(fh.read(pixels), np.uint8).reshape(entry["height"], entry["width"], 4)
+        bigtiff_verify(os.path.join(out_dir, entry["file"]), first, entry["name"])
 
     write_manifest(out_dir, entries)
     print(f"tiff: {len(entries)} fixtures")

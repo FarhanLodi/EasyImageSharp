@@ -1,4 +1,5 @@
 using System.Buffers.Binary;
+using System.Globalization;
 using System.Text;
 using EasyImageSharp.PixelFormats;
 
@@ -73,11 +74,21 @@ public sealed class PbmEncoder : IImageEncoder
             PbmColorType.Grayscale => binary ? 5 : 2,
             _ => binary ? 6 : 3,
         };
+
+        // Netpbm headers and plain rasters are ASCII decimal by specification, so every number written here
+        // must be formatted invariantly: StringBuilder.Append(int) would follow the ambient culture instead.
         var header = new StringBuilder();
-        header.Append('P').Append(magic).Append('\n').Append(width).Append(' ').Append(height).Append('\n');
+        header.Append('P');
+        AppendInvariant(header, magic);
+        header.Append('\n');
+        AppendInvariant(header, width);
+        header.Append(' ');
+        AppendInvariant(header, height);
+        header.Append('\n');
         if (colorType != PbmColorType.BlackAndWhite)
         {
-            header.Append(wide ? 65535 : 255).Append('\n');
+            AppendInvariant(header, wide ? 65535 : 255);
+            header.Append('\n');
         }
 
         stream.Write(System.Text.Encoding.ASCII.GetBytes(header.ToString()));
@@ -134,6 +145,14 @@ public sealed class PbmEncoder : IImageEncoder
         }
     }
 
+    /// <summary>Appends a non-negative integer as invariant ASCII decimal digits, whatever the ambient culture is.</summary>
+    private static void AppendInvariant(StringBuilder text, int value)
+    {
+        Span<char> scratch = stackalloc char[11];
+        value.TryFormat(scratch, out int written, provider: CultureInfo.InvariantCulture);
+        text.Append(scratch[..written]);
+    }
+
     /// <summary>Converts a row to file samples: 0/1 for bitmaps (1 = black), 8- or 16-bit gray or RGB otherwise.</summary>
     private static void FillSamples(ReadOnlySpan<Rgba32> row, Span<int> samples, PbmColorType colorType, bool wide)
     {
@@ -174,7 +193,7 @@ public sealed class PbmEncoder : IImageEncoder
         int lineLength = 0;
         for (int i = 0; i < samples.Length; i++)
         {
-            string token = samples[i].ToString(System.Globalization.CultureInfo.InvariantCulture);
+            string token = samples[i].ToString(CultureInfo.InvariantCulture);
             int needed = token.Length + (lineLength > 0 && !bitmap ? 1 : 0);
             if (lineLength > 0 && lineLength + needed > MaxPlainLineLength)
             {
