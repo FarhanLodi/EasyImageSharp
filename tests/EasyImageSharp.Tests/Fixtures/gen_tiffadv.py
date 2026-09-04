@@ -322,9 +322,11 @@ def bigtiff_decodes_to(data: bytes, expected: np.ndarray, name: str) -> None:
     end = ">" if data[0] == 0x4D else "<"
     assert struct.unpack_from(f"{end}HHH", data, 2) == (43, 8, 0), f"{name}: this is not a BigTIFF header"
     checked = False
+    have_tifffile = True
     try:
         import tifffile
     except ImportError:
+        have_tifffile = False
         print(f"  note: tifffile is not installed; {name} was not cross-checked against a second BigTIFF reader.")
     else:
         with tifffile.TiffFile(io.BytesIO(data)) as handle:
@@ -341,7 +343,20 @@ def bigtiff_decodes_to(data: bytes, expected: np.ndarray, name: str) -> None:
     if data[0] != 0x4D:
         pillow_decodes_to(data, expected, name)
         checked = True
-    assert checked, f"{name}: no independent reader could decode this fixture"
+    if not checked:
+        # Say which reader was missing and how to get it. A big-endian BigTIFF has exactly one independent
+        # reader here, so "no reader could decode this" is almost always just an absent tifffile.
+        remedy = (
+            'install it with: python -m pip install "tifffile>=2024.1"'
+            if not have_tifffile
+            else "the installed tifffile parsed the file but could not decode its codec"
+        )
+        byte_order = "big-endian" if data[0] == 0x4D else "little-endian"
+        raise AssertionError(
+            f"{name}: no independent reader could decode this {byte_order} BigTIFF fixture; {remedy}. "
+            "Pillow cannot open a big-endian BigTIFF (it tests ifh[2] == 43, which only lands on the "
+            "version word in the little-endian layout), so tifffile is the only cross-check for these."
+        )
 
 
 # ----------------------------------------------------------------------------------------------------

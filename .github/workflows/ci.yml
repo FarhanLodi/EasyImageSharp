@@ -104,8 +104,16 @@ jobs:
       # Pinned exactly as tests/EasyImageSharp.Tests/Fixtures/README.md documents. The pins reproduce the
       # generators' behaviour, not their compression output, which is why they can be this tight without
       # making the check fragile.
+      #
+      # tifffile is REQUIRED, not optional. Pillow detects BigTIFF by testing ifh[2] == 43, an index that
+      # only lands on the version word in the little-endian layout, so Pillow cannot open a big-endian
+      # BigTIFF at all. tifffile is therefore the only independent reader for the big-endian fixtures, and
+      # gen_tiffadv.py refuses to emit a fixture no independent reader has confirmed. It is deliberately
+      # not pinned hard: it verifies fixtures rather than producing any committed bytes, so its version
+      # cannot change what lands in the tree. imagecodecs is NOT needed - the one fixture whose codec
+      # would require it is little-endian, and Pillow cross-checks that one.
       - name: Install the generators' dependencies
-        run: python -m pip install --disable-pip-version-check "pillow==11.3.0" "numpy>=2,<3"
+        run: python -m pip install --disable-pip-version-check "pillow==11.3.0" "numpy>=2,<3" "tifffile>=2024.1"
 
       # Exit status 1 is a corpus difference and 2 is a check that could not run at all; both fail the job,
       # and the two are distinguished in the output rather than being collapsed into one failure. The

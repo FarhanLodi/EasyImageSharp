@@ -10,7 +10,14 @@ recorded alongside it. A test that compared this library's decoder against this 
 prove nothing.
 
 - Regenerate everything with `python generate.py` from this directory.
-- Requires Python 3.11+, Pillow 11 and NumPy 2: `python -m pip install "pillow==11.3.0" "numpy>=2,<3"`.
+- Requires Python 3.11+, Pillow 11, NumPy 2 and tifffile:
+  `python -m pip install "pillow==11.3.0" "numpy>=2,<3" "tifffile>=2024.1"`.
+  tifffile is required, not optional. Pillow detects BigTIFF by testing `ifh[2] == 43`, an index that only
+  lands on the version word in the little-endian layout, so it cannot open a big-endian BigTIFF at all;
+  tifffile is the only independent reader for `bigtiff_be_rgb` and `bigtiff_mm_tiled`, and `gen_tiffadv.py`
+  refuses to emit a fixture that no independent reader has confirmed. It is not pinned hard because it only
+  verifies fixtures and never produces committed bytes. `imagecodecs` is not needed: the one fixture whose
+  codec would require it (`bigtiff_lzw`) is little-endian, so Pillow cross-checks that one.
 - Keep each file small (well under 50 KB); the point is coverage, not size.
 - Hand-crafted byte-level fixtures that exist only for one test live next to that test; only files a
   generator writes belong here.
