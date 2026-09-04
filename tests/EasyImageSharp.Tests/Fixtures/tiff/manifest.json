@@ -1551,5 +1551,378 @@
     4
    ]
   ]
+ },
+ {
+  "name": "classic_le_rgb",
+  "file": "classic_le_rgb.tif",
+  "width": 24,
+  "height": 16,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "classic TIFF (version 42): 8-byte header, 2-byte entry count, 12-byte entries, 4-byte offsets; little-endian 8-bit RGB in one uncompressed strip",
+  "compression": 1,
+  "photometric": 2,
+  "bits_per_sample": [
+   8,
+   8,
+   8
+  ],
+  "predictor": 1,
+  "byte_order": "II",
+  "container": "classic",
+  "twin": "bigtiff_le_rgb",
+  "frame_sizes": [
+   [
+    24,
+    16
+   ]
+  ]
+ },
+ {
+  "name": "classic_be_rgb",
+  "file": "classic_be_rgb.tif",
+  "width": 24,
+  "height": 16,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "classic TIFF (version 42): 8-byte header, 2-byte entry count, 12-byte entries, 4-byte offsets; big-endian (MM) 8-bit RGB: byte order and container version are independent",
+  "compression": 1,
+  "photometric": 2,
+  "bits_per_sample": [
+   8,
+   8,
+   8
+  ],
+  "predictor": 1,
+  "byte_order": "MM",
+  "container": "classic",
+  "twin": "bigtiff_be_rgb",
+  "frame_sizes": [
+   [
+    24,
+    16
+   ]
+  ]
+ },
+ {
+  "name": "classic_long8_offsets",
+  "file": "classic_long8_offsets.tif",
+  "width": 24,
+  "height": 16,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "classic TIFF (version 42): 8-byte header, 2-byte entry count, 12-byte entries, 4-byte offsets; six Deflate strips, so StripOffsets and StripByteCounts are arrays too large for a value field and are read from an external LONG (type 4) block",
+  "compression": 8,
+  "photometric": 2,
+  "bits_per_sample": [
+   8,
+   8,
+   8
+  ],
+  "predictor": 1,
+  "byte_order": "II",
+  "container": "classic",
+  "twin": "bigtiff_long8_offsets",
+  "frame_sizes": [
+   [
+    24,
+    16
+   ]
+  ]
+ },
+ {
+  "name": "classic_inline8",
+  "file": "classic_inline8.tif",
+  "width": 20,
+  "height": 14,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "classic TIFF (version 42): 8-byte header, 2-byte entry count, 12-byte entries, 4-byte offsets; RGBA whose BitsPerSample (four SHORTs) and RATIONAL resolution tags are exactly eight bytes, so they sit in an external value block",
+  "compression": 1,
+  "photometric": 2,
+  "bits_per_sample": [
+   8,
+   8,
+   8,
+   8
+  ],
+  "predictor": 1,
+  "byte_order": "II",
+  "container": "classic",
+  "twin": "bigtiff_inline8",
+  "frame_sizes": [
+   [
+    20,
+    14
+   ]
+  ]
+ },
+ {
+  "name": "classic_exif",
+  "file": "classic_exif.tif",
+  "width": 21,
+  "height": 13,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "classic TIFF (version 42): 8-byte header, 2-byte entry count, 12-byte entries, 4-byte offsets; the EXIF sub-directory hangs off tag 34665 as LONG (type 4), beside an ICC profile (34675) and an XMP packet (700)",
+  "compression": 1,
+  "photometric": 1,
+  "bits_per_sample": [
+   8
+  ],
+  "predictor": 1,
+  "byte_order": "II",
+  "container": "classic",
+  "twin": "bigtiff_exif",
+  "frame_sizes": [
+   [
+    21,
+    13
+   ]
+  ]
+ },
+ {
+  "name": "classic_tiled",
+  "file": "classic_tiled.tif",
+  "width": 24,
+  "height": 16,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "classic TIFF (version 42): 8-byte header, 2-byte entry count, 12-byte entries, 4-byte offsets; 16x16 Deflate tiles over a 24x16 page, so both tiles are padded",
+  "compression": 8,
+  "photometric": 2,
+  "bits_per_sample": [
+   8,
+   8,
+   8
+  ],
+  "tile_size": [
+   16,
+   16
+  ],
+  "predictor": 1,
+  "byte_order": "II",
+  "container": "classic",
+  "twin": "bigtiff_tiled",
+  "frame_sizes": [
+   [
+    24,
+    16
+   ]
+  ]
+ },
+ {
+  "name": "classic_multipage",
+  "file": "classic_multipage.tif",
+  "width": 12,
+  "height": 9,
+  "frames": 2,
+  "writer": "hand",
+  "notes": "classic TIFF (version 42): 8-byte header, 2-byte entry count, 12-byte entries, 4-byte offsets; two pages of different sizes chained through 4-byte next-directory pointers",
+  "container": "classic",
+  "twin": "bigtiff_multipage",
+  "byte_order": "II",
+  "frame_sizes": [
+   [
+    12,
+    9
+   ],
+   [
+    10,
+    7
+   ]
+  ]
+ },
+ {
+  "name": "bigtiff_le_rgb",
+  "file": "bigtiff_le_rgb.tif",
+  "width": 24,
+  "height": 16,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "BigTIFF (version 43): 16-byte header, 8-byte entry count, 20-byte entries, 8-byte offsets; little-endian 8-bit RGB in one uncompressed strip",
+  "compression": 1,
+  "photometric": 2,
+  "bits_per_sample": [
+   8,
+   8,
+   8
+  ],
+  "predictor": 1,
+  "byte_order": "II",
+  "container": "bigtiff",
+  "twin": "classic_le_rgb",
+  "frame_sizes": [
+   [
+    24,
+    16
+   ]
+  ]
+ },
+ {
+  "name": "bigtiff_be_rgb",
+  "file": "bigtiff_be_rgb.tif",
+  "width": 24,
+  "height": 16,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "BigTIFF (version 43): 16-byte header, 8-byte entry count, 20-byte entries, 8-byte offsets; big-endian (MM) 8-bit RGB: byte order and container version are independent",
+  "compression": 1,
+  "photometric": 2,
+  "bits_per_sample": [
+   8,
+   8,
+   8
+  ],
+  "predictor": 1,
+  "byte_order": "MM",
+  "container": "bigtiff",
+  "twin": "classic_be_rgb",
+  "frame_sizes": [
+   [
+    24,
+    16
+   ]
+  ]
+ },
+ {
+  "name": "bigtiff_long8_offsets",
+  "file": "bigtiff_long8_offsets.tif",
+  "width": 24,
+  "height": 16,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "BigTIFF (version 43): 16-byte header, 8-byte entry count, 20-byte entries, 8-byte offsets; six Deflate strips, so StripOffsets and StripByteCounts are arrays too large for a value field and are read from an external LONG8 (type 16) block",
+  "compression": 8,
+  "photometric": 2,
+  "bits_per_sample": [
+   8,
+   8,
+   8
+  ],
+  "predictor": 1,
+  "byte_order": "II",
+  "container": "bigtiff",
+  "twin": "classic_long8_offsets",
+  "frame_sizes": [
+   [
+    24,
+    16
+   ]
+  ]
+ },
+ {
+  "name": "bigtiff_inline8",
+  "file": "bigtiff_inline8.tif",
+  "width": 20,
+  "height": 14,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "BigTIFF (version 43): 16-byte header, 8-byte entry count, 20-byte entries, 8-byte offsets; RGBA whose BitsPerSample (four SHORTs) and RATIONAL resolution tags are exactly eight bytes, so they sit inside the widened value field",
+  "compression": 1,
+  "photometric": 2,
+  "bits_per_sample": [
+   8,
+   8,
+   8,
+   8
+  ],
+  "predictor": 1,
+  "byte_order": "II",
+  "container": "bigtiff",
+  "twin": "classic_inline8",
+  "frame_sizes": [
+   [
+    20,
+    14
+   ]
+  ]
+ },
+ {
+  "name": "bigtiff_exif",
+  "file": "bigtiff_exif.tif",
+  "width": 21,
+  "height": 13,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "BigTIFF (version 43): 16-byte header, 8-byte entry count, 20-byte entries, 8-byte offsets; the EXIF sub-directory hangs off tag 34665 as IFD8 (type 18), beside an ICC profile (34675) and an XMP packet (700)",
+  "compression": 1,
+  "photometric": 1,
+  "bits_per_sample": [
+   8
+  ],
+  "predictor": 1,
+  "byte_order": "II",
+  "container": "bigtiff",
+  "twin": "classic_exif",
+  "frame_sizes": [
+   [
+    21,
+    13
+   ]
+  ]
+ },
+ {
+  "name": "bigtiff_tiled",
+  "file": "bigtiff_tiled.tif",
+  "width": 24,
+  "height": 16,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "BigTIFF (version 43): 16-byte header, 8-byte entry count, 20-byte entries, 8-byte offsets; 16x16 Deflate tiles over a 24x16 page, so both tiles are padded",
+  "compression": 8,
+  "photometric": 2,
+  "bits_per_sample": [
+   8,
+   8,
+   8
+  ],
+  "tile_size": [
+   16,
+   16
+  ],
+  "predictor": 1,
+  "byte_order": "II",
+  "container": "bigtiff",
+  "twin": "classic_tiled",
+  "frame_sizes": [
+   [
+    24,
+    16
+   ]
+  ]
+ },
+ {
+  "name": "bigtiff_multipage",
+  "file": "bigtiff_multipage.tif",
+  "width": 12,
+  "height": 9,
+  "frames": 2,
+  "writer": "hand",
+  "notes": "BigTIFF (version 43): 16-byte header, 8-byte entry count, 20-byte entries, 8-byte offsets; two pages of different sizes chained through 8-byte next-directory pointers",
+  "container": "bigtiff",
+  "twin": "classic_multipage",
+  "byte_order": "II",
+  "frame_sizes": [
+   [
+    12,
+    9
+   ],
+   [
+    10,
+    7
+   ]
+  ]
+ },
+ {
+  "name": "bigtiff_long8_offset_past_eof",
+  "file": "bigtiff_long8_offset_past_eof.tif",
+  "width": 24,
+  "height": 16,
+  "frames": 1,
+  "writer": "hand",
+  "notes": "BigTIFF whose single LONG8 StripOffsets value carries a non-zero HIGH word, putting the strip over 4 GiB beyond the end of a one-kilobyte file: the page must be rejected rather than read from the low 32 bits of the offset",
+  "container": "bigtiff",
+  "expect": "InvalidImageContentException"
  }
 ]

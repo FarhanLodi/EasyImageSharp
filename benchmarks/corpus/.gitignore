@@ -1,0 +1,4 @@
+# The benchmark corpus is generated, never committed: run `python generate.py`.
+*
+!.gitignore
+!generate.py

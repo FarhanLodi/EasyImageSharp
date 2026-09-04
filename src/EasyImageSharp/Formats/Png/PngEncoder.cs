@@ -1,5 +1,7 @@
 using System.Buffers.Binary;
 using System.IO.Compression;
+using EasyImageSharp.Metadata;
+using EasyImageSharp.Metadata.Exif;
 using EasyImageSharp.PixelFormats;
 using EasyImageSharp.Processing.Quantization;
 
@@ -11,6 +13,25 @@ namespace EasyImageSharp.Formats.Png;
 /// <see cref="ColorType"/> and <see cref="BitDepth"/> to write palette images (quantized with
 /// <see cref="Quantizer"/>), 1/2/4-bit grayscale, 16-bit samples, a fixed scanline filter or Adam7 interlacing.
 /// </summary>
+/// <remarks>
+/// <para>
+/// An image with more than one frame - or one whose <see cref="PngMetadata.IsAnimated"/> is set - is written as
+/// an APNG: an acTL chunk, an fcTL for every frame, the first frame's pixels in IDAT and every later frame's in
+/// an fdAT. Frames arrive fully composited, which is what the decoder produces, and the encoder derives each
+/// frame's sub-rectangle itself by diffing against the canvas the frames before it leave behind. A
+/// <see cref="PngFrameMetadata"/> left on a frame contributes its delay and its disposal, and bounds its
+/// blending: a frame whose metadata names <see cref="PngBlendMethod.Source"/> is always written with SOURCE,
+/// while one naming <see cref="PngBlendMethod.Over"/> - or carrying no PNG metadata at all - is written
+/// whichever way comes out smaller, which is pixel for pixel the same picture either way.
+/// To write a single still PNG from a multi-frame image, encode <c>image.Frames.ExportFrame(0)</c> instead.
+/// </para>
+/// <para>
+/// Animated output is truecolour or grayscale at 8 or 16 bits: <see cref="PngColorType.Palette"/> and grayscale
+/// below 8 bits are refused, because every frame would have to share one palette while the quantizer runs per
+/// frame. A single-frame image that is not marked as animated is written exactly as it always was, with no
+/// animation chunks at all.
+/// </para>
+/// </remarks>
 public sealed class PngEncoder : IImageEncoder
 {
     // Adam7 pass geometry: (x start, y start, x step, y step).
@@ -18,6 +39,11 @@ public sealed class PngEncoder : IImageEncoder
     {
         (0, 0, 8, 8), (4, 0, 8, 8), (0, 4, 4, 8), (2, 0, 4, 4), (0, 2, 2, 4), (1, 0, 2, 2), (0, 1, 1, 2),
     };
+
+    private const int DefaultFrameDelay = 100;
+
+    private readonly int? frameDelay;
+    private readonly int? repeatCount;
 
     /// <summary>The deflate effort used for the IDAT stream. Defaults to <see cref="CompressionLevel.Optimal"/>.</summary>
     public CompressionLevel CompressionLevel { get; init; } = CompressionLevel.Optimal;
@@ -46,6 +72,42 @@ public sealed class PngEncoder : IImageEncoder
     /// <summary>What to do with the colour of fully transparent pixels. Defaults to <see cref="PngTransparentColorMode.Preserve"/>.</summary>
     public PngTransparentColorMode TransparentColorMode { get; init; } = PngTransparentColorMode.Preserve;
 
+    /// <summary>
+    /// The delay written for every animation frame, in milliseconds (0 to 65535). When it is not set
+    /// explicitly each frame uses its own <see cref="PngFrameMetadata.FrameDelay"/>, falling back to 100.
+    /// </summary>
+    public int FrameDelay
+    {
+        get => this.frameDelay ?? DefaultFrameDelay;
+        init
+        {
+            if (value is < 0 or > ushort.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException(nameof(value), value, "FrameDelay must be between 0 and 65535 milliseconds.");
+            }
+
+            this.frameDelay = value;
+        }
+    }
+
+    /// <summary>
+    /// How many times an animation plays; 0 loops forever. When it is not set explicitly the image's
+    /// <see cref="PngMetadata.RepeatCount"/> is used, falling back to 0.
+    /// </summary>
+    public int RepeatCount
+    {
+        get => this.repeatCount ?? 0;
+        init
+        {
+            if (value < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(value), value, "RepeatCount must not be negative.");
+            }
+
+            this.repeatCount = value;
+        }
+    }
+
     public void Encode<TPixel>(Image<TPixel> image, Stream stream)
         where TPixel : unmanaged, IPixel<TPixel>
     {
@@ -56,11 +118,21 @@ public sealed class PngEncoder : IImageEncoder
         int height = image.Height;
         ImageFrame<TPixel> frame = image.Frames.RootFrame;
 
-        PngColorType colorType = this.ColorType ?? DefaultColorType<TPixel>();
+        // More than one frame - or a single frame the caller marked as animated - becomes an APNG.
+        PngMetadata? pngMetadata = image.Metadata.TryGetFormatMetadata(out PngMetadata? found) ? found : null;
+        bool animate = image.Frames.Count > 1 || (pngMetadata?.IsAnimated ?? false);
+
+        PngColorType colorType = this.ColorType ?? (animate ? AnimatedColorType<TPixel>() : DefaultColorType<TPixel>());
         int bitDepth = this.BitDepth.HasValue ? (int)this.BitDepth.Value : 8;
         if (this.BitDepth.HasValue)
         {
             ValidateBitDepth(colorType, bitDepth);
+        }
+
+        if (animate && (colorType == PngColorType.Palette || (colorType == PngColorType.Grayscale && bitDepth < 8)))
+        {
+            throw new NotSupportedException(
+                "PNG palette and sub-8-bit grayscale output are not supported for animated images.");
         }
 
         // Palette and sub-byte grayscale go through a quantizer to obtain one index per pixel.
@@ -87,9 +159,15 @@ public sealed class PngEncoder : IImageEncoder
             _ => 4,
         };
         int bitsPerPixel = channels * bitDepth;
-        int filterBpp = Math.Max(1, bitsPerPixel / 8);
-        bool clearTransparent = this.TransparentColorMode == PngTransparentColorMode.Clear
-            && colorType is PngColorType.RgbWithAlpha or PngColorType.GrayscaleWithAlpha;
+        var format = new FrameFormat
+        {
+            ColorType = colorType,
+            BitDepth = bitDepth,
+            BitsPerPixel = bitsPerPixel,
+            FilterBpp = Math.Max(1, bitsPerPixel / 8),
+            ClearTransparent = this.TransparentColorMode == PngTransparentColorMode.Clear
+                && colorType is PngColorType.RgbWithAlpha or PngColorType.GrayscaleWithAlpha,
+        };
 
         // Signature
         stream.Write(new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A });
@@ -108,13 +186,32 @@ public sealed class PngEncoder : IImageEncoder
 
         // Metadata chunks (pHYs, tEXt, ...) belong here, directly after IHDR and before PLTE.
 
+        if (animate)
+        {
+            this.WriteAnimation(stream, image, width, height, in format, pngMetadata);
+            return;
+        }
+
         if (palette is not null)
         {
             WritePaletteChunks(stream, palette);
         }
 
         // IDAT: filter each scanline (per pass when interlaced), then deflate everything into one chunk.
-        var scanlines = new ScanlineSource<TPixel>(frame, colorType, bitDepth, indices, clearTransparent);
+        WriteChunk(stream, "IDAT"u8, this.EncodeFrameData(frame, width, height, in format, indices));
+        WriteChunk(stream, "IEND"u8, ReadOnlySpan<byte>.Empty);
+    }
+
+    /// <summary>
+    /// Filters and deflates one frame's scanlines - every Adam7 pass in turn when interlaced - and returns the
+    /// zlib stream an IDAT or fdAT chunk carries. The dimensions are the whole canvas for a still image and the
+    /// frame's own rectangle for an animation frame, which is exactly what a sub-rectangle frame declares.
+    /// </summary>
+    private byte[] EncodeFrameData<TPixel>(
+        ImageFrame<TPixel> frame, int width, int height, in FrameFormat format, byte[]? indices)
+        where TPixel : unmanaged, IPixel<TPixel>
+    {
+        var scanlines = new ScanlineSource<TPixel>(frame, format.ColorType, format.BitDepth, indices, format.ClearTransparent);
         using var compressed = new MemoryStream();
         using (var zlib = new ZLibStream(compressed, this.CompressionLevel, leaveOpen: true))
         {
@@ -129,17 +226,16 @@ public sealed class PngEncoder : IImageEncoder
                         continue;
                     }
 
-                    this.WritePass(zlib, scanlines, x0, y0, dx, dy, passWidth, passHeight, bitsPerPixel, filterBpp);
+                    this.WritePass(zlib, scanlines, x0, y0, dx, dy, passWidth, passHeight, format.BitsPerPixel, format.FilterBpp);
                 }
             }
             else
             {
-                this.WritePass(zlib, scanlines, 0, 0, 1, 1, width, height, bitsPerPixel, filterBpp);
+                this.WritePass(zlib, scanlines, 0, 0, 1, 1, width, height, format.BitsPerPixel, format.FilterBpp);
             }
         }
 
-        WriteChunk(stream, "IDAT"u8, compressed.ToArray());
-        WriteChunk(stream, "IEND"u8, ReadOnlySpan<byte>.Empty);
+        return compressed.ToArray();
     }
 
     // ----- Setup -----
@@ -159,6 +255,20 @@ public sealed class PngEncoder : IImageEncoder
 
         return PngColorType.RgbWithAlpha;
     }
+
+    /// <summary>
+    /// The colour type an animation defaults to: the alpha-bearing sibling of the still default. Sub-rectangle
+    /// frames leave the pixels they do not touch fully transparent and blend them back over the canvas, which
+    /// needs an alpha channel to express; a grayscale image still stays grayscale.
+    /// </summary>
+    private static PngColorType AnimatedColorType<TPixel>()
+        where TPixel : unmanaged, IPixel<TPixel>
+        => DefaultColorType<TPixel>() switch
+        {
+            PngColorType.Grayscale => PngColorType.GrayscaleWithAlpha,
+            PngColorType.Rgb => PngColorType.RgbWithAlpha,
+            PngColorType other => other,
+        };
 
     private static void ValidateBitDepth(PngColorType colorType, int bitDepth)
     {
@@ -242,6 +352,265 @@ public sealed class PngEncoder : IImageEncoder
             WriteChunk(stream, "tRNS"u8, trns);
         }
     }
+
+    // ----- Animations -----
+
+    /// <summary>
+    /// Writes the APNG chunks: the animation control, then one frame control per frame with the first frame's
+    /// pixels in IDAT and every later frame's in an fdAT. A single counter numbers the fcTL and fdAT chunks
+    /// together, as the format requires. Frames after the first are shrunk to the rectangle that actually
+    /// changed, so an animation only pays for the pixels that move.
+    /// </summary>
+    private void WriteAnimation<TPixel>(
+        Stream stream, Image<TPixel> image, int width, int height, in FrameFormat format, PngMetadata? metadata)
+        where TPixel : unmanaged, IPixel<TPixel>
+    {
+        Rgba32[][] frames = ReadFrames(image, width, height);
+        if (format.ClearTransparent)
+        {
+            // Clear before diffing, so the canvas the encoder tracks is the one a decoder will end up with.
+            foreach (Rgba32[] pixels in frames)
+            {
+                ClearTransparentColor(pixels);
+            }
+        }
+
+        // An explicit RepeatCount wins; otherwise the play count a decoded animation carried is preserved.
+        uint plays = this.repeatCount.HasValue ? (uint)this.repeatCount.Value : metadata?.RepeatCount ?? 0u;
+        PngAnimation.WriteAnimationControl(stream, frames.Length, plays);
+
+        // A hidden root frame keeps IDAT outside the animation: it is the still image an APNG-unaware reader
+        // shows, and every frame including the first then gets its own fcTL and fdAT.
+        bool animateRoot = metadata?.AnimateRootFrame ?? true;
+        byte[]? still = null;
+        if (!animateRoot)
+        {
+            still = this.EncodeFrameData(AsFrame(frames[0], width, height), width, height, in format, null);
+            WriteChunk(stream, "IDAT"u8, still);
+        }
+
+        var canvas = new Rgba32[width * height];
+        uint sequence = 0;
+        bool previousDisposed = false;
+        for (int i = 0; i < frames.Length; i++)
+        {
+            PngFrameMetadata? frameMetadata =
+                image.Frames[i].Metadata.TryGetFormatMetadata(out PngFrameMetadata? found) ? found : null;
+            (ushort delayNumerator, ushort delayDenominator) = this.ResolveDelay(frameMetadata);
+            PngDisposalMethod disposal = frameMetadata?.DisposalMethod ?? PngDisposalMethod.None;
+
+            // The first frame is always the whole canvas: it is the IDAT image as well, and the format
+            // requires that one to be the full size at the origin.
+            Rgba32[] target = frames[i];
+            Rectangle rectangle = i == 0
+                ? new Rectangle(0, 0, width, height)
+                : ChangedRectangle(canvas, target, width, height);
+
+            bool blend = false;
+            byte[] data;
+            if (i == 0 && still is not null)
+            {
+                data = still;
+            }
+            else
+            {
+                bool allowBlend = i > 0 && format.HasAlpha && !previousDisposed
+                    && frameMetadata?.BlendMethod != PngBlendMethod.Source;
+                data = this.EncodeFrameVariants(canvas, target, width, rectangle, in format, allowBlend, out blend);
+            }
+
+            var control = new ApngFrameControl
+            {
+                Width = rectangle.Width,
+                Height = rectangle.Height,
+                XOffset = rectangle.X,
+                YOffset = rectangle.Y,
+            };
+            Rgba32[]? saved = disposal == PngDisposalMethod.RestoreToPrevious
+                ? PngAnimation.CopyRegion(canvas, width, control)
+                : null;
+
+            PngAnimation.WriteFrameControl(
+                stream, sequence++, rectangle, delayNumerator, delayDenominator, disposal,
+                blend ? PngBlendMethod.Over : PngBlendMethod.Source);
+            if (i == 0 && animateRoot)
+            {
+                WriteChunk(stream, "IDAT"u8, data);
+            }
+            else
+            {
+                PngAnimation.WriteFrameData(stream, sequence++, data);
+            }
+
+            // Track what a decoder now has on screen: the composited frame, then this frame's disposal.
+            target.CopyTo(canvas, 0);
+            PngAnimation.ApplyDisposal(canvas, width, disposal, control, saved);
+            previousDisposed = disposal != PngDisposalMethod.None;
+        }
+
+        WriteChunk(stream, "IEND"u8, ReadOnlySpan<byte>.Empty);
+    }
+
+    /// <summary>
+    /// Encodes one sub-frame both ways - overwriting the rectangle, and blending it so that unchanged pixels
+    /// can be left transparent - and keeps whichever came out smaller. Blending is only offered when every
+    /// pixel the frame changes is opaque, because source-over can never lower the alpha already on the canvas.
+    /// </summary>
+    private byte[] EncodeFrameVariants(
+        Rgba32[] canvas, Rgba32[] target, int canvasWidth, in Rectangle rectangle, in FrameFormat format,
+        bool allowBlend, out bool blend)
+    {
+        Rgba32[] direct = Crop(target, canvasWidth, rectangle);
+        byte[] best = this.EncodeFrameData(
+            AsFrame(direct, rectangle.Width, rectangle.Height), rectangle.Width, rectangle.Height, in format, null);
+        blend = false;
+
+        if (!allowBlend)
+        {
+            return best;
+        }
+
+        var blended = new Rgba32[rectangle.Width * rectangle.Height];
+        for (int y = 0; y < rectangle.Height; y++)
+        {
+            int source = ((rectangle.Y + y) * canvasWidth) + rectangle.X;
+            int destination = y * rectangle.Width;
+            for (int x = 0; x < rectangle.Width; x++)
+            {
+                Rgba32 wanted = target[source + x];
+                if (!wanted.Equals(canvas[source + x]))
+                {
+                    if (wanted.A != byte.MaxValue)
+                    {
+                        return best;
+                    }
+
+                    blended[destination + x] = wanted;
+                }
+                else if (wanted.A == 0 && (wanted.R | wanted.G | wanted.B) != 0)
+                {
+                    // Source-over onto a fully transparent canvas pixel yields the source verbatim, so a pixel
+                    // that is transparent but still carries a colour cannot be left to the blend to reproduce.
+                    return best;
+                }
+            }
+        }
+
+        byte[] candidate = this.EncodeFrameData(
+            AsFrame(blended, rectangle.Width, rectangle.Height), rectangle.Width, rectangle.Height, in format, null);
+        if (candidate.Length < best.Length)
+        {
+            blend = true;
+            return candidate;
+        }
+
+        return best;
+    }
+
+    /// <summary>
+    /// Resolves the two 16-bit halves of a frame's delay. An explicit <see cref="FrameDelay"/> applies to every
+    /// frame; otherwise a frame's own fraction is written verbatim whenever it fits, which is what lets a
+    /// decoded animation re-encode to exactly the timing it came with.
+    /// </summary>
+    private (ushort Numerator, ushort Denominator) ResolveDelay(PngFrameMetadata? metadata)
+    {
+        if (this.frameDelay is null && metadata is not null)
+        {
+            Rational delay = metadata.FrameDelay;
+            if (delay.Numerator > 0 && delay.Numerator <= ushort.MaxValue
+                && delay.Denominator > 0 && delay.Denominator <= ushort.MaxValue)
+            {
+                return ((ushort)delay.Numerator, (ushort)delay.Denominator);
+            }
+
+            // A fraction too large for the chunk is approximated in milliseconds, the unit the option uses.
+            double seconds = delay.Denominator > 0 ? delay.ToDouble() : 0d;
+            if (seconds > 0d)
+            {
+                return ((ushort)Math.Clamp(Math.Round(seconds * 1000d), 0d, ushort.MaxValue), 1000);
+            }
+        }
+
+        return ((ushort)(this.frameDelay ?? DefaultFrameDelay), 1000);
+    }
+
+    /// <summary>Finds the rectangle outside which the frame is identical to what the canvas already shows.</summary>
+    private static Rectangle ChangedRectangle(Rgba32[] canvas, Rgba32[] target, int width, int height)
+    {
+        int minX = width;
+        int minY = height;
+        int maxX = -1;
+        int maxY = -1;
+        for (int y = 0; y < height; y++)
+        {
+            int row = y * width;
+            for (int x = 0; x < width; x++)
+            {
+                if (!target[row + x].Equals(canvas[row + x]))
+                {
+                    minX = Math.Min(minX, x);
+                    maxX = Math.Max(maxX, x);
+                    minY = Math.Min(minY, y);
+                    maxY = Math.Max(maxY, y);
+                }
+            }
+        }
+
+        // Nothing moved: the format still needs a rectangle, so send the cheapest one there is.
+        return maxX < 0
+            ? new Rectangle(0, 0, 1, 1)
+            : new Rectangle(minX, minY, maxX - minX + 1, maxY - minY + 1);
+    }
+
+    /// <summary>Reads every frame as a full-canvas RGBA buffer, which is what the sub-rectangle diff needs.</summary>
+    private static Rgba32[][] ReadFrames<TPixel>(Image<TPixel> image, int width, int height)
+        where TPixel : unmanaged, IPixel<TPixel>
+    {
+        var frames = new Rgba32[image.Frames.Count][];
+        for (int i = 0; i < frames.Length; i++)
+        {
+            ImageFrame<TPixel> frame = image.Frames[i];
+            var pixels = new Rgba32[width * height];
+            int rows = Math.Min(height, frame.Height);
+            int columns = Math.Min(width, frame.Width);
+            var row = new Rgba32[frame.Width];
+            for (int y = 0; y < rows; y++)
+            {
+                PixelOps.ToRgba32(frame.GetRowSpan(y), row);
+                row.AsSpan(0, columns).CopyTo(pixels.AsSpan(y * width, columns));
+            }
+
+            frames[i] = pixels;
+        }
+
+        return frames;
+    }
+
+    private static Rgba32[] Crop(Rgba32[] source, int sourceWidth, in Rectangle rectangle)
+    {
+        var result = new Rgba32[rectangle.Width * rectangle.Height];
+        for (int y = 0; y < rectangle.Height; y++)
+        {
+            source.AsSpan(((rectangle.Y + y) * sourceWidth) + rectangle.X, rectangle.Width)
+                .CopyTo(result.AsSpan(y * rectangle.Width, rectangle.Width));
+        }
+
+        return result;
+    }
+
+    private static void ClearTransparentColor(Rgba32[] pixels)
+    {
+        for (int i = 0; i < pixels.Length; i++)
+        {
+            if (pixels[i].A == 0)
+            {
+                pixels[i] = default;
+            }
+        }
+    }
+
+    /// <summary>Presents a plain RGBA buffer as a frame, so it can go through the same scanline machinery.</summary>
+    private static ImageFrame<Rgba32> AsFrame(Rgba32[] pixels, int width, int height) => new(width, height, pixels);
 
     // ----- Scanlines and filtering -----
 
@@ -331,6 +700,32 @@ public sealed class PngEncoder : IImageEncoder
         Span<byte> crcBytes = stackalloc byte[4];
         BinaryPrimitives.WriteUInt32BigEndian(crcBytes, crc);
         stream.Write(crcBytes);
+    }
+
+    /// <summary>
+    /// The output format every frame of one file shares: what IHDR declares, plus the two byte counts the
+    /// filter needs. It is resolved once from the encoder options and the pixel type and then passed down,
+    /// because an animation's frames all have to agree with the single IHDR at the top of the file.
+    /// </summary>
+    private readonly struct FrameFormat
+    {
+        /// <summary>The colour type written to IHDR.</summary>
+        public PngColorType ColorType { get; init; }
+
+        /// <summary>Bits per sample, 1 to 16.</summary>
+        public int BitDepth { get; init; }
+
+        /// <summary>Bits per pixel: channels times <see cref="BitDepth"/>.</summary>
+        public int BitsPerPixel { get; init; }
+
+        /// <summary>The filter's byte offset to the pixel on the left, at least 1.</summary>
+        public int FilterBpp { get; init; }
+
+        /// <summary>Whether the colour of fully transparent pixels is discarded before filtering.</summary>
+        public bool ClearTransparent { get; init; }
+
+        /// <summary>Whether the colour type carries an alpha channel, which is what a blended frame needs.</summary>
+        public bool HasAlpha => this.ColorType is PngColorType.RgbWithAlpha or PngColorType.GrayscaleWithAlpha;
     }
 
     /// <summary>Produces packed scanline bytes for any colour type, bit depth and column subset (for Adam7).</summary>

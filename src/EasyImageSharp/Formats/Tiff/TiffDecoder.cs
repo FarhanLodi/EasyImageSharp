@@ -33,6 +33,15 @@ namespace EasyImageSharp.Formats.Tiff;
 /// Old-style JPEG (compression 6), JBIG, the CCITT uncompressed-mode extension, the floating-point predictor
 /// and planar pages with sub-byte samples are reported as <see cref="NotSupportedException"/>.
 /// </para>
+/// <para>
+/// Both container versions are read: classic TIFF (version 42, 4-byte offsets) and BigTIFF (version 43, 8-byte
+/// offsets, 8-byte directory entry counts and 20-byte directory entries), including the BigTIFF field types
+/// LONG8, SLONG8 and IFD8. Only the directory layer differs; the pixel layer is shared, because tag values are
+/// already carried as <see langword="long"/> and every segment is bounds-checked against the buffered file
+/// before it is read. Since a file is buffered whole before decoding, BigTIFF support here means compatibility
+/// with the 64-bit container for files below 2 GiB, not streaming of larger ones: a segment beyond the buffered
+/// length is reported as truncated data. The encoder always writes classic TIFF.
+/// </para>
 /// </remarks>
 public sealed class TiffDecoder : IImageDecoder
 {
@@ -72,6 +81,22 @@ public sealed class TiffDecoder : IImageDecoder
 
     private const int TagXmp = 700;
     private const int TagIccProfile = 34675;
+
+    private const int MagicClassic = 42;
+    private const int MagicBig = 43;
+
+    private const int TypeIfd = 13;
+    private const int TypeLong8 = 16;
+    private const int TypeSLong8 = 17;
+    private const int TypeIfd8 = 18;
+
+    /// <summary>
+    /// A tag's element count is never allowed past the larger of this floor and one element per eight bytes of
+    /// file. The floor is the historical fixed ceiling, so no classic TIFF that was read before is rejected now;
+    /// the file-relative term is what lets a large BigTIFF carry the millions of entries a real tile table has,
+    /// while still refusing a count that no file of that size could possibly hold the values for.
+    /// </summary>
+    private const int MaxTagElementsFloor = 1 << 22;
 
     /// <summary>
     /// Tags that describe the sample layout of a page (or point at its data). They are exposed through
@@ -113,15 +138,20 @@ public sealed class TiffDecoder : IImageDecoder
     private static Image<TPixel> DecodeCore<TPixel>(ReadOnlySpan<byte> data, DecoderOptions options)
         where TPixel : unmanaged, IPixel<TPixel>
     {
-        bool bigEndian = ValidateHeader(data);
+        TiffHeader header = ValidateHeader(data);
+        IfdShape shape = IfdShape.For(header.BigTiff);
+        bool bigEndian = header.BigEndian;
         var frames = new List<ImageFrame<TPixel>>();
         var visited = new HashSet<long>();
 
-        long ifdOffset = ReadU32(data, 4, bigEndian);
+        long ifdOffset = header.FirstIfd;
         while (ifdOffset != 0 && visited.Add(ifdOffset) && frames.Count < options.MaxFrames)
         {
-            frames.Add(DecodeFrame<TPixel>(data, CheckedIfdOffset(ifdOffset, data.Length), bigEndian, options));
-            ifdOffset = NextIfdOffset(data, (int)ifdOffset, bigEndian);
+            // Narrowed once: the same checked value feeds the page and the walk to the next one, so a 64-bit
+            // offset can never be truncated back into range on its second use.
+            int ifd = CheckedIfdOffset(ifdOffset, data.Length, shape.CountBytes);
+            frames.Add(DecodeFrame<TPixel>(data, ifd, bigEndian, shape, options));
+            ifdOffset = NextIfdOffset(data, ifd, bigEndian, shape);
         }
 
         if (frames.Count == 0)
@@ -129,14 +159,16 @@ public sealed class TiffDecoder : IImageDecoder
             throw new InvalidImageContentException("TIFF image contains no pages.");
         }
 
-        return new Image<TPixel>(frames, CreateImageMetadata(frames[0].Metadata, bigEndian));
+        return new Image<TPixel>(frames, CreateImageMetadata(frames[0].Metadata, header));
     }
 
     /// <summary>Builds the image-level metadata from the first page: profiles are copied, the resolution comes from the page's tags.</summary>
-    private static ImageMetadata CreateImageMetadata(ImageFrameMetadata firstPage, bool bigEndian)
+    private static ImageMetadata CreateImageMetadata(ImageFrameMetadata firstPage, in TiffHeader header)
     {
         var metadata = new ImageMetadata { DecodedImageFormat = ImageFormat.Tiff };
-        metadata.GetTiffMetadata().ByteOrder = bigEndian ? ByteOrder.BigEndian : ByteOrder.LittleEndian;
+        TiffMetadata tiffMetadata = metadata.GetTiffMetadata();
+        tiffMetadata.ByteOrder = header.BigEndian ? ByteOrder.BigEndian : ByteOrder.LittleEndian;
+        tiffMetadata.BigTiff = header.BigTiff;
         metadata.ExifProfile = firstPage.ExifProfile?.DeepClone();
         metadata.IccProfile = firstPage.IccProfile?.DeepClone();
         metadata.XmpProfile = firstPage.XmpProfile?.DeepClone();
@@ -153,8 +185,19 @@ public sealed class TiffDecoder : IImageDecoder
     /// ICC/XMP into their profiles, everything else (with the Exif/GPS sub-directories) into the page's EXIF profile.
     /// Malformed ancillary entries are skipped; only the size caps abort the decode.
     /// </summary>
+    /// <param name="data">The whole buffered file.</param>
+    /// <param name="ifdOffset">The already range-checked offset of the page's directory.</param>
+    /// <param name="bigEndian">True when the file is big-endian.</param>
+    /// <param name="bigTiff">
+    /// True when the file is BigTIFF, so the directory uses an 8-byte entry count, 20-byte entries and 8-byte
+    /// value offsets. Not consumed yet: the EXIF directory reader is still classic-only, so a BigTIFF page's
+    /// ancillary metadata is read with the classic layout until that reader is widened to take this flag.
+    /// </param>
+    /// <param name="tags">The layout tags already read from the same directory.</param>
+    /// <param name="frameMetadata">The page metadata to populate.</param>
     private static void PopulateFrameMetadata(
-        ReadOnlySpan<byte> data, int ifdOffset, bool bigEndian, Dictionary<int, long[]> tags, ImageFrameMetadata frameMetadata)
+        ReadOnlySpan<byte> data, int ifdOffset, bool bigEndian, bool bigTiff, Dictionary<int, long[]> tags,
+        ImageFrameMetadata frameMetadata)
     {
         TiffFrameMetadata tiff = frameMetadata.GetTiffMetadata();
         long[] bps = tags.TryGetValue(TagBitsPerSample, out long[]? b) ? b : new long[] { 1 };
@@ -178,7 +221,7 @@ public sealed class TiffDecoder : IImageDecoder
         List<IExifValue> values;
         try
         {
-            values = ExifReader.ReadDirectoryTree(data, ifdOffset, bigEndian);
+            values = ExifReader.ReadDirectoryTree(data, ifdOffset, bigEndian, bigTiff);
         }
         catch (Exception ex) when (DecoderGuard.IsMalformedInputSymptom(ex))
         {
@@ -241,9 +284,12 @@ public sealed class TiffDecoder : IImageDecoder
 
     private static ImageInfo IdentifyCore(ReadOnlySpan<byte> data)
     {
-        bool bigEndian = ValidateHeader(data);
-        long firstIfd = ReadU32(data, 4, bigEndian);
-        Dictionary<int, long[]> tags = ReadTags(data, CheckedIfdOffset(firstIfd, data.Length), bigEndian);
+        TiffHeader header = ValidateHeader(data);
+        IfdShape shape = IfdShape.For(header.BigTiff);
+        bool bigEndian = header.BigEndian;
+        long firstIfd = header.FirstIfd;
+        int firstIfdOffset = CheckedIfdOffset(firstIfd, data.Length, shape.CountBytes);
+        Dictionary<int, long[]> tags = ReadTags(data, firstIfdOffset, bigEndian, shape);
 
         long width = GetSingle(tags, TagImageWidth, 0);
         long height = GetSingle(tags, TagImageLength, 0);
@@ -262,20 +308,34 @@ public sealed class TiffDecoder : IImageDecoder
         while (ifdOffset != 0 && visited.Add(ifdOffset) && frameCount < int.MaxValue)
         {
             frameCount++;
-            ifdOffset = NextIfdOffset(data, CheckedIfdOffset(ifdOffset, data.Length), bigEndian);
+            ifdOffset = NextIfdOffset(data, CheckedIfdOffset(ifdOffset, data.Length, shape.CountBytes), bigEndian, shape);
         }
 
         var firstPage = new ImageFrameMetadata();
-        PopulateFrameMetadata(data, CheckedIfdOffset(firstIfd, data.Length), bigEndian, tags, firstPage);
-        return new ImageInfo((int)width, (int)height, (int)bitsPerPixel, frameCount, ImageFormat.Tiff, CreateImageMetadata(firstPage, bigEndian));
+        PopulateFrameMetadata(data, firstIfdOffset, bigEndian, header.BigTiff, tags, firstPage);
+        return new ImageInfo((int)width, (int)height, (int)bitsPerPixel, frameCount, ImageFormat.Tiff, CreateImageMetadata(firstPage, header));
     }
 
-    private static int CheckedIfdOffset(long offset, int dataLength)
-        => offset >= 0 && offset + 2 <= dataLength
+    /// <summary>
+    /// The single place a 64-bit directory offset is narrowed to an index into the buffered file. The offset must
+    /// leave room for the directory's entry count, which is <paramref name="minBytes"/> wide (2 for classic TIFF,
+    /// 8 for BigTIFF), so a count field straddling the end of the file is rejected here rather than faulting
+    /// inside the directory reader.
+    /// </summary>
+    /// <param name="offset">The offset exactly as it was read from the file.</param>
+    /// <param name="dataLength">The length of the buffered file.</param>
+    /// <param name="minBytes">The width of the entry count the directory must still have room for.</param>
+    private static int CheckedIfdOffset(long offset, int dataLength, int minBytes)
+        => offset >= 0 && offset + minBytes <= dataLength
             ? (int)offset
             : throw new InvalidImageContentException("TIFF directory offset is out of range.");
 
-    private static bool ValidateHeader(ReadOnlySpan<byte> data)
+    /// <summary>
+    /// Reads the 8-byte classic or 16-byte BigTIFF file header: the byte order, the version word and the offset of
+    /// the first directory. Any first byte other than 'M' is taken as little-endian, matching the leniency the rest
+    /// of the decoder is written to.
+    /// </summary>
+    private static TiffHeader ValidateHeader(ReadOnlySpan<byte> data)
     {
         if (data.Length < 8)
         {
@@ -284,18 +344,46 @@ public sealed class TiffDecoder : IImageDecoder
 
         bool bigEndian = data[0] == 0x4D;
         int magic = (int)ReadU16(data, 2, bigEndian);
-        if (magic != 42)
+        if (magic == MagicClassic)
+        {
+            return new TiffHeader(bigEndian, false, ReadU32(data, 4, bigEndian));
+        }
+
+        if (magic != MagicBig)
         {
             throw new InvalidImageContentException("Invalid TIFF magic number.");
         }
 
-        return bigEndian;
+        if (data.Length < 16)
+        {
+            throw new InvalidImageContentException("TIFF header is truncated.");
+        }
+
+        uint offsetSize = ReadU16(data, 4, bigEndian);
+        if (offsetSize != 8)
+        {
+            throw new InvalidImageContentException($"BigTIFF offset size {offsetSize} is not supported (must be 8).");
+        }
+
+        if (ReadU16(data, 6, bigEndian) != 0)
+        {
+            throw new InvalidImageContentException("BigTIFF reserved field is not zero.");
+        }
+
+        ulong firstIfd = ReadU64(data, 8, bigEndian);
+        if (firstIfd > long.MaxValue)
+        {
+            throw new InvalidImageContentException("TIFF directory offset is out of range.");
+        }
+
+        return new TiffHeader(bigEndian, true, (long)firstIfd);
     }
 
-    private static ImageFrame<TPixel> DecodeFrame<TPixel>(ReadOnlySpan<byte> data, int ifdOffset, bool bigEndian, DecoderOptions options)
+    private static ImageFrame<TPixel> DecodeFrame<TPixel>(
+        ReadOnlySpan<byte> data, int ifdOffset, bool bigEndian, in IfdShape shape, DecoderOptions options)
         where TPixel : unmanaged, IPixel<TPixel>
     {
-        Dictionary<int, long[]> tags = ReadTags(data, ifdOffset, bigEndian);
+        Dictionary<int, long[]> tags = ReadTags(data, ifdOffset, bigEndian, shape);
 
         long widthTag = GetSingle(tags, TagImageWidth, 0);
         long heightTag = GetSingle(tags, TagImageLength, 0);
@@ -421,7 +509,7 @@ public sealed class TiffDecoder : IImageDecoder
             }
         }
 
-        PopulateFrameMetadata(data, ifdOffset, bigEndian, tags, frame.Metadata);
+        PopulateFrameMetadata(data, ifdOffset, bigEndian, shape.BigTiff, tags, frame.Metadata);
         return frame;
     }
 
@@ -1208,35 +1296,86 @@ public sealed class TiffDecoder : IImageDecoder
 
     // ----- IFD parsing -----
 
-    private static long NextIfdOffset(ReadOnlySpan<byte> data, int ifdOffset, bool bigEndian)
+    /// <summary>
+    /// Reads the pointer that follows a directory's entries. Unlike <see cref="ReadTags"/> this is deliberately
+    /// forgiving: an offset, an entry count or a pointer that does not fit the file ends the page chain instead of
+    /// failing the decode, so a file whose pages are good but whose chain is damaged still yields its pages.
+    /// </summary>
+    /// <param name="data">The whole buffered file.</param>
+    /// <param name="ifdOffset">The offset of the directory whose successor is wanted.</param>
+    /// <param name="bigEndian">True when the file is big-endian.</param>
+    /// <param name="shape">The directory layout of the container version.</param>
+    private static long NextIfdOffset(ReadOnlySpan<byte> data, int ifdOffset, bool bigEndian, in IfdShape shape)
     {
-        if (ifdOffset < 0 || ifdOffset + 2 > data.Length)
+        int countBytes = shape.CountBytes;
+        int entryBytes = shape.EntryBytes;
+        if (ifdOffset < 0 || ifdOffset + countBytes > data.Length)
         {
             return 0;
         }
 
-        int entryCount = (int)ReadU16(data, ifdOffset, bigEndian);
-        long nextPointer = ifdOffset + 2L + (entryCount * 12L);
-        return nextPointer + 4 <= data.Length ? ReadU32(data, (int)nextPointer, bigEndian) : 0;
+        long entryCount = countBytes == 2 ? ReadU16(data, ifdOffset, bigEndian) : (long)ReadU64(data, ifdOffset, bigEndian);
+        int entriesStart = ifdOffset + countBytes;
+        if (entryCount < 0 || entryCount > (data.Length - entriesStart) / entryBytes)
+        {
+            return 0;
+        }
+
+        int nextPointer = entriesStart + ((int)entryCount * entryBytes);
+        if (nextPointer + shape.OffsetBytes > data.Length)
+        {
+            return 0;
+        }
+
+        if (shape.OffsetBytes == 4)
+        {
+            return ReadU32(data, nextPointer, bigEndian);
+        }
+
+        ulong wide = ReadU64(data, nextPointer, bigEndian);
+        return wide > long.MaxValue ? 0 : (long)wide;
     }
 
-    private static Dictionary<int, long[]> ReadTags(ReadOnlySpan<byte> data, int ifdOffset, bool bigEndian)
+    /// <summary>
+    /// Materializes the directory entries this decoder knows about. The container's directory layout is read out
+    /// of <paramref name="shape"/> into locals before the entry loop starts, so neither the per-entry loop nor the
+    /// per-element value loop ever tests which container version is being read.
+    /// </summary>
+    /// <param name="data">The whole buffered file.</param>
+    /// <param name="ifdOffset">The offset of the directory to read.</param>
+    /// <param name="bigEndian">True when the file is big-endian.</param>
+    /// <param name="shape">The directory layout of the container version.</param>
+    private static Dictionary<int, long[]> ReadTags(ReadOnlySpan<byte> data, int ifdOffset, bool bigEndian, in IfdShape shape)
     {
-        if (ifdOffset < 0 || ifdOffset + 2 > data.Length)
+        int countBytes = shape.CountBytes;
+        int entryBytes = shape.EntryBytes;
+        int offsetBytes = shape.OffsetBytes;
+        int inlineMax = shape.InlineMax;
+
+        // Tag and type sit at +0 and +2 in both layouts; the element count and then the value field follow, so the
+        // value field starts 4 + offsetBytes into the entry (8 for classic TIFF, 12 for BigTIFF).
+        int valueField = 4 + offsetBytes;
+
+        if (ifdOffset < 0 || ifdOffset + countBytes > data.Length)
         {
             throw new InvalidImageContentException("TIFF directory offset is out of range.");
         }
 
-        int entryCount = (int)ReadU16(data, ifdOffset, bigEndian);
-        if (ifdOffset + 2 + (entryCount * 12L) > data.Length)
+        long entryCountValue = countBytes == 2
+            ? ReadU16(data, ifdOffset, bigEndian)
+            : (long)ReadU64(data, ifdOffset, bigEndian);
+        int entriesStart = ifdOffset + countBytes;
+        if (entryCountValue < 0 || entryCountValue > (data.Length - entriesStart) / entryBytes)
         {
             throw new InvalidImageContentException("TIFF directory is truncated.");
         }
 
+        int entryCount = (int)entryCountValue;
+        long maxElements = Math.Max(MaxTagElementsFloor, data.Length / 8);
         var tags = new Dictionary<int, long[]>();
         for (int i = 0; i < entryCount; i++)
         {
-            int entry = ifdOffset + 2 + (i * 12);
+            int entry = entriesStart + (i * entryBytes);
             int tag = (int)ReadU16(data, entry, bigEndian);
             if (!KnownTags.Contains(tag) || tags.ContainsKey(tag))
             {
@@ -1244,38 +1383,85 @@ public sealed class TiffDecoder : IImageDecoder
             }
 
             int type = (int)ReadU16(data, entry + 2, bigEndian);
-            long count = ReadU32(data, entry + 4, bigEndian);
+            long count = offsetBytes == 4
+                ? ReadU32(data, entry + 4, bigEndian)
+                : (long)ReadU64(data, entry + 4, bigEndian);
             int size = type switch
             {
                 1 or 2 or 6 or 7 => 1,
                 3 or 8 => 2,
-                4 or 9 or 11 => 4,
-                5 or 10 or 12 => 8,
+                4 or 9 or 11 or TypeIfd => 4,
+                5 or 10 or 12 or TypeLong8 or TypeSLong8 or TypeIfd8 => 8,
                 _ => 0,
             };
-            if (size == 0 || count <= 0 || count > 1 << 22)
+            if (size == 0 || count <= 0 || count > maxElements)
             {
                 continue;
             }
 
             long total = size * count;
-            long valueOffset = total <= 4 ? entry + 8 : ReadU32(data, entry + 8, bigEndian);
-            if (valueOffset < 0 || valueOffset + total > data.Length)
+            int field = entry + valueField;
+            long offset = total <= inlineMax
+                ? field
+                : offsetBytes == 4
+                    ? ReadU32(data, field, bigEndian)
+                    : (long)ReadU64(data, field, bigEndian);
+
+            // Written as a subtraction so a hostile 64-bit offset cannot wrap the comparison back into range.
+            if (offset < 0 || offset > data.Length - total)
             {
                 continue;
             }
 
             var values = new long[count];
-            for (int v = 0; v < count; v++)
+            int start = (int)offset;
+
+            // The element reader is chosen once per entry rather than once per element: a strip or tile table can
+            // hold millions of offsets, and the classic path must not pay a branch for the BigTIFF types.
+            switch (type)
             {
-                int o = (int)(valueOffset + (v * size));
-                values[v] = size switch
-                {
-                    1 => data[o],
-                    2 => ReadU16(data, o, bigEndian),
-                    4 => ReadU32(data, o, bigEndian),
-                    _ => ReadU32(data, o, bigEndian), // Rationals: numerator only; unused by this decoder.
-                };
+                case 1 or 2 or 6 or 7:
+                    for (int v = 0; v < values.Length; v++)
+                    {
+                        values[v] = data[start + v];
+                    }
+
+                    break;
+                case 3 or 8:
+                    for (int v = 0; v < values.Length; v++)
+                    {
+                        values[v] = ReadU16(data, start + (v * 2), bigEndian);
+                    }
+
+                    break;
+                case 4 or 9 or 11 or TypeIfd:
+                    for (int v = 0; v < values.Length; v++)
+                    {
+                        values[v] = ReadU32(data, start + (v * 4), bigEndian);
+                    }
+
+                    break;
+                case TypeLong8 or TypeSLong8 or TypeIfd8:
+                    for (int v = 0; v < values.Length; v++)
+                    {
+                        ulong wide = ReadU64(data, start + (v * 8), bigEndian);
+                        if (wide > long.MaxValue)
+                        {
+                            throw new InvalidImageContentException("TIFF field value exceeds the representable range.");
+                        }
+
+                        values[v] = (long)wide;
+                    }
+
+                    break;
+                default:
+                    for (int v = 0; v < values.Length; v++)
+                    {
+                        // Rationals and doubles: numerator (or leading word) only; unused by this decoder.
+                        values[v] = ReadU32(data, start + (v * 8), bigEndian);
+                    }
+
+                    break;
             }
 
             tags[tag] = values;
@@ -1309,8 +1495,44 @@ public sealed class TiffDecoder : IImageDecoder
             ? BinaryPrimitives.ReadUInt32BigEndian(data[offset..])
             : BinaryPrimitives.ReadUInt32LittleEndian(data[offset..]);
 
+    private static ulong ReadU64(ReadOnlySpan<byte> data, int offset, bool bigEndian)
+        => bigEndian
+            ? BinaryPrimitives.ReadUInt64BigEndian(data[offset..])
+            : BinaryPrimitives.ReadUInt64LittleEndian(data[offset..]);
+
     /// <summary>The validated per-page sample layout.</summary>
     private readonly record struct Layout(
         int BitsPerSample, int SamplesPerPixel, bool HasAlpha, int Compression, bool ApplyPredictor, TiffCcittOptions? Ccitt,
         bool Planar, TiffJpegState? Jpeg);
+
+    /// <summary>The file header: byte order, container version and the offset of the first directory.</summary>
+    /// <param name="BigEndian">True when multi-byte values in the file are big-endian.</param>
+    /// <param name="BigTiff">True for BigTIFF (version 43), false for classic TIFF (version 42).</param>
+    /// <param name="FirstIfd">The offset of the first page directory, still unnarrowed and unchecked.</param>
+    private readonly record struct TiffHeader(bool BigEndian, bool BigTiff, long FirstIfd);
+
+    /// <summary>
+    /// How a directory is laid out in the container version being read. It is resolved once per file and hoisted
+    /// into locals at the top of every directory reader, so the widths cost a few loads per directory rather than
+    /// a branch per entry or per element.
+    /// </summary>
+    /// <param name="CountBytes">The width of the entry count that starts a directory.</param>
+    /// <param name="EntryBytes">The width of one directory entry.</param>
+    /// <param name="OffsetBytes">The width of a file offset, and of a directory entry's element count.</param>
+    /// <param name="InlineMax">The number of value bytes that still fit inside the entry itself.</param>
+    private readonly record struct IfdShape(int CountBytes, int EntryBytes, int OffsetBytes, int InlineMax)
+    {
+        /// <summary>Classic TIFF: a 2-byte entry count, 12-byte entries and 4-byte offsets.</summary>
+        public static IfdShape Classic { get; } = new(2, 12, 4, 4);
+
+        /// <summary>BigTIFF: an 8-byte entry count, 20-byte entries and 8-byte offsets.</summary>
+        public static IfdShape Big { get; } = new(8, 20, 8, 8);
+
+        /// <summary>True when this is the BigTIFF layout.</summary>
+        public bool BigTiff => this.EntryBytes == 20;
+
+        /// <summary>Selects the layout for a container version.</summary>
+        /// <param name="bigTiff">True for BigTIFF, false for classic TIFF.</param>
+        public static IfdShape For(bool bigTiff) => bigTiff ? Big : Classic;
+    }
 }

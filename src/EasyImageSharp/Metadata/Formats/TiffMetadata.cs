@@ -59,10 +59,20 @@ public sealed class TiffMetadata : IFormatMetadata
     {
     }
 
-    private TiffMetadata(TiffMetadata other) => this.ByteOrder = other.ByteOrder;
+    private TiffMetadata(TiffMetadata other)
+    {
+        this.ByteOrder = other.ByteOrder;
+        this.BigTiff = other.BigTiff;
+    }
 
     /// <summary>The byte order of the decoded file. The encoder always writes little-endian.</summary>
     public ByteOrder ByteOrder { get; set; } = ByteOrder.LittleEndian;
+
+    /// <summary>
+    /// True when the decoded file was BigTIFF (version 43: an 8-byte offset container). The encoder always writes
+    /// classic TIFF (version 42) regardless of this flag.
+    /// </summary>
+    public bool BigTiff { get; set; }
 
     public TiffMetadata DeepClone() => new(this);
 

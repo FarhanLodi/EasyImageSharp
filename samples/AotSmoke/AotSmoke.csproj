@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    The Native AOT smoke test. Single-target net10.0 on purpose: the CI job publishes this project with
+    no -f, so a multi-targeted project would fail publish outright. PublishAot is NOT set here - the job
+    passes -p:PublishAot=true - so a plain `dotnet build` does not pay ILC on every local build, while
+    IsAotCompatible still runs the trim/AOT analyzers. TreatWarningsAsErrors is inherited from
+    Directory.Build.props and is what turns an IL2xxx/IL3xxx analyzer warning into a failed build.
+    It references the core package only: EasyImageSharp.AI wraps ONNX Runtime, which is not annotated
+    AOT-compatible, and its IL2026/IL3050 warnings would become errors here.
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>AotSmoke</AssemblyName>
+    <RootNamespace>AotSmoke</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <IsAotCompatible>true</IsAotCompatible>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\EasyImageSharp\EasyImageSharp.csproj" />
+  </ItemGroup>
+
+</Project>

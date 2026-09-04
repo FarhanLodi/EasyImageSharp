@@ -54,7 +54,7 @@ public readonly struct PngTextData : IEquatable<PngTextData>
     public override string ToString() => $"{this.Keyword}: {this.Value}";
 }
 
-/// <summary>PNG-specific metadata: IHDR facts, gamma and textual chunks.</summary>
+/// <summary>PNG-specific metadata: IHDR facts, gamma, the APNG animation control (acTL) and textual chunks.</summary>
 public sealed class PngMetadata : IFormatMetadata
 {
     /// <summary>Creates PNG metadata with default values.</summary>
@@ -68,6 +68,9 @@ public sealed class PngMetadata : IFormatMetadata
         this.BitDepth = other.BitDepth;
         this.Gamma = other.Gamma;
         this.Interlaced = other.Interlaced;
+        this.IsAnimated = other.IsAnimated;
+        this.RepeatCount = other.RepeatCount;
+        this.AnimateRootFrame = other.AnimateRootFrame;
         this.TextData = new List<PngTextData>(other.TextData);
     }
 
@@ -83,6 +86,27 @@ public sealed class PngMetadata : IFormatMetadata
     /// <summary>True when the decoded file was Adam7-interlaced (informational).</summary>
     public bool Interlaced { get; set; }
 
+    /// <summary>
+    /// True when the file carries an APNG animation control chunk (acTL). Still images report false;
+    /// setting it asks the encoder to write an animation even for a single-frame image.
+    /// </summary>
+    public bool IsAnimated { get; set; }
+
+    /// <summary>
+    /// The number of times the animation plays, from the acTL <c>num_plays</c> field: 0 means loop forever.
+    /// Still images report 1 (play once). Unlike <see cref="GifMetadata.RepeatCount"/> and
+    /// <see cref="EasyImageSharp.Formats.Webp.WebpMetadata.RepeatCount"/> this is a 32-bit value, because APNG stores
+    /// <c>num_plays</c> as a uint32 rather than GIF's and WebP's 16 bits.
+    /// </summary>
+    public uint RepeatCount { get; set; } = 1;
+
+    /// <summary>
+    /// True when the IDAT image is also the animation's first frame, which is the case when an fcTL chunk
+    /// precedes IDAT. False when the file places every fcTL after IDAT, making the IDAT image a still
+    /// fallback that sits outside the animation and is not shown by an APNG-aware viewer.
+    /// </summary>
+    public bool AnimateRootFrame { get; set; } = true;
+
     /// <summary>tEXt/zTXt/iTXt entries in file order (excluding the XMP packet, see <see cref="ImageMetadata.XmpProfile"/>). Written back by the encoder.</summary>
     public IList<PngTextData> TextData { get; } = new List<PngTextData>();
 
@@ -91,22 +115,34 @@ public sealed class PngMetadata : IFormatMetadata
     IFormatMetadata IDeepCloneable<IFormatMetadata>.DeepClone() => this.DeepClone();
 }
 
-/// <summary>How an APNG frame is disposed of before the next one is rendered.</summary>
+/// <summary>How an APNG frame is disposed of before the next one is rendered (the fcTL <c>dispose_op</c> field).</summary>
 public enum PngDisposalMethod : byte
 {
+    /// <summary>Leave the frame's rectangle as it is; the next frame is drawn on top of it.</summary>
     None = 0,
+
+    /// <summary>Clear the frame's rectangle to fully transparent black before the next frame is drawn.</summary>
     RestoreToBackground = 1,
+
+    /// <summary>Restore the frame's rectangle to the contents it had before the frame was drawn.</summary>
     RestoreToPrevious = 2,
 }
 
-/// <summary>How an APNG frame is blended onto the output buffer.</summary>
+/// <summary>How an APNG frame is blended onto the output buffer (the fcTL <c>blend_op</c> field).</summary>
 public enum PngBlendMethod : byte
 {
+    /// <summary>Overwrite the frame's rectangle with the frame's pixels, alpha included.</summary>
     Source = 0,
+
+    /// <summary>Composite the frame's pixels over the canvas with source-over alpha blending.</summary>
     Over = 1,
 }
 
-/// <summary>Per-frame PNG metadata (reserved for animated PNG; the current decoder produces a single frame).</summary>
+/// <summary>
+/// Per-frame PNG metadata from an APNG frame control chunk (fcTL). Every decoded frame is already
+/// composited onto the full canvas, so the frame's sub-rectangle is not preserved; what survives is how
+/// long the frame is shown and how it was combined with the canvas underneath.
+/// </summary>
 public sealed class PngFrameMetadata : IFormatMetadata
 {
     /// <summary>Creates frame metadata with default values.</summary>
@@ -124,8 +160,10 @@ public sealed class PngFrameMetadata : IFormatMetadata
     /// <summary>The frame delay in seconds as a fraction; defaults to 0/100.</summary>
     public Rational FrameDelay { get; set; } = new(0, 100);
 
+    /// <summary>What happened to the frame's rectangle after it was shown.</summary>
     public PngDisposalMethod DisposalMethod { get; set; }
 
+    /// <summary>How the frame was combined with the canvas underneath.</summary>
     public PngBlendMethod BlendMethod { get; set; }
 
     public PngFrameMetadata DeepClone() => new(this);

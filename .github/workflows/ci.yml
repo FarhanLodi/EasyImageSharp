@@ -36,7 +36,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -77,37 +77,262 @@ jobs:
           if-no-files-found: warn
 
   # -------------------------------------------------------------------------------------------------
-  # There was a "fixture determinism" job here that regenerated the corpus and failed if any tracked
-  # fixture byte changed. It was removed because it could not do what it claimed.
+  # Fixture determinism. Every expected value the test suite asserts against is written by Pillow, not by
+  # this library, and that only means something while the corpus on disk is still what the generators
+  # produce. check_determinism.py regenerates the whole corpus into a scratch directory and compares it
+  # against the committed one, so a hand-edited or stale fixture announces itself.
   #
-  # The expected-value files are PNGs written by Pillow, and Pillow's wheels compress with zlib-ng,
-  # whose deflate output varies with the zlib-ng version and with the SIMD path it selects at run time
-  # from the host CPU. So the same generator, on the same pixels, with the pinned Pillow and NumPy,
-  # emits different bytes on a Linux runner than on a contributor's machine. The job was comparing
-  # compression output, not fixture content, and flagged hundreds of files that carry identical pixels.
-  #
-  # The claim it was meant to protect — that expected values come from somewhere other than this
-  # library — is still enforced, by the fixtures themselves: every one is produced by an independent
-  # encoder and the tests assert against its decoded pixels. What is no longer checked automatically is
-  # that the committed corpus is regenerable, so a stale fixture will not announce itself.
-  #
-  # To bring it back, compare decoded pixels rather than file bytes. See ROADMAP.md.
+  # It compares DECODED PIXELS, not file bytes. Pillow's wheels deflate through zlib-ng, whose output
+  # depends on the zlib-ng build and on the SIMD path it selects at run time from the host CPU, so the
+  # same generator emits different bytes here than on a contributor's machine. An earlier job compared
+  # bytes and had to be deleted for flagging hundreds of files that carried identical pixels; this is a
+  # different check, not that one restored.
   # -------------------------------------------------------------------------------------------------
+  fixture-determinism:
+    name: Fixture determinism
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          # The generators need 3.11 or newer.
+          python-version: "3.11"
+
+      # Pinned exactly as tests/EasyImageSharp.Tests/Fixtures/README.md documents. The pins reproduce the
+      # generators' behaviour, not their compression output, which is why they can be this tight without
+      # making the check fragile.
+      #
+      # tifffile is REQUIRED, not optional. Pillow detects BigTIFF by testing ifh[2] == 43, an index that
+      # only lands on the version word in the little-endian layout, so Pillow cannot open a big-endian
+      # BigTIFF at all. tifffile is therefore the only independent reader for the big-endian fixtures, and
+      # gen_tiffadv.py refuses to emit a fixture no independent reader has confirmed. It is deliberately
+      # not pinned hard: it verifies fixtures rather than producing any committed bytes, so its version
+      # cannot change what lands in the tree. imagecodecs is NOT needed - the one fixture whose codec
+      # would require it is little-endian, and Pillow cross-checks that one.
+      - name: Install the generators' dependencies
+        run: python -m pip install --disable-pip-version-check "pillow==11.3.0" "numpy>=2,<3" "tifffile>=2024.1"
+
+      # Exit status 1 is a corpus difference and 2 is a check that could not run at all; both fail the job,
+      # and the two are distinguished in the output rather than being collapsed into one failure. The
+      # report goes to the runner's temp directory because the checker's one promise about this tree is
+      # that it never writes into it, and a report left here would read as a stale fixture on a re-run.
+      - name: Regenerate the corpus and compare it against the committed one
+        working-directory: tests/EasyImageSharp.Tests/Fixtures
+        run: python check_determinism.py --json "${{ runner.temp }}/fixture-determinism.json"
+
+      # The console summary names the differing files; the report adds the rule applied to every file and
+      # the exact Pillow, NumPy and Python versions, which is what a toolchain-induced failure is diagnosed
+      # from. The report is only written once the comparison ran, so a setup failure uploads nothing.
+      - name: Upload the determinism report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fixture-determinism-report
+          path: ${{ runner.temp }}/fixture-determinism.json
+          if-no-files-found: warn
 
   # -------------------------------------------------------------------------------------------------
-  # There were three jobs here — Native AOT smoke, trimming smoke and a samples run — and all three
-  # published or ran projects under samples/, which no longer exists: the directory was removed in the
-  # pre-1.0.0 repository cleanup, so every one of them failed on "Project file does not exist" without
-  # ever exercising the library.
-  #
-  # Removing them costs real coverage, and it is worth being precise about what. Both projects still set
-  # IsAotCompatible, so the trimming and AOT analyzers run on every build and build-test requires that
-  # build to be warning-free: static violations are still caught. What is gone is the end-to-end proof —
-  # that the library actually publishes under PublishAot and that the codecs still work once statically
-  # compiled. An analyzer-clean build is necessary for that, not sufficient.
-  #
-  # To restore it, the smoke sample has to come back first. See ROADMAP.md.
+  # Native AOT. Both samples set IsAotCompatible, so the trim and AOT analyzers already run on every
+  # build and build-test requires that build to be warning-free — static violations are caught without
+  # this job. What only this job can establish is that the library actually publishes under PublishAot
+  # and that the codecs still work once statically compiled, which an analyzer-clean build is necessary
+  # for and not sufficient to prove.
   # -------------------------------------------------------------------------------------------------
+  aot-smoke:
+    name: Native AOT smoke
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          # samples/AotSmoke is single-target net10.0, so the publish below passes no -f and this is the
+          # only SDK it needs.
+          dotnet-version: 10.0.x
+
+      # ILC shells out to the platform linker. The hosted image already ships both, but naming them is
+      # what stops this job from breaking silently the next time that image is rebuilt.
+      - name: Install the Native AOT prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang zlib1g-dev
+
+      - name: Publish with PublishAot
+        run: dotnet publish samples/AotSmoke -c Release -p:PublishAot=true -o aot-publish
+
+      # A publish that quietly does not run ILC produces an ordinary managed app, and that app would pass
+      # the run below without proving anything about AOT. A managed AotSmoke.dll in the output directory is
+      # exactly that failure, so its absence is asserted before the binary is trusted.
+      - name: The output must really be native
+        run: |
+          set -euo pipefail
+          ls -l aot-publish
+          [ -x aot-publish/AotSmoke ] || { echo "::error::No native AotSmoke executable was produced"; exit 1; }
+          if [ -f aot-publish/AotSmoke.dll ]; then
+            echo "::error::aot-publish/AotSmoke.dll exists, so ILC did not run and this is a managed publish"
+            exit 1
+          fi
+
+      # The sample reports every broken format rather than stopping at the first, so its summary line is
+      # the result. Matching a non-zero check count as well as zero failures is what stops a sample that
+      # silently stopped running any checks from passing.
+      - name: Run the published binary
+        run: |
+          set -euo pipefail
+          ./aot-publish/AotSmoke | tee aot-smoke.log
+          grep -Eq "^AotSmoke: [1-9][0-9]* checks, 0 failures$" aot-smoke.log \
+            || { echo "::error::AotSmoke did not report a clean run"; exit 1; }
+
+  # -------------------------------------------------------------------------------------------------
+  # Trimming. TrimmerSingleWarn=false reports every trim warning instead of one per assembly, and
+  # SuppressTrimAnalysisWarnings=false undoes the suppression the SDK applies by default; together they
+  # are far stricter than an ordinary build, so a project that builds clean can still fail here. Running
+  # the published binary afterwards is a separate claim: publishing only proves the trimmer had nothing
+  # to say, while executing proves the codecs survive having the unused closure removed.
+  # -------------------------------------------------------------------------------------------------
+  trim-smoke:
+    name: Trimming smoke
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          # samples/Thumbnailer is single-target net10.0 for the same reason samples/AotSmoke is.
+          dotnet-version: 10.0.x
+
+      - name: Publish trimmed
+        run: |
+          set -euo pipefail
+          dotnet publish samples/Thumbnailer -c Release \
+            -r linux-x64 --self-contained true \
+            -p:PublishTrimmed=true \
+            -p:TrimmerSingleWarn=false \
+            -p:SuppressTrimAnalysisWarnings=false \
+            -o trim-publish 2>&1 | tee trim-publish.log
+
+      # TreatWarningsAsErrors already fails the publish on an IL warning it promotes. This catches the
+      # ones that arrive as plain warnings, which would otherwise scroll past in a green job.
+      - name: No IL trim warnings
+        run: |
+          set -euo pipefail
+          if grep -n "warning IL" trim-publish.log; then
+            echo "::error::The trimmed publish produced the IL trim warnings listed above"
+            exit 1
+          fi
+          echo "No trim warnings."
+
+      - name: Run the trimmed binary
+        run: ./trim-publish/Thumbnailer
+
+  # -------------------------------------------------------------------------------------------------
+  # The samples, run the way a reader of the repository runs them. Neither is a member of
+  # EasyImageSharp.slnx — both are single-target net10.0 and the solution's test legs run against net8.0
+  # as well — so build-test never touches them, and without this job a sample could stop compiling
+  # without anything noticing. It is also the only check that either one works framework-dependent,
+  # which is not what the AOT and trimming publishes above measure.
+  # -------------------------------------------------------------------------------------------------
+  samples:
+    name: Samples
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Build samples/AotSmoke
+        run: dotnet build samples/AotSmoke -c Release
+
+      - name: Build samples/Thumbnailer
+        run: dotnet build samples/Thumbnailer -c Release
+
+      - name: Run samples/AotSmoke
+        run: |
+          set -euo pipefail
+          dotnet run --project samples/AotSmoke -c Release --no-build | tee aot-smoke.log
+          grep -Eq "^AotSmoke: [1-9][0-9]* checks, 0 failures$" aot-smoke.log \
+            || { echo "::error::AotSmoke did not report a clean run"; exit 1; }
+
+      # The sample takes no arguments and synthesises its own input: it prints one line and returns 0, or
+      # prints FAIL and returns 1.
+      - name: Run samples/Thumbnailer
+        run: dotnet run --project samples/Thumbnailer -c Release --no-build
+
+  # -------------------------------------------------------------------------------------------------
+  # The benchmark suite, executed rather than measured. The numbers in the root README's Performance
+  # table come from this project, so a benchmark that no longer compiles, or that throws in its
+  # [GlobalSetup], makes those numbers unreproducible — and nothing else in CI builds this project,
+  # because it sits outside EasyImageSharp.slnx to keep BenchmarkDotNet out of the packaging graph.
+  # -------------------------------------------------------------------------------------------------
+  benchmarks-smoke:
+    name: Benchmarks smoke
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          # The project multi-targets, because the inflate-backend comparison is only meaningful when
+          # both frameworks can be measured, so the restore needs both.
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install the corpus generator's dependencies
+        run: python -m pip install --disable-pip-version-check "pillow>=11" "numpy>=2"
+
+      # EASYIMAGESHARP_BENCH_SMALL divides every dimension by eight: about 1.4 MiB in a few seconds,
+      # against 111 MiB in several minutes for the corpus the committed table was measured on. It is good
+      # only for proving the suite executes, which is all this job claims.
+      - name: Generate the small corpus
+        env:
+          EASYIMAGESHARP_BENCH_SMALL: "1"
+        run: python benchmarks/corpus/generate.py
+
+      # benchmarks/corpus/.gitignore is what keeps a 111 MiB generated corpus from being one `git add -A`
+      # away from the history, and benchmarks/README.md states this command comes back empty after a run.
+      # If that ever stops being true, it should stop being true here first.
+      - name: The generated corpus must stay unstageable
+        run: |
+          set -euo pipefail
+          status=$(git status --porcelain benchmarks/corpus)
+          if [ -n "$status" ]; then
+            echo "$status"
+            echo "::error::Generating the benchmark corpus left stageable files behind"
+            exit 1
+          fi
+          echo "benchmarks/corpus is clean."
+
+      # --job Dry runs every benchmark exactly once, so the timings mean nothing and the execution means
+      # everything. Program.Main turns a benchmark that threw into a non-zero exit code, which
+      # BenchmarkDotNet on its own does not: it reports a failed benchmark and still exits zero.
+      - name: Run every benchmark once
+        run: dotnet run -c Release -f net10.0 --project benchmarks/EasyImageSharp.Benchmarks -- --filter "*" --job Dry
+
+      # ReadmeTable.Rows is the contract between the suite and the root README: it maps every row of the
+      # Performance table to a named benchmark and exits non-zero naming any the last run did not produce,
+      # so a renamed benchmark cannot leave a README row quoting a number nothing measures any more. It
+      # reads the Dry run's reports, so what it checks here is the mapping; the numbers it prints are not
+      # measurements, and nothing commits them.
+      - name: The README performance rows must still map to benchmarks
+        run: dotnet run -c Release -f net10.0 --project benchmarks/EasyImageSharp.Benchmarks -- --readme-table
 
   # -------------------------------------------------------------------------------------------------
   # Pack validation for BOTH packages. A package that is missing its README, licence, icon or symbol
@@ -119,7 +344,7 @@ jobs:
     needs: build-test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -199,24 +424,12 @@ jobs:
           if-no-files-found: error
 
   # -------------------------------------------------------------------------------------------------
-  # The documentation site. `docfx build --warningsAsErrors` fails on a broken cross-reference, so a
-  # renamed type cannot silently leave a dead <see cref> or a dangling article link behind.
-  # -------------------------------------------------------------------------------------------------
-  # -------------------------------------------------------------------------------------------------
-  # Nightly deep fuzzing.
-  #
-  # The harness in tests/EasyImageSharp.Tests/FuzzSmokeTests.cs fixes its seed and its mutation count
-  # as compile-time constants (`Seed`, `MutationsPerSeed`), so there is currently NO environment
-  # variable to raise the iteration count with. Until the harness reads one, this job widens the
-  # search the only way available from the outside: it runs the fuzz suite across all three operating
-  # systems and both target frameworks, which exercises different JIT output, different intrinsics
-  # paths and different allocator behaviour against the same corpus.
-  #
-  # When the harness learns to read an override, add it to `env:` below and drop this comment:
-  #     EASYIMAGESHARP_FUZZ_MUTATIONS: 20000
-  #     EASYIMAGESHARP_FUZZ_SEED: ${{ github.run_id }}
-  # A run-id seed is the more valuable half: a fixed seed re-tests the same 130,000 inputs every
-  # night, whereas a varying seed explores new ones and turns this job into a real fuzzing campaign.
+  # Nightly deep fuzzing. The harness reads EASYIMAGESHARP_FUZZ_MUTATIONS and EASYIMAGESHARP_FUZZ_SEED,
+  # so the env block below is what widens the search: fifty times the default mutation count, and a seed
+  # that changes every night. The varying seed is the more valuable half — a fixed one re-tests the same
+  # inputs forever, whereas this explores new ones and makes the job a real campaign rather than a
+  # regression test. Running that corpus across three operating systems and both target frameworks
+  # widens it again, over different JIT output, intrinsics paths and allocator behaviour.
   # -------------------------------------------------------------------------------------------------
   fuzz-nightly:
     name: Fuzz (nightly, ${{ matrix.os }} ${{ matrix.tfm }})
@@ -229,11 +442,10 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
         tfm: [net8.0, net10.0]
     env:
-      # Harmless today; picked up automatically once the harness reads them.
       EASYIMAGESHARP_FUZZ_MUTATIONS: "20000"
       EASYIMAGESHARP_FUZZ_SEED: ${{ github.run_id }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-dotnet@v4
         with:
@@ -265,12 +477,14 @@ jobs:
           if-no-files-found: warn
 
   # -------------------------------------------------------------------------------------------------
-  # A single required status check for branch protection.
+  # A single required status check for branch protection. The `needs:` list below is what makes a job
+  # enforced rather than merely present: a job missing from it can fail while this one still reports
+  # success, so anything added to this file has to be added there too.
   # -------------------------------------------------------------------------------------------------
   ci-passed:
     name: CI passed
     if: always() && github.event_name != 'schedule'
-    needs: [build-test, pack]
+    needs: [build-test, fixture-determinism, aot-smoke, trim-smoke, samples, benchmarks-smoke, pack]
     runs-on: ubuntu-latest
     steps:
       - name: Check that every job succeeded

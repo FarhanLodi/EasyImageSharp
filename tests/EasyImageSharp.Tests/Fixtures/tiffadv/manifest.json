@@ -436,5 +436,55 @@
   "match": "psnr",
   "notes": "RGB JPEG-in-TIFF in 16x16 tiles sharing one JPEGTables block",
   "psnr": 40
+ },
+ {
+  "name": "bigtiff_none",
+  "file": "bigtiff_none.tif",
+  "width": 40,
+  "height": 28,
+  "frames": 1,
+  "feature": "bigtiff",
+  "match": "exact",
+  "notes": "BigTIFF (version 43), little-endian, 7-row uncompressed strips, hand-assembled; StripOffsets and StripByteCounts are LONG8 (type 16)"
+ },
+ {
+  "name": "bigtiff_deflate",
+  "file": "bigtiff_deflate.tif",
+  "width": 40,
+  "height": 28,
+  "frames": 1,
+  "feature": "bigtiff",
+  "match": "exact",
+  "notes": "BigTIFF (version 43), little-endian, 7-row Deflate strips, hand-assembled; StripOffsets and StripByteCounts are LONG8 (type 16)"
+ },
+ {
+  "name": "bigtiff_lzw",
+  "file": "bigtiff_lzw.tif",
+  "width": 40,
+  "height": 28,
+  "frames": 1,
+  "feature": "bigtiff",
+  "match": "exact",
+  "notes": "BigTIFF (version 43), little-endian, 7-row LZW strips written by libtiff and re-containered here; StripOffsets and StripByteCounts are LONG8 (type 16)"
+ },
+ {
+  "name": "bigtiff_packbits",
+  "file": "bigtiff_packbits.tif",
+  "width": 40,
+  "height": 28,
+  "frames": 1,
+  "feature": "bigtiff",
+  "match": "exact",
+  "notes": "BigTIFF (version 43), little-endian, 7-row PackBits strips written by libtiff and re-containered here; StripOffsets and StripByteCounts are LONG8 (type 16)"
+ },
+ {
+  "name": "bigtiff_mm_tiled",
+  "file": "bigtiff_mm_tiled.tif",
+  "width": 40,
+  "height": 28,
+  "frames": 1,
+  "feature": "bigtiff",
+  "match": "exact",
+  "notes": "BigTIFF (version 43) in big-endian (MM) byte order: 16x16 Deflate tiles whose TileOffsets and TileByteCounts are LONG8. Pillow cannot open this arm at all, so tifffile verifies it"
  }
 ]
