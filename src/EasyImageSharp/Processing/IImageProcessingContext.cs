@@ -4,7 +4,8 @@ namespace EasyImageSharp.Processing;
 
 /// <summary>
 /// A fluent pipeline of operations applied to an image by
-/// <see cref="ProcessingExtensions.Mutate{TPixel}"/> or <see cref="ProcessingExtensions.Clone{TPixel}"/>.
+/// <see cref="ProcessingExtensions.Mutate{TPixel}(Image{TPixel}, Action{IImageProcessingContext})"/>
+/// or <see cref="ProcessingExtensions.Clone{TPixel}(Image{TPixel}, Action{IImageProcessingContext})"/>.
 /// Operations apply to every frame of the image.
 /// </summary>
 public partial interface IImageProcessingContext

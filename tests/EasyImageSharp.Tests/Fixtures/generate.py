@@ -1932,6 +1932,10 @@ def main() -> None:
         print(f"{fmt}/")
         generators[name](os.path.join(HERE, fmt))
 
+    # These references depend on the encoded JPEG corpus above, so run after it exists.
+    import generate_jpeg_reduced
+    generate_jpeg_reduced.main()
+
 
 if __name__ == "__main__":
     main()

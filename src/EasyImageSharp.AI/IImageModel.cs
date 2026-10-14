@@ -110,14 +110,15 @@ public static class ImageModels
         TileOverlap = 16,
     });
 
-    /// <summary>UVDoc dewarp (RGB 0-1 at 488x712 in, rectified RGB 0-1 out, resized back to the source size).</summary>
+    /// <summary>UVDoc dewarp (dynamic full-resolution BGR 0-1 in, rectified BGR 0-1 out, edge-replicated stride-32 padding).</summary>
     public static RegistryImageModel DocumentDewarp { get; } = new(ModelRegistry.DocumentDewarp, new ImageModelContract
     {
         InputName = ModelRegistry.DocumentDewarp.InputName,
         InputChannels = 3,
+        UseBgrChannelOrder = true,
         InputNormalization = TensorNormalization.Unit,
         OutputNormalization = TensorNormalization.Unit,
         ScaleFactor = 1,
-        FixedInputSize = new Size(488, 712),
+        SizeMultiple = 32,
     });
 }

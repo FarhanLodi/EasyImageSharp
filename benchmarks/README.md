@@ -7,6 +7,83 @@ machine.
 
 ## What this measures
 
+`TensorBenchmarks` additionally compares allocating RGB conversion with caller-owned RGB/BGR
+tensor writing for 320x48 recognizer crops and 960x960 detector inputs. Setup checks RGB parity
+within `1e-6`; resize, inference, and model loading are excluded. Run with
+`--filter "*TensorBenchmarks*" --job Short` for an exploratory comparison, or omit `--job Short`
+for a longer measurement. Existing corpus validation still runs at startup.
+
+An exploratory local result with hardware metadata is recorded in
+[`results/tensor-performance-2026-10-14.json`](results/tensor-performance-2026-10-14.json).
+Detector timings varied substantially across short runs; this is not an end-to-end OCR performance claim.
+
+## OCR prediction evaluation
+
+`ocr/evaluate.py` scores exported predictions without installing OCR engines or downloading models:
+
+```bash
+python benchmarks/ocr/evaluate.py corpus.json predictions.json --output report.json
+python -m unittest discover -s benchmarks/ocr -p "test_*.py"
+```
+
+The corpus JSON contract is:
+
+```json
+{
+  "schema_version": 1,
+  "corpus_id": "receipts-v1",
+  "license": "Your dataset license",
+  "provenance": "Dataset version and source; record image hashes with the corpus",
+  "split": "heldout",
+  "samples": [
+    { "id": "page-001", "text": "Total 123", "category": "receipt", "script": "Latin" }
+  ]
+}
+```
+
+Predictions use the same corpus ID and exactly one entry per sample:
+
+```json
+{
+  "schema_version": 1,
+  "corpus_id": "receipts-v1",
+  "metadata": {
+    "engine": "PaddleOCRNet",
+    "engine_version": "record the actual package version",
+    "model_id": "record the exact export identifier",
+    "model_sha256": "replace with the actual 64-hex-digit model or model-bundle manifest SHA-256",
+    "preprocessing": { "profile": "record exact settings" },
+    "environment": {
+      "runtime": "record runtime version", "hardware": "record CPU/GPU",
+      "provider": "record execution provider", "threads": 1, "warmup": "record policy"
+    }
+  },
+  "predictions": [
+    { "id": "page-001", "text": "Total 123", "latency_ms": 10.5 }
+  ]
+}
+```
+
+The example metadata contains placeholders and must be replaced with actual run information.
+Model metadata is recorded, not independently verified against model bytes. Use a versioned bundle
+manifest hash for pipelines with multiple models. Do not include warmup/model download in steady-state
+latency; explicitly record the measured scope in the environment metadata.
+
+Reports include micro-averaged CER/WER, raw edit counts, exact matches, failures, and per-category/script
+breakdowns. Text is normalized to Unicode NFC; case and punctuation are retained. CER counts Unicode
+code points, not grapheme clusters. WER splits on Unicode whitespace and is not a suitable standalone
+metric for unsegmented CJK text. Empty-reference categories have null rates while retaining insertion
+counts; CER/WER can exceed 1. Failed inference must supply empty `text` plus an `error` string, so its
+deletions remain in the aggregate. Missing/duplicate predictions are rejected.
+
+Optional `latency_ms` must cover every sample or none. Percentiles use nearest rank and include failed
+requests: inspect failure counts alongside timings. Reports hash both input JSON files; those hashes do
+not verify the source images. Keep image provenance and hashes in your corpus records. This scorer does
+not yet evaluate detection boxes, peak memory, concurrency, or statistical significance, and ships no
+labeled image corpus. Use separate tuning/heldout sets; `smoke` is for synthetic validation only.
+
+## Existing image benchmark mapping
+
 | README row | Benchmark | Input |
 |---|---|---|
 | JPEG decode | `DecodeBenchmarks.Decode`, `Format=jpeg` | `corpus/photo.jpeg`, 3032×2008 → `Rgba32` |
@@ -163,3 +240,33 @@ reason and is likewise referenced by path.
 The project itself targets both `net8.0` and `net10.0`, because the inflate-backend comparison above is only
 meaningful when both can be measured. `dotnet run` therefore needs an explicit `-f`; the committed table is
 measured on `net10.0`.
+
+
+## Detection geometry and model export tools
+
+The Python evaluator optionally accepts `boxes` on every reference and prediction. Each box is four
+finite `[x,y]` points ordered around a convex quadrilateral, in the same source-image coordinate system.
+An empty array represents no text boxes. Coverage must be complete; failed predictions use empty text
+and empty boxes. `metadata.detection_iou_threshold` defaults to 0.5 and must lie in (0,1].
+
+Detection scoring uses convex polygon intersection and maximum-cardinality one-to-one matching above
+the IoU threshold. Duplicate detections count as false positives. Reports include micro precision,
+recall and F1 overall and by category/script; undefined denominators remain null. Ignored regions,
+transcription-aware matching and benchmark-specific protocols are not implemented. These metrics must
+not be presented as official ICDAR/COCO scores.
+
+[OcrCorpusExport](../tools/OcrCorpusExport/README.md) runs the actual local OCR consumers offline and
+writes its own PascalCase audit report with model-cache/image/assembly hashes. Its trimmed-text Unicode
+scalar CER differs from the Python scorer's NFC contract; compare reports using the same evaluator.
+[DocumentModelSmoke](../tools/DocumentModelSmoke/README.md) verifies the pinned orientation/dewarp export
+contracts. The [recorded reports](ocr/results) are smoke evidence, not a broad held-out corpus baseline.
+
+`ResizeTensorBenchmarks` compares materialized resize plus reusable writing against fused resizing.
+Both reuse the output tensor. The rolling fused implementation minimizes temporary storage; it is not
+a promise of lower latency at every image size. Report allocation and timing separately.
+
+Latest short-run results: [fused tensor measurements](results/fused-tensor-performance-2026-10-14.json).
+At 960x960, fused preprocessing allocated about 50 KiB versus 4.45 MiB for materialized resize, but latency
+was 12.61 ms versus 6.46 ms. Prefer the existing parallel resize plus reusable writer when latency is the
+priority; measure fused preprocessing when temporary memory is the constraint. The byte-output LUT
+optimization did not remove the larger workload's serial filtering cost.

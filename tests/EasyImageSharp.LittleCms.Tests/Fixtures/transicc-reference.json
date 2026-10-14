@@ -1,0 +1,1402 @@
+[
+    {
+        "source":  "test5.icc",
+        "destination":  "srgb",
+        "intent":  1,
+        "blackPointCompensation":  false,
+        "input":  [
+                      0,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         0,
+                         0,
+                         0
+                     ]
+    },
+    {
+        "source":  "test5.icc",
+        "destination":  "srgb",
+        "intent":  1,
+        "blackPointCompensation":  false,
+        "input":  [
+                      1,
+                      1,
+                      1
+                  ],
+        "expected":  [
+                         1.00009017645144,
+                         0.99994315353094365,
+                         1.0001219506357231
+                     ]
+    },
+    {
+        "source":  "test5.icc",
+        "destination":  "srgb",
+        "intent":  1,
+        "blackPointCompensation":  false,
+        "input":  [
+                      0.25098039215686274,
+                      0.50196078431372548,
+                      0.75294117647058822
+                  ],
+        "expected":  [
+                         0.25104627422257964,
+                         0.50192039340150119,
+                         0.7530364990234375
+                     ]
+    },
+    {
+        "source":  "test5.icc",
+        "destination":  "srgb",
+        "intent":  1,
+        "blackPointCompensation":  false,
+        "input":  [
+                      1,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         1.000031774184283,
+                         -0.00021490196094793432,
+                         -6.4313725805750075E-05
+                     ]
+    },
+    {
+        "source":  "test1.icc",
+        "destination":  "srgb",
+        "intent":  0,
+        "blackPointCompensation":  false,
+        "input":  [
+                      0,
+                      0,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         1,
+                         1,
+                         1
+                     ]
+    },
+    {
+        "source":  "test1.icc",
+        "destination":  "srgb",
+        "intent":  0,
+        "blackPointCompensation":  false,
+        "input":  [
+                      10,
+                      25,
+                      50,
+                      5
+                  ],
+        "expected":  [
+                         0.84870784983915437,
+                         0.707858455882353,
+                         0.51522863051470591
+                     ]
+    },
+    {
+        "source":  "test1.icc",
+        "destination":  "srgb",
+        "intent":  0,
+        "blackPointCompensation":  false,
+        "input":  [
+                      100,
+                      0,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         -2.6934043734681374,
+                         0.68092860801547184,
+                         0.93810394885493265
+                     ]
+    },
+    {
+        "source":  "test1.icc",
+        "destination":  "srgb",
+        "intent":  0,
+        "blackPointCompensation":  false,
+        "input":  [
+                      0,
+                      0,
+                      0,
+                      100
+                  ],
+        "expected":  [
+                         0.13704039629767922,
+                         0.12236313913382736,
+                         0.12564314299938725
+                     ]
+    },
+    {
+        "source":  "srgb",
+        "destination":  "test1.icc",
+        "intent":  0,
+        "blackPointCompensation":  false,
+        "input":  [
+                      0.12549019607843137,
+                      0.25098039215686274,
+                      0.50196078431372548
+                  ],
+        "expected":  [
+                         99.6857,
+                         86.7277,
+                         23.5126,
+                         9.1814
+                     ]
+    },
+    {
+        "source":  "srgb",
+        "destination":  "test1.icc",
+        "intent":  0,
+        "blackPointCompensation":  false,
+        "input":  [
+                      0,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         74.0627,
+                         68.2857,
+                         66.566,
+                         89.8268
+                     ]
+    },
+    {
+        "source":  "srgb",
+        "destination":  "test1.icc",
+        "intent":  0,
+        "blackPointCompensation":  false,
+        "input":  [
+                      1,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         0,
+                         99.7864,
+                         100,
+                         0.0519
+                     ]
+    },
+    {
+        "source":  "test3.icc",
+        "destination":  "srgb",
+        "intent":  0,
+        "blackPointCompensation":  false,
+        "input":  [
+                      0.12549019607843137,
+                      0.25098039215686274,
+                      0.50196078431372548
+                  ],
+        "expected":  [
+                         0.096992156084846043,
+                         0.263581189922258,
+                         0.50526547899433216
+                     ]
+    },
+    {
+        "source":  "test3.icc",
+        "destination":  "srgb",
+        "intent":  0,
+        "blackPointCompensation":  false,
+        "input":  [
+                      0,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         0,
+                         0,
+                         0
+                     ]
+    },
+    {
+        "source":  "test3.icc",
+        "destination":  "srgb",
+        "intent":  0,
+        "blackPointCompensation":  false,
+        "input":  [
+                      1,
+                      1,
+                      1
+                  ],
+        "expected":  [
+                         1,
+                         1,
+                         1
+                     ]
+    },
+    {
+        "source":  "test1.icc",
+        "destination":  "srgb",
+        "intent":  0,
+        "blackPointCompensation":  true,
+        "input":  [
+                      0,
+                      0,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         1,
+                         1,
+                         1
+                     ]
+    },
+    {
+        "source":  "test1.icc",
+        "destination":  "srgb",
+        "intent":  0,
+        "blackPointCompensation":  true,
+        "input":  [
+                      10,
+                      25,
+                      50,
+                      5
+                  ],
+        "expected":  [
+                         0.84870784983915437,
+                         0.707858455882353,
+                         0.51522863051470591
+                     ]
+    },
+    {
+        "source":  "test1.icc",
+        "destination":  "srgb",
+        "intent":  0,
+        "blackPointCompensation":  true,
+        "input":  [
+                      100,
+                      0,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         -2.6934043734681374,
+                         0.68092860801547184,
+                         0.93810394885493265
+                     ]
+    },
+    {
+        "source":  "test1.icc",
+        "destination":  "srgb",
+        "intent":  0,
+        "blackPointCompensation":  true,
+        "input":  [
+                      0,
+                      0,
+                      0,
+                      100
+                  ],
+        "expected":  [
+                         0.13704039629767922,
+                         0.12236313913382736,
+                         0.12564314299938725
+                     ]
+    },
+    {
+        "source":  "srgb",
+        "destination":  "test1.icc",
+        "intent":  0,
+        "blackPointCompensation":  true,
+        "input":  [
+                      0.12549019607843137,
+                      0.25098039215686274,
+                      0.50196078431372548
+                  ],
+        "expected":  [
+                         99.6857,
+                         86.7277,
+                         23.5126,
+                         9.1814
+                     ]
+    },
+    {
+        "source":  "srgb",
+        "destination":  "test1.icc",
+        "intent":  0,
+        "blackPointCompensation":  true,
+        "input":  [
+                      0,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         74.0627,
+                         68.2857,
+                         66.566,
+                         89.8268
+                     ]
+    },
+    {
+        "source":  "srgb",
+        "destination":  "test1.icc",
+        "intent":  0,
+        "blackPointCompensation":  true,
+        "input":  [
+                      1,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         0,
+                         99.7864,
+                         100,
+                         0.0519
+                     ]
+    },
+    {
+        "source":  "test3.icc",
+        "destination":  "srgb",
+        "intent":  0,
+        "blackPointCompensation":  true,
+        "input":  [
+                      0.12549019607843137,
+                      0.25098039215686274,
+                      0.50196078431372548
+                  ],
+        "expected":  [
+                         0.096992156084846043,
+                         0.263581189922258,
+                         0.50526547899433216
+                     ]
+    },
+    {
+        "source":  "test3.icc",
+        "destination":  "srgb",
+        "intent":  0,
+        "blackPointCompensation":  true,
+        "input":  [
+                      0,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         0,
+                         0,
+                         0
+                     ]
+    },
+    {
+        "source":  "test3.icc",
+        "destination":  "srgb",
+        "intent":  0,
+        "blackPointCompensation":  true,
+        "input":  [
+                      1,
+                      1,
+                      1
+                  ],
+        "expected":  [
+                         1,
+                         1,
+                         1
+                     ]
+    },
+    {
+        "source":  "test1.icc",
+        "destination":  "srgb",
+        "intent":  1,
+        "blackPointCompensation":  false,
+        "input":  [
+                      0,
+                      0,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         1,
+                         1,
+                         1
+                     ]
+    },
+    {
+        "source":  "test1.icc",
+        "destination":  "srgb",
+        "intent":  1,
+        "blackPointCompensation":  false,
+        "input":  [
+                      10,
+                      25,
+                      50,
+                      5
+                  ],
+        "expected":  [
+                         0.85248586617264088,
+                         0.7161290187461703,
+                         0.53264273849188115
+                     ]
+    },
+    {
+        "source":  "test1.icc",
+        "destination":  "srgb",
+        "intent":  1,
+        "blackPointCompensation":  false,
+        "input":  [
+                      100,
+                      0,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         -2.3508961397058825,
+                         0.690078795189951,
+                         0.93952116124770224
+                     ]
+    },
+    {
+        "source":  "test1.icc",
+        "destination":  "srgb",
+        "intent":  1,
+        "blackPointCompensation":  false,
+        "input":  [
+                      0,
+                      0,
+                      0,
+                      100
+                  ],
+        "expected":  [
+                         0.21601843740425858,
+                         0.207449026668773,
+                         0.20931137683344822
+                     ]
+    },
+    {
+        "source":  "srgb",
+        "destination":  "test1.icc",
+        "intent":  1,
+        "blackPointCompensation":  false,
+        "input":  [
+                      0.12549019607843137,
+                      0.25098039215686274,
+                      0.50196078431372548
+                  ],
+        "expected":  [
+                         100,
+                         88.6976,
+                         24.0681,
+                         13.3333
+                     ]
+    },
+    {
+        "source":  "srgb",
+        "destination":  "test1.icc",
+        "intent":  1,
+        "blackPointCompensation":  false,
+        "input":  [
+                      0,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         74.6059,
+                         67.9896,
+                         65.3422,
+                         90.0481
+                     ]
+    },
+    {
+        "source":  "srgb",
+        "destination":  "test1.icc",
+        "intent":  1,
+        "blackPointCompensation":  false,
+        "input":  [
+                      1,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         0,
+                         100,
+                         100,
+                         0
+                     ]
+    },
+    {
+        "source":  "test3.icc",
+        "destination":  "srgb",
+        "intent":  1,
+        "blackPointCompensation":  false,
+        "input":  [
+                      0.12549019607843137,
+                      0.25098039215686274,
+                      0.50196078431372548
+                  ],
+        "expected":  [
+                         0.096992156084846043,
+                         0.263581189922258,
+                         0.50526547899433216
+                     ]
+    },
+    {
+        "source":  "test3.icc",
+        "destination":  "srgb",
+        "intent":  1,
+        "blackPointCompensation":  false,
+        "input":  [
+                      0,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         0,
+                         0,
+                         0
+                     ]
+    },
+    {
+        "source":  "test3.icc",
+        "destination":  "srgb",
+        "intent":  1,
+        "blackPointCompensation":  false,
+        "input":  [
+                      1,
+                      1,
+                      1
+                  ],
+        "expected":  [
+                         1,
+                         1,
+                         1
+                     ]
+    },
+    {
+        "source":  "test1.icc",
+        "destination":  "srgb",
+        "intent":  1,
+        "blackPointCompensation":  true,
+        "input":  [
+                      0,
+                      0,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         1,
+                         1,
+                         1
+                     ]
+    },
+    {
+        "source":  "test1.icc",
+        "destination":  "srgb",
+        "intent":  1,
+        "blackPointCompensation":  true,
+        "input":  [
+                      10,
+                      25,
+                      50,
+                      5
+                  ],
+        "expected":  [
+                         0.84874153885186887,
+                         0.70789453843060657,
+                         0.51522001378676474
+                     ]
+    },
+    {
+        "source":  "test1.icc",
+        "destination":  "srgb",
+        "intent":  1,
+        "blackPointCompensation":  true,
+        "input":  [
+                      100,
+                      0,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         -2.6971729951746322,
+                         0.68081724877450978,
+                         0.93808982699525123
+                     ]
+    },
+    {
+        "source":  "test1.icc",
+        "destination":  "srgb",
+        "intent":  1,
+        "blackPointCompensation":  true,
+        "input":  [
+                      0,
+                      0,
+                      0,
+                      100
+                  ],
+        "expected":  [
+                         0.1358309876685049,
+                         0.12103097953048407,
+                         0.12433568917068781
+                     ]
+    },
+    {
+        "source":  "srgb",
+        "destination":  "test1.icc",
+        "intent":  1,
+        "blackPointCompensation":  true,
+        "input":  [
+                      0.12549019607843137,
+                      0.25098039215686274,
+                      0.50196078431372548
+                  ],
+        "expected":  [
+                         99.0646,
+                         87.2511,
+                         19.6353,
+                         5.8091
+                     ]
+    },
+    {
+        "source":  "srgb",
+        "destination":  "test1.icc",
+        "intent":  1,
+        "blackPointCompensation":  true,
+        "input":  [
+                      0,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         72.2728,
+                         67.6844,
+                         67.0939,
+                         88.3833
+                     ]
+    },
+    {
+        "source":  "srgb",
+        "destination":  "test1.icc",
+        "intent":  1,
+        "blackPointCompensation":  true,
+        "input":  [
+                      1,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         0,
+                         99.7864,
+                         100,
+                         0
+                     ]
+    },
+    {
+        "source":  "test3.icc",
+        "destination":  "srgb",
+        "intent":  1,
+        "blackPointCompensation":  true,
+        "input":  [
+                      0.12549019607843137,
+                      0.25098039215686274,
+                      0.50196078431372548
+                  ],
+        "expected":  [
+                         0.096992156084846043,
+                         0.263581189922258,
+                         0.50526547899433216
+                     ]
+    },
+    {
+        "source":  "test3.icc",
+        "destination":  "srgb",
+        "intent":  1,
+        "blackPointCompensation":  true,
+        "input":  [
+                      0,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         0,
+                         0,
+                         0
+                     ]
+    },
+    {
+        "source":  "test3.icc",
+        "destination":  "srgb",
+        "intent":  1,
+        "blackPointCompensation":  true,
+        "input":  [
+                      1,
+                      1,
+                      1
+                  ],
+        "expected":  [
+                         1,
+                         1,
+                         1
+                     ]
+    },
+    {
+        "source":  "test1.icc",
+        "destination":  "srgb",
+        "intent":  2,
+        "blackPointCompensation":  false,
+        "input":  [
+                      0,
+                      0,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         1,
+                         1,
+                         1
+                     ]
+    },
+    {
+        "source":  "test1.icc",
+        "destination":  "srgb",
+        "intent":  2,
+        "blackPointCompensation":  false,
+        "input":  [
+                      10,
+                      25,
+                      50,
+                      5
+                  ],
+        "expected":  [
+                         0.84870784983915437,
+                         0.707858455882353,
+                         0.51522863051470591
+                     ]
+    },
+    {
+        "source":  "test1.icc",
+        "destination":  "srgb",
+        "intent":  2,
+        "blackPointCompensation":  false,
+        "input":  [
+                      100,
+                      0,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         -2.6934043734681374,
+                         0.68092860801547184,
+                         0.93810394885493265
+                     ]
+    },
+    {
+        "source":  "test1.icc",
+        "destination":  "srgb",
+        "intent":  2,
+        "blackPointCompensation":  false,
+        "input":  [
+                      0,
+                      0,
+                      0,
+                      100
+                  ],
+        "expected":  [
+                         0.13704039629767922,
+                         0.12236313913382736,
+                         0.12564314299938725
+                     ]
+    },
+    {
+        "source":  "srgb",
+        "destination":  "test1.icc",
+        "intent":  2,
+        "blackPointCompensation":  false,
+        "input":  [
+                      0.12549019607843137,
+                      0.25098039215686274,
+                      0.50196078431372548
+                  ],
+        "expected":  [
+                         100,
+                         87.3716,
+                         21.3199,
+                         6.717
+                     ]
+    },
+    {
+        "source":  "srgb",
+        "destination":  "test1.icc",
+        "intent":  2,
+        "blackPointCompensation":  false,
+        "input":  [
+                      0,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         73.9132,
+                         68.2857,
+                         66.4164,
+                         89.8268
+                     ]
+    },
+    {
+        "source":  "srgb",
+        "destination":  "test1.icc",
+        "intent":  2,
+        "blackPointCompensation":  false,
+        "input":  [
+                      1,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         0,
+                         100,
+                         100,
+                         0
+                     ]
+    },
+    {
+        "source":  "test3.icc",
+        "destination":  "srgb",
+        "intent":  2,
+        "blackPointCompensation":  false,
+        "input":  [
+                      0.12549019607843137,
+                      0.25098039215686274,
+                      0.50196078431372548
+                  ],
+        "expected":  [
+                         0.096992156084846043,
+                         0.263581189922258,
+                         0.50526547899433216
+                     ]
+    },
+    {
+        "source":  "test3.icc",
+        "destination":  "srgb",
+        "intent":  2,
+        "blackPointCompensation":  false,
+        "input":  [
+                      0,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         0,
+                         0,
+                         0
+                     ]
+    },
+    {
+        "source":  "test3.icc",
+        "destination":  "srgb",
+        "intent":  2,
+        "blackPointCompensation":  false,
+        "input":  [
+                      1,
+                      1,
+                      1
+                  ],
+        "expected":  [
+                         1,
+                         1,
+                         1
+                     ]
+    },
+    {
+        "source":  "test1.icc",
+        "destination":  "srgb",
+        "intent":  2,
+        "blackPointCompensation":  true,
+        "input":  [
+                      0,
+                      0,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         1,
+                         1,
+                         1
+                     ]
+    },
+    {
+        "source":  "test1.icc",
+        "destination":  "srgb",
+        "intent":  2,
+        "blackPointCompensation":  true,
+        "input":  [
+                      10,
+                      25,
+                      50,
+                      5
+                  ],
+        "expected":  [
+                         0.84870784983915437,
+                         0.707858455882353,
+                         0.51522863051470591
+                     ]
+    },
+    {
+        "source":  "test1.icc",
+        "destination":  "srgb",
+        "intent":  2,
+        "blackPointCompensation":  true,
+        "input":  [
+                      100,
+                      0,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         -2.6934043734681374,
+                         0.68092860801547184,
+                         0.93810394885493265
+                     ]
+    },
+    {
+        "source":  "test1.icc",
+        "destination":  "srgb",
+        "intent":  2,
+        "blackPointCompensation":  true,
+        "input":  [
+                      0,
+                      0,
+                      0,
+                      100
+                  ],
+        "expected":  [
+                         0.13704039629767922,
+                         0.12236313913382736,
+                         0.12564314299938725
+                     ]
+    },
+    {
+        "source":  "srgb",
+        "destination":  "test1.icc",
+        "intent":  2,
+        "blackPointCompensation":  true,
+        "input":  [
+                      0.12549019607843137,
+                      0.25098039215686274,
+                      0.50196078431372548
+                  ],
+        "expected":  [
+                         100,
+                         87.3716,
+                         21.3199,
+                         6.717
+                     ]
+    },
+    {
+        "source":  "srgb",
+        "destination":  "test1.icc",
+        "intent":  2,
+        "blackPointCompensation":  true,
+        "input":  [
+                      0,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         73.9132,
+                         68.2857,
+                         66.4164,
+                         89.8268
+                     ]
+    },
+    {
+        "source":  "srgb",
+        "destination":  "test1.icc",
+        "intent":  2,
+        "blackPointCompensation":  true,
+        "input":  [
+                      1,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         0,
+                         100,
+                         100,
+                         0
+                     ]
+    },
+    {
+        "source":  "test3.icc",
+        "destination":  "srgb",
+        "intent":  2,
+        "blackPointCompensation":  true,
+        "input":  [
+                      0.12549019607843137,
+                      0.25098039215686274,
+                      0.50196078431372548
+                  ],
+        "expected":  [
+                         0.096992156084846043,
+                         0.263581189922258,
+                         0.50526547899433216
+                     ]
+    },
+    {
+        "source":  "test3.icc",
+        "destination":  "srgb",
+        "intent":  2,
+        "blackPointCompensation":  true,
+        "input":  [
+                      0,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         0,
+                         0,
+                         0
+                     ]
+    },
+    {
+        "source":  "test3.icc",
+        "destination":  "srgb",
+        "intent":  2,
+        "blackPointCompensation":  true,
+        "input":  [
+                      1,
+                      1,
+                      1
+                  ],
+        "expected":  [
+                         1,
+                         1,
+                         1
+                     ]
+    },
+    {
+        "source":  "test1.icc",
+        "destination":  "srgb",
+        "intent":  3,
+        "blackPointCompensation":  false,
+        "input":  [
+                      0,
+                      0,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         0.880764710669424,
+                         0.87345999923406858,
+                         0.84624585918351714
+                     ]
+    },
+    {
+        "source":  "test1.icc",
+        "destination":  "srgb",
+        "intent":  3,
+        "blackPointCompensation":  false,
+        "input":  [
+                      10,
+                      25,
+                      50,
+                      5
+                  ],
+        "expected":  [
+                         0.7455498190487132,
+                         0.62389059627757348,
+                         0.44480940874885111
+                     ]
+    },
+    {
+        "source":  "test1.icc",
+        "destination":  "srgb",
+        "intent":  3,
+        "blackPointCompensation":  false,
+        "input":  [
+                      100,
+                      0,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         -1.5581980985753676,
+                         0.600120813706342,
+                         0.79668471392463236
+                     ]
+    },
+    {
+        "source":  "test1.icc",
+        "destination":  "srgb",
+        "intent":  3,
+        "blackPointCompensation":  false,
+        "input":  [
+                      0,
+                      0,
+                      0,
+                      100
+                  ],
+        "expected":  [
+                         0.18526705573586857,
+                         0.17597372017654719,
+                         0.17079725078507965
+                     ]
+    },
+    {
+        "source":  "srgb",
+        "destination":  "test1.icc",
+        "intent":  3,
+        "blackPointCompensation":  false,
+        "input":  [
+                      0.12549019607843137,
+                      0.25098039215686274,
+                      0.50196078431372548
+                  ],
+        "expected":  [
+                         100,
+                         85.42,
+                         12.3964,
+                         1.6281
+                     ]
+    },
+    {
+        "source":  "srgb",
+        "destination":  "test1.icc",
+        "intent":  3,
+        "blackPointCompensation":  false,
+        "input":  [
+                      0,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         74.6059,
+                         67.9896,
+                         65.3422,
+                         90.0481
+                     ]
+    },
+    {
+        "source":  "srgb",
+        "destination":  "test1.icc",
+        "intent":  3,
+        "blackPointCompensation":  false,
+        "input":  [
+                      1,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         0,
+                         100,
+                         100,
+                         0
+                     ]
+    },
+    {
+        "source":  "test3.icc",
+        "destination":  "srgb",
+        "intent":  3,
+        "blackPointCompensation":  false,
+        "input":  [
+                      0.12549019607843137,
+                      0.25098039215686274,
+                      0.50196078431372548
+                  ],
+        "expected":  [
+                         -0.23818235210343902,
+                         0.26946195714613969,
+                         0.5764400108187806
+                     ]
+    },
+    {
+        "source":  "test3.icc",
+        "destination":  "srgb",
+        "intent":  3,
+        "blackPointCompensation":  false,
+        "input":  [
+                      0,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         0,
+                         0,
+                         0
+                     ]
+    },
+    {
+        "source":  "test3.icc",
+        "destination":  "srgb",
+        "intent":  3,
+        "blackPointCompensation":  false,
+        "input":  [
+                      1,
+                      1,
+                      1
+                  ],
+        "expected":  [
+                         0.91981135349647669,
+                         1.0097568885952819,
+                         1.1479164273131128
+                     ]
+    },
+    {
+        "source":  "test1.icc",
+        "destination":  "srgb",
+        "intent":  3,
+        "blackPointCompensation":  true,
+        "input":  [
+                      0,
+                      0,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         0.880764710669424,
+                         0.87345999923406858,
+                         0.84624585918351714
+                     ]
+    },
+    {
+        "source":  "test1.icc",
+        "destination":  "srgb",
+        "intent":  3,
+        "blackPointCompensation":  true,
+        "input":  [
+                      10,
+                      25,
+                      50,
+                      5
+                  ],
+        "expected":  [
+                         0.7455498190487132,
+                         0.62389059627757348,
+                         0.44480940874885111
+                     ]
+    },
+    {
+        "source":  "test1.icc",
+        "destination":  "srgb",
+        "intent":  3,
+        "blackPointCompensation":  true,
+        "input":  [
+                      100,
+                      0,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         -1.5581980985753676,
+                         0.600120813706342,
+                         0.79668471392463236
+                     ]
+    },
+    {
+        "source":  "test1.icc",
+        "destination":  "srgb",
+        "intent":  3,
+        "blackPointCompensation":  true,
+        "input":  [
+                      0,
+                      0,
+                      0,
+                      100
+                  ],
+        "expected":  [
+                         0.18526705573586857,
+                         0.17597372017654719,
+                         0.17079725078507965
+                     ]
+    },
+    {
+        "source":  "srgb",
+        "destination":  "test1.icc",
+        "intent":  3,
+        "blackPointCompensation":  true,
+        "input":  [
+                      0.12549019607843137,
+                      0.25098039215686274,
+                      0.50196078431372548
+                  ],
+        "expected":  [
+                         100,
+                         85.42,
+                         12.3964,
+                         1.6281
+                     ]
+    },
+    {
+        "source":  "srgb",
+        "destination":  "test1.icc",
+        "intent":  3,
+        "blackPointCompensation":  true,
+        "input":  [
+                      0,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         74.6059,
+                         67.9896,
+                         65.3422,
+                         90.0481
+                     ]
+    },
+    {
+        "source":  "srgb",
+        "destination":  "test1.icc",
+        "intent":  3,
+        "blackPointCompensation":  true,
+        "input":  [
+                      1,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         0,
+                         100,
+                         100,
+                         0
+                     ]
+    },
+    {
+        "source":  "test3.icc",
+        "destination":  "srgb",
+        "intent":  3,
+        "blackPointCompensation":  true,
+        "input":  [
+                      0.12549019607843137,
+                      0.25098039215686274,
+                      0.50196078431372548
+                  ],
+        "expected":  [
+                         -0.23818235210343902,
+                         0.26946195714613969,
+                         0.5764400108187806
+                     ]
+    },
+    {
+        "source":  "test3.icc",
+        "destination":  "srgb",
+        "intent":  3,
+        "blackPointCompensation":  true,
+        "input":  [
+                      0,
+                      0,
+                      0
+                  ],
+        "expected":  [
+                         0,
+                         0,
+                         0
+                     ]
+    },
+    {
+        "source":  "test3.icc",
+        "destination":  "srgb",
+        "intent":  3,
+        "blackPointCompensation":  true,
+        "input":  [
+                      1,
+                      1,
+                      1
+                  ],
+        "expected":  [
+                         0.91981135349647669,
+                         1.0097568885952819,
+                         1.1479164273131128
+                     ]
+    }
+]

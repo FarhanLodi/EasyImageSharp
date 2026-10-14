@@ -1,0 +1,277 @@
+{
+  "engine": "paddleocr",
+  "images": 40,
+  "identicalSuccessfulTexts": 40,
+  "bothFailedImages": 0,
+  "sourceFailures": 0,
+  "releaseFailures": 0,
+  "changedRows": [],
+  "commonModelAssets": 42,
+  "mismatchedModelAssets": [],
+  "commonModelFingerprints": [
+    {
+      "name": "PP-DocLayout-M.onnx",
+      "sourceSha256": "34ecdc84e60d5f5822fab85e3e97f30ca73fdc6c7c0aa10b3bd7227742a574b5",
+      "releaseSha256": "34ecdc84e60d5f5822fab85e3e97f30ca73fdc6c7c0aa10b3bd7227742a574b5"
+    },
+    {
+      "name": "PP-DocLayout-S.onnx",
+      "sourceSha256": "e3a5864e9f29bfddf7ea447ce03cd42adde0a49cea93191d7858e95407d0040a",
+      "releaseSha256": "e3a5864e9f29bfddf7ea447ce03cd42adde0a49cea93191d7858e95407d0040a"
+    },
+    {
+      "name": "PP-DocLayoutV3.onnx",
+      "sourceSha256": "dc5670ebbb42e2ba4e41395fc55e8217b007134e8b9e35023d592a8fe040a288",
+      "releaseSha256": "dc5670ebbb42e2ba4e41395fc55e8217b007134e8b9e35023d592a8fe040a288"
+    },
+    {
+      "name": "PP-DocLayoutV3_labels.txt",
+      "sourceSha256": "a04c55c3bb398fe7c5ece52d279eb26a905f9645cd58c0c812fb9de3c4790f46",
+      "releaseSha256": "a04c55c3bb398fe7c5ece52d279eb26a905f9645cd58c0c812fb9de3c4790f46"
+    },
+    {
+      "name": "PP-LCNet_x1_0_doc_ori.onnx",
+      "sourceSha256": "d85b3185075afca1a83157f73eac2e52b598d72e9d47dd19cc4a2f3605e23e3f",
+      "releaseSha256": "d85b3185075afca1a83157f73eac2e52b598d72e9d47dd19cc4a2f3605e23e3f"
+    },
+    {
+      "name": "PP-LCNet_x1_0_table_cls.onnx",
+      "sourceSha256": "c4d7737fdb2b0b31d9cb3d961b339174e36152ad5a48e7979cd81d7cf7e5b7de",
+      "releaseSha256": "c4d7737fdb2b0b31d9cb3d961b339174e36152ad5a48e7979cd81d7cf7e5b7de"
+    },
+    {
+      "name": "PP-LCNet_x1_0_textline_ori.onnx",
+      "sourceSha256": "1e82a12332d6b0b09a0643250c48a8d372515ba672e1299259adcf28b9701460",
+      "releaseSha256": "1e82a12332d6b0b09a0643250c48a8d372515ba672e1299259adcf28b9701460"
+    },
+    {
+      "name": "PP-OCRv4_server_seal_det.onnx",
+      "sourceSha256": "2f83d57ee079490e7465e83017606dd1a5ed71fc99555c45b1460ff0332adc25",
+      "releaseSha256": "2f83d57ee079490e7465e83017606dd1a5ed71fc99555c45b1460ff0332adc25"
+    },
+    {
+      "name": "PP-OCRv5_mobile_det.onnx",
+      "sourceSha256": "d7fe3ea74652890722c0f4d02458b7261d9f5ae6c92904d05707c9eb155c7924",
+      "releaseSha256": "d7fe3ea74652890722c0f4d02458b7261d9f5ae6c92904d05707c9eb155c7924"
+    },
+    {
+      "name": "PP-OCRv5_mobile_rec.onnx",
+      "sourceSha256": "d253c3cbee6e507828a5271a30ab0ec8ae7c2a99d0cc8e6f844fe380809d22b3",
+      "releaseSha256": "d253c3cbee6e507828a5271a30ab0ec8ae7c2a99d0cc8e6f844fe380809d22b3"
+    },
+    {
+      "name": "SLANeXt_wired.onnx",
+      "sourceSha256": "0a6e063b56e35a434eb6669eb2342113c6bd76a6ce5acaa0331f370c9e00732f",
+      "releaseSha256": "0a6e063b56e35a434eb6669eb2342113c6bd76a6ce5acaa0331f370c9e00732f"
+    },
+    {
+      "name": "SLANeXt_wireless.onnx",
+      "sourceSha256": "5c79ee87cce6712f8f640394decce72157bd1df13c9bccf86d071bd07a6e9f97",
+      "releaseSha256": "5c79ee87cce6712f8f640394decce72157bd1df13c9bccf86d071bd07a6e9f97"
+    },
+    {
+      "name": "SLANet_plus.onnx",
+      "sourceSha256": "d57a942af6a2f57d6a4a0372573c696a2379bf5857c45e2ac69993f3b334514b",
+      "releaseSha256": "d57a942af6a2f57d6a4a0372573c696a2379bf5857c45e2ac69993f3b334514b"
+    },
+    {
+      "name": "arabic_PP-OCRv5_mobile_rec.onnx",
+      "sourceSha256": "b58f7d1cc7200566aae1d56ac26c17942881958ed100ac5a07d9a6e67150cbef",
+      "releaseSha256": "b58f7d1cc7200566aae1d56ac26c17942881958ed100ac5a07d9a6e67150cbef"
+    },
+    {
+      "name": "arabic_dict.txt",
+      "sourceSha256": "f6b5baf1335408e6e1fb5cc6e8268a26769f549c2bb37268e72a6804fe269b4c",
+      "releaseSha256": "f6b5baf1335408e6e1fb5cc6e8268a26769f549c2bb37268e72a6804fe269b4c"
+    },
+    {
+      "name": "cyrillic_PP-OCRv5_mobile_rec.onnx",
+      "sourceSha256": "0d91040605ef7bdca6868fad6cad1664840d031e9f6d40d54607df5b50fa280a",
+      "releaseSha256": "0d91040605ef7bdca6868fad6cad1664840d031e9f6d40d54607df5b50fa280a"
+    },
+    {
+      "name": "cyrillic_dict.txt",
+      "sourceSha256": "90822a96058eb83f8e637ace75f90cbd36c41253f9dbdfb88fcf5a2bdd50d669",
+      "releaseSha256": "90822a96058eb83f8e637ace75f90cbd36c41253f9dbdfb88fcf5a2bdd50d669"
+    },
+    {
+      "name": "devanagari_PP-OCRv5_mobile_rec.onnx",
+      "sourceSha256": "932e2d53fafdfd929131c4e20133f49901288e8ec1ba03b18317a4780b21f3ce",
+      "releaseSha256": "932e2d53fafdfd929131c4e20133f49901288e8ec1ba03b18317a4780b21f3ce"
+    },
+    {
+      "name": "devanagari_dict.txt",
+      "sourceSha256": "4bfb5fc511c24da3b1f3a582ae4e07ecd16601997b70b864bb34e111fc646cfe",
+      "releaseSha256": "4bfb5fc511c24da3b1f3a582ae4e07ecd16601997b70b864bb34e111fc646cfe"
+    },
+    {
+      "name": "el_PP-OCRv5_mobile_rec.onnx",
+      "sourceSha256": "54235f471b1ca8e356c48673125e0b14e4823496cd7bb583b24fb8808dbcd9c4",
+      "releaseSha256": "54235f471b1ca8e356c48673125e0b14e4823496cd7bb583b24fb8808dbcd9c4"
+    },
+    {
+      "name": "en_PP-OCRv5_mobile_rec_infer.onnx",
+      "sourceSha256": "1081b104a3c44d103511f150763d997a846994431c5775a800c802254c1124bf",
+      "releaseSha256": "1081b104a3c44d103511f150763d997a846994431c5775a800c802254c1124bf"
+    },
+    {
+      "name": "eslav_PP-OCRv5_mobile_rec.onnx",
+      "sourceSha256": "bb86cdbd09c21d6bd73c0c0d5dc50379a6f94fc0078f7200a192ed1087f3e6ac",
+      "releaseSha256": "bb86cdbd09c21d6bd73c0c0d5dc50379a6f94fc0078f7200a192ed1087f3e6ac"
+    },
+    {
+      "name": "japan_PP-OCRv5_mobile_rec.onnx",
+      "sourceSha256": "45b0872d8e93ea6293c9f7a5aed101b4c73b94e3c5f9076ac6176bdd0506ef22",
+      "releaseSha256": "45b0872d8e93ea6293c9f7a5aed101b4c73b94e3c5f9076ac6176bdd0506ef22"
+    },
+    {
+      "name": "japan_dict.txt",
+      "sourceSha256": "ef0dedf763530a436043372cff6e0886451a40cd203eb8fd9f11384041bbf437",
+      "releaseSha256": "ef0dedf763530a436043372cff6e0886451a40cd203eb8fd9f11384041bbf437"
+    },
+    {
+      "name": "korean_PP-OCRv5_mobile_rec.onnx",
+      "sourceSha256": "ee0dfde503d787c91fd0455daae2eb85311b4b5bdcddf85a54d8c1e0adc157de",
+      "releaseSha256": "ee0dfde503d787c91fd0455daae2eb85311b4b5bdcddf85a54d8c1e0adc157de"
+    },
+    {
+      "name": "korean_dict.txt",
+      "sourceSha256": "a3792cbb41215a43e555e16ff4a7f7b18db5dd80cd058637098f0d872f2dd9d6",
+      "releaseSha256": "a3792cbb41215a43e555e16ff4a7f7b18db5dd80cd058637098f0d872f2dd9d6"
+    },
+    {
+      "name": "latexocr_decoder.onnx",
+      "sourceSha256": "bd695497bf1b22279b7626f5916c79226e1e244c84355f8da7edfd2d921d0072",
+      "releaseSha256": "bd695497bf1b22279b7626f5916c79226e1e244c84355f8da7edfd2d921d0072"
+    },
+    {
+      "name": "latexocr_encoder.onnx",
+      "sourceSha256": "01bf5dc25539ca0cd5b1bd29296ea495977a6ba5f629dc4178277809d26e5e7d",
+      "releaseSha256": "01bf5dc25539ca0cd5b1bd29296ea495977a6ba5f629dc4178277809d26e5e7d"
+    },
+    {
+      "name": "latexocr_image_resizer.onnx",
+      "sourceSha256": "e0b075c39700f64d50400f39c8fc186bbb3b5d84d31864008313f376603aca9d",
+      "releaseSha256": "e0b075c39700f64d50400f39c8fc186bbb3b5d84d31864008313f376603aca9d"
+    },
+    {
+      "name": "latexocr_tokenizer.json",
+      "sourceSha256": "1dc27b18d6a518d0d5ff3f4bb7bd98521fe80ad39e5b2a246d4109f1bb9d5019",
+      "releaseSha256": "1dc27b18d6a518d0d5ff3f4bb7bd98521fe80ad39e5b2a246d4109f1bb9d5019"
+    },
+    {
+      "name": "latin_PP-OCRv5_mobile_rec.onnx",
+      "sourceSha256": "497dbed20b7fd86334c9deb5082c2958982a316bb16e3589ebc6502cd85cae79",
+      "releaseSha256": "497dbed20b7fd86334c9deb5082c2958982a316bb16e3589ebc6502cd85cae79"
+    },
+    {
+      "name": "latin_dict.txt",
+      "sourceSha256": "7274e68c7675355e45dd75c360c83faa0d0624de33a704c799a7da8897662201",
+      "releaseSha256": "7274e68c7675355e45dd75c360c83faa0d0624de33a704c799a7da8897662201"
+    },
+    {
+      "name": "ppocrv5_dict.txt",
+      "sourceSha256": "9dfc80c50b6cb07399a47a7cf25d11db475fb4ad0e1fc96b2eff6467c8166ff3",
+      "releaseSha256": "9dfc80c50b6cb07399a47a7cf25d11db475fb4ad0e1fc96b2eff6467c8166ff3"
+    },
+    {
+      "name": "ppocrv5_el_dict.txt",
+      "sourceSha256": "17147b8921fbcc7d2bcbc69cb7dbb7ae61cc0808e6dec1b311d746ffe5f6afed",
+      "releaseSha256": "17147b8921fbcc7d2bcbc69cb7dbb7ae61cc0808e6dec1b311d746ffe5f6afed"
+    },
+    {
+      "name": "ppocrv5_en_dict.txt",
+      "sourceSha256": "c60d46e9e01d500ed6388fe8681051eac9cf6692e0d57238315be171927a0a1b",
+      "releaseSha256": "c60d46e9e01d500ed6388fe8681051eac9cf6692e0d57238315be171927a0a1b"
+    },
+    {
+      "name": "ppocrv5_eslav_dict.txt",
+      "sourceSha256": "1bbd3d43860503821debcbba74fe9bf3f9e42caf50dcf6d2f5365d7f75769c91",
+      "releaseSha256": "1bbd3d43860503821debcbba74fe9bf3f9e42caf50dcf6d2f5365d7f75769c91"
+    },
+    {
+      "name": "ta_PP-OCRv5_mobile_rec.onnx",
+      "sourceSha256": "99734f0d198fddc89869dcce54cab4c8330898bac6ab4a192ee5aef4debb023b",
+      "releaseSha256": "99734f0d198fddc89869dcce54cab4c8330898bac6ab4a192ee5aef4debb023b"
+    },
+    {
+      "name": "ta_dict.txt",
+      "sourceSha256": "ed4c188a82743f6067809d004be1b320b3d2c53c849a9ca83f8e47e7bcd6010f",
+      "releaseSha256": "ed4c188a82743f6067809d004be1b320b3d2c53c849a9ca83f8e47e7bcd6010f"
+    },
+    {
+      "name": "te_PP-OCRv5_mobile_rec.onnx",
+      "sourceSha256": "e068d1331426f686bcffa65b04d295359f2615429100119482e7687e91420504",
+      "releaseSha256": "e068d1331426f686bcffa65b04d295359f2615429100119482e7687e91420504"
+    },
+    {
+      "name": "te_dict.txt",
+      "sourceSha256": "3b4fa5b9a85676c59681df9155612b86d61a407a2abb074f729ae66e41301a57",
+      "releaseSha256": "3b4fa5b9a85676c59681df9155612b86d61a407a2abb074f729ae66e41301a57"
+    },
+    {
+      "name": "th_PP-OCRv5_mobile_rec.onnx",
+      "sourceSha256": "6f07aa2af58713da04b4bdaf1524588d8051fc734db5a1ad7b7a65c1e7c7ec18",
+      "releaseSha256": "6f07aa2af58713da04b4bdaf1524588d8051fc734db5a1ad7b7a65c1e7c7ec18"
+    },
+    {
+      "name": "th_dict.txt",
+      "sourceSha256": "eaacae5cf9b0808d9078ce1152c9ea5c6099d1f563750e66b93c12854acea31a",
+      "releaseSha256": "eaacae5cf9b0808d9078ce1152c9ea5c6099d1f563750e66b93c12854acea31a"
+    }
+  ],
+  "sourceOnlyModelAssets": [],
+  "releaseOnlyModelAssets": [],
+  "sourceAssemblies": [
+    {
+      "Name": "EasyOcrSharp",
+      "Version": "3.1.1+c804c3af4046757174024968de77937a1d7d90c3",
+      "Sha256": "986CCFB62350609F5118F72D8A8645BECC06434AF1BCEA20F5F778372EB695EA"
+    },
+    {
+      "Name": "PaddleOcrNet",
+      "Version": "2.3.1+14fc1027d1be6c18eed6a38cf65e2b61e4a3045b",
+      "Sha256": "5C0900021ACFEF535C7A980750104DD11EDDC95566A3556AE2C1E403FDE92C55"
+    },
+    {
+      "Name": "EasyImageSharp",
+      "Version": "1.2.0+c01fe5e1afb963002c1fa1cdc609261226aaeedc",
+      "Sha256": "AAAB72872965CE497A77D6AFE8CCD178AE9AA7479036BE02C324829EEB89B11E"
+    }
+  ],
+  "releaseAssemblies": [
+    {
+      "Name": "EasyOcrSharp",
+      "Version": "3.1.1+c804c3af4046757174024968de77937a1d7d90c3",
+      "Sha256": "842E9E5ACAFF07DA688481751E9B4613185C3446387841AE940E8103153C3F5F"
+    },
+    {
+      "Name": "PaddleOcrNet",
+      "Version": "2.3.1+14fc1027d1be6c18eed6a38cf65e2b61e4a3045b",
+      "Sha256": "159D4C95439915A0221AD634C62E7A1BBFF20CB1595E633327B9AFF476EF56BD"
+    },
+    {
+      "Name": "EasyImageSharp",
+      "Version": "1.1.0+1fc5237ada97e8d2b327357ab571d6331e7c0349",
+      "Sha256": "427454B1D6AC760873E35768DD7BD1C62089BBEB73050B21E4966D322C1AA356"
+    }
+  ],
+  "limitations": [
+    "Cache fingerprints cover all assets, including unused models; they do not identify the exact models used per image.",
+    "Successful means no recorded exception, not a correct transcription; parity is separate from accuracy.",
+    "Identical failed empty predictions are not counted as successful text parity.",
+    "This checks one corpus and execution configuration, not universal binary or OCR equivalence."
+  ],
+  "reports": [
+    {
+      "name": "mdp-block-paddleocr-source.json",
+      "path": "../../../artifacts/ocr-evaluation/mdp-block-paddleocr-source.json",
+      "sha256": "b61926e79e6dbddfe9990dd5414194196842107de154eb38ca1d4b9c755f7373"
+    },
+    {
+      "name": "mdp-block-paddleocr-release.json",
+      "path": "../../../artifacts/ocr-evaluation/mdp-block-paddleocr-release.json",
+      "sha256": "435c80b43321644768573b8bc461647eb167b95566b227be1ebae3f90d94a0dc"
+    }
+  ]
+}

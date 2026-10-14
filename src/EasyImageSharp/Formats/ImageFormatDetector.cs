@@ -20,6 +20,16 @@ internal static class ImageFormatDetector
         => Detect(data) ?? throw new UnknownImageFormatException(
             $"The image data was not recognized as a supported format ({string.Join(", ", ImageFormat.All.Select(f => f.Name))}).");
 
+    internal static ImageFormat DetectOrThrow(ReadOnlySpan<byte> data, DecoderOptions options)
+    {
+        foreach (ImageFormat format in options.AdditionalFormats)
+        {
+            if (format.Matches(data)) return format;
+        }
+
+        return DetectOrThrow(data);
+    }
+
     /// <summary>Resolves the format for a file path based on its extension.</summary>
     public static ImageFormat FormatForPath(string path)
     {

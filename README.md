@@ -4,7 +4,7 @@
 
 # EasyImageSharp
 
-**A complete 2D imaging library for .NET, written entirely in managed C#.**
+**A managed 2D imaging core for .NET, with optional AI and native drawing packages.**
 
 Ten codecs, a fluent processing pipeline, EXIF metadata, a document-imaging toolkit and ONNX tensor
 bridges — in one assembly, with no native dependencies and no licence key.
@@ -30,6 +30,17 @@ using Image<Rgba32> image = Image.Load<Rgba32>("photo.jpg");
 image.Mutate(ctx => ctx.AutoOrient().Resize(800, 0));
 image.SaveAsWebp("thumbnail.webp");
 ```
+
+## Next release: advanced OCR and imaging
+
+The working tree targets **1.2.0**; these additions have not been published to NuGet. It adds reusable
+and fused tensors, adaptive document diagnostics, precision-preserving geometry, bounded execution,
+lazy TIFF pages and seekable BigTIFF regions, reduced-IDCT JPEG decoding, and optional LittleCMS and Skia/HarfBuzz adapters.
+
+Start with the [capability matrix and recipes](docs/ADVANCED_IMAGING.md),
+[implementation/validation status](IMPLEMENTATION_PLAN.md), and
+[offline OCR export tool](tools/OcrCorpusExport/README.md). The matrix states format, memory,
+precision, mapping and native dependency limits; no library can guarantee correct OCR for every image.
 
 ## Highlights
 
@@ -312,9 +323,9 @@ The `image[x, y]` indexer bounds-checks every access; prefer `ProcessPixelRows` 
 
 **BigTIFF is read, not written.** A version-43 file — 8-byte offsets, 64-bit directory entry counts,
 20-byte entries and the `LONG8` / `SLONG8` / `IFD8` field types — decodes like any other TIFF, with EXIF
-and the rest of the metadata read at 64 bits. The encoder always writes classic TIFF. Because a file is
-buffered whole before decoding, a BigTIFF must still be under 2 GiB; the point of the support is
-compatibility with files written in the larger container, not multi-gigabyte imagery.
+and the rest of the metadata read at 64 bits. The encoder always writes classic TIFF. The regular decoder buffers encoded files and requires them below 2 GiB. The separate
+[seekable region reader](docs/tiff-region-decoding.md) reads supported strips/tiles using 64-bit offsets,
+including tiny regions from multi-gigabyte and gigapixel sources without materializing the entire page.
 
 **Not implemented**, and reported as `NotSupportedException` with a message naming the feature:
 arithmetic-coded, lossless and 12-bit JPEG; old-style JPEG-in-TIFF (compression 6); JBIG. HEIC/HEIF is
@@ -460,6 +471,45 @@ using Image<Rgb24> result = TensorImage.FromChwTensor<Rgb24>(output, width, heig
 `FromGrayscaleTensor` builds an image from single-channel output. You supply the inference session; the
 library handles normalisation and layout.
 
+For reusable inference buffers, `WriteTensor` writes into caller-owned storage without allocating a
+tensor or scratch arrays. Choose RGB/BGR/grayscale and CHW/HWC explicitly; normalization follows the
+**output channel order**. Strides and offsets are in float elements. Initialize padding yourself: the
+writer changes only image samples and leaves gaps and other batch entries untouched.
+
+```csharp
+// The crop has already been resized using the model's required sampling and rounding rules.
+int tensorWidth = crop.Width + 16;
+int planeStride = checked(tensorWidth * crop.Height);
+float[] batch = new float[checked(2 * 3 * planeStride)]; // zero padding in normalized tensor space
+var tensorOptions = new TensorWriteOptions
+{
+    Channels = TensorChannels.Bgr,
+    DestinationOffset = 3 * planeStride, // second batch item
+    RowStride = tensorWidth,
+    PlaneStride = planeStride,
+};
+crop.WriteTensor(batch, tensorOptions, channelMean: [0.5f], channelStd: [0.5f]);
+```
+
+Keep the options and destination buffer for subsequent calls; clear reused padding if its contents
+may have changed. Mean/std accept zero values, one broadcast value, or exactly one value per channel;
+values must be finite and standard deviations positive. Built-in 16-bit and floating-point pixel formats
+retain their precision during tensor conversion. This API performs conversion only, not resizing or inference.
+
+### Independent document pages
+
+For multi-page scans, analyze orientation and crop geometry separately on each page:
+
+```csharp
+using Image<Rgb24> pages = Image.Load<Rgb24>("scans.tiff");
+pages.Mutate(ctx => ctx.AutoRotateDocumentPages().AutoCropPages());
+pages.SaveAsTiff("corrected.tiff");
+```
+
+Pages may have different output dimensions. These opt-in methods use the existing document heuristics;
+classical orientation remains designed for Latin-script text. `AutoRotateDocument` and `AutoCropPage`
+retain their root-frame-driven behavior for callers requiring a shared transformation.
+
 ### EasyImageSharp.AI — pre-wired models
 
 ```bash
@@ -543,12 +593,12 @@ when none is present. Full details in the
 |---|---|---|
 | **EasyImageSharp** | Codecs, `Image<TPixel>`, processing pipeline, document operators, drawing, metadata, pixel formats, tensor bridges | None beyond the framework |
 | **EasyImageSharp.AI** | ONNX-powered orientation, dewarping, super-resolution, denoising, background removal and binarisation; model hub | `Microsoft.ML.OnnxRuntime` |
+| **EasyImageSharp.SkiaSharp** (planned 1.2.0) | Native bitmap interop, paths, brushes, gradients and HarfBuzz shaped text runs | SkiaSharp, SkiaSharp.HarfBuzz |
+| **EasyImageSharp.LittleCms** (planned 1.2.0) | ICC matrix/LUT transforms, RGB/CMYK/Gray/Lab/XYZ, intents and BPC | Native LittleCMS; packaged win-x64 runtime, system library elsewhere |
 
-**Planned, and not in this release.** A separate `EasyImageSharp.Drawing` package (vector geometry, a
-rasteriser, brushes and pens, and text rendering from real glyph outlines), colour-space converters for
-Lab, LCh, HSL, HSV and XYZ, and int8 variants of the AI models are designed but not implemented. Nothing
-described above depends on them, and nothing in 1.1.0 provides them: today's drawing is the annotation
-API listed in [Processing](#processing), and today's colour work is the `ColorMatrix` family.
+The unreleased 1.2.0 core includes Lab/LCh/HSL/HSV/XYZ converters. Paragraph text layout, a separate
+managed vector rasterizer, bundled document rasterizers and int8 AI model variants remain outside this release.
+The native adapters are optional; the core annotation API remains available without them.
 
 **Dependency policy.** The core package uses framework APIs only, and CI fails if it ever gains a
 package dependency. Free, managed, permissively-licensed dependencies may be added where they provide
@@ -588,14 +638,19 @@ pixel-accessing member throws `ObjectDisposedException`.
   self-contained and trimmed and must produce no `IL####` warning at all.
 - **Reproducible performance.** The benchmark suite and its corpus generator are in the repository, so
   the [Performance](#performance) table can be regenerated rather than taken on trust.
-- **Documentation that cannot drift.** Every code sample in this file is transcribed into the test suite
+- **Documentation that cannot drift.** The C# examples in this file are transcribed into the test suite
   and compiled, so a rename breaks the build rather than the docs.
-- **Scale.** 8,290 tests for the core library and 162 for the AI package, run on Ubuntu, Windows and
-  macOS on both target frameworks, plus pack validation for both packages.
+- **Scale.** The current 1.2.0 Windows run passes 9,270 tests across both frameworks and all four packages.
+  Linux core/native checks and native deployment smoke are recorded in the [validation plan](IMPLEMENTATION_PLAN.md).
+  CI is configured for Windows, Ubuntu and macOS; local execution and remote CI evidence are distinguished.
 
 ## Building from source
 
 Requires the .NET 10 SDK; the `net8.0` test leg additionally requires the .NET 8 runtime.
+Full-solution tests include optional native packages: on Windows run `./scripts/build-littlecms.ps1`
+after cloning; on Ubuntu install `liblcms2-dev`; on macOS install Homebrew `little-cms2`.
+See [LittleCMS deployment](src/EasyImageSharp.LittleCms/README.md) for supported native paths.
+The core-only test project is `tests/EasyImageSharp.Tests` and has no native library requirement.
 
 ```bash
 git clone https://github.com/FarhanLodi/EasyImageSharp.git

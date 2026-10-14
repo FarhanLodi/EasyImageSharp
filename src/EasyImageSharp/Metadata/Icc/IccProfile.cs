@@ -6,7 +6,8 @@ namespace EasyImageSharp.Metadata.Icc;
 /// <summary>
 /// An embedded ICC colour profile, carried as raw bytes so it can be written back unchanged. The header
 /// fields that can be read without a colour-management engine are exposed for inspection; the library does
-/// not apply the profile to pixel data.
+/// not apply the profile to pixel data automatically. <see cref="IccMatrixProfile"/> provides explicit
+/// conversion for supported RGB matrix/TRC profiles.
 /// </summary>
 public sealed class IccProfile : IDeepCloneable<IccProfile>
 {

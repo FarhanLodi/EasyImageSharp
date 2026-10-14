@@ -29,6 +29,9 @@ public sealed record ImageModelContract
     /// <summary>1 for a single luminance plane, 3 for RGB planes. Default 3.</summary>
     public int InputChannels { get; init; } = 3;
 
+    /// <summary>Three-channel inputs and outputs use BGR instead of RGB. Normalization arrays follow that same channel order. Ignored for grayscale.</summary>
+    public bool UseBgrChannelOrder { get; init; }
+
     /// <summary>How input pixels are normalised. Default 0-1.</summary>
     public TensorNormalization InputNormalization { get; init; } = TensorNormalization.Unit;
 

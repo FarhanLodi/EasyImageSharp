@@ -5,18 +5,48 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.2.0] - 2026-10-14
 
-Nothing yet.
+### Added
 
-### Planned, and not implemented
+- Direct reduced-IDCT JPEG decoding and seekable 64-bit TIFF/BigTIFF region/tile access.
+- Optional LittleCMS ICC LUT/CMYK transforms with rendering intents/BPC and reproducible native deployment.
+- Isolated image worker with OS process limits; multilingual corpus, orientation calibration and warmed concurrency tools.
+- Reusable `WriteTensor` and fused `ResizeToTensor`: CHW/HWC, RGB/BGR/grayscale, caller-owned
+  strided buffers, batch offsets, normalization, request execution options and coordinate mapping.
+- Independent document-page rotation/cropping; opt-in NeuralOcr, ScannedDocument, PhoneDocument
+  and Screenshot profiles with sampled diagnostics, stage decisions/timings and coordinate maps.
+- Duplicate-page candidate dHash similarity, with collision and sampling caveats.
+- Optional async AI document pipeline with explicit image/grid dewarp contracts and truthful
+  mapping availability. Requested model failures propagate; no silent heuristic substitution.
+- Request-local parallelism, cancellation and cumulative pixel-buffer allocation budgets; encoded
+  input byte limits; incremental root-header inspection for six formats; lazy TIFF page pixel decoding.
+- RGB/XYZ/Lab/Lch/HSV/HSL conversions and the documented RGB matrix/TRC ICC v2/v4 subset.
+- Per-request optional format providers and a public header-info factory for external decoders.
+- Optional `EasyImageSharp.SkiaSharp` package for copied native pixel interop, vector drawing,
+  HarfBuzz text-run shaping and explicit RGB color conversion. Core remains managed and dependency-free.
+- OCR corpus exporter, CER/WER and convex-quadrilateral detection scoring, pinned local-model smoke
+  reports, source integration recipes in both sibling OCR repositories, and tensor benchmarks.
+- Broader smoke/precision/resource tests and ARM64/scalar/Native AOT CI coverage; locally verified Linux x64 native and ARM64 QEMU smoke.
 
-Recorded here so it is not mistaken for shipped behaviour. Designs exist for a separate
-`EasyImageSharp.Drawing` package (vector geometry, a rasteriser, brushes and pens, and text rendering
-from real glyph outlines), for colour-space converters covering Lab, LCh, HSL, HSV and XYZ, and for
-int8 variants of the `EasyImageSharp.AI` models. None of them is in the library today: drawing is still
-the annotation API (`DrawRectangle`, `DrawLine`, `DrawText`, `DrawLabel`, ...) with an embedded bitmap
-font, and colour work is still `ColorMatrix` and `KnownFilterMatrices`.
+### Fixed
+
+- Built-in wide pixel formats retain precision through tensors, resize, rotation, affine/projective
+  and page perspective sampling. Wide geometric sampling uses premultiplied alpha; existing byte
+  arithmetic is retained.
+- Published UVDoc image-output contract now receives dynamic full-resolution BGR input with stride
+  padding instead of a fixed low-resolution RGB input. Orientation uses short-side resize plus center crop.
+  These intentional AI behavior fixes can change existing outputs and full-resolution inference memory.
+- Finite parameter, quadrilateral, tensor shape, resize/kernel and row-batch overflow validation.
+- Failed/canceled processing clones dispose their outputs while preserving source pixels.
+
+### Limits
+
+See [the capability matrix](docs/ADVANCED_IMAGING.md). Pixel budgets do not cover all scratch/native
+memory; the separate process worker supplies an OS-enforced envelope. The TIFF page API buffers
+encoded data; the new seekable region reader supports documented layouts without that buffer. Paragraph text layout, additional bundled codecs/rasterizers and int8 AI variants are not implemented.
+Broader real-photo accuracy, deployment calibration and production throughput remain validation gates;
+small public-corpus and synthetic-region experiments do not establish universal OCR improvement.
 
 ## [1.1.0] - 2026-09-03
 

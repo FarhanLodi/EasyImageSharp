@@ -6,12 +6,9 @@ namespace EasyImageSharp;
 /// </summary>
 /// <remarks>
 /// <para>
-/// <see cref="Default"/> is a process-wide singleton and no public API accepts a <see cref="Configuration"/>
-/// of its own, so mutating it changes the behaviour of every operation in the process. Both properties are
-/// plain <see cref="int"/> fields, so reads and writes are atomic and no amount of concurrent mutation can
-/// corrupt the instance, but an operation already in flight may observe either the old or the new value and
-/// may observe different values at different points. Set these once during application start-up rather than
-/// per request, and do not flip them from one thread while another is processing an image.
+/// <see cref="Default"/> is a process-wide singleton. Set it during application startup.
+/// Use <see cref="ImageExecutionOptions.Configuration"/> for an isolated request-local snapshot;
+/// these overrides never mutate the process defaults.
 /// </para>
 /// <para>
 /// <see cref="MaxDegreeOfParallelism"/> set to 1 is the only way to force fully serial execution:

@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+    <PackageId>EasyImageSharp.LittleCms</PackageId>
+    <Version>1.2.0</Version>
+    <Authors>Farhan Lodi</Authors>
+    <Description>Optional Little CMS native ICC v2/v4 RGB, CMYK, Gray, Lab and XYZ transforms with LUT profiles, rendering intents and black-point compensation.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageProjectUrl>https://github.com/FarhanLodi/EasyImageSharp</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/FarhanLodi/EasyImageSharp</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>image;icc;littlecms;cmyk;color-management</PackageTags>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <IsAotCompatible>true</IsAotCompatible>
+    <NativeLcmsPath>$(MSBuildThisFileDirectory)../../.artifacts/native/lcms2/win-x64/lcms2.dll</NativeLcmsPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../EasyImageSharp/EasyImageSharp.csproj" />
+    <None Include="README.md" Pack="true" PackagePath="" />
+    <None Include="../../LICENSE" Pack="true" PackagePath="" />
+    <None Include="THIRD_PARTY_NOTICES.txt" Pack="true" PackagePath="" />
+    <None Include="../EasyImageSharp/Assets/icon.png" Pack="true" PackagePath="" Visible="false" />
+    <None Include="$(NativeLcmsPath)" Condition="Exists('$(NativeLcmsPath)')" Pack="true" PackagePath="runtimes/win-x64/native/lcms2.dll" Link="lcms2.dll" CopyToOutputDirectory="PreserveNewest" />
+    <InternalsVisibleTo Include="EasyImageSharp.LittleCms.Tests" />
+  </ItemGroup>
+  <Target Name="RequireNativeLcmsForPack" BeforeTargets="GenerateNuspec">
+    <Error Condition="!Exists('$(NativeLcmsPath)')" Text="Build the reproducible win-x64 LittleCMS runtime with scripts/build-littlecms.ps1 before packing." />
+  </Target>
+</Project>

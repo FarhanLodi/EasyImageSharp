@@ -173,6 +173,7 @@ internal sealed partial class ImageProcessingContext<TPixel>
 
     public IImageProcessingContext AutoRotateDocument(float minConfidence)
     {
+        ValidateOrientationConfidence(minConfidence);
         OrientationEstimate estimate = this.DetectOrientation();
         if (estimate.Rotation == RotateMode.None || estimate.Confidence < minConfidence)
         {
@@ -180,6 +181,35 @@ internal sealed partial class ImageProcessingContext<TPixel>
         }
 
         return this.Rotate((float)(int)estimate.Rotation);
+    }
+
+    public IImageProcessingContext AutoRotateDocumentPages(float minConfidence)
+    {
+        ValidateOrientationConfidence(minConfidence);
+        return this.PerFrameReplace(frame =>
+        {
+            OrientationEstimate estimate = OrientationOps.Estimate(frame);
+            if (estimate.Confidence < minConfidence)
+            {
+                return frame;
+            }
+
+            return estimate.Rotation switch
+            {
+                RotateMode.Rotate90 => FrameOps.Rotate90(frame),
+                RotateMode.Rotate180 => FrameOps.Rotate180(frame),
+                RotateMode.Rotate270 => FrameOps.Rotate270(frame),
+                _ => frame,
+            };
+        });
+    }
+
+    private static void ValidateOrientationConfidence(float minConfidence)
+    {
+        if (!(minConfidence >= 0f && minConfidence <= 1f))
+        {
+            throw new ArgumentOutOfRangeException(nameof(minConfidence), minConfidence, "Confidence must be finite and between zero and one.");
+        }
     }
 
     public PointF[]? DetectPage() => PageDetection.Detect(this.image.Frames.RootFrame);
@@ -206,19 +236,25 @@ internal sealed partial class ImageProcessingContext<TPixel>
             return this;
         }
 
-        Size size = PerspectiveWarp.NaturalSize(quad);
-        return this.PerFrame(frame =>
-        {
-            ImageFrame<TPixel> warped = PerspectiveWarp.Warp(frame, quad, size.Width, size.Height);
-            byte[] luminance = DocumentPlanes.Luminance(warped);
-            Rectangle trim = CleanupOps.TrimDarkMargins(luminance, warped.Width, warped.Height);
-            if (trim.Width <= 0 || trim.Height <= 0 || (trim.Width == warped.Width && trim.Height == warped.Height))
-            {
-                return warped;
-            }
+        return this.PerFrameReplace(frame => CropDetectedPage(frame, quad));
+    }
 
-            return FrameOps.Crop(warped, trim);
+    public IImageProcessingContext AutoCropPages()
+        => this.PerFrameReplace(frame =>
+        {
+            PointF[]? quad = PageDetection.Detect(frame);
+            return quad is null ? frame : CropDetectedPage(frame, quad);
         });
+
+    private static ImageFrame<TPixel> CropDetectedPage(ImageFrame<TPixel> frame, PointF[] quad)
+    {
+        Size size = PerspectiveWarp.NaturalSize(quad);
+        ImageFrame<TPixel> warped = PerspectiveWarp.Warp(frame, quad, size.Width, size.Height);
+        byte[] luminance = DocumentPlanes.Luminance(warped);
+        Rectangle trim = CleanupOps.TrimDarkMargins(luminance, warped.Width, warped.Height);
+        return trim.Width <= 0 || trim.Height <= 0 || (trim.Width == warped.Width && trim.Height == warped.Height)
+            ? warped
+            : FrameOps.Crop(warped, trim);
     }
 
     public IImageProcessingContext RemoveBorders() => this.PerFrameInPlace(CleanupOps.RemoveBorders);

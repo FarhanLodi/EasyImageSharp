@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-14",
+  "sdk": "10.0.402",
+  "distribution": "PRETTY_NAME=\"Ubuntu 24.04.3 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.3 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+  "runs": [
+    {
+      "architecture": "x64",
+      "execution": "native Linux x64 under WSL2",
+      "checks": 52,
+      "failures": 0,
+      "binarySha256": "19ece84628cff215202407e6d25cdd03b3ea7f58b0fc9ee34a7f6d3b1022f37c",
+      "binaryFormat": "/work/aot-x64/AotSmoke: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=8166668d2f728a8b71d2bd70aae109fc91044e3b, for GNU/Linux 3.2.0, stripped",
+      "summary": "AotSmoke: 52 checks, 0 failures"
+    },
+    {
+      "architecture": "arm64",
+      "execution": "QEMU user-mode ARM64 emulation on Linux x64",
+      "checks": 52,
+      "failures": 0,
+      "binarySha256": "3071d74a556852fd803c7ca44371363c445cfaea92aaf06169c74ab081cd0321",
+      "binaryFormat": "/work/aot-arm64/AotSmoke: ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=4b8e4a10ca846758c8f3f21c7edb0d2ed3bf7b9a, for GNU/Linux 3.7.0, with debug_info, not stripped",
+      "summary": "AotSmoke: 52 checks, 0 failures"
+    }
+  ],
+  "physicalArm64Validated": false,
+  "documentation": "docs/platform-verification.md",
+  "limitations": [
+    "QEMU behavior checks do not establish hardware throughput.",
+    "Windows Native AOT was not run; Windows trimming and Linux Native AOT are distinct evidence."
+  ]
+}

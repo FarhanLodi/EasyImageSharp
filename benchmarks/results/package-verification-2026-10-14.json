@@ -1,0 +1,22 @@
+[
+  {
+    "package": "EasyImageSharp.1.2.0.nupkg",
+    "sha256": "f10837e82d918158021df123720be53ce851d34da7c7deeda05213d193a6bb31",
+    "assetsVerified": true
+  },
+  {
+    "package": "EasyImageSharp.AI.1.2.0.nupkg",
+    "sha256": "2fe24c527a39f7201dbe8c6cb46275003a9e7226d75301763b9762a0e623b172",
+    "assetsVerified": true
+  },
+  {
+    "package": "EasyImageSharp.LittleCms.1.2.0.nupkg",
+    "sha256": "66efd36f025887532c28d355690f042efbf95ecb7514e2ba8f53806f8518e1b4",
+    "assetsVerified": true
+  },
+  {
+    "package": "EasyImageSharp.SkiaSharp.1.2.0.nupkg",
+    "sha256": "28a5cdb2271f94a365adc8535b59e498bb2d6bf872be150bb008f08e886e8b54",
+    "assetsVerified": true
+  }
+]

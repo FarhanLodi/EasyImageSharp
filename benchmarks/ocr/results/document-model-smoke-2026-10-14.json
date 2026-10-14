@@ -1,0 +1,172 @@
+{
+  "SchemaVersion": 1,
+  "EvidenceKind": "integration-smoke",
+  "Date": "2026-10-14",
+  "AccuracyEvaluation": false,
+  "TimingPurpose": "Single cold runs including analysis and inference; not a benchmark or performance claim.",
+  "ExecutionProvider": "CPU",
+  "IntraOpNumThreads": 2,
+  "Reproduce": "dotnet run -c Release --project tools/DocumentModelSmoke -- input.png orientation.onnx UVDoc.onnx output-directory",
+  "Runs": [
+    {
+      "Input": "text_page_rot90.png",
+      "InputWidth": 700,
+      "InputHeight": 500,
+      "OutputWidth": 500,
+      "OutputHeight": 700,
+      "ElapsedMs": 4215.5915,
+      "Models": {
+        "doc-orientation": "D85B3185075AFCA1A83157F73EAC2E52B598D72E9D47DD19CC4A2F3605E23E3F",
+        "doc-dewarp": "7E54E917AD9CA8F6CFFE606C7C311AAD3B6EEE457D4D9776F99F175D0CA86835"
+      },
+      "Stages": [
+        {
+          "Name": "AnalyzeOriginal",
+          "Applied": true,
+          "Reason": "Sampled original page before AI geometry.",
+          "Confidence": null,
+          "ElapsedMs": 30.273
+        },
+        {
+          "Name": "AiOrient",
+          "Applied": true,
+          "Reason": "Applied model quarter-turn correction.",
+          "Confidence": 0.9185910224914551,
+          "ElapsedMs": 2952.6692
+        },
+        {
+          "Name": "AiDewarp",
+          "Applied": true,
+          "Reason": "Applied rectified-image model; geometric correspondence is unavailable.",
+          "Confidence": null,
+          "ElapsedMs": 307.8126
+        },
+        {
+          "Name": "Analyze",
+          "Applied": true,
+          "Reason": "Sampled original page diagnostics.",
+          "Confidence": null,
+          "ElapsedMs": 5.1999
+        },
+        {
+          "Name": "Orient",
+          "Applied": false,
+          "Reason": "Disabled by profile or explicit option.",
+          "Confidence": null,
+          "ElapsedMs": 0.0002
+        },
+        {
+          "Name": "Perspective",
+          "Applied": false,
+          "Reason": "Disabled by profile or explicit option.",
+          "Confidence": null,
+          "ElapsedMs": 0
+        },
+        {
+          "Name": "Deskew",
+          "Applied": false,
+          "Reason": "Disabled by profile or explicit option.",
+          "Confidence": null,
+          "ElapsedMs": 0
+        },
+        {
+          "Name": "NormalizeBackground",
+          "Applied": false,
+          "Reason": "Disabled by profile or explicit option.",
+          "Confidence": null,
+          "ElapsedMs": 0
+        },
+        {
+          "Name": "Binarize",
+          "Applied": false,
+          "Reason": "Disabled by profile or explicit option.",
+          "Confidence": null,
+          "ElapsedMs": 0
+        }
+      ],
+      "OutputMeanLuminance": 0.836818510313126,
+      "CoordinateMapAvailable": false,
+      "VisualSanity": "Synthetic orientation/dimensions checked."
+    },
+    {
+      "Input": "ocr_test1.png",
+      "InputWidth": 254,
+      "InputHeight": 198,
+      "OutputWidth": 254,
+      "OutputHeight": 198,
+      "ElapsedMs": 592.268,
+      "Models": {
+        "doc-orientation": "D85B3185075AFCA1A83157F73EAC2E52B598D72E9D47DD19CC4A2F3605E23E3F",
+        "doc-dewarp": "7E54E917AD9CA8F6CFFE606C7C311AAD3B6EEE457D4D9776F99F175D0CA86835"
+      },
+      "Stages": [
+        {
+          "Name": "AnalyzeOriginal",
+          "Applied": true,
+          "Reason": "Sampled original page before AI geometry.",
+          "Confidence": null,
+          "ElapsedMs": 21.3529
+        },
+        {
+          "Name": "AiOrient",
+          "Applied": false,
+          "Reason": "Model predicts upright page.",
+          "Confidence": 0.9250730872154236,
+          "ElapsedMs": 64.052
+        },
+        {
+          "Name": "AiDewarp",
+          "Applied": true,
+          "Reason": "Applied rectified-image model; geometric correspondence is unavailable.",
+          "Confidence": null,
+          "ElapsedMs": 231.884
+        },
+        {
+          "Name": "Analyze",
+          "Applied": true,
+          "Reason": "Sampled original page diagnostics.",
+          "Confidence": null,
+          "ElapsedMs": 1.5447
+        },
+        {
+          "Name": "Orient",
+          "Applied": false,
+          "Reason": "Disabled by profile or explicit option.",
+          "Confidence": null,
+          "ElapsedMs": 0.0004
+        },
+        {
+          "Name": "Perspective",
+          "Applied": false,
+          "Reason": "Disabled by profile or explicit option.",
+          "Confidence": null,
+          "ElapsedMs": 0.0001
+        },
+        {
+          "Name": "Deskew",
+          "Applied": false,
+          "Reason": "Disabled by profile or explicit option.",
+          "Confidence": null,
+          "ElapsedMs": 0.0001
+        },
+        {
+          "Name": "NormalizeBackground",
+          "Applied": false,
+          "Reason": "Disabled by profile or explicit option.",
+          "Confidence": null,
+          "ElapsedMs": 0
+        },
+        {
+          "Name": "Binarize",
+          "Applied": false,
+          "Reason": "Disabled by profile or explicit option.",
+          "Confidence": null,
+          "ElapsedMs": 0.0001
+        }
+      ],
+      "OutputMeanLuminance": 0.8712072120111846,
+      "CoordinateMapAvailable": false,
+      "VisualSanity": "Source and result manually inspected: English, German and Portuguese text remains readable; this is not measured OCR accuracy."
+    }
+  ]
+}

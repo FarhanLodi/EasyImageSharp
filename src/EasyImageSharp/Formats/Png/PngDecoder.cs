@@ -46,6 +46,8 @@ public sealed class PngDecoder : IImageDecoder
         where TPixel : unmanaged, IPixel<TPixel>
     {
         ArgumentNullException.ThrowIfNull(options);
+        using var execution = OperationExecution.Enter(options.ExecutionOptions);
+        options.EnsureEncodedWithinLimits(data.Length);
         try
         {
             return DecodeCore<TPixel>(data, options);
@@ -80,6 +82,7 @@ public sealed class PngDecoder : IImageDecoder
         bool sawIdat = false;
         while (pos + 8 <= data.Length)
         {
+            OperationExecution.Checkpoint();
             int length = BinaryPrimitives.ReadInt32BigEndian(data[pos..]);
             uint type = BinaryPrimitives.ReadUInt32BigEndian(data[(pos + 4)..]);
             pos += 8;
@@ -291,6 +294,7 @@ public sealed class PngDecoder : IImageDecoder
             int passCount = header.Interlaced ? 7 : 1;
             for (int pass = 0; pass < passCount; pass++)
             {
+                OperationExecution.Checkpoint();
                 (int xStart, int yStart, int xStep, int yStep) = header.Interlaced
                     ? (PassXStart[pass], PassYStart[pass], PassXStep[pass], PassYStep[pass])
                     : (0, 0, 1, 1);
@@ -667,6 +671,8 @@ public sealed class PngDecoder : IImageDecoder
     public ImageInfo Identify(ReadOnlySpan<byte> data, DecoderOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
+        using var execution = OperationExecution.Enter(options.ExecutionOptions);
+        options.EnsureEncodedWithinLimits(data.Length);
         try
         {
             return IdentifyCore(data);
@@ -695,6 +701,7 @@ public sealed class PngDecoder : IImageDecoder
         long pos = 8;
         while (pos + 8 <= data.Length)
         {
+            OperationExecution.Checkpoint();
             int length = BinaryPrimitives.ReadInt32BigEndian(data[(int)pos..]);
             uint type = BinaryPrimitives.ReadUInt32BigEndian(data[(int)(pos + 4)..]);
             if (length < 0)
@@ -839,6 +846,7 @@ public sealed class PngDecoder : IImageDecoder
         {
             for (int pass = 0; pass < 7; pass++)
             {
+                OperationExecution.Checkpoint();
                 long passWidth = (header.Width - PassXStart[pass] + PassXStep[pass] - 1) / PassXStep[pass];
                 long passHeight = (header.Height - PassYStart[pass] + PassYStep[pass] - 1) / PassYStep[pass];
                 if (passWidth > 0 && passHeight > 0)

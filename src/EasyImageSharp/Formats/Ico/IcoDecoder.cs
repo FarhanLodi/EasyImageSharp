@@ -30,6 +30,8 @@ public sealed class IcoDecoder : IImageDecoder
         where TPixel : unmanaged, IPixel<TPixel>
     {
         ArgumentNullException.ThrowIfNull(options);
+        using var execution = OperationExecution.Enter(options.ExecutionOptions);
+        options.EnsureEncodedWithinLimits(data.Length);
         try
         {
             return DecodeCore<TPixel>(data, options);
@@ -43,6 +45,8 @@ public sealed class IcoDecoder : IImageDecoder
     public ImageInfo Identify(ReadOnlySpan<byte> data, DecoderOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
+        using var execution = OperationExecution.Enter(options.ExecutionOptions);
+        options.EnsureEncodedWithinLimits(data.Length);
         try
         {
             Entry[] entries = ReadDirectory(data);
@@ -297,6 +301,7 @@ public sealed class IcoDecoder : IImageDecoder
         bool anyAlpha = false;
         for (int y = 0; y < height; y++)
         {
+            OperationExecution.Checkpoint();
             // Rows are stored bottom-up.
             ReadOnlySpan<byte> row = dib.Slice((int)(pos + ((height - 1 - y) * xorStride)), (int)xorStride);
             Span<Rgba32> dest = pixels.AsSpan(y * width, width);
@@ -360,6 +365,7 @@ public sealed class IcoDecoder : IImageDecoder
         {
             for (int y = 0; y < height; y++)
             {
+                OperationExecution.Checkpoint();
                 ReadOnlySpan<byte> row = dib.Slice((int)(maskOffset + ((height - 1 - y) * maskStride)), (int)maskStride);
                 Span<Rgba32> dest = pixels.AsSpan(y * width, width);
                 for (int x = 0; x < width; x++)
@@ -374,6 +380,7 @@ public sealed class IcoDecoder : IImageDecoder
 
         for (int y = 0; y < height; y++)
         {
+            OperationExecution.Checkpoint();
             PixelOps.FromRgba32(pixels.AsSpan(y * width, width), frame.GetRowSpan(y));
         }
 

@@ -1,0 +1,15 @@
+{
+  "easyOcrCache": "%LOCALAPPDATA%/EasyOcrSharp/models",
+  "paddleOcrCache": "%LOCALAPPDATA%/PaddleOcrNet/models",
+  "images": [
+    {
+      "id": "easyocr-labeled-sample",
+      "path": "../../../EasyOcrSharp/test/assets/sample.png",
+      "groundTruthFile": "../../../EasyOcrSharp/test/assets/sample.gt.txt",
+      "category": "existing-labeled-smoke",
+      "split": "smoke",
+      "easyOcrLanguages": ["en"],
+      "paddleOcrLanguages": ["English"]
+    }
+  ]
+}

@@ -1,0 +1,211 @@
+{
+  "date": "2026-10-14",
+  "method": "Independent visual inspection of all 20 digital source pages via five contact sheets, plus enlarged en_paper_41 inspection. No classifier output used to assign labels.",
+  "labelsModified": false,
+  "exactSkewGroundTruthAvailable": false,
+  "singleOrientationEligibleCount": 19,
+  "mixedOrientationCount": 1,
+  "pages": [
+    {
+      "id": "en_book_2",
+      "path": "images/en_book_2.png",
+      "pageUprightCorrectionClockwiseDegrees": 0,
+      "singleOrientationCalibrationEligible": true,
+      "dominantTextCorrectionClockwiseDegrees": 0,
+      "inspectionConfidence": "high for cardinal page orientation",
+      "notes": "Readable headings/body establish upright orientation; exact residual skew was not measured.",
+      "sha256": "e72beab845252ecba56ca31288f8c78277f389c91f7cc297053c70ea66940442"
+    },
+    {
+      "id": "en_newspaper_30",
+      "path": "images/en_newspaper_30.png",
+      "pageUprightCorrectionClockwiseDegrees": 0,
+      "singleOrientationCalibrationEligible": true,
+      "dominantTextCorrectionClockwiseDegrees": 0,
+      "inspectionConfidence": "high for cardinal page orientation",
+      "notes": "Readable headings/body establish upright orientation; exact residual skew was not measured.",
+      "sha256": "0fc48b1811994f28bc4ebf73c15fc903d5cfdcb2f0b878580d15a8498e0cb044"
+    },
+    {
+      "id": "en_book_6",
+      "path": "images/en_book_6.png",
+      "pageUprightCorrectionClockwiseDegrees": 0,
+      "singleOrientationCalibrationEligible": true,
+      "dominantTextCorrectionClockwiseDegrees": 0,
+      "inspectionConfidence": "high for cardinal page orientation",
+      "notes": "Readable headings/body establish upright orientation; exact residual skew was not measured.",
+      "sha256": "2efca2f31729fa6bb0f4ecfd577e5ba3b74250c166ce73fdcd3a226e90554bab"
+    },
+    {
+      "id": "en_paper_41",
+      "path": "images/en_paper_41.jpg",
+      "pageUprightCorrectionClockwiseDegrees": 0,
+      "singleOrientationCalibrationEligible": false,
+      "dominantTextCorrectionClockwiseDegrees": 90,
+      "inspectionConfidence": "high for cardinal page orientation",
+      "notes": "Mixed orientation: running header Childs Nerv Syst and Springer footer upright; entire dominant table and caption require 90 degrees clockwise to read horizontally. Exclude from single-label page orientation calibration unless the target explicitly defines dominant-content orientation.",
+      "sha256": "519288cd624a4d0071586a6fa8ca8fed88aa31c9e7ec08d3f687d2129696880f"
+    },
+    {
+      "id": "ar_book_3",
+      "path": "images/ar_book_3.jpg",
+      "pageUprightCorrectionClockwiseDegrees": 0,
+      "singleOrientationCalibrationEligible": true,
+      "dominantTextCorrectionClockwiseDegrees": 0,
+      "inspectionConfidence": "high for cardinal page orientation",
+      "notes": "Readable headings/body establish upright orientation; exact residual skew was not measured.",
+      "sha256": "0b3db85f384a9fb796ccd7b7aea792c99bb401cdccde38337c137fd527ff7323"
+    },
+    {
+      "id": "ar_academicpaper_33",
+      "path": "images/ar_academicpaper_33.jpg",
+      "pageUprightCorrectionClockwiseDegrees": 0,
+      "singleOrientationCalibrationEligible": true,
+      "dominantTextCorrectionClockwiseDegrees": 0,
+      "inspectionConfidence": "high for cardinal page orientation",
+      "notes": "Readable headings/body establish upright orientation; exact residual skew was not measured.",
+      "sha256": "ba81c1ab60b0a541d59d51aca63e5584d729eada9fab5fb14eadd8e9f4efa8ce"
+    },
+    {
+      "id": "ar_academicpaper_37",
+      "path": "images/ar_academicpaper_37.jpg",
+      "pageUprightCorrectionClockwiseDegrees": 0,
+      "singleOrientationCalibrationEligible": true,
+      "dominantTextCorrectionClockwiseDegrees": 0,
+      "inspectionConfidence": "high for cardinal page orientation",
+      "notes": "Readable headings/body establish upright orientation; exact residual skew was not measured.",
+      "sha256": "c28ecb217c8a2e5f49b334a228d8fd5ecafad34d12ced4b13c1aa4cf54fa4a91"
+    },
+    {
+      "id": "ar_book_8",
+      "path": "images/ar_book_8.jpg",
+      "pageUprightCorrectionClockwiseDegrees": 0,
+      "singleOrientationCalibrationEligible": true,
+      "dominantTextCorrectionClockwiseDegrees": 0,
+      "inspectionConfidence": "high for cardinal page orientation",
+      "notes": "Readable headings/body establish upright orientation; exact residual skew was not measured.",
+      "sha256": "091533e5e3d3da6378604a4623742714cdbabad9bd6928e7f458fe49a786b491"
+    },
+    {
+      "id": "hi_comicbook_28",
+      "path": "images/hi_comicbook_28.jpeg",
+      "pageUprightCorrectionClockwiseDegrees": 0,
+      "singleOrientationCalibrationEligible": true,
+      "dominantTextCorrectionClockwiseDegrees": 0,
+      "inspectionConfidence": "high for cardinal page orientation",
+      "notes": "Readable headings/body establish upright orientation; exact residual skew was not measured.",
+      "sha256": "76637a8ca8538f1a1c51accfbe86c3ce39ab202c1c8f5b203e5df4317763f857"
+    },
+    {
+      "id": "hi_textbook_34",
+      "path": "images/hi_textbook_34.png",
+      "pageUprightCorrectionClockwiseDegrees": 0,
+      "singleOrientationCalibrationEligible": true,
+      "dominantTextCorrectionClockwiseDegrees": 0,
+      "inspectionConfidence": "high for cardinal page orientation",
+      "notes": "Readable headings/body establish upright orientation; exact residual skew was not measured.",
+      "sha256": "fea2d4b82bfee5ccefdf204d717f7662fafe35b66cc7c552007011a38e50465c"
+    },
+    {
+      "id": "hi_book_15",
+      "path": "images/hi_book_15.png",
+      "pageUprightCorrectionClockwiseDegrees": 0,
+      "singleOrientationCalibrationEligible": true,
+      "dominantTextCorrectionClockwiseDegrees": 0,
+      "inspectionConfidence": "high for cardinal page orientation",
+      "notes": "Readable headings/body establish upright orientation; exact residual skew was not measured.",
+      "sha256": "6b5fcb8db000416e5c55b78ec0a5e48ae3b916cc8b8f83a272414f405ca6752f"
+    },
+    {
+      "id": "hi_book_17",
+      "path": "images/hi_book_17.jpg",
+      "pageUprightCorrectionClockwiseDegrees": 0,
+      "singleOrientationCalibrationEligible": true,
+      "dominantTextCorrectionClockwiseDegrees": 0,
+      "inspectionConfidence": "high for cardinal page orientation",
+      "notes": "Readable headings/body establish upright orientation; exact residual skew was not measured.",
+      "sha256": "f305fb8931cf4120223ad293fb9c56b807d54623d511ad62f4b8d8ab8cb40151"
+    },
+    {
+      "id": "zh_financialpaper_46",
+      "path": "images/zh_financialpaper_46.jpg",
+      "pageUprightCorrectionClockwiseDegrees": 0,
+      "singleOrientationCalibrationEligible": true,
+      "dominantTextCorrectionClockwiseDegrees": 0,
+      "inspectionConfidence": "high for cardinal page orientation",
+      "notes": "Readable headings/body establish upright orientation; exact residual skew was not measured.",
+      "sha256": "e3c1aa1fbd52efd8288632232b08a52ff20a015ef7cbd8c52b1ee925038079c6"
+    },
+    {
+      "id": "zh_newspaper_22",
+      "path": "images/zh_newspaper_22.jpg",
+      "pageUprightCorrectionClockwiseDegrees": 0,
+      "singleOrientationCalibrationEligible": true,
+      "dominantTextCorrectionClockwiseDegrees": 0,
+      "inspectionConfidence": "high for cardinal page orientation",
+      "notes": "Readable headings/body establish upright orientation; exact residual skew was not measured.",
+      "sha256": "cf53d10f8d07e67ca77edd36eaae0a6a0b4b7110c3b755479950f264a7b22098"
+    },
+    {
+      "id": "zh_slide_45",
+      "path": "images/zh_slide_45.jpg",
+      "pageUprightCorrectionClockwiseDegrees": 0,
+      "singleOrientationCalibrationEligible": true,
+      "dominantTextCorrectionClockwiseDegrees": 0,
+      "inspectionConfidence": "high for cardinal page orientation",
+      "notes": "Readable headings/body establish upright orientation; exact residual skew was not measured.",
+      "sha256": "d6fd2c14e36d6d190d5c0a8dd93ca2e5bd8ef422a5bc09ecb58a5c69b4daed3c"
+    },
+    {
+      "id": "zh_exampaper_35",
+      "path": "images/zh_exampaper_35.jpg",
+      "pageUprightCorrectionClockwiseDegrees": 0,
+      "singleOrientationCalibrationEligible": true,
+      "dominantTextCorrectionClockwiseDegrees": 0,
+      "inspectionConfidence": "high for cardinal page orientation",
+      "notes": "Readable headings/body establish upright orientation; exact residual skew was not measured.",
+      "sha256": "e0cc6c9ca27a76a4da67c61dc8f2fce39c2cf173151749d49a1c020b95c07c27"
+    },
+    {
+      "id": "jp_magazine_29",
+      "path": "images/jp_magazine_29.jpg",
+      "pageUprightCorrectionClockwiseDegrees": 0,
+      "singleOrientationCalibrationEligible": true,
+      "dominantTextCorrectionClockwiseDegrees": 0,
+      "inspectionConfidence": "high for cardinal page orientation",
+      "notes": "Readable headings/body establish upright orientation; exact residual skew was not measured. Photographed open spread has local perspective/curl; no exact zero-skew ground truth.",
+      "sha256": "112eea183d30c0f358ab40b44ef4582f344a0c0807611569799fab037e43f264"
+    },
+    {
+      "id": "jp_note_39",
+      "path": "images/jp_note_39.jpg",
+      "pageUprightCorrectionClockwiseDegrees": 0,
+      "singleOrientationCalibrationEligible": true,
+      "dominantTextCorrectionClockwiseDegrees": 0,
+      "inspectionConfidence": "high for cardinal page orientation",
+      "notes": "Readable headings/body establish upright orientation; exact residual skew was not measured. Handwritten photographed notebook; variable handwriting baselines are not exact zero-skew truth.",
+      "sha256": "29734d6ca8159f0394554b451588769265ae7d876c440a73ad83d6330d6f25ca"
+    },
+    {
+      "id": "jp_book_1",
+      "path": "images/jp_book_1.jpg",
+      "pageUprightCorrectionClockwiseDegrees": 0,
+      "singleOrientationCalibrationEligible": true,
+      "dominantTextCorrectionClockwiseDegrees": 0,
+      "inspectionConfidence": "high for cardinal page orientation",
+      "notes": "Readable headings/body establish upright orientation; exact residual skew was not measured.",
+      "sha256": "4b1bf4e9d96223a960d2418163c24a3d270dfaecf42b7ddae2c87170391bce7c"
+    },
+    {
+      "id": "jp_slide_6",
+      "path": "images/jp_slide_6.jpg",
+      "pageUprightCorrectionClockwiseDegrees": 0,
+      "singleOrientationCalibrationEligible": true,
+      "dominantTextCorrectionClockwiseDegrees": 0,
+      "inspectionConfidence": "high for cardinal page orientation",
+      "notes": "Readable headings/body establish upright orientation; exact residual skew was not measured.",
+      "sha256": "e3afb91d40edae1ee39bfaee639eb49dd4f426112d33f5dd6d5ad4b00b914fb0"
+    }
+  ],
+  "originalManifestSha256": "aeb463b1485dcfc044859b7dc855ba2d97c8c15f4c0682a8406ddf28660b653d"
+}

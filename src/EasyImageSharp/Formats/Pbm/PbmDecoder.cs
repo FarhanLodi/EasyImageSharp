@@ -21,6 +21,8 @@ public sealed class PbmDecoder : IImageDecoder
         where TPixel : unmanaged, IPixel<TPixel>
     {
         ArgumentNullException.ThrowIfNull(options);
+        using var execution = OperationExecution.Enter(options.ExecutionOptions);
+        options.EnsureEncodedWithinLimits(data.Length);
         try
         {
             return DecodeCore<TPixel>(data, options);
@@ -34,6 +36,8 @@ public sealed class PbmDecoder : IImageDecoder
     public ImageInfo Identify(ReadOnlySpan<byte> data, DecoderOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
+        using var execution = OperationExecution.Enter(options.ExecutionOptions);
+        options.EnsureEncodedWithinLimits(data.Length);
         try
         {
             int pos = 0;
@@ -278,6 +282,7 @@ public sealed class PbmDecoder : IImageDecoder
             case 1:
                 for (int y = 0; y < height; y++)
                 {
+                    OperationExecution.Checkpoint();
                     for (int x = 0; x < width; x++)
                     {
                         SkipWhitespaceAndComments(data, ref pos);
@@ -304,6 +309,7 @@ public sealed class PbmDecoder : IImageDecoder
             case 3:
                 for (int y = 0; y < height; y++)
                 {
+                    OperationExecution.Checkpoint();
                     for (int i = 0; i < samples.Length; i++)
                     {
                         int v = ReadInt(data, ref pos, "sample");
@@ -331,6 +337,7 @@ public sealed class PbmDecoder : IImageDecoder
 
                 for (int y = 0; y < height; y++)
                 {
+                    OperationExecution.Checkpoint();
                     ReadOnlySpan<byte> row = data.Slice(pos, stride);
                     for (int x = 0; x < width; x++)
                     {
@@ -355,6 +362,7 @@ public sealed class PbmDecoder : IImageDecoder
 
                 for (int y = 0; y < height; y++)
                 {
+                    OperationExecution.Checkpoint();
                     ReadOnlySpan<byte> row = data.Slice(pos, stride);
                     if (bytesPerSample == 1)
                     {
@@ -478,6 +486,7 @@ public sealed class PbmDecoder : IImageDecoder
                     int start = pos;
                     while (pos < data.Length && data[pos] is >= (byte)'0' and <= (byte)'9')
                     {
+                        OperationExecution.Checkpoint();
                         pos++;
                     }
 
@@ -526,6 +535,7 @@ public sealed class PbmDecoder : IImageDecoder
     {
         while (pos < data.Length)
         {
+            OperationExecution.Checkpoint();
             byte b = data[pos];
             if (IsWhitespace(b))
             {
@@ -535,6 +545,7 @@ public sealed class PbmDecoder : IImageDecoder
             {
                 while (pos < data.Length && data[pos] != '\n' && data[pos] != '\r')
                 {
+                    OperationExecution.Checkpoint();
                     pos++;
                 }
             }
@@ -552,6 +563,7 @@ public sealed class PbmDecoder : IImageDecoder
         long value = 0;
         while (pos < data.Length && data[pos] is >= (byte)'0' and <= (byte)'9')
         {
+            OperationExecution.Checkpoint();
             value = (value * 10) + (data[pos] - '0');
             if (value > int.MaxValue)
             {

@@ -77,6 +77,10 @@ public static partial class ProcessingExtensions
     public static IImageProcessingContext AutoRotateDocument(this IImageProcessingContext context)
         => context.AutoRotateDocument(0.2f);
 
+    /// <summary>Estimates and corrects each independent document page's orientation with a confidence floor of 0.2.</summary>
+    public static IImageProcessingContext AutoRotateDocumentPages(this IImageProcessingContext context)
+        => context.AutoRotateDocumentPages(0.2f);
+
     /// <summary>Warps the quadrilateral onto a rectangle of its natural size.</summary>
     public static IImageProcessingContext CorrectPerspective(this IImageProcessingContext context, PointF[] quad)
         => context.CorrectPerspective(quad, null);

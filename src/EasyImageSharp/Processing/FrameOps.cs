@@ -77,6 +77,8 @@ internal static class FrameOps
         Guard.MustBePositive(width, nameof(width));
         Guard.MustBePositive(height, nameof(height));
         ArgumentNullException.ThrowIfNull(sampler);
+        if (!(sampler.Radius > 0f) || !float.IsFinite(sampler.Radius) || sampler.Radius > 1048576f)
+            throw new ArgumentException("Resampler radius must be finite, positive, and no greater than 1048576.", nameof(sampler));
         if (width == source.Width && height == source.Height)
         {
             return source;
@@ -136,15 +138,15 @@ internal static class FrameOps
         ImageFrame<TPixel> source, int width, int height, IResampler sampler, bool premultiply, bool compand)
         where TPixel : unmanaged, IPixel<TPixel>
     {
+        ImageFrame<TPixel> dest = FrameFactory.CreateUninitialized<TPixel>(width, height);
         var horizontal = ResizeKernelMap.Build(source.Width, width, sampler);
         var vertical = ResizeKernelMap.Build(source.Height, height, sampler);
-        ImageFrame<TPixel> dest = FrameFactory.CreateUninitialized<TPixel>(width, height);
 
         // L8 carries a single channel, so filtering it as four is three quarters wasted work.
         bool singleChannel = typeof(TPixel) == typeof(L8);
         int channels = singleChannel ? 1 : 4;
         int budgetRows = Math.Clamp(
-            ResizeChunkBudgetBytes / Math.Max(1, width * channels * sizeof(float)),
+            (int)(ResizeChunkBudgetBytes / Math.Max(1L, (long)width * channels * sizeof(float))),
             vertical.MaxLength,
             source.Height);
         (int Y0, int Y1)[] chunks = PlanResizeChunks(vertical, height, budgetRows);
@@ -215,8 +217,18 @@ internal static class FrameOps
             Span<Vector4> sourceVectorRow = sourceVectors.AsSpan(0, sourceWidth);
             for (int r = 0; r < rowCount; r++)
             {
-                PixelOps.ToRgba32<TPixel>(source.GetRowSpan(firstRow + r), sourceRow);
-                LoadRow(sourceRow, sourceVectorRow, premultiply, compand);
+                OperationExecution.Checkpoint();
+                if (PixelOps.IsHighPrecision<TPixel>())
+                {
+                    Span<TPixel> pixels = source.GetRowSpan(firstRow + r);
+                    for (int x = 0; x < sourceWidth; x++)
+                        sourceVectorRow[x] = HighPrecisionSampling.Load(pixels[x].ToScaledVector4(), premultiply, compand);
+                }
+                else
+                {
+                    PixelOps.ToRgba32<TPixel>(source.GetRowSpan(firstRow + r), sourceRow);
+                    LoadRow(sourceRow, sourceVectorRow, premultiply, compand);
+                }
                 HorizontalPass(sourceVectorRow, filtered.AsSpan(r * width, width), horizontal);
             }
 
@@ -224,7 +236,15 @@ internal static class FrameOps
             Span<Rgba32> destRow = destRgba.AsSpan(0, width);
             for (int y = y0; y < y1; y++)
             {
+                OperationExecution.Checkpoint();
                 VerticalPass(filtered, firstRow, width, vertical, y, accumulate);
+                if (PixelOps.IsHighPrecision<TPixel>())
+                {
+                    Span<TPixel> pixels = dest.GetRowSpan(y);
+                    for (int x = 0; x < width; x++)
+                        pixels[x] = TPixel.FromScaledVector4(HighPrecisionSampling.Store(accumulate[x], premultiply, compand));
+                    continue;
+                }
                 for (int x = 0; x < width; x++)
                 {
                     destRow[x] = StorePixel(accumulate[x], premultiply, compand);
@@ -333,7 +353,7 @@ internal static class FrameOps
     }
 
     /// <summary>Applies the horizontal kernel to one source row.</summary>
-    private static void HorizontalPass(ReadOnlySpan<Vector4> source, Span<Vector4> destination, ResizeKernelMap map)
+    internal static void HorizontalPass(ReadOnlySpan<Vector4> source, Span<Vector4> destination, ResizeKernelMap map)
     {
         ref Vector4 samples = ref MemoryMarshal.GetReference(source);
         ref float weights = ref MemoryMarshal.GetReference(map.Weights.AsSpan());
@@ -395,7 +415,7 @@ internal static class FrameOps
     /// <c>accumulator += source * weight</c>, or <c>accumulator = source * weight</c> for the first tap.
     /// Float addition is commutative, so folding the running sum in from the right leaves the result exact.
     /// </summary>
-    private static void AccumulateScaled(ReadOnlySpan<float> source, Span<float> accumulator, float weight, bool first)
+    internal static void AccumulateScaled(ReadOnlySpan<float> source, Span<float> accumulator, float weight, bool first)
     {
         int count = source.Length;
         ref float src = ref MemoryMarshal.GetReference(source);
@@ -573,13 +593,33 @@ internal static class FrameOps
     public static ImageFrame<TPixel> RotateArbitrary<TPixel>(ImageFrame<TPixel> source, float degrees, Rgba32 background)
         where TPixel : unmanaged, IPixel<TPixel>
     {
+        if (!float.IsFinite(degrees))
+        {
+            throw new ArgumentOutOfRangeException(nameof(degrees), "Rotation angle must be finite.");
+        }
+
         double radians = degrees * Math.PI / 180.0;
         double cos = Math.Cos(radians);
         double sin = Math.Sin(radians);
         int w = source.Width;
         int h = source.Height;
-        int newW = Math.Max(1, (int)Math.Ceiling(Math.Abs(w * cos) + Math.Abs(h * sin)));
-        int newH = Math.Max(1, (int)Math.Ceiling(Math.Abs(w * sin) + Math.Abs(h * cos)));
+        double expandedWidth = Math.Ceiling(Math.Abs(w * cos) + Math.Abs(h * sin));
+        double expandedHeight = Math.Ceiling(Math.Abs(w * sin) + Math.Abs(h * cos));
+        if (expandedWidth > int.MaxValue || expandedHeight > int.MaxValue)
+        {
+            throw new InvalidImageContentException("Rotated dimensions exceed the supported buffer size.");
+        }
+
+        int newW = Math.Max(1, (int)expandedWidth);
+        int newH = Math.Max(1, (int)expandedHeight);
+
+        // Validate and allocate the destination before allocating any scratch storage.
+        var dest = FrameFactory.CreateUninitialized<TPixel>(newW, newH);
+        if (PixelOps.IsHighPrecision<TPixel>())
+        {
+            RotateHighPrecision(source, dest, cos, sin, background);
+            return dest;
+        }
 
         // Pre-convert the source to Rgba32 for fast repeated sampling.
         var src = new Rgba32[w * h];
@@ -588,28 +628,77 @@ internal static class FrameOps
             PixelOps.ToRgba32<TPixel>(source.GetRowSpan(y), src.AsSpan(y * w, w));
         }
 
-        var dest = new ImageFrame<TPixel>(newW, newH);
-        var destRow = new Rgba32[newW];
         double halfDestW = newW / 2.0;
         double halfDestH = newH / 2.0;
         double halfSrcW = w / 2.0;
         double halfSrcH = h / 2.0;
 
-        for (int dy = 0; dy < newH; dy++)
+        ParallelRowIterator.IterateRows(newW, newH, (startRow, endRow) =>
         {
-            double ty = dy + 0.5 - halfDestH;
-            for (int dx = 0; dx < newW; dx++)
+            var destRow = new Rgba32[newW];
+            for (int dy = startRow; dy < endRow; dy++)
             {
-                double tx = dx + 0.5 - halfDestW;
-                double sx = (cos * tx) + (sin * ty) + halfSrcW - 0.5;
-                double sy = (-sin * tx) + (cos * ty) + halfSrcH - 0.5;
-                destRow[dx] = BilinearSample(src, w, h, sx, sy, background);
-            }
+                double ty = dy + 0.5 - halfDestH;
+                for (int dx = 0; dx < newW; dx++)
+                {
+                    double tx = dx + 0.5 - halfDestW;
+                    double sx = (cos * tx) + (sin * ty) + halfSrcW - 0.5;
+                    double sy = (-sin * tx) + (cos * ty) + halfSrcH - 0.5;
+                    destRow[dx] = BilinearSample(src, w, h, sx, sy, background);
+                }
 
-            PixelOps.FromRgba32<TPixel>(destRow, dest.GetRowSpan(dy));
-        }
+                PixelOps.FromRgba32<TPixel>(destRow, dest.GetRowSpan(dy));
+            }
+        });
 
         return dest;
+    }
+
+    // Read source pixels directly: this avoids a full-image scratch copy and preserves HDR and
+    // 16-bit detail. Legacy byte formats retain their historical straight-alpha interpolation.
+    private static void RotateHighPrecision<TPixel>(ImageFrame<TPixel> source, ImageFrame<TPixel> dest,
+        double cos, double sin, Rgba32 background)
+        where TPixel : unmanaged, IPixel<TPixel>
+    {
+        Vector4 fill = background.ToScaledVector4();
+        bool hasAlpha = PixelFormatInfo<TPixel>.HasAlpha;
+        ParallelRowIterator.IterateRows(dest.Width, dest.Height, (startRow, endRow) =>
+        {
+            for (int y = startRow; y < endRow; y++)
+            {
+                Span<TPixel> row = dest.GetRowSpan(y);
+                double ty = y + 0.5 - (dest.Height / 2.0);
+                for (int x = 0; x < dest.Width; x++)
+                {
+                    double tx = x + 0.5 - (dest.Width / 2.0);
+                    double sx = (cos * tx) + (sin * ty) + (source.Width / 2.0) - 0.5;
+                    double sy = (-sin * tx) + (cos * ty) + (source.Height / 2.0) - 0.5;
+                    int x0 = (int)Math.Floor(sx);
+                    int y0 = (int)Math.Floor(sy);
+                    float fx = (float)(sx - x0);
+                    float fy = (float)(sy - y0);
+                    Vector4 top = Vector4.Lerp(Sample(x0, y0), Sample(x0 + 1, y0), fx);
+                    Vector4 bottom = Vector4.Lerp(Sample(x0, y0 + 1), Sample(x0 + 1, y0 + 1), fx);
+                    Vector4 value = Vector4.Lerp(top, bottom, fy);
+                    if (hasAlpha)
+                    {
+                        value = value.W > 0f
+                            ? new Vector4(value.X / value.W, value.Y / value.W, value.Z / value.W, value.W)
+                            : Vector4.Zero;
+                    }
+
+                    row[x] = TPixel.FromScaledVector4(value);
+                }
+            }
+        });
+
+        Vector4 Sample(int x, int y)
+        {
+            Vector4 value = (uint)x < (uint)source.Width && (uint)y < (uint)source.Height
+                ? source.GetRowSpan(y)[x].ToScaledVector4()
+                : fill;
+            return hasAlpha ? new Vector4(value.X * value.W, value.Y * value.W, value.Z * value.W, value.W) : value;
+        }
     }
 
     private static Rgba32 BilinearSample(Rgba32[] src, int width, int height, double x, double y, Rgba32 background)

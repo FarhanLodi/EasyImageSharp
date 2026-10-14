@@ -1,0 +1,76 @@
+{
+  "VerificationDate": "2026-10-14",
+  "Platform": "Linux x64 in WSL2",
+  "OS": "Linux 6.6.87.2-microsoft-standard-WSL2 x86_64 GNU/Linux",
+  "Runtime": "Microsoft.NETCore.App 10.0.13",
+  "Command": "DOTNET_GCHeapHardLimit=0x40000000 /opt/dotnet/dotnet /work/easyimage/tools/IsolatedImageWorker/bin/Release/net10.0/IsolatedImageWorker.dll --self-test",
+  "WorkerAssemblySha256": "c08c8b8ff9e9b857bf603f9bbf54390318c21aac48a4a43cb07a4cbda5c275ad",
+  "CoreAssemblySha256": "2ce77389e2c9ac9c63e342f3cc9dfd76d5689e967f7ca786d272e19bea8aec77",
+  "Capture": "Successful self-test stdout, persisted after execution. Assembly fingerprints gathered from unchanged output binaries.",
+  "LimitMeaning": "Linux RLIMIT_AS 4 GiB virtual-address cap, not a resident/committed-memory cap. Child managed heap additionally capped at 128 MiB. Runtime startup reserves gigabytes even with small RSS; a cgroup is needed for a Linux resident/committed-memory deployment boundary.",
+  "Output": {
+    "Normal": {
+      "Result": {
+        "Success": true,
+        "Width": 96,
+        "Height": 64,
+        "Error": null
+      },
+      "MemoryLimitBytes": 4294967296,
+      "LimitKind": "Linux RLIMIT_AS virtual-address cap",
+      "PeakWorkingSetBytes": 44470272,
+      "ElapsedMs": 1552.3879,
+      "ExitCode": 0,
+      "ManagedHeapLimitBytes": 134217728
+    },
+    "RejectedNativeAllocation": {
+      "Result": {
+        "Success": false,
+        "Width": 0,
+        "Height": 0,
+        "Error": "Memory allocation rejected."
+      },
+      "MemoryLimitBytes": 4294967296,
+      "LimitKind": "Linux RLIMIT_AS virtual-address cap",
+      "PeakWorkingSetBytes": 39583744,
+      "ElapsedMs": 713.1632,
+      "ExitCode": 3,
+      "ManagedHeapLimitBytes": 134217728
+    },
+    "Deadline": {
+      "Result": {
+        "Success": false,
+        "Width": 0,
+        "Height": 0,
+        "Error": "Worker deadline exceeded."
+      },
+      "MemoryLimitBytes": 4294967296,
+      "LimitKind": "process deadline",
+      "PeakWorkingSetBytes": 40239104,
+      "ElapsedMs": 2023.0047,
+      "ExitCode": 137,
+      "ManagedHeapLimitBytes": 134217728
+    },
+    "InsufficientVirtualAllowance": {
+      "Result": {
+        "Success": false,
+        "Width": 0,
+        "Height": 0,
+        "Error": "Requested Linux virtual-address cap 134217728 bytes is below the worker's startup virtual address reservation 2910187520 bytes. Increase the virtual allowance (typically at least 4 GiB); this is not a resident-memory cap."
+      },
+      "MemoryLimitBytes": 134217728,
+      "LimitKind": "Linux RLIMIT_AS virtual-address cap",
+      "PeakWorkingSetBytes": 31588352,
+      "ElapsedMs": 48.6563,
+      "ExitCode": -1,
+      "ManagedHeapLimitBytes": 33554432
+    },
+    "Checks": 4
+  },
+  "Assertions": [
+    "96x64 output created successfully",
+    "8 GiB native allocation rejected under 4 GiB virtual-address cap",
+    "10 second delayed operation killed at 2 second deadline without output",
+    "128 MiB virtual-address allowance rejected with startup-reservation explanation"
+  ]
+}

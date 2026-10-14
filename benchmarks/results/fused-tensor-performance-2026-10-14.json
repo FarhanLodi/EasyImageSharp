@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-14",
+  "evidence": "exploratory BenchmarkDotNet ShortRun after byte-output LUT optimization",
+  "command": "dotnet run -c Release -f net10.0 --project benchmarks/EasyImageSharp.Benchmarks -- --filter *ResizeTensorBenchmarks* --job Short",
+  "environment": {
+    "BenchmarkDotNetCaption": "BenchmarkDotNet",
+    "BenchmarkDotNetVersion": "0.15.8",
+    "OsVersion": "Windows 11 (10.0.26200.9550/25H2/2025Update/HudsonValley2)",
+    "ProcessorName": "AMD Ryzen 5 4600H with Radeon Graphics",
+    "PhysicalProcessorCount": 1,
+    "PhysicalCoreCount": 6,
+    "LogicalCoreCount": 12,
+    "RuntimeVersion": ".NET 10.0.13 (10.0.13, 10.0.1326.50504)",
+    "Architecture": "X64",
+    "HasAttachedDebugger": false,
+    "HasRyuJit": true,
+    "Configuration": "RELEASE",
+    "DotNetCliVersion": "10.0.301",
+    "ChronometerFrequency": {
+      "Hertz": 10000000
+    },
+    "HardwareTimerKind": "Unknown"
+  },
+  "limitations": [
+    "Three iterations, single launch; not steady-state OCR throughput.",
+    "Both paths reuse the destination tensor. Fused trades full resize buffers for rolling scratch.",
+    "960-square fused path remains slower: memory optimization, not a universal latency optimization."
+  ],
+  "benchmarks": [
+    {
+      "method": "Materialized",
+      "parameters": "Width=320",
+      "mean_ns": 3622091.1458333335,
+      "stddev_ns": 9659.748599280525,
+      "allocated_bytes": 91071
+    },
+    {
+      "method": "Fused",
+      "parameters": "Width=320",
+      "mean_ns": 3462256.7708333335,
+      "stddev_ns": 52562.04895963012,
+      "allocated_bytes": 33290
+    },
+    {
+      "method": "Materialized",
+      "parameters": "Width=960",
+      "mean_ns": 6457818.75,
+      "stddev_ns": 96075.51220795291,
+      "allocated_bytes": 4666303
+    },
+    {
+      "method": "Fused",
+      "parameters": "Width=960",
+      "mean_ns": 12605522.395833334,
+      "stddev_ns": 97190.27414315093,
+      "allocated_bytes": 51535
+    }
+  ]
+}

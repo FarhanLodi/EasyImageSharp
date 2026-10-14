@@ -22,6 +22,8 @@ public sealed class TgaDecoder : IImageDecoder
         where TPixel : unmanaged, IPixel<TPixel>
     {
         ArgumentNullException.ThrowIfNull(options);
+        using var execution = OperationExecution.Enter(options.ExecutionOptions);
+        options.EnsureEncodedWithinLimits(data.Length);
         try
         {
             return DecodeCore<TPixel>(data, options);
@@ -35,6 +37,8 @@ public sealed class TgaDecoder : IImageDecoder
     public ImageInfo Identify(ReadOnlySpan<byte> data, DecoderOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
+        using var execution = OperationExecution.Enter(options.ExecutionOptions);
+        options.EnsureEncodedWithinLimits(data.Length);
         try
         {
             TgaHeader header = ParseHeader(data);
@@ -89,6 +93,7 @@ public sealed class TgaDecoder : IImageDecoder
             DecodeRunLength(pixels, storage, context);
             for (int row = 0; row < height; row++)
             {
+                OperationExecution.Checkpoint();
                 StoreRow(frame, storage.AsSpan(row * width, width), row, header);
             }
         }
@@ -103,6 +108,7 @@ public sealed class TgaDecoder : IImageDecoder
             var rgbaRow = new Rgba32[width];
             for (int row = 0; row < height; row++)
             {
+                OperationExecution.Checkpoint();
                 context.ConvertPixels(pixels.Slice(row * rowBytes, rowBytes), rgbaRow);
                 StoreRow(frame, rgbaRow, row, header);
             }

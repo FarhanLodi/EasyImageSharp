@@ -25,8 +25,31 @@ public sealed class JpegDecoder : IImageDecoder
 {
     public Image<TPixel> Decode<TPixel>(ReadOnlySpan<byte> data, DecoderOptions options)
         where TPixel : unmanaged, IPixel<TPixel>
+        => this.DecodeCore<TPixel>(data, options, 1);
+
+    /// <summary>
+    /// Decodes directly at 1/2, 1/4, or 1/8 resolution using reduced inverse DCT blocks; 1 preserves full resolution.
+    /// Dimensions are rounded up. Baseline and progressive images, supported color spaces, and metadata are retained.
+    /// Source dimension limits still apply. Progressive coefficient storage remains at source resolution,
+    /// while decoded sample planes and the output image are reduced; this is not decode followed by resize.
+    /// </summary>
+    public Image<TPixel> DecodeReduced<TPixel>(ReadOnlySpan<byte> data, int scaleDenominator, DecoderOptions? options = null)
+        where TPixel : unmanaged, IPixel<TPixel>
+    {
+        if (scaleDenominator is not (1 or 2 or 4 or 8))
+        {
+            throw new ArgumentOutOfRangeException(nameof(scaleDenominator), "JPEG scale denominator must be 1, 2, 4, or 8.");
+        }
+
+        return this.DecodeCore<TPixel>(data, options ?? DecoderOptions.Default, scaleDenominator);
+    }
+
+    private Image<TPixel> DecodeCore<TPixel>(ReadOnlySpan<byte> data, DecoderOptions options, int scaleDenominator)
+        where TPixel : unmanaged, IPixel<TPixel>
     {
         ArgumentNullException.ThrowIfNull(options);
+        using var execution = OperationExecution.Enter(options.ExecutionOptions);
+        options.EnsureEncodedWithinLimits(data.Length);
         try
         {
             // The parser needs an array (it is captured by the parallel colour-conversion pass, which a
@@ -36,7 +59,7 @@ public sealed class JpegDecoder : IImageDecoder
             try
             {
                 data.CopyTo(buffer);
-                var core = new JpegDecoderCore(buffer, data.Length, options);
+                var core = new JpegDecoderCore(buffer, data.Length, options, scaleDenominator);
                 core.ParseAndDecode();
                 return core.ToImage<TPixel>();
             }
@@ -54,6 +77,8 @@ public sealed class JpegDecoder : IImageDecoder
     public ImageInfo Identify(ReadOnlySpan<byte> data, DecoderOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
+        using var execution = OperationExecution.Enter(options.ExecutionOptions);
+        options.EnsureEncodedWithinLimits(data.Length);
         try
         {
             return IdentifyCore(data);
@@ -79,6 +104,7 @@ public sealed class JpegDecoder : IImageDecoder
         int pos = 2;
         while (pos + 4 <= data.Length)
         {
+            OperationExecution.Checkpoint();
             if (data[pos] != 0xFF)
             {
                 pos++;
@@ -164,6 +190,7 @@ public sealed class JpegDecoder : IImageDecoder
         int pos = 0;
         while (pos < payload.Length)
         {
+            OperationExecution.Checkpoint();
             byte pqTq = payload[pos++];
             int precision = pqTq >> 4;
             int id = pqTq & 0x0F;
@@ -212,6 +239,8 @@ internal sealed partial class JpegDecoderCore
     /// <summary>Bytes of <see cref="data"/> that hold the image; the buffer itself may be longer (pooled).</summary>
     private readonly int dataLength;
     private readonly DecoderOptions options;
+    private readonly int scaleDenominator;
+    private readonly int outputBlockSize;
     private int pos;
 
     private readonly ushort[]?[] quantTables = new ushort[4][];
@@ -247,11 +276,13 @@ internal sealed partial class JpegDecoderCore
     private bool markerPending;
     private bool insufficientData;
 
-    public JpegDecoderCore(byte[] data, int dataLength, DecoderOptions options)
+    public JpegDecoderCore(byte[] data, int dataLength, DecoderOptions options, int scaleDenominator = 1)
     {
         this.data = data;
         this.dataLength = dataLength;
         this.options = options;
+        this.scaleDenominator = scaleDenominator;
+        this.outputBlockSize = 8 / scaleDenominator;
     }
 
     private enum ScanKind
@@ -267,6 +298,14 @@ internal sealed partial class JpegDecoderCore
 
     public int Height => this.height;
 
+    internal long DecodedPlaneBytes => this.components.Sum(component => component.Plane.LongLength);
+
+    internal long CoefficientBytes => this.components.Sum(component => component.Coefficients.LongLength * sizeof(short));
+
+    private int OutputWidth => (this.width + this.scaleDenominator - 1) / this.scaleDenominator;
+
+    private int OutputHeight => (this.height + this.scaleDenominator - 1) / this.scaleDenominator;
+
     public void ParseAndDecode()
     {
         if (this.dataLength < 4 || this.data[0] != 0xFF || this.data[1] != 0xD8)
@@ -278,6 +317,7 @@ internal sealed partial class JpegDecoderCore
         bool reachedEoi = false;
         while (!reachedEoi)
         {
+            OperationExecution.Checkpoint();
             if (!this.TryNextMarker(out byte marker))
             {
                 throw new InvalidImageContentException("Unexpected end of JPEG data while searching for a marker.");
@@ -371,7 +411,7 @@ internal sealed partial class JpegDecoderCore
             throw new NotSupportedException($"JPEG images with {componentCount} components are not supported.");
         }
 
-        ImageFrame<TPixel> frame = FrameFactory.CreateUninitialized<TPixel>(this.width, this.height);
+        ImageFrame<TPixel> frame = FrameFactory.CreateUninitialized<TPixel>(this.OutputWidth, this.OutputHeight);
 
         bool rgbIds = componentCount == 3
             && this.components[0].Id == 'R' && this.components[1].Id == 'G' && this.components[2].Id == 'B';
@@ -391,15 +431,15 @@ internal sealed partial class JpegDecoderCore
         // Subsampled components are upsampled one full-resolution row at a time into a scratch row;
         // full-resolution components are read straight from their plane. Rows are independent, so each
         // batch gets its own scratch and they run in parallel.
-        int fullWidth = this.mcusX * this.maxH * 8;
-        int imageWidth = this.width;
-        ParallelRowIterator.IterateRows(imageWidth, this.height, (startRow, endRow) =>
+        int fullWidth = this.mcusX * this.maxH * this.outputBlockSize;
+        int imageWidth = this.OutputWidth;
+        ParallelRowIterator.IterateRows(imageWidth, this.OutputHeight, (startRow, endRow) =>
         {
             byte[]?[] scratch = new byte[componentCount][];
             for (int i = 0; i < componentCount; i++)
             {
                 JpegComponent c = this.components[i];
-                scratch[i] = c.H == this.maxH && c.V == this.maxV ? null : ArrayPool<byte>.Shared.Rent(fullWidth);
+                scratch[i] = c.SampleH == this.maxH && c.SampleV == this.maxV ? null : ArrayPool<byte>.Shared.Rent(fullWidth);
             }
 
             Rgba32[] rgbaRow = ArrayPool<Rgba32>.Shared.Rent(imageWidth);
@@ -408,6 +448,7 @@ internal sealed partial class JpegDecoderCore
                 Span<Rgba32> row = rgbaRow.AsSpan(0, imageWidth);
                 for (int y = startRow; y < endRow; y++)
                 {
+                    OperationExecution.Checkpoint();
                     switch (componentCount)
                     {
                         case 1:
@@ -496,12 +537,12 @@ internal sealed partial class JpegDecoderCore
     {
         if (scratch is null)
         {
-            return c.Plane.AsSpan(y * c.PlaneWidth, this.width);
+            return c.Plane.AsSpan(y * c.PlaneWidth, this.OutputWidth);
         }
 
         JpegUpsampler.UpsampleRow(
             c.Plane, c.PlaneWidth, c.PlaneHeight, c.CompWidth, c.CompHeight,
-            c.H, c.V, this.maxH, this.maxV, y, this.width, scratch);
+            c.SampleH, c.SampleV, this.maxH, this.maxV, y, this.OutputWidth, scratch, this.outputBlockSize > 1);
         return scratch;
     }
 
@@ -598,6 +639,7 @@ internal sealed partial class JpegDecoderCore
     {
         while (this.pos + 1 < this.dataLength)
         {
+            OperationExecution.Checkpoint();
             if (this.data[this.pos] == 0xFF)
             {
                 byte candidate = this.data[this.pos + 1];
@@ -696,6 +738,7 @@ internal sealed partial class JpegDecoderCore
         int end = this.ReadTableSegmentEnd("DQT");
         while (this.pos < end)
         {
+            OperationExecution.Checkpoint();
             byte pqTq = this.ReadByte();
             int precision = pqTq >> 4;
             int id = pqTq & 0x0F;
@@ -726,6 +769,7 @@ internal sealed partial class JpegDecoderCore
         Span<byte> counts = stackalloc byte[16];
         while (this.pos < end)
         {
+            OperationExecution.Checkpoint();
             byte tcTh = this.ReadByte();
             int tableClass = tcTh >> 4;
             int id = tcTh & 0x0F;
@@ -840,8 +884,21 @@ internal sealed partial class JpegDecoderCore
             component.BlocksPerColumn = (component.CompHeight + 7) / 8;
             component.BlocksPerLineTotal = this.mcusX * component.H;
             component.BlocksPerColumnTotal = this.mcusY * component.V;
-            component.PlaneWidth = component.BlocksPerLineTotal * 8;
-            component.PlaneHeight = component.BlocksPerColumnTotal * 8;
+            // Use a larger chroma IDCT when it eliminates power-of-two upsampling at the requested scale.
+            int blockSize = this.outputBlockSize;
+            while (blockSize < 8 && (this.maxH * this.outputBlockSize) % (component.H * blockSize * 2) == 0
+                && (this.maxV * this.outputBlockSize) % (component.V * blockSize * 2) == 0)
+            {
+                blockSize *= 2;
+            }
+
+            component.BlockSize = blockSize;
+            component.SampleH = component.H * blockSize / this.outputBlockSize;
+            component.SampleV = component.V * blockSize / this.outputBlockSize;
+            component.CompWidth = ((this.width * component.H * blockSize) + (this.maxH * 8) - 1) / (this.maxH * 8);
+            component.CompHeight = ((this.height * component.V * blockSize) + (this.maxV * 8) - 1) / (this.maxV * 8);
+            component.PlaneWidth = component.BlocksPerLineTotal * blockSize;
+            component.PlaneHeight = component.BlocksPerColumnTotal * blockSize;
             long planeSize = (long)component.PlaneWidth * component.PlaneHeight;
             if (planeSize > int.MaxValue)
             {
@@ -943,6 +1000,7 @@ internal sealed partial class JpegDecoderCore
             int decoded = 0;
             for (int by = 0; by < component.BlocksPerColumn; by++)
             {
+            OperationExecution.Checkpoint();
                 for (int bx = 0; bx < component.BlocksPerLine; bx++)
                 {
                     this.DecodeBlock(component, bx, by);
@@ -957,6 +1015,7 @@ internal sealed partial class JpegDecoderCore
             int decoded = 0;
             for (int my = 0; my < this.mcusY; my++)
             {
+            OperationExecution.Checkpoint();
                 for (int mx = 0; mx < this.mcusX; mx++)
                 {
                     foreach (JpegComponent component in scanComponents)
@@ -1091,13 +1150,36 @@ internal sealed partial class JpegDecoderCore
             return;
         }
 
-        JpegTables.InverseDct(block, this.tempScratch);
+        if (component.BlockSize == 8)
+        {
+            JpegTables.InverseDct(block, this.tempScratch);
+        }
+        else
+        {
+            JpegReducedIdct.Transform(block, this.tempScratch, component.BlockSize);
+        }
+
         WriteBlock(component, bx, by, block);
     }
 
     /// <summary>Level-shifts, rounds and clamps an IDCT output block into the component's sample plane.</summary>
     private static void WriteBlock(JpegComponent component, int bx, int by, ReadOnlySpan<float> block)
     {
+        if (component.BlockSize != 8)
+        {
+            int size = component.BlockSize;
+            for (int y = 0; y < size; y++)
+            {
+                Span<byte> target = component.Plane.AsSpan(((by * size + y) * component.PlaneWidth) + bx * size, size);
+                for (int x = 0; x < size; x++)
+                {
+                    target[x] = (byte)Math.Clamp((int)(block[y * size + x] + 128.5f), 0, 255);
+                }
+            }
+
+            return;
+        }
+
         int baseX = bx * 8;
         int baseY = by * 8;
         byte[] plane = component.Plane;
@@ -1138,11 +1220,12 @@ internal sealed partial class JpegDecoderCore
         byte sample = (byte)Math.Clamp((int)(value + 128.5f), 0, 255);
         byte[] plane = component.Plane;
         int planeWidth = component.PlaneWidth;
-        int baseX = bx * 8;
-        int baseY = by * 8;
-        for (int y = 0; y < 8; y++)
+        int size = component.BlockSize;
+        int baseX = bx * size;
+        int baseY = by * size;
+        for (int y = 0; y < size; y++)
         {
-            plane.AsSpan((((baseY + y) * planeWidth) + baseX), 8).Fill(sample);
+            plane.AsSpan((((baseY + y) * planeWidth) + baseX), size).Fill(sample);
         }
     }
 
@@ -1296,6 +1379,9 @@ internal sealed partial class JpegDecoderCore
 
     private sealed class JpegComponent
     {
+        public int BlockSize = 8;
+        public int SampleH;
+        public int SampleV;
         public int Id;
         public int H;
         public int V;

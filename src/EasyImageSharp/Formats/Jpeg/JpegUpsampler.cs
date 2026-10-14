@@ -24,12 +24,13 @@ internal static class JpegUpsampler
     /// <param name="y">Output (image) row to produce.</param>
     /// <param name="outputWidth">Image width; the number of samples the replication fallback writes.</param>
     /// <param name="output">Receives the upsampled row.</param>
+    /// <param name="fancy">Whether to use triangle filtering for supported subsampling ratios.</param>
     public static void UpsampleRow(
         byte[] plane, int planeWidth, int planeHeight, int compWidth, int compHeight,
-        int h, int v, int maxH, int maxV, int y, int outputWidth, Span<byte> output)
+        int h, int v, int maxH, int maxV, int y, int outputWidth, Span<byte> output, bool fancy = true)
     {
         // libjpeg only applies the triangle filter when the component is wider than two samples.
-        if (maxH == 2 * h && compWidth > 2)
+        if (fancy && maxH == 2 * h && compWidth > 2)
         {
             if (maxV == v)
             {

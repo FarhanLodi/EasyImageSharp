@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+    <PackageId>EasyImageSharp.SkiaSharp</PackageId>
+    <Version>1.2.0</Version>
+    <Authors>Farhan Lodi</Authors>
+    <Description>Optional native SkiaSharp interop, path drawing and HarfBuzz text shaping for EasyImageSharp.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageProjectUrl>https://github.com/FarhanLodi/EasyImageSharp</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/FarhanLodi/EasyImageSharp</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>image;imaging;skiasharp;harfbuzz;drawing;interop;unicode</PackageTags>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../EasyImageSharp/EasyImageSharp.csproj" />
+    <PackageReference Include="SkiaSharp" Version="4.153.1" />
+    <PackageReference Include="SkiaSharp.HarfBuzz" Version="4.153.1" />
+    <None Include="README.md" Pack="true" PackagePath="" />
+    <None Include="../../LICENSE" Pack="true" PackagePath="" />
+    <None Include="../EasyImageSharp/Assets/icon.png" Pack="true" PackagePath="" Visible="false" />
+  </ItemGroup>
+</Project>

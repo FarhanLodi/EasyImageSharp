@@ -5,7 +5,7 @@ Run it from this directory, with no arguments:
 
     python check_determinism.py
 
-It copies generate.py and every gen_*.py into a scratch directory, regenerates the whole corpus there
+It copies generate.py, generate_jpeg_reduced.py and every gen_*.py into a scratch directory, regenerates the whole corpus there
 from nothing, and compares the result against the corpus in this directory. Exit status is 0 when the
 two agree, 1 when they differ, and 2 when the check itself could not run (Pillow missing, a generator
 crashed, a bad command line).
@@ -31,6 +31,8 @@ So each file is compared by the strongest rule that is stable for its kind:
                   byte by byte in Python, so they are byte-stable by construction.
   structural      manifest.json, compared as JSON with the keys in VOLATILE_MANIFEST_KEYS deleted at
                   every depth, because those hash or measure the *encoded* bytes.
+                  jpeg-reduced/provenance.json validates encoded hashes against each tree, then
+                  compares all other fields; its referenced images still pass pixel comparison.
   masked text     EXPECTED.md and friends, with hashes and byte counts masked for the same reason.
 
 Because the comparison is pixel-based, the exact Pillow version matters far less than it did. The pins
@@ -45,6 +47,7 @@ Requires Python 3.11+, Pillow 11 and NumPy 2 - the same versions generate.py nee
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -194,7 +197,7 @@ def regenerate(fixtures_dir: str, scratch: str) -> str:
     """
     scripts = [
         name for name in sorted(os.listdir(fixtures_dir))
-        if name == "generate.py" or (name.startswith("gen_") and name.endswith(".py"))
+        if name in ("generate.py", "generate_jpeg_reduced.py") or (name.startswith("gen_") and name.endswith(".py"))
     ]
     if "generate.py" not in scripts:
         raise SetupError(f"no generate.py in {fixtures_dir}")
@@ -374,6 +377,32 @@ def compare_manifests(corpus: str, regenerated: str) -> tuple[str, str | None, s
     return RULE_STRUCTURAL, difference, note
 
 
+def compare_reduced_jpeg_provenance(corpus: str, regenerated: str) -> tuple[str, str | None, str | None]:
+    """Validate local encoded hashes, then compare provenance without compressor-byte differences.
+
+    This rule applies only to jpeg-reduced/provenance.json. The referenced JPEG and PNG files
+    separately pass exact decoded-pixel comparison; the global manifest rules are unchanged.
+    """
+    documents = []
+    try:
+        for path in (corpus, regenerated):
+            with open(path, encoding="utf-8") as handle:
+                document = json.load(handle)
+            output_dir = os.path.dirname(path)
+            input_dir = os.path.join(os.path.dirname(output_dir), "jpeg")
+            for record in document["references"]:
+                name, denominator = record["name"], record["denominator"]
+                for key, file in (("inputSha256", os.path.join(input_dir, name + ".jpg")),
+                                  ("outputSha256", os.path.join(output_dir, f"{name}-{denominator}.png"))):
+                    if hashlib.sha256(read_bytes(file)).hexdigest() != record[key]:
+                        return RULE_STRUCTURAL, f"{path}: {name}/{denominator} {key} does not match its referenced file", None
+                    del record[key]
+            documents.append(document)
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        return RULE_STRUCTURAL, f"invalid reduced JPEG provenance: {exc}", None
+    return RULE_STRUCTURAL, first_json_difference(*documents), "encoded hashes verified against each tree; pixels compared separately"
+
+
 def mask_text(text: str) -> tuple[str, int]:
     masked, hits = text, 0
     for pattern, placeholder in MASK_PATTERNS:
@@ -399,6 +428,8 @@ def compare_file(relative: str, corpus: str, regenerated: str) -> tuple[str, str
     """Applies the rule that suits ``relative``'s kind. Returns (rule, difference, note)."""
     name = os.path.basename(relative).lower()
     extension = os.path.splitext(name)[1]
+    if relative == "jpeg-reduced/provenance.json":
+        return compare_reduced_jpeg_provenance(corpus, regenerated)
     if name == "manifest.json":
         return compare_manifests(corpus, regenerated)
     if extension in (".md", ".txt"):

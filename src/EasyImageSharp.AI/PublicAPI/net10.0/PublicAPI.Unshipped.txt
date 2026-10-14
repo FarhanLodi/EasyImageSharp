@@ -1,1 +1,46 @@
 #nullable enable
+EasyImageSharp.AI.DocumentAiPreprocessingOptions
+EasyImageSharp.AI.DocumentAiPreprocessingOptions.AutoOrient.get -> bool
+EasyImageSharp.AI.DocumentAiPreprocessingOptions.AutoOrient.set -> void
+EasyImageSharp.AI.DocumentAiPreprocessingOptions.Dewarp.get -> bool
+EasyImageSharp.AI.DocumentAiPreprocessingOptions.Dewarp.set -> void
+EasyImageSharp.AI.DocumentAiPreprocessingOptions.DewarpContract.get -> EasyImageSharp.AI.DocumentDewarpContract!
+EasyImageSharp.AI.DocumentAiPreprocessingOptions.DewarpContract.set -> void
+EasyImageSharp.AI.DocumentAiPreprocessingOptions.DocumentAiPreprocessingOptions() -> void
+EasyImageSharp.AI.DocumentAiPreprocessingOptions.MinimumOrientationConfidence.get -> float
+EasyImageSharp.AI.DocumentAiPreprocessingOptions.MinimumOrientationConfidence.set -> void
+EasyImageSharp.AI.DocumentAiPreprocessingOptions.Preprocessing.get -> EasyImageSharp.Processing.DocumentPreprocessingOptions!
+EasyImageSharp.AI.DocumentAiPreprocessingOptions.Preprocessing.set -> void
+EasyImageSharp.AI.DocumentAiProcessingExtensions
+EasyImageSharp.AI.DocumentDewarpContract
+EasyImageSharp.AI.DocumentDewarpContract.<Clone>$() -> EasyImageSharp.AI.DocumentDewarpContract!
+EasyImageSharp.AI.DocumentDewarpContract.Channels.get -> EasyImageSharp.Tensors.TensorChannels
+EasyImageSharp.AI.DocumentDewarpContract.Channels.init -> void
+EasyImageSharp.AI.DocumentDewarpContract.DocumentDewarpContract() -> void
+EasyImageSharp.AI.DocumentDewarpContract.Equals(EasyImageSharp.AI.DocumentDewarpContract? other) -> bool
+EasyImageSharp.AI.DocumentDewarpContract.FixedInputSize.get -> EasyImageSharp.Size
+EasyImageSharp.AI.DocumentDewarpContract.FixedInputSize.init -> void
+EasyImageSharp.AI.DocumentDewarpContract.GridAlignCorners.get -> bool
+EasyImageSharp.AI.DocumentDewarpContract.GridAlignCorners.init -> void
+EasyImageSharp.AI.DocumentDewarpContract.InputName.get -> string?
+EasyImageSharp.AI.DocumentDewarpContract.InputName.init -> void
+EasyImageSharp.AI.DocumentDewarpContract.MaximumInputPixels.get -> long
+EasyImageSharp.AI.DocumentDewarpContract.MaximumInputPixels.init -> void
+EasyImageSharp.AI.DocumentDewarpContract.OutputKind.get -> EasyImageSharp.AI.DocumentDewarpOutputKind
+EasyImageSharp.AI.DocumentDewarpContract.OutputKind.init -> void
+EasyImageSharp.AI.DocumentDewarpContract.OutputName.get -> string?
+EasyImageSharp.AI.DocumentDewarpContract.OutputName.init -> void
+EasyImageSharp.AI.DocumentDewarpContract.SizeMultiple.get -> int
+EasyImageSharp.AI.DocumentDewarpContract.SizeMultiple.init -> void
+EasyImageSharp.AI.DocumentDewarpOutputKind
+EasyImageSharp.AI.DocumentDewarpOutputKind.NormalizedSamplingGrid = 1 -> EasyImageSharp.AI.DocumentDewarpOutputKind
+EasyImageSharp.AI.DocumentDewarpOutputKind.RectifiedImage = 0 -> EasyImageSharp.AI.DocumentDewarpOutputKind
+EasyImageSharp.AI.ImageModelContract.UseBgrChannelOrder.get -> bool
+EasyImageSharp.AI.ImageModelContract.UseBgrChannelOrder.init -> void
+override EasyImageSharp.AI.DocumentDewarpContract.Equals(object? obj) -> bool
+override EasyImageSharp.AI.DocumentDewarpContract.GetHashCode() -> int
+override EasyImageSharp.AI.DocumentDewarpContract.ToString() -> string!
+static EasyImageSharp.AI.DocumentAiProcessingExtensions.DewarpDocumentWithContractAsync<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageAiSession! ai, EasyImageSharp.AI.DocumentDewarpContract! contract, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+static EasyImageSharp.AI.DocumentAiProcessingExtensions.PreprocessDocumentAIAsync<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageAiSession! ai, EasyImageSharp.AI.DocumentAiPreprocessingOptions? options = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<EasyImageSharp.Processing.DocumentPreprocessingResult<TPixel>!>!
+static EasyImageSharp.AI.DocumentDewarpContract.operator !=(EasyImageSharp.AI.DocumentDewarpContract? left, EasyImageSharp.AI.DocumentDewarpContract? right) -> bool
+static EasyImageSharp.AI.DocumentDewarpContract.operator ==(EasyImageSharp.AI.DocumentDewarpContract? left, EasyImageSharp.AI.DocumentDewarpContract? right) -> bool

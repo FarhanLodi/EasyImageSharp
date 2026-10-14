@@ -161,8 +161,12 @@ public static class ImageModelRunner
         {
             TensorNormalization inNorm = contract.InputNormalization;
             float[] input = contract.InputChannels == 3
-                ? networkInput.ToChwTensor(inNorm.Mean, inNorm.Std)
+                ? contract.UseBgrChannelOrder ? new float[checked(paddedWidth * paddedHeight * 3)] : networkInput.ToChwTensor(inNorm.Mean, inNorm.Std)
                 : networkInput.ToGrayscaleTensor(inNorm.Mean[0], inNorm.Std[0]);
+            if (contract.InputChannels == 3 && contract.UseBgrChannelOrder)
+            {
+                networkInput.WriteTensor(input, new TensorWriteOptions { Channels = TensorChannels.Bgr }, inNorm.Mean, inNorm.Std);
+            }
             long[] shape = [1, contract.InputChannels, paddedHeight, paddedWidth];
 
             TensorResult result = OrtRunner.Run(run.Session, run.InputName, input, shape, run.OutputName);
@@ -190,9 +194,22 @@ public static class ImageModelRunner
             }
 
             TensorNormalization outNorm = contract.OutputNormalization;
+            float[] outputMean = outNorm.Mean, outputStd = outNorm.Std;
+            if (outChannels == 3 && contract.UseBgrChannelOrder)
+            {
+                int plane = checked(outWidth * outHeight);
+                for (int i = 0; i < plane; i++)
+                {
+                    (result.Data[i], result.Data[(2 * plane) + i]) = (result.Data[(2 * plane) + i], result.Data[i]);
+                }
+
+                outputMean = outNorm.Mean.Length == 1 ? outNorm.Mean : [outNorm.Mean[2], outNorm.Mean[1], outNorm.Mean[0]];
+                outputStd = outNorm.Std.Length == 1 ? outNorm.Std : [outNorm.Std[2], outNorm.Std[1], outNorm.Std[0]];
+            }
+
             Image<TPixel> converted = outChannels switch
             {
-                3 => TensorImage.FromChwTensor<TPixel>(result.Data, outWidth, outHeight, outNorm.Mean, outNorm.Std),
+                3 => TensorImage.FromChwTensor<TPixel>(result.Data, outWidth, outHeight, outputMean, outputStd),
                 1 => TensorImage.FromGrayscaleTensor<TPixel>(result.Data, outWidth, outHeight, outNorm.Mean[0], outNorm.Std[0]),
                 _ => throw new ModelContractException($"Output has {outChannels} channels; only 1 (gray) or 3 (RGB) can be converted to an image."),
             };

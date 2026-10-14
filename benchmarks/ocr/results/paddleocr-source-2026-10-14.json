@@ -1,0 +1,216 @@
+{
+  "SchemaVersion": 1,
+  "Engine": "paddleocr",
+  "ManifestSha256": "305D1FEFD6323A60240BD7DA60AE696609467BDD7734F7BADE1DCF7D41BB7FB9",
+  "Runtime": ".NET 10.0.12",
+  "Platform": "Microsoft Windows 10.0.26200",
+  "Architecture": "X64",
+  "ExecutionProvider": "CPU",
+  "IntraOpThreads": 1,
+  "InterOpThreads": 1,
+  "TimingIncludesFirstUseModelInitialization": true,
+  "TextNormalization": "Trim only; CER counts Unicode scalar values; WER splits whitespace; case-sensitive",
+  "ModelsScope": "All cached ONNX, dictionary and JSON assets; offline mode prevents downloads",
+  "ModelCacheSnapshot": [
+    {
+      "Name": "PP-DocLayout-M.onnx",
+      "Sha256": "34ECDC84E60D5F5822FAB85E3E97F30CA73FDC6C7C0AA10B3BD7227742A574B5"
+    },
+    {
+      "Name": "PP-DocLayout-S.onnx",
+      "Sha256": "E3A5864E9F29BFDDF7EA447CE03CD42ADDE0A49CEA93191D7858E95407D0040A"
+    },
+    {
+      "Name": "PP-DocLayoutV3.onnx",
+      "Sha256": "DC5670EBBB42E2BA4E41395FC55E8217B007134E8B9E35023D592A8FE040A288"
+    },
+    {
+      "Name": "PP-DocLayoutV3_labels.txt",
+      "Sha256": "A04C55C3BB398FE7C5ECE52D279EB26A905F9645CD58C0C812FB9DE3C4790F46"
+    },
+    {
+      "Name": "PP-LCNet_x1_0_doc_ori.onnx",
+      "Sha256": "D85B3185075AFCA1A83157F73EAC2E52B598D72E9D47DD19CC4A2F3605E23E3F"
+    },
+    {
+      "Name": "PP-LCNet_x1_0_table_cls.onnx",
+      "Sha256": "C4D7737FDB2B0B31D9CB3D961B339174E36152AD5A48E7979CD81D7CF7E5B7DE"
+    },
+    {
+      "Name": "PP-LCNet_x1_0_textline_ori.onnx",
+      "Sha256": "1E82A12332D6B0B09A0643250C48A8D372515BA672E1299259ADCF28B9701460"
+    },
+    {
+      "Name": "PP-OCRv4_server_seal_det.onnx",
+      "Sha256": "2F83D57EE079490E7465E83017606DD1A5ED71FC99555C45B1460FF0332ADC25"
+    },
+    {
+      "Name": "PP-OCRv5_mobile_det.onnx",
+      "Sha256": "D7FE3EA74652890722C0F4D02458B7261D9F5AE6C92904D05707C9EB155C7924"
+    },
+    {
+      "Name": "PP-OCRv5_mobile_rec.onnx",
+      "Sha256": "D253C3CBEE6E507828A5271A30AB0EC8AE7C2A99D0CC8E6F844FE380809D22B3"
+    },
+    {
+      "Name": "SLANeXt_wired.onnx",
+      "Sha256": "0A6E063B56E35A434EB6669EB2342113C6BD76A6CE5ACAA0331F370C9E00732F"
+    },
+    {
+      "Name": "SLANeXt_wireless.onnx",
+      "Sha256": "5C79EE87CCE6712F8F640394DECCE72157BD1DF13C9BCCF86D071BD07A6E9F97"
+    },
+    {
+      "Name": "SLANet_plus.onnx",
+      "Sha256": "D57A942AF6A2F57D6A4A0372573C696A2379BF5857C45E2AC69993F3B334514B"
+    },
+    {
+      "Name": "arabic_PP-OCRv5_mobile_rec.onnx",
+      "Sha256": "B58F7D1CC7200566AAE1D56AC26C17942881958ED100AC5A07D9A6E67150CBEF"
+    },
+    {
+      "Name": "arabic_dict.txt",
+      "Sha256": "F6B5BAF1335408E6E1FB5CC6E8268A26769F549C2BB37268E72A6804FE269B4C"
+    },
+    {
+      "Name": "cyrillic_PP-OCRv5_mobile_rec.onnx",
+      "Sha256": "0D91040605EF7BDCA6868FAD6CAD1664840D031E9F6D40D54607DF5B50FA280A"
+    },
+    {
+      "Name": "cyrillic_dict.txt",
+      "Sha256": "90822A96058EB83F8E637ACE75F90CBD36C41253F9DBDFB88FCF5A2BDD50D669"
+    },
+    {
+      "Name": "devanagari_PP-OCRv5_mobile_rec.onnx",
+      "Sha256": "932E2D53FAFDFD929131C4E20133F49901288E8EC1BA03B18317A4780B21F3CE"
+    },
+    {
+      "Name": "devanagari_dict.txt",
+      "Sha256": "4BFB5FC511C24DA3B1F3A582AE4E07ECD16601997B70B864BB34E111FC646CFE"
+    },
+    {
+      "Name": "el_PP-OCRv5_mobile_rec.onnx",
+      "Sha256": "54235F471B1CA8E356C48673125E0B14E4823496CD7BB583B24FB8808DBCD9C4"
+    },
+    {
+      "Name": "en_PP-OCRv5_mobile_rec_infer.onnx",
+      "Sha256": "1081B104A3C44D103511F150763D997A846994431C5775A800C802254C1124BF"
+    },
+    {
+      "Name": "eslav_PP-OCRv5_mobile_rec.onnx",
+      "Sha256": "BB86CDBD09C21D6BD73C0C0D5DC50379A6F94FC0078F7200A192ED1087F3E6AC"
+    },
+    {
+      "Name": "japan_PP-OCRv5_mobile_rec.onnx",
+      "Sha256": "45B0872D8E93EA6293C9F7A5AED101B4C73B94E3C5F9076AC6176BDD0506EF22"
+    },
+    {
+      "Name": "japan_dict.txt",
+      "Sha256": "EF0DEDF763530A436043372CFF6E0886451A40CD203EB8FD9F11384041BBF437"
+    },
+    {
+      "Name": "korean_PP-OCRv5_mobile_rec.onnx",
+      "Sha256": "EE0DFDE503D787C91FD0455DAAE2EB85311B4B5BDCDDF85A54D8C1E0ADC157DE"
+    },
+    {
+      "Name": "korean_dict.txt",
+      "Sha256": "A3792CBB41215A43E555E16FF4A7F7B18DB5DD80CD058637098F0D872F2DD9D6"
+    },
+    {
+      "Name": "latexocr_decoder.onnx",
+      "Sha256": "BD695497BF1B22279B7626F5916C79226E1E244C84355F8DA7EDFD2D921D0072"
+    },
+    {
+      "Name": "latexocr_encoder.onnx",
+      "Sha256": "01BF5DC25539CA0CD5B1BD29296EA495977A6BA5F629DC4178277809D26E5E7D"
+    },
+    {
+      "Name": "latexocr_image_resizer.onnx",
+      "Sha256": "E0B075C39700F64D50400F39C8FC186BBB3B5D84D31864008313F376603ACA9D"
+    },
+    {
+      "Name": "latexocr_tokenizer.json",
+      "Sha256": "1DC27B18D6A518D0D5FF3F4BB7BD98521FE80AD39E5B2A246D4109F1BB9D5019"
+    },
+    {
+      "Name": "latin_PP-OCRv5_mobile_rec.onnx",
+      "Sha256": "497DBED20B7FD86334C9DEB5082C2958982A316BB16E3589EBC6502CD85CAE79"
+    },
+    {
+      "Name": "latin_dict.txt",
+      "Sha256": "7274E68C7675355E45DD75C360C83FAA0D0624DE33A704C799A7DA8897662201"
+    },
+    {
+      "Name": "ppocrv5_dict.txt",
+      "Sha256": "9DFC80C50B6CB07399A47A7CF25D11DB475FB4AD0E1FC96B2EFF6467C8166FF3"
+    },
+    {
+      "Name": "ppocrv5_el_dict.txt",
+      "Sha256": "17147B8921FBCC7D2BCBC69CB7DBB7AE61CC0808E6DEC1B311D746FFE5F6AFED"
+    },
+    {
+      "Name": "ppocrv5_en_dict.txt",
+      "Sha256": "C60D46E9E01D500ED6388FE8681051EAC9CF6692E0D57238315BE171927A0A1B"
+    },
+    {
+      "Name": "ppocrv5_eslav_dict.txt",
+      "Sha256": "1BBD3D43860503821DEBCBBA74FE9BF3F9E42CAF50DCF6D2F5365D7F75769C91"
+    },
+    {
+      "Name": "ta_PP-OCRv5_mobile_rec.onnx",
+      "Sha256": "99734F0D198FDDC89869DCCE54CAB4C8330898BAC6AB4A192EE5AEF4DEBB023B"
+    },
+    {
+      "Name": "ta_dict.txt",
+      "Sha256": "ED4C188A82743F6067809D004BE1B320B3D2C53C849A9CA83F8E47E7BCD6010F"
+    },
+    {
+      "Name": "te_PP-OCRv5_mobile_rec.onnx",
+      "Sha256": "E068D1331426F686BCFFA65B04D295359F2615429100119482E7687E91420504"
+    },
+    {
+      "Name": "te_dict.txt",
+      "Sha256": "3B4FA5B9A85676C59681DF9155612B86D61A407A2ABB074F729AE66E41301A57"
+    },
+    {
+      "Name": "th_PP-OCRv5_mobile_rec.onnx",
+      "Sha256": "6F07AA2AF58713DA04B4BDAF1524588D8051FC734DB5A1AD7B7A65C1E7C7EC18"
+    },
+    {
+      "Name": "th_dict.txt",
+      "Sha256": "EAACAE5CF9B0808D9078CE1152C9EA5C6099D1F563750E66B93C12854ACEA31A"
+    }
+  ],
+  "Assemblies": [
+    {
+      "Name": "EasyOcrSharp",
+      "Version": "3.1.1\u002Bc804c3af4046757174024968de77937a1d7d90c3",
+      "Sha256": "627E31F524F06D288529DF7C5CB2A2B8AB2F593FC99BA39642BBA66E724DF1F4"
+    },
+    {
+      "Name": "PaddleOcrNet",
+      "Version": "2.3.1\u002B14fc1027d1be6c18eed6a38cf65e2b61e4a3045b",
+      "Sha256": "B821DD900ECFD72A5EA2E4991A1A7FFEEA56901F2487EDCFC3F816FC30020D52"
+    },
+    {
+      "Name": "EasyImageSharp",
+      "Version": "1.1.0\u002Bc01fe5e1afb963002c1fa1cdc609261226aaeedc",
+      "Sha256": "D7D59AC93705848D6DD8AA338D43D1F78FCE0E283376EE385EC37162D5564657"
+    }
+  ],
+  "Rows": [
+    {
+      "Id": "easyocr-labeled-sample",
+      "Category": "existing-labeled-smoke",
+      "Split": "smoke",
+      "ImageSha256": "80725506BDDD74A232EF04FD9FE95D6A5F9BE9EFC0857C7A6065485DE649CBAB",
+      "GroundTruth": "Hello World\nEasyOcrSharp 2024",
+      "Prediction": "Hello World\nEasyOcrSharp 2024",
+      "Lines": 2,
+      "ElapsedMilliseconds": 1394.1377,
+      "ManagedAllocatedBytes": 9249000,
+      "CharacterErrorRate": 0,
+      "WordErrorRate": 0
+    }
+  ]
+}

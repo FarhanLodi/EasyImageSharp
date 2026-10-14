@@ -1,0 +1,21 @@
+{
+  "fixtures_dir": "tests/EasyImageSharp.Tests/Fixtures",
+  "source": "worktree",
+  "python": "3.11.9",
+  "pillow": "11.3.0",
+  "numpy": "2.4.6",
+  "checked": 1298,
+  "counts": {
+    "decoded pixels": 853,
+    "exact bytes": 421,
+    "structural json": 17,
+    "masked text": 7
+  },
+  "git_ignored": [],
+  "seconds": {
+    "regenerate": 9.695,
+    "compare": 51.936,
+    "total": 62.219
+  },
+  "differences": []
+}

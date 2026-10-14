@@ -47,8 +47,8 @@ public static class ModelRegistry
 
     /// <summary>
     /// PP-LCNet_x1_0 document-orientation classifier (PaddleX <c>doc_orientation_classify</c>): input <c>x</c>
-    /// <c>[1,3,224,224]</c>, RGB, ImageNet mean/std on 0-1 values, page stretched to 224x224 with bicubic
-    /// resampling; output <c>[1,4]</c> scores over {0, 90, 180, 270} degrees clockwise (index i means the page
+    /// <c>[1,3,224,224]</c>, RGB, ImageNet mean/std on 0-1 values, aspect-preserving bilinear resize to short side 256
+    /// followed by a 224x224 center crop; output <c>[1,4]</c> scores over {0, 90, 180, 270} degrees clockwise (index i means the page
     /// is currently rotated i*90 degrees clockwise from upright). Apache-2.0.
     /// </summary>
     public static ModelDescriptor DocumentOrientation { get; } = new()
@@ -67,9 +67,9 @@ public static class ModelRegistry
     };
 
     /// <summary>
-    /// UVDoc page dewarp network: input <c>image</c> <c>[1,3,H,W]</c> RGB in 0-1 (no mean/std), fed at the
-    /// canonical 488x712 (width x height); output <c>[1,3,H,W]</c> is a rectified RGB image in 0-1 at the
-    /// same size, which the operation resizes back to the source dimensions. MIT.
+    /// UVDoc page dewarp network: input <c>image</c> <c>[1,3,H,W]</c> BGR in 0-1 (no mean/std), fed at full
+    /// resolution with stride-32 edge padding; output <c>[1,3,H,W]</c> is a rectified BGR image in 0-1 at the
+    /// same size, with padding removed after inference. It does not expose a geometric sampling grid. MIT.
     /// </summary>
     public static ModelDescriptor DocumentDewarp { get; } = new()
     {
@@ -79,7 +79,7 @@ public static class ModelRegistry
         BaseUrl = DefaultBaseUrl,
         License = "MIT",
         InputName = "image",
-        InputShape = [1, 3, 712, 488],
+        InputShape = [1, 3, -1, -1],
         Normalization = TensorNormalization.Unit,
         Task = ImageModelTask.Dewarp,
         SizeBytes = 31_000_000,

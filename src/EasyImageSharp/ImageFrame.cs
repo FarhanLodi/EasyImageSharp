@@ -30,9 +30,11 @@ public sealed class ImageFrame<TPixel>
         Guard.MustBePositive(height, nameof(height));
         this.Width = width;
         this.Height = height;
-        this.array = new TPixel[(long)width * height <= int.MaxValue
-            ? width * height
-            : throw new InvalidImageContentException($"Image dimensions {width}x{height} exceed the supported buffer size.")];
+        long length = (long)width * height;
+        if (length > int.MaxValue)
+            throw new InvalidImageContentException($"Image dimensions {width}x{height} exceed the supported buffer size.");
+        OperationExecution.ReservePixelBuffer<TPixel>(length);
+        this.array = new TPixel[(int)length];
         this.pixels = this.array;
         this.Metadata = new ImageFrameMetadata();
     }
@@ -98,6 +100,7 @@ public sealed class ImageFrame<TPixel>
     /// <exception cref="ObjectDisposedException">The owning image has been disposed.</exception>
     public Span<TPixel> GetRowSpan(int rowIndex)
     {
+        OperationExecution.Checkpoint();
         this.EnsureNotDisposed();
         if ((uint)rowIndex >= (uint)this.Height)
         {
@@ -185,7 +188,9 @@ public sealed class ImageFrame<TPixel>
         get
         {
             this.EnsureNotDisposed();
-            return this.array ?? this.pixels.ToArray();
+            if (this.array is not null) return this.array;
+            OperationExecution.ReservePixelBuffer<TPixel>(this.pixels.Length);
+            return this.pixels.ToArray();
         }
     }
 
@@ -195,6 +200,7 @@ public sealed class ImageFrame<TPixel>
     internal ImageFrame<TPixel> Clone()
     {
         Span<TPixel> source = this.PixelSpan;
+        OperationExecution.ReservePixelBuffer<TPixel>(source.Length);
         var copy = new TPixel[source.Length];
         source.CopyTo(copy);
         return new ImageFrame<TPixel>(this.Width, this.Height, copy, this.Metadata.DeepClone());
@@ -204,6 +210,7 @@ public sealed class ImageFrame<TPixel>
         where TPixel2 : unmanaged, IPixel<TPixel2>
     {
         Span<TPixel> source = this.PixelSpan;
+        OperationExecution.ReservePixelBuffer<TPixel2>(source.Length);
         var target = new ImageFrame<TPixel2>(this.Width, this.Height, new TPixel2[source.Length], this.Metadata.DeepClone());
         PixelOps.Convert<TPixel, TPixel2>(source, target.PixelSpan);
         return target;

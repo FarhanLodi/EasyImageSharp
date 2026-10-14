@@ -1,0 +1,651 @@
+{
+  "schemaVersion": 1,
+  "method": "Tuning-only weighted isotonic PAV, ties grouped; linear interpolation; endpoint clamping",
+  "target": "Correct cardinal orientation estimate, regardless of threshold acceptance",
+  "eceBins": "Five fixed equal-width bins; last bin includes 1; empty-bin metrics are null",
+  "limitations": [
+    "Experimental analysis, no library default or acceptance policy changes.",
+    "Four rotated views per family are dependent; only ten tuning and nine held-out families.",
+    "Sparse script bins are descriptive, not reliable population calibration estimates.",
+    "Isotonic fitting may overfit or worsen held-out Brier/ECE; no production calibration claim.",
+    "ECE depends on bin definitions; Brier includes both calibration and discrimination effects."
+  ],
+  "results": [
+    {
+      "sourceReport": "benchmarks/ocr/results/orientation-threshold-2026-10-14.json",
+      "sourceReportSha256": "4fe1eda0253cafe594a99928397c4132fca413f451be87da605cb75b2c4c514f",
+      "manifestSha256": "947003b585933f98b286c4e8ff55a5e2a175e50403a4c6d4fe3dcd66bcca2da2",
+      "detector": "EasyImageSharp classical DetectOrientation",
+      "fitFamilies": 10,
+      "fitObservations": 40,
+      "model": [
+        {
+          "score": 0.014866911806166172,
+          "probability": 0.35714285714285715
+        },
+        {
+          "score": 0.015194831416010857,
+          "probability": 0.35714285714285715
+        },
+        {
+          "score": 0.02268330566585064,
+          "probability": 0.35714285714285715
+        },
+        {
+          "score": 0.029017191380262375,
+          "probability": 0.35714285714285715
+        },
+        {
+          "score": 0.12471366673707962,
+          "probability": 0.35714285714285715
+        },
+        {
+          "score": 0.20876798033714294,
+          "probability": 0.35714285714285715
+        },
+        {
+          "score": 0.21700599789619446,
+          "probability": 0.35714285714285715
+        },
+        {
+          "score": 0.22289632260799408,
+          "probability": 0.35714285714285715
+        },
+        {
+          "score": 0.22640904784202576,
+          "probability": 0.35714285714285715
+        },
+        {
+          "score": 0.23763661086559296,
+          "probability": 0.35714285714285715
+        },
+        {
+          "score": 0.23966987431049347,
+          "probability": 0.35714285714285715
+        },
+        {
+          "score": 0.25353991985321045,
+          "probability": 0.35714285714285715
+        },
+        {
+          "score": 0.2614762485027313,
+          "probability": 0.52
+        },
+        {
+          "score": 0.27767252922058105,
+          "probability": 0.52
+        },
+        {
+          "score": 0.32401350140571594,
+          "probability": 0.52
+        },
+        {
+          "score": 0.40836450457572937,
+          "probability": 0.52
+        },
+        {
+          "score": 0.42105376720428467,
+          "probability": 0.52
+        },
+        {
+          "score": 0.4343619644641876,
+          "probability": 0.52
+        },
+        {
+          "score": 0.439994752407074,
+          "probability": 0.52
+        },
+        {
+          "score": 0.4552624821662903,
+          "probability": 0.52
+        },
+        {
+          "score": 0.4680258333683014,
+          "probability": 0.52
+        },
+        {
+          "score": 0.5021451711654663,
+          "probability": 0.52
+        },
+        {
+          "score": 0.527860164642334,
+          "probability": 0.52
+        },
+        {
+          "score": 0.591372549533844,
+          "probability": 0.52
+        },
+        {
+          "score": 0.6834408044815063,
+          "probability": 0.52
+        },
+        {
+          "score": 0.6998242139816284,
+          "probability": 0.52
+        },
+        {
+          "score": 0.7199602723121643,
+          "probability": 0.52
+        },
+        {
+          "score": 0.7576895356178284,
+          "probability": 0.52
+        },
+        {
+          "score": 0.8549399971961975,
+          "probability": 0.52
+        },
+        {
+          "score": 0.8932292461395264,
+          "probability": 0.52
+        },
+        {
+          "score": 0.9877051711082458,
+          "probability": 0.52
+        },
+        {
+          "score": 1,
+          "probability": 1.0
+        }
+      ],
+      "heldOut": {
+        "families": 9,
+        "raw": {
+          "count": 36,
+          "brier": 0.26991339281265125,
+          "ece": 0.26621831834523213,
+          "bins": [
+            {
+              "lowerInclusive": 0.0,
+              "upper": 0.2,
+              "upperInclusive": false,
+              "count": 8,
+              "meanProbability": 0.10499657108448446,
+              "accuracy": 0.5
+            },
+            {
+              "lowerInclusive": 0.2,
+              "upper": 0.4,
+              "upperInclusive": false,
+              "count": 12,
+              "meanProbability": 0.2646168495217959,
+              "accuracy": 0.3333333333333333
+            },
+            {
+              "lowerInclusive": 0.4,
+              "upper": 0.6,
+              "upperInclusive": false,
+              "count": 14,
+              "meanProbability": 0.5068465045520237,
+              "accuracy": 0.8571428571428571
+            },
+            {
+              "lowerInclusive": 0.6,
+              "upper": 0.8,
+              "upperInclusive": false,
+              "count": 2,
+              "meanProbability": 0.6524573564529419,
+              "accuracy": 1.0
+            },
+            {
+              "lowerInclusive": 0.8,
+              "upper": 1.0,
+              "upperInclusive": true,
+              "count": 0,
+              "meanProbability": null,
+              "accuracy": null
+            }
+          ]
+        },
+        "isotonic": {
+          "count": 36,
+          "brier": 0.2548480725623583,
+          "ece": 0.16349206349206363,
+          "bins": [
+            {
+              "lowerInclusive": 0.0,
+              "upper": 0.2,
+              "upperInclusive": false,
+              "count": 0,
+              "meanProbability": null,
+              "accuracy": null
+            },
+            {
+              "lowerInclusive": 0.2,
+              "upper": 0.4,
+              "upperInclusive": false,
+              "count": 16,
+              "meanProbability": 0.35714285714285704,
+              "accuracy": 0.5
+            },
+            {
+              "lowerInclusive": 0.4,
+              "upper": 0.6,
+              "upperInclusive": false,
+              "count": 20,
+              "meanProbability": 0.5199999999999998,
+              "accuracy": 0.7
+            },
+            {
+              "lowerInclusive": 0.6,
+              "upper": 0.8,
+              "upperInclusive": false,
+              "count": 0,
+              "meanProbability": null,
+              "accuracy": null
+            },
+            {
+              "lowerInclusive": 0.8,
+              "upper": 1.0,
+              "upperInclusive": true,
+              "count": 0,
+              "meanProbability": null,
+              "accuracy": null
+            }
+          ]
+        }
+      },
+      "heldOutByScript": {
+        "Arabic": {
+          "families": 2,
+          "raw": {
+            "count": 8,
+            "brier": 0.31792387994426946,
+            "ece": 0.2701207250356674
+          },
+          "isotonic": {
+            "count": 8,
+            "brier": 0.2704081632653061,
+            "ece": 0.14285714285714285
+          }
+        },
+        "Devanagari": {
+          "families": 2,
+          "raw": {
+            "count": 8,
+            "brier": 0.4779974307059756,
+            "ece": 0.6435493491590023
+          },
+          "isotonic": {
+            "count": 8,
+            "brier": 0.34183265306122446,
+            "ece": 0.5814285714285714
+          }
+        },
+        "Han": {
+          "families": 2,
+          "raw": {
+            "count": 8,
+            "brier": 0.06524121201982364,
+            "ece": 0.21928750514052808
+          },
+          "isotonic": {
+            "count": 8,
+            "brier": 0.18897551020408165,
+            "ece": 0.18857142857142858
+          }
+        },
+        "Japanese": {
+          "families": 2,
+          "raw": {
+            "count": 8,
+            "brier": 0.23581106181078604,
+            "ece": 0.4806819036602974
+          },
+          "isotonic": {
+            "count": 8,
+            "brier": 0.23039999999999997,
+            "ece": 0.48
+          }
+        },
+        "Latin": {
+          "families": 1,
+          "raw": {
+            "count": 4,
+            "brier": 0.2352733663521518,
+            "ece": 0.48448313027620316
+          },
+          "isotonic": {
+            "count": 4,
+            "brier": 0.2304,
+            "ece": 0.48
+          }
+        }
+      }
+    },
+    {
+      "sourceReport": "benchmarks/ocr/results/orientation-ai-threshold-2026-10-14.json",
+      "sourceReportSha256": "21ce990d0f85b4c317f587560ae36c31e3998612454d5a2f50a748ceb39388fa",
+      "manifestSha256": "947003b585933f98b286c4e8ff55a5e2a175e50403a4c6d4fe3dcd66bcca2da2",
+      "detector": "PP-LCNet_x1_0_doc_ori via EasyImageSharp.AI",
+      "fitFamilies": 10,
+      "fitObservations": 40,
+      "model": [
+        {
+          "score": 0.6171064376831055,
+          "probability": 0.8333333333333334
+        },
+        {
+          "score": 0.8234474062919617,
+          "probability": 0.8333333333333334
+        },
+        {
+          "score": 0.8384427428245544,
+          "probability": 0.8333333333333334
+        },
+        {
+          "score": 0.8511021733283997,
+          "probability": 0.8333333333333334
+        },
+        {
+          "score": 0.8626291751861572,
+          "probability": 0.8333333333333334
+        },
+        {
+          "score": 0.8665530681610107,
+          "probability": 0.8333333333333334
+        },
+        {
+          "score": 0.8773910999298096,
+          "probability": 0.875
+        },
+        {
+          "score": 0.8966152667999268,
+          "probability": 0.875
+        },
+        {
+          "score": 0.9031785130500793,
+          "probability": 0.875
+        },
+        {
+          "score": 0.904530942440033,
+          "probability": 0.875
+        },
+        {
+          "score": 0.9050284028053284,
+          "probability": 0.875
+        },
+        {
+          "score": 0.90853351354599,
+          "probability": 0.875
+        },
+        {
+          "score": 0.9177415370941162,
+          "probability": 0.875
+        },
+        {
+          "score": 0.92250657081604,
+          "probability": 0.875
+        },
+        {
+          "score": 0.9231210947036743,
+          "probability": 1.0
+        },
+        {
+          "score": 0.9235275983810425,
+          "probability": 1.0
+        },
+        {
+          "score": 0.9235925674438477,
+          "probability": 1.0
+        },
+        {
+          "score": 0.9238691329956055,
+          "probability": 1.0
+        },
+        {
+          "score": 0.9240250587463379,
+          "probability": 1.0
+        },
+        {
+          "score": 0.9244481325149536,
+          "probability": 1.0
+        },
+        {
+          "score": 0.9245908856391907,
+          "probability": 1.0
+        },
+        {
+          "score": 0.9248149394989014,
+          "probability": 1.0
+        },
+        {
+          "score": 0.9248401522636414,
+          "probability": 1.0
+        },
+        {
+          "score": 0.9251863360404968,
+          "probability": 1.0
+        },
+        {
+          "score": 0.9252211451530457,
+          "probability": 1.0
+        },
+        {
+          "score": 0.9253147840499878,
+          "probability": 1.0
+        },
+        {
+          "score": 0.925485372543335,
+          "probability": 1.0
+        },
+        {
+          "score": 0.9257877469062805,
+          "probability": 1.0
+        },
+        {
+          "score": 0.9259352684020996,
+          "probability": 1.0
+        },
+        {
+          "score": 0.9263521432876587,
+          "probability": 1.0
+        },
+        {
+          "score": 0.9264557957649231,
+          "probability": 1.0
+        },
+        {
+          "score": 0.9265464544296265,
+          "probability": 1.0
+        },
+        {
+          "score": 0.9267691373825073,
+          "probability": 1.0
+        },
+        {
+          "score": 0.9271575212478638,
+          "probability": 1.0
+        },
+        {
+          "score": 0.9273468255996704,
+          "probability": 1.0
+        },
+        {
+          "score": 0.9273810982704163,
+          "probability": 1.0
+        },
+        {
+          "score": 0.928621768951416,
+          "probability": 1.0
+        },
+        {
+          "score": 0.9300957322120667,
+          "probability": 1.0
+        },
+        {
+          "score": 0.9303035140037537,
+          "probability": 1.0
+        },
+        {
+          "score": 0.93671053647995,
+          "probability": 1.0
+        }
+      ],
+      "heldOut": {
+        "families": 9,
+        "raw": {
+          "count": 36,
+          "brier": 0.10276681413772308,
+          "ece": 0.04206368161572353,
+          "bins": [
+            {
+              "lowerInclusive": 0.0,
+              "upper": 0.2,
+              "upperInclusive": false,
+              "count": 0,
+              "meanProbability": null,
+              "accuracy": null
+            },
+            {
+              "lowerInclusive": 0.2,
+              "upper": 0.4,
+              "upperInclusive": false,
+              "count": 0,
+              "meanProbability": null,
+              "accuracy": null
+            },
+            {
+              "lowerInclusive": 0.4,
+              "upper": 0.6,
+              "upperInclusive": false,
+              "count": 0,
+              "meanProbability": null,
+              "accuracy": null
+            },
+            {
+              "lowerInclusive": 0.6,
+              "upper": 0.8,
+              "upperInclusive": false,
+              "count": 2,
+              "meanProbability": 0.698262482881546,
+              "accuracy": 0.5
+            },
+            {
+              "lowerInclusive": 0.8,
+              "upper": 1.0,
+              "upperInclusive": true,
+              "count": 34,
+              "meanProbability": 0.9152284580118516,
+              "accuracy": 0.8823529411764706
+            }
+          ]
+        },
+        "isotonic": {
+          "count": 36,
+          "brier": 0.1031758207597728,
+          "ece": 0.07901163469483063,
+          "bins": [
+            {
+              "lowerInclusive": 0.0,
+              "upper": 0.2,
+              "upperInclusive": false,
+              "count": 0,
+              "meanProbability": null,
+              "accuracy": null
+            },
+            {
+              "lowerInclusive": 0.2,
+              "upper": 0.4,
+              "upperInclusive": false,
+              "count": 0,
+              "meanProbability": null,
+              "accuracy": null
+            },
+            {
+              "lowerInclusive": 0.4,
+              "upper": 0.6,
+              "upperInclusive": false,
+              "count": 0,
+              "meanProbability": null,
+              "accuracy": null
+            },
+            {
+              "lowerInclusive": 0.6,
+              "upper": 0.8,
+              "upperInclusive": false,
+              "count": 0,
+              "meanProbability": null,
+              "accuracy": null
+            },
+            {
+              "lowerInclusive": 0.8,
+              "upper": 1.0,
+              "upperInclusive": true,
+              "count": 36,
+              "meanProbability": 0.9401227458059418,
+              "accuracy": 0.8611111111111112
+            }
+          ]
+        }
+      },
+      "heldOutByScript": {
+        "Arabic": {
+          "families": 2,
+          "raw": {
+            "count": 8,
+            "brier": 0.4412414822145734,
+            "ece": 0.46025464683771133
+          },
+          "isotonic": {
+            "count": 8,
+            "brier": 0.4484295029162805,
+            "ece": 0.48644469366311016
+          }
+        },
+        "Devanagari": {
+          "families": 2,
+          "raw": {
+            "count": 8,
+            "brier": 0.005589047545641712,
+            "ece": 0.07468840479850769
+          },
+          "isotonic": {
+            "count": 8,
+            "brier": 0.003839019262142497,
+            "ece": 0.030978722114451962
+          }
+        },
+        "Han": {
+          "families": 2,
+          "raw": {
+            "count": 8,
+            "brier": 0.007296573105200821,
+            "ece": 0.08457352221012115
+          },
+          "isotonic": {
+            "count": 8,
+            "brier": 0.01171875,
+            "ece": 0.09375
+          }
+        },
+        "Japanese": {
+          "families": 2,
+          "raw": {
+            "count": 8,
+            "brier": 0.00564909083189491,
+            "ece": 0.07515408098697662
+          },
+          "isotonic": {
+            "count": 8,
+            "brier": 0.00030392124055468665,
+            "ece": 0.006163615421920454
+          }
+        },
+        "Latin": {
+          "families": 1,
+          "raw": {
+            "count": 4,
+            "brier": 0.005348939844886047,
+            "ece": 0.0731041431427002
+          },
+          "isotonic": {
+            "count": 4,
+            "brier": 0.0,
+            "ece": 0.0
+          }
+        }
+      }
+    }
+  ]
+}

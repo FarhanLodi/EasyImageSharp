@@ -27,6 +27,12 @@ prove nothing.
 the module, passing it `<this directory>/<format>` as the output directory. Adding a format means adding a
 `gen_<format>.py` with a matching function name; nothing else needs editing.
 
+The master then invokes `generate_jpeg_reduced.py`, whose 42 references depend on the JPEG bytes just
+generated. The determinism checker copies this generator into its scratch tree as well. It verifies
+each reduced-JPEG provenance input/output SHA-256 against the files in its own tree, then compares
+all non-hash provenance fields. JPEG/PNG images still undergo exact decoded-pixel comparison, so
+different PNG compression bytes are allowed without accepting changed pixels or stale digests.
+
 ## Layout
 
 | Folder | What it covers |

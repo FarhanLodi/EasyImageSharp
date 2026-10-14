@@ -124,6 +124,7 @@ nuget.config.local
 *.rej
 scratch/
 tmp/
+.artifacts/
 
 # ---------------------------------------------------------------------------------------------------
 # Local planning notes — kept out of version control deliberately

@@ -105,12 +105,14 @@ internal static class TransformOps
         int destWidth = destination.Width;
         int destHeight = destination.Height;
         bool premultiply = PixelFormatInfo<TPixel>.HasAlpha;
-        Rgba32[] src = ToRgba32Array(source);
+        bool highPrecision = PixelOps.IsHighPrecision<TPixel>();
+        Rgba32[] src = highPrecision ? [] : ToRgba32Array(source);
         Rgba32 fillPixel = fill.ToRgba32();
-        Vector4 fillVector = Load(fillPixel, premultiply);
+        Vector4 fillVector = highPrecision
+            ? HighPrecisionSampling.Load(fillPixel.ToScaledVector4(), premultiply) : Load(fillPixel, premultiply);
         bool nearest = sampler is NearestNeighborResampler;
         float radius = sampler.Radius;
-        if (!(radius > 0f) || !float.IsFinite(radius))
+        if (!(radius > 0f) || !float.IsFinite(radius) || radius > 1048576f)
         {
             throw new ArgumentException("The resampler radius must be a positive finite number.", nameof(sampler));
         }
@@ -124,24 +126,35 @@ internal static class TransformOps
             var window = new KernelWindow(maxTaps);
             for (int y = startRow; y < endRow; y++)
             {
+                OperationExecution.Checkpoint();
+                Span<TPixel> output = dest.GetRowSpan(y);
                 float dy = y + 0.5f;
                 for (int x = 0; x < destWidth; x++)
                 {
                     if (!map.TryMap(x + 0.5f, dy, out float sx, out float sy))
                     {
                         row[x] = fillPixel;
+                        if (highPrecision) output[x] = TPixel.FromRgba32(fillPixel);
                         continue;
                     }
 
                     if (nearest)
                     {
-                        row[x] = PointSample(src, srcWidth, srcHeight, sx, sy, fillPixel);
+                        if (highPrecision)
+                        {
+                            int ix = (int)MathF.Floor(sx);
+                            int iy = (int)MathF.Floor(sy);
+                            output[x] = (uint)ix < (uint)srcWidth && (uint)iy < (uint)srcHeight
+                                ? source.GetRowSpan(iy)[ix] : TPixel.FromRgba32(fillPixel);
+                        }
+                        else row[x] = PointSample(src, srcWidth, srcHeight, sx, sy, fillPixel);
                         continue;
                     }
 
                     if (!window.Prepare(sx, sy, srcWidth, srcHeight, sampler, radius))
                     {
                         row[x] = fillPixel;
+                        if (highPrecision) output[x] = TPixel.FromRgba32(fillPixel);
                         continue;
                     }
 
@@ -152,19 +165,21 @@ internal static class TransformOps
                     if (coverage <= 0f)
                     {
                         row[x] = fillPixel;
+                        if (highPrecision) output[x] = TPixel.FromRgba32(fillPixel);
                         continue;
                     }
 
-                    Vector4 colour = window.Sample(src, srcWidth, premultiply);
+                    Vector4 colour = highPrecision ? window.Sample(source, premultiply) : window.Sample(src, srcWidth, premultiply);
                     if (coverage < 1f)
                     {
                         colour = (colour * coverage) + (fillVector * (1f - coverage));
                     }
 
-                    row[x] = FrameOps.StorePixel(colour, premultiply, compand: false);
+                    if (highPrecision) output[x] = TPixel.FromScaledVector4(HighPrecisionSampling.Store(colour, premultiply));
+                    else row[x] = FrameOps.StorePixel(colour, premultiply, compand: false);
                 }
 
-                PixelOps.FromRgba32<TPixel>(row, dest.GetRowSpan(y));
+                if (!highPrecision) PixelOps.FromRgba32<TPixel>(row, output);
             }
         });
 
@@ -230,6 +245,9 @@ internal static class TransformOps
         /// <summary>Computes the window for a source position; returns <see langword="false"/> when it lies entirely outside the source.</summary>
         public bool Prepare(float sx, float sy, int width, int height, IResampler sampler, float radius)
         {
+            if (!float.IsFinite(sx) || !float.IsFinite(sy)
+                || sx < -radius || sy < -radius || sx > width + radius || sy > height + radius)
+                return false;
             // Kernel positions are measured from pixel centres, so work in index space where pixel i sits at i.
             float cx = sx - 0.5f;
             float cy = sy - 0.5f;
@@ -285,6 +303,36 @@ internal static class TransformOps
             this.sumX = sx0;
             this.sumY = sy0;
             return true;
+        }
+
+        public Vector4 Sample<TPixel>(ImageFrame<TPixel> source, bool premultiply)
+            where TPixel : unmanaged, IPixel<TPixel>
+        {
+            float total = this.sumX * this.sumY;
+            if (MathF.Abs(total) < MinimumWeightSum)
+            {
+                int ix = Math.Clamp((int)MathF.Floor(this.sourceX), this.left, this.left + this.countX - 1);
+                int iy = Math.Clamp((int)MathF.Floor(this.sourceY), this.top, this.top + this.countY - 1);
+                return HighPrecisionSampling.Load(source.GetRowSpan(iy)[ix].ToScaledVector4(), premultiply);
+            }
+
+            Vector4 accumulator = Vector4.Zero;
+            for (int j = 0; j < this.countY; j++)
+            {
+                float wy = this.weightsY[j];
+                if (wy == 0f) continue;
+                ReadOnlySpan<TPixel> row = source.GetRowSpan(this.top + j);
+                Vector4 rowSum = Vector4.Zero;
+                for (int i = 0; i < this.countX; i++)
+                {
+                    float wx = this.weightsX[i];
+                    if (wx != 0f) rowSum += HighPrecisionSampling.Load(row[this.left + i].ToScaledVector4(), premultiply) * wx;
+                }
+
+                accumulator += rowSum * wy;
+            }
+
+            return accumulator * (1f / total);
         }
 
         /// <summary>The weighted (premultiplied when requested) colour of the prepared window.</summary>
@@ -368,7 +416,7 @@ internal static class TransformOps
         {
             sourceX = (x * this.inverse.M11) + (y * this.inverse.M21) + this.inverse.M31;
             sourceY = (x * this.inverse.M12) + (y * this.inverse.M22) + this.inverse.M32;
-            return true;
+            return float.IsFinite(sourceX) && float.IsFinite(sourceY);
         }
     }
 
@@ -392,7 +440,7 @@ internal static class TransformOps
             float invW = 1f / w;
             sourceX = ((x * this.inverse.M11) + (y * this.inverse.M21) + this.inverse.M41) * invW;
             sourceY = ((x * this.inverse.M12) + (y * this.inverse.M22) + this.inverse.M42) * invW;
-            return true;
+            return float.IsFinite(sourceX) && float.IsFinite(sourceY);
         }
     }
 }

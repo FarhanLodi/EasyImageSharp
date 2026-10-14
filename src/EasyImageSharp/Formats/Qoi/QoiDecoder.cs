@@ -30,6 +30,8 @@ public sealed class QoiDecoder : IImageDecoder
         where TPixel : unmanaged, IPixel<TPixel>
     {
         ArgumentNullException.ThrowIfNull(options);
+        using var execution = OperationExecution.Enter(options.ExecutionOptions);
+        options.EnsureEncodedWithinLimits(data.Length);
         try
         {
             return DecodeCore<TPixel>(data, options);
@@ -43,6 +45,8 @@ public sealed class QoiDecoder : IImageDecoder
     public ImageInfo Identify(ReadOnlySpan<byte> data, DecoderOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
+        using var execution = OperationExecution.Enter(options.ExecutionOptions);
+        options.EnsureEncodedWithinLimits(data.Length);
         try
         {
             Header header = ParseHeader(data);
@@ -73,6 +77,7 @@ public sealed class QoiDecoder : IImageDecoder
 
         for (int y = 0; y < height; y++)
         {
+            OperationExecution.Checkpoint();
             for (int x = 0; x < width; x++)
             {
                 if (run > 0)

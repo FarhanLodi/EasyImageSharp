@@ -21,6 +21,7 @@ internal static class FrameFactory
             throw new InvalidImageContentException($"Image dimensions {width}x{height} exceed the supported buffer size.");
         }
 
+        OperationExecution.ReservePixelBuffer<TPixel>(length);
         return new ImageFrame<TPixel>(width, height, GC.AllocateUninitializedArray<TPixel>((int)length));
     }
 
@@ -48,6 +49,7 @@ internal static class FrameFactory
         where TPixel : unmanaged, IPixel<TPixel>
     {
         TPixel[] source = frame.PixelArray;
+        OperationExecution.ReservePixelBuffer<TPixel>(source.Length);
         TPixel[] copy = GC.AllocateUninitializedArray<TPixel>(source.Length);
         source.AsSpan().CopyTo(copy);
         frame.ReplaceBuffer(copy, frame.Width, frame.Height);

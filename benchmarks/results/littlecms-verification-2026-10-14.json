@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-14",
+  "platform": "win-x64",
+  "nativeVersion": "2.19.1",
+  "upstreamCommit": "21c582a594fe5279f90c0b93437c398f93bf62b0",
+  "frameworks": {
+    "net8.0": {
+      "passed": 90,
+      "failed": 0
+    },
+    "net10.0": {
+      "passed": 90,
+      "failed": 0
+    }
+  },
+  "analyzersEnabled": true,
+  "referenceCases": 84,
+  "referenceTool": "Upstream transicc compiled separately with double formatters",
+  "analyticChecks": [
+    "Gray18percent to Lab L49.496",
+    "Lab D50 white to XYZ0.9642 1 0.8249"
+  ],
+  "packValidated": true,
+  "linux": {
+    "distribution": "Ubuntu WSL EasyImageSharpVerify",
+    "architecture": "linux-x64",
+    "nativePackage": "liblcms2-2:amd64 2.14-2ubuntu0.1",
+    "framework": "net10.0",
+    "configuration": "Release",
+    "passed": 90,
+    "failed": 0,
+    "analyzersEnabled": true
+  },
+  "macOS": "Not executed locally; CI installs Homebrew little-cms2 and runs both TFMs without skip"
+}

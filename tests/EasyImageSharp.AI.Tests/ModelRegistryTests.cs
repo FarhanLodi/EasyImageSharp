@@ -183,11 +183,13 @@ public class ModelRegistryTests
     }
 
     [Fact]
-    public void DewarpIsAFixedSizeContract()
+    public void DewarpIsAFullResolutionBgrContract()
     {
         ImageModelContract contract = ImageModels.DocumentDewarp.Contract;
 
-        Assert.Equal(new Size(488, 712), contract.FixedInputSize);
+        Assert.True(contract.FixedInputSize.IsEmpty);
+        Assert.True(contract.UseBgrChannelOrder);
+        Assert.Equal(32, contract.SizeMultiple);
         Assert.Equal(1, contract.ScaleFactor);
         Assert.Equal(0, contract.TileSize);
     }

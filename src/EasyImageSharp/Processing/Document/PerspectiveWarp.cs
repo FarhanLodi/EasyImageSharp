@@ -27,6 +27,9 @@ internal static class PerspectiveWarp
         var a = new double[8, 9];
         for (int i = 0; i < 4; i++)
         {
+            if (!float.IsFinite(source[i].X) || !float.IsFinite(source[i].Y)
+                || !float.IsFinite(target[i].X) || !float.IsFinite(target[i].Y))
+                throw new ArgumentException("Homography points must be finite.");
             double x = source[i].X;
             double y = source[i].Y;
             double u = target[i].X;
@@ -117,6 +120,8 @@ internal static class PerspectiveWarp
     {
         Guard.MustBePositive(targetWidth, nameof(targetWidth));
         Guard.MustBePositive(targetHeight, nameof(targetHeight));
+        ValidateQuad(quad);
+        var dest = FrameFactory.CreateUninitialized<TPixel>(targetWidth, targetHeight);
 
         // Homography from the continuous target rectangle to the continuous source quad; each destination
         // pixel centre (dx + 0.5, dy + 0.5) is mapped and sampled bilinearly between source pixel centres.
@@ -129,6 +134,28 @@ internal static class PerspectiveWarp
         };
         double[] h = SolveHomography(targetCorners, quad);
 
+        if (PixelOps.IsHighPrecision<TPixel>())
+        {
+            ParallelRowIterator.IterateRows(targetWidth, targetHeight, (start, end) =>
+            {
+                for (int y = start; y < end; y++)
+                {
+                    OperationExecution.Checkpoint();
+                    Span<TPixel> row = dest.GetRowSpan(y);
+                    for (int x = 0; x < targetWidth; x++)
+                    {
+                        double cx = x + 0.5;
+                        double cy = y + 0.5;
+                        double w = (h[6] * cx) + (h[7] * cy) + h[8];
+                        double sx = (((h[0] * cx) + (h[1] * cy) + h[2]) / w) - 0.5;
+                        double sy = (((h[3] * cx) + (h[4] * cy) + h[5]) / w) - 0.5;
+                        row[x] = SampleClamped(source, sx, sy);
+                    }
+                }
+            });
+            return dest;
+        }
+
         int sw = source.Width;
         int sh = source.Height;
         var src = new Rgba32[sw * sh];
@@ -137,12 +164,12 @@ internal static class PerspectiveWarp
             PixelOps.ToRgba32<TPixel>(source.GetRowSpan(y), src.AsSpan(y * sw, sw));
         }
 
-        var dest = new ImageFrame<TPixel>(targetWidth, targetHeight);
         ParallelRowIterator.IterateRows(targetWidth, targetHeight, (start, end) =>
         {
             var row = new Rgba32[targetWidth];
             for (int dy = start; dy < end; dy++)
             {
+                OperationExecution.Checkpoint();
                 double cy = dy + 0.5;
                 for (int dx = 0; dx < targetWidth; dx++)
                 {
@@ -168,20 +195,58 @@ internal static class PerspectiveWarp
     /// <summary>The natural output size of a quad: the longer of the two horizontal sides by the longer of the two vertical sides.</summary>
     public static Size NaturalSize(ReadOnlySpan<PointF> quad)
     {
+        ValidateQuad(quad);
         double top = Distance(quad[0], quad[1]);
         double bottom = Distance(quad[3], quad[2]);
         double left = Distance(quad[0], quad[3]);
         double right = Distance(quad[1], quad[2]);
-        int width = Math.Max(1, (int)Math.Round(Math.Max(top, bottom)));
-        int height = Math.Max(1, (int)Math.Round(Math.Max(left, right)));
+        double w = Math.Round(Math.Max(top, bottom));
+        double h = Math.Round(Math.Max(left, right));
+        if (w > int.MaxValue || h > int.MaxValue || Math.Max(1, w) * Math.Max(1, h) > int.MaxValue)
+            throw new InvalidImageContentException("Perspective output exceeds the supported buffer size.");
+        int width = Math.Max(1, (int)w);
+        int height = Math.Max(1, (int)h);
         return new Size(width, height);
     }
 
     private static double Distance(PointF a, PointF b)
     {
-        double dx = a.X - b.X;
-        double dy = a.Y - b.Y;
+        double dx = (double)a.X - b.X;
+        double dy = (double)a.Y - b.Y;
         return Math.Sqrt((dx * dx) + (dy * dy));
+    }
+
+    private static void ValidateQuad(ReadOnlySpan<PointF> quad)
+    {
+        if (quad.Length != 4) throw new ArgumentException("Exactly four corners are required.", nameof(quad));
+        foreach (PointF point in quad)
+            if (!float.IsFinite(point.X) || !float.IsFinite(point.Y))
+                throw new ArgumentException("Corners must be finite.", nameof(quad));
+        double previous = 0;
+        for (int i = 0; i < 4; i++)
+        {
+            PointF a = quad[i], b = quad[(i + 1) % 4], c = quad[(i + 2) % 4];
+            double cross = (((double)b.X - a.X) * ((double)c.Y - b.Y)) - (((double)b.Y - a.Y) * ((double)c.X - b.X));
+            if (cross == 0 || (i != 0 && Math.Sign(cross) != Math.Sign(previous)))
+                throw new ArgumentException("Corners must describe a nondegenerate convex quadrilateral in perimeter order.", nameof(quad));
+            previous = cross;
+        }
+    }
+
+    private static TPixel SampleClamped<TPixel>(ImageFrame<TPixel> source, double x, double y)
+        where TPixel : unmanaged, IPixel<TPixel>
+    {
+        x = Math.Clamp(x, 0, source.Width - 1);
+        y = Math.Clamp(y, 0, source.Height - 1);
+        int x0 = (int)x, y0 = (int)y;
+        int x1 = Math.Min(x0 + 1, source.Width - 1), y1 = Math.Min(y0 + 1, source.Height - 1);
+        bool premultiply = PixelFormatInfo<TPixel>.HasAlpha;
+        Vector4 p00 = HighPrecisionSampling.Load(source.GetRowSpan(y0)[x0].ToScaledVector4(), premultiply);
+        Vector4 p10 = HighPrecisionSampling.Load(source.GetRowSpan(y0)[x1].ToScaledVector4(), premultiply);
+        Vector4 p01 = HighPrecisionSampling.Load(source.GetRowSpan(y1)[x0].ToScaledVector4(), premultiply);
+        Vector4 p11 = HighPrecisionSampling.Load(source.GetRowSpan(y1)[x1].ToScaledVector4(), premultiply);
+        Vector4 value = Vector4.Lerp(Vector4.Lerp(p00, p10, (float)(x - x0)), Vector4.Lerp(p01, p11, (float)(x - x0)), (float)(y - y0));
+        return TPixel.FromScaledVector4(HighPrecisionSampling.Store(value, premultiply));
     }
 
     private static Rgba32 SampleClamped(Rgba32[] src, int width, int height, double x, double y)

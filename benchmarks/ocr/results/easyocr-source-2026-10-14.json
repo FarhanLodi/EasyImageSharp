@@ -1,0 +1,144 @@
+{
+  "SchemaVersion": 1,
+  "Engine": "easyocr",
+  "ManifestSha256": "305D1FEFD6323A60240BD7DA60AE696609467BDD7734F7BADE1DCF7D41BB7FB9",
+  "Runtime": ".NET 10.0.12",
+  "Platform": "Microsoft Windows 10.0.26200",
+  "Architecture": "X64",
+  "ExecutionProvider": "CPU",
+  "IntraOpThreads": 1,
+  "InterOpThreads": 1,
+  "TimingIncludesFirstUseModelInitialization": true,
+  "TextNormalization": "Trim only; CER counts Unicode scalar values; WER splits whitespace; case-sensitive",
+  "ModelsScope": "All cached ONNX, dictionary and JSON assets; offline mode prevents downloads",
+  "ModelCacheSnapshot": [
+    {
+      "Name": "PP-DocLayoutV3.onnx",
+      "Sha256": "DC5670EBBB42E2BA4E41395FC55E8217B007134E8B9E35023D592A8FE040A288"
+    },
+    {
+      "Name": "PP-DocLayoutV3_labels.txt",
+      "Sha256": "A04C55C3BB398FE7C5ECE52D279EB26A905F9645CD58C0C812FB9DE3C4790F46"
+    },
+    {
+      "Name": "PP-LCNet_x1_0_doc_ori.onnx",
+      "Sha256": "D85B3185075AFCA1A83157F73EAC2E52B598D72E9D47DD19CC4A2F3605E23E3F"
+    },
+    {
+      "Name": "PP-LCNet_x1_0_textline_ori.onnx",
+      "Sha256": "1E82A12332D6B0B09A0643250C48A8D372515BA672E1299259ADCF28B9701460"
+    },
+    {
+      "Name": "PP-OCRv5_mobile_det.onnx",
+      "Sha256": "D7FE3EA74652890722C0F4D02458B7261D9F5AE6C92904D05707C9EB155C7924"
+    },
+    {
+      "Name": "PP-OCRv5_mobile_rec.onnx",
+      "Sha256": "D253C3CBEE6E507828A5271A30AB0EC8AE7C2A99D0CC8E6F844FE380809D22B3"
+    },
+    {
+      "Name": "SLANet_plus.onnx",
+      "Sha256": "D57A942AF6A2F57D6A4A0372573C696A2379BF5857C45E2AC69993F3B334514B"
+    },
+    {
+      "Name": "UVDoc.onnx",
+      "Sha256": "7E54E917AD9CA8F6CFFE606C7C311AAD3B6EEE457D4D9776F99F175D0CA86835"
+    },
+    {
+      "Name": "arabic_g2.onnx",
+      "Sha256": "132973A45315699E90BA2D8B8552C2EBA6C1E7CD127EFBC98B9D2DA077A0DBAD"
+    },
+    {
+      "Name": "arabic_g2.vocab.json",
+      "Sha256": "4600FC98FC870E4137EDAA6769244FE84008C26FE8F2ADD28E5C9D56B8CE03D3"
+    },
+    {
+      "Name": "craft_mlt_25k.onnx",
+      "Sha256": "47544A1E1B0F5EDD9C31B0059EBC1C3E9F57886F9C3E2BA65CB222687323B187"
+    },
+    {
+      "Name": "cyrillic_PP-OCRv5_mobile_rec.onnx",
+      "Sha256": "0D91040605EF7BDCA6868FAD6CAD1664840D031E9F6D40D54607DF5B50FA280A"
+    },
+    {
+      "Name": "cyrillic_dict.txt",
+      "Sha256": "90822A96058EB83F8E637ACE75F90CBD36C41253F9DBDFB88FCF5A2BDD50D669"
+    },
+    {
+      "Name": "cyrillic_g2.onnx",
+      "Sha256": "B9B4DFAD1AB354270908A50BA28072CAC36DD355CD61F003693B182EF7AF575D"
+    },
+    {
+      "Name": "cyrillic_g2.vocab.json",
+      "Sha256": "4B41CD0EA790BC4650D81FE809A9679A82AEEA9FC44191A4FE993E17A6069A82"
+    },
+    {
+      "Name": "japanese_g2.onnx",
+      "Sha256": "37BEA1EA1C8E91D77E8AAF1B8FE62336FA96A4656077CB77432FF3EBE0D7E682"
+    },
+    {
+      "Name": "japanese_g2.vocab.json",
+      "Sha256": "2152E694D4E6C40DB530EBC16524DCB2CD63035465C2AD3BB0259B5372518D2F"
+    },
+    {
+      "Name": "korean_g2.onnx",
+      "Sha256": "DA2119CE5C32B8D9D50E69E3EFD93227F8F1ED24B0898849D94BB8A3DF87C2EF"
+    },
+    {
+      "Name": "korean_g2.vocab.json",
+      "Sha256": "527FD3815C3A08A1AA21E4897758CF41BC6753335110B1456D9714BAAAFFAAC2"
+    },
+    {
+      "Name": "latin_g2.onnx",
+      "Sha256": "8AF0B165299DAD129E5F34D6BFD6B58BE1F9AA8FA6641D6DD5FC32F1E00A9E8F"
+    },
+    {
+      "Name": "latin_g2.vocab.json",
+      "Sha256": "48F41D497C34C7240F9FCC50252C0AB5716B0A7EE4F274E0F407E0E081992575"
+    },
+    {
+      "Name": "ppocrv5_dict.txt",
+      "Sha256": "9DFC80C50B6CB07399A47A7CF25D11DB475FB4AD0E1FC96B2EFF6467C8166FF3"
+    },
+    {
+      "Name": "zh_sim_g2.onnx",
+      "Sha256": "62D2884F3409C2054124E0390A6CDFB1AF6AA882AB88EC02F379B7115C59E728"
+    },
+    {
+      "Name": "zh_sim_g2.vocab.json",
+      "Sha256": "A17EE945D74B616133AC2B6C18F64B6D4E4CE47D9DFC4733B4F46AD82C928E60"
+    }
+  ],
+  "Assemblies": [
+    {
+      "Name": "EasyOcrSharp",
+      "Version": "3.1.1\u002Bc804c3af4046757174024968de77937a1d7d90c3",
+      "Sha256": "627E31F524F06D288529DF7C5CB2A2B8AB2F593FC99BA39642BBA66E724DF1F4"
+    },
+    {
+      "Name": "PaddleOcrNet",
+      "Version": "2.3.1\u002B14fc1027d1be6c18eed6a38cf65e2b61e4a3045b",
+      "Sha256": "B821DD900ECFD72A5EA2E4991A1A7FFEEA56901F2487EDCFC3F816FC30020D52"
+    },
+    {
+      "Name": "EasyImageSharp",
+      "Version": "1.1.0\u002Bc01fe5e1afb963002c1fa1cdc609261226aaeedc",
+      "Sha256": "D7D59AC93705848D6DD8AA338D43D1F78FCE0E283376EE385EC37162D5564657"
+    }
+  ],
+  "Rows": [
+    {
+      "Id": "easyocr-labeled-sample",
+      "Category": "existing-labeled-smoke",
+      "Split": "smoke",
+      "ImageSha256": "80725506BDDD74A232EF04FD9FE95D6A5F9BE9EFC0857C7A6065485DE649CBAB",
+      "GroundTruth": "Hello World\nEasyOcrSharp 2024",
+      "Prediction": "Hello World\nEasyOcrSharp 2024",
+      "Lines": 2,
+      "ElapsedMilliseconds": 2180.6264,
+      "ManagedAllocatedBytes": 6013632,
+      "CharacterErrorRate": 0,
+      "WordErrorRate": 0
+    }
+  ]
+}

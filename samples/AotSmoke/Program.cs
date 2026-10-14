@@ -75,6 +75,8 @@ internal static class Program
         RoundTrip.RunAll(report);
         DetectionAndIdentify(report);
         ProcessingPipeline(report);
+        OcrPreprocessing.RunAll(report);
+        AdvancedDocumentChecks.RunAll(report);
         MetadataSurvival(report);
         await StreamAndAsyncSurface(report).ConfigureAwait(false);
         ResourceLimits(report);

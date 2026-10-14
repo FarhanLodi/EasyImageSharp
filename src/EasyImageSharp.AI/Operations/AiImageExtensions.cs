@@ -22,7 +22,7 @@ public static class AiImageExtensions
     {
         Check(image, ai);
         InferenceSession session = await ai.GetSessionAsync(ModelRegistry.DocumentOrientation, cancellationToken).ConfigureAwait(false);
-        return await Task.Run(() => AiOperations.DetectOrientation(session, image), cancellationToken).ConfigureAwait(false);
+        return await Task.Run(() => AiOperations.DetectOrientation(session, image, cancellationToken), cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>Synchronous <see cref="DetectOrientationAsync{TPixel}"/>.</summary>
@@ -30,7 +30,7 @@ public static class AiImageExtensions
         where TPixel : unmanaged, IPixel<TPixel>
     {
         Check(image, ai);
-        return AiOperations.DetectOrientation(ai.GetSession(ModelRegistry.DocumentOrientation, cancellationToken), image);
+        return AiOperations.DetectOrientation(ai.GetSession(ModelRegistry.DocumentOrientation, cancellationToken), image, cancellationToken);
     }
 
     /// <summary>
@@ -43,7 +43,7 @@ public static class AiImageExtensions
     {
         Check(image, ai);
         InferenceSession session = await ai.GetSessionAsync(ModelRegistry.DocumentOrientation, cancellationToken).ConfigureAwait(false);
-        return await Task.Run(() => AiOperations.AutoOrient(session, image), cancellationToken).ConfigureAwait(false);
+        return await Task.Run(() => AiOperations.AutoOrient(session, image, cancellationToken), cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>Synchronous <see cref="AutoOrientAsync{TPixel}"/>.</summary>
@@ -51,7 +51,7 @@ public static class AiImageExtensions
         where TPixel : unmanaged, IPixel<TPixel>
     {
         Check(image, ai);
-        return AiOperations.AutoOrient(ai.GetSession(ModelRegistry.DocumentOrientation, cancellationToken), image);
+        return AiOperations.AutoOrient(ai.GetSession(ModelRegistry.DocumentOrientation, cancellationToken), image, cancellationToken);
     }
 
     // ----- Dewarp -----

@@ -36,6 +36,8 @@ public sealed class GifDecoder : IImageDecoder
         where TPixel : unmanaged, IPixel<TPixel>
     {
         ArgumentNullException.ThrowIfNull(options);
+        using var execution = OperationExecution.Enter(options.ExecutionOptions);
+        options.EnsureEncodedWithinLimits(data.Length);
         try
         {
             return DecodeCore<TPixel>(data, options);
@@ -49,6 +51,8 @@ public sealed class GifDecoder : IImageDecoder
     public ImageInfo Identify(ReadOnlySpan<byte> data, DecoderOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
+        using var execution = OperationExecution.Enter(options.ExecutionOptions);
+        options.EnsureEncodedWithinLimits(data.Length);
         try
         {
             return IdentifyCore(data);
@@ -499,6 +503,7 @@ public sealed class GifDecoder : IImageDecoder
                 // Browsers ignore the background color index and clear to transparent black.
                 for (int y = y0; y < y1; y++)
                 {
+                    OperationExecution.Checkpoint();
                     canvas.AsSpan((y * screenWidth) + x0, regionWidth).Clear();
                 }
 
@@ -507,6 +512,7 @@ public sealed class GifDecoder : IImageDecoder
             case DisposalRestorePrevious when savedRegion is not null:
                 for (int y = y0; y < y1; y++)
                 {
+                    OperationExecution.Checkpoint();
                     savedRegion.AsSpan((y - y0) * regionWidth, regionWidth).CopyTo(canvas.AsSpan((y * screenWidth) + x0, regionWidth));
                 }
 
@@ -525,6 +531,7 @@ public sealed class GifDecoder : IImageDecoder
         var region = new Rgba32[regionWidth * (y1 - y0)];
         for (int y = y0; y < y1; y++)
         {
+            OperationExecution.Checkpoint();
             canvas.AsSpan((y * screenWidth) + x0, regionWidth).CopyTo(region.AsSpan((y - y0) * regionWidth, regionWidth));
         }
 

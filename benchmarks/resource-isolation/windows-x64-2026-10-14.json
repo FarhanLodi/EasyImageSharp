@@ -1,0 +1,66 @@
+{
+  "VerificationDate": "2026-10-14",
+  "Platform": "Windows x64",
+  "OS": "Microsoft Windows NT 10.0.26200.0",
+  "TargetFramework": "net10.0",
+  "AvailableNet10RuntimeVersions": [
+    "10.0.9",
+    "10.0.13"
+  ],
+  "Command": "dotnet tools/IsolatedImageWorker/bin/Release/net10.0/IsolatedImageWorker.dll --self-test",
+  "WorkerAssemblySha256": "B72BF64207723600D1A5BA596CA29A4C77064245EFBD2DDB084D80FB4F7144AE",
+  "CoreAssemblySha256": "AAAB72872965CE497A77D6AFE8CCD178AE9AA7479036BE02C324829EEB89B11E",
+  "Capture": "Successful self-test stdout, persisted after execution. Assembly fingerprints gathered from unchanged output binaries.",
+  "LimitMeaning": "Windows Job Object process/job committed-memory cap including native allocations; managed heap additionally capped at 128 MiB. PeakWorkingSetBytes is a different sampled diagnostic quantity.",
+  "Output": {
+    "Normal": {
+      "Result": {
+        "Success": true,
+        "Width": 96,
+        "Height": 64,
+        "Error": null
+      },
+      "MemoryLimitBytes": 536870912,
+      "LimitKind": "Windows job committed-memory cap",
+      "PeakWorkingSetBytes": 31666176,
+      "ElapsedMs": 820.7776,
+      "ExitCode": 0,
+      "ManagedHeapLimitBytes": 134217728
+    },
+    "RejectedNativeAllocation": {
+      "Result": {
+        "Success": false,
+        "Width": 0,
+        "Height": 0,
+        "Error": "Memory allocation rejected."
+      },
+      "MemoryLimitBytes": 536870912,
+      "LimitKind": "Windows job committed-memory cap",
+      "PeakWorkingSetBytes": 27693056,
+      "ElapsedMs": 237.4451,
+      "ExitCode": 3,
+      "ManagedHeapLimitBytes": 134217728
+    },
+    "Deadline": {
+      "Result": {
+        "Success": false,
+        "Width": 0,
+        "Height": 0,
+        "Error": "Worker deadline exceeded."
+      },
+      "MemoryLimitBytes": 536870912,
+      "LimitKind": "process deadline",
+      "PeakWorkingSetBytes": 28348416,
+      "ElapsedMs": 2050.4127,
+      "ExitCode": -1,
+      "ManagedHeapLimitBytes": 134217728
+    },
+    "InsufficientVirtualAllowance": null,
+    "Checks": 3
+  },
+  "Assertions": [
+    "96x64 output created successfully",
+    "2 GiB native allocation rejected under 512 MiB committed-memory cap",
+    "10 second delayed operation killed at 2 second deadline without output"
+  ]
+}

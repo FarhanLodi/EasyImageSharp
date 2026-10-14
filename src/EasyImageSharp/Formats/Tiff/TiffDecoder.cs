@@ -43,7 +43,7 @@ namespace EasyImageSharp.Formats.Tiff;
 /// length is reported as truncated data. The encoder always writes classic TIFF.
 /// </para>
 /// </remarks>
-public sealed class TiffDecoder : IImageDecoder
+public sealed partial class TiffDecoder : IImageDecoder
 {
     private const int TagImageWidth = 256;
     private const int TagImageLength = 257;
@@ -125,6 +125,8 @@ public sealed class TiffDecoder : IImageDecoder
         where TPixel : unmanaged, IPixel<TPixel>
     {
         ArgumentNullException.ThrowIfNull(options);
+        using var execution = OperationExecution.Enter(options.ExecutionOptions);
+        options.EnsureEncodedWithinLimits(data.Length);
         try
         {
             return DecodeCore<TPixel>(data, options);
@@ -147,6 +149,7 @@ public sealed class TiffDecoder : IImageDecoder
         long ifdOffset = header.FirstIfd;
         while (ifdOffset != 0 && visited.Add(ifdOffset) && frames.Count < options.MaxFrames)
         {
+            OperationExecution.Checkpoint();
             // Narrowed once: the same checked value feeds the page and the walk to the next one, so a 64-bit
             // offset can never be truncated back into range on its second use.
             int ifd = CheckedIfdOffset(ifdOffset, data.Length, shape.CountBytes);
@@ -272,6 +275,8 @@ public sealed class TiffDecoder : IImageDecoder
     public ImageInfo Identify(ReadOnlySpan<byte> data, DecoderOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
+        using var execution = OperationExecution.Enter(options.ExecutionOptions);
+        options.EnsureEncodedWithinLimits(data.Length);
         try
         {
             return IdentifyCore(data);
@@ -307,6 +312,7 @@ public sealed class TiffDecoder : IImageDecoder
         long ifdOffset = firstIfd;
         while (ifdOffset != 0 && visited.Add(ifdOffset) && frameCount < int.MaxValue)
         {
+            OperationExecution.Checkpoint();
             frameCount++;
             ifdOffset = NextIfdOffset(data, CheckedIfdOffset(ifdOffset, data.Length, shape.CountBytes), bigEndian, shape);
         }
@@ -380,10 +386,11 @@ public sealed class TiffDecoder : IImageDecoder
     }
 
     private static ImageFrame<TPixel> DecodeFrame<TPixel>(
-        ReadOnlySpan<byte> data, int ifdOffset, bool bigEndian, in IfdShape shape, DecoderOptions options)
+        ReadOnlySpan<byte> data, int ifdOffset, bool bigEndian, in IfdShape shape, DecoderOptions options,
+        Dictionary<int, long[]>? parsedTags = null)
         where TPixel : unmanaged, IPixel<TPixel>
     {
-        Dictionary<int, long[]> tags = ReadTags(data, ifdOffset, bigEndian, shape);
+        Dictionary<int, long[]> tags = parsedTags ?? ReadTags(data, ifdOffset, bigEndian, shape);
 
         long widthTag = GetSingle(tags, TagImageWidth, 0);
         long heightTag = GetSingle(tags, TagImageLength, 0);
@@ -472,6 +479,7 @@ public sealed class TiffDecoder : IImageDecoder
 
         for (int y = 0; y < height; y++)
         {
+            OperationExecution.Checkpoint();
             ReadOnlySpan<byte> row = raw.AsSpan(y * rowBytes, rowBytes);
             Span<TPixel> destination = frame.GetRowSpan(y);
             switch (fast)
@@ -867,6 +875,7 @@ public sealed class TiffDecoder : IImageDecoder
             int stride = samples * bytesPerSample;
             for (int y = 0; y < height; y++)
             {
+                OperationExecution.Checkpoint();
                 int source = y * planeRowBytes;
                 int target = (y * rowBytes) + (p * bytesPerSample);
                 for (int x = 0; x < width; x++)
@@ -951,6 +960,7 @@ public sealed class TiffDecoder : IImageDecoder
                 Span<byte> row = rows.Slice(start, rowBytes);
                 for (int i = spp; i < row.Length; i++)
                 {
+                    OperationExecution.Checkpoint();
                     row[i] = (byte)(row[i] + row[i - spp]);
                 }
             }
@@ -963,6 +973,7 @@ public sealed class TiffDecoder : IImageDecoder
                 Span<byte> row = rows.Slice(start, rowBytes);
                 for (int i = spp * 2; i < row.Length; i += 2)
                 {
+                    OperationExecution.Checkpoint();
                     Span<byte> current = row.Slice(i, 2);
                     ReadOnlySpan<byte> previous = row.Slice(i - (spp * 2), 2);
                     ushort sum = (ushort)((bigEndian
@@ -1261,6 +1272,7 @@ public sealed class TiffDecoder : IImageDecoder
         int inPos = 0;
         while (outPos < expectedSize && inPos < strip.Length)
         {
+            OperationExecution.Checkpoint();
             sbyte n = (sbyte)strip[inPos++];
             if (n >= 0)
             {

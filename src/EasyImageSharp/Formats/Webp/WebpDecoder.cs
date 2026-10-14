@@ -31,6 +31,8 @@ public sealed class WebpDecoder : IImageDecoder
         where TPixel : unmanaged, IPixel<TPixel>
     {
         ArgumentNullException.ThrowIfNull(options);
+        using var execution = OperationExecution.Enter(options.ExecutionOptions);
+        options.EnsureEncodedWithinLimits(data.Length);
         byte[] buffer = data.ToArray();
         try
         {
@@ -46,6 +48,8 @@ public sealed class WebpDecoder : IImageDecoder
     public ImageInfo Identify(ReadOnlySpan<byte> data, DecoderOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
+        using var execution = OperationExecution.Enter(options.ExecutionOptions);
+        options.EnsureEncodedWithinLimits(data.Length);
         byte[] buffer = data.ToArray();
         try
         {
@@ -153,6 +157,7 @@ public sealed class WebpDecoder : IImageDecoder
         {
             for (int y = start; y < end; y++)
             {
+                OperationExecution.Checkpoint();
                 PixelOps.FromRgba32(pixels.AsSpan(y * width, width), frame.GetRowSpan(y));
             }
         });
@@ -172,6 +177,7 @@ public sealed class WebpDecoder : IImageDecoder
 
         for (int y = 0; y < frame.Height; y++)
         {
+            OperationExecution.Checkpoint();
             int src = y * frame.Width;
             int dst = ((y0 + y) * canvasWidth) + x0;
             if (!blend)
@@ -229,6 +235,7 @@ public sealed class WebpDecoder : IImageDecoder
     {
         for (int y = 0; y < frame.Height; y++)
         {
+            OperationExecution.Checkpoint();
             canvas.AsSpan((((frame.Y + y) * canvasWidth) + frame.X), frame.Width).Clear();
         }
     }
@@ -285,6 +292,7 @@ public sealed class WebpDecoder : IImageDecoder
         int pos = 12;
         while (pos + 8 <= end)
         {
+            OperationExecution.Checkpoint();
             ReadOnlySpan<byte> id = data.AsSpan(pos, 4);
             uint rawSize = BinaryPrimitives.ReadUInt32LittleEndian(data.AsSpan(pos + 4, 4));
             if (rawSize > (uint)(end - pos - 8))
@@ -432,6 +440,7 @@ public sealed class WebpDecoder : IImageDecoder
     {
         while (pos + 8 <= end)
         {
+            OperationExecution.Checkpoint();
             ReadOnlySpan<byte> id = data.AsSpan(pos, 4);
             uint rawSize = BinaryPrimitives.ReadUInt32LittleEndian(data.AsSpan(pos + 4, 4));
             if (rawSize > (uint)(end - pos - 8))

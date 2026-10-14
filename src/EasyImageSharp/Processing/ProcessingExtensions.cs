@@ -12,7 +12,9 @@ public static partial class ProcessingExtensions
         ArgumentNullException.ThrowIfNull(source);
         ArgumentNullException.ThrowIfNull(operation);
         source.EnsureNotDisposed();
+        OperationExecution.Checkpoint();
         operation(new ImageProcessingContext<TPixel>(source));
+        OperationExecution.Checkpoint();
     }
 
     /// <summary>Applies the given operations to a deep copy of the image and returns the copy.</summary>
@@ -27,9 +29,19 @@ public static partial class ProcessingExtensions
         // its own buffer anyway, so the source is never copied for it.
         Image<TPixel> clone = FrameFactory.ShallowClone(source);
         var context = new ImageProcessingContext<TPixel>(clone, sharedBuffers: true);
-        operation(context);
-        context.EnsureOwnBuffers();
-        return clone;
+        try
+        {
+            OperationExecution.Checkpoint();
+            operation(context);
+            context.EnsureOwnBuffers();
+            OperationExecution.Checkpoint();
+            return clone;
+        }
+        catch
+        {
+            clone.Dispose();
+            throw;
+        }
     }
 
     // ----- Convenience overloads -----

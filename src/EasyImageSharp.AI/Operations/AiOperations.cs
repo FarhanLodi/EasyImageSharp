@@ -18,13 +18,13 @@ internal static class AiOperations
     // ----- Orientation -----
 
     /// <summary>Classifies the root frame's orientation (PP-LCNet doc-ori contract).</summary>
-    public static OrientationResult DetectOrientation<TPixel>(InferenceSession session, Image<TPixel> image)
+    public static OrientationResult DetectOrientation<TPixel>(InferenceSession session, Image<TPixel> image, CancellationToken cancellationToken = default)
         where TPixel : unmanaged, IPixel<TPixel>
     {
         Image<TPixel> single = FrameUtil.FrameAsImage(image, 0, out bool isCopy);
         try
         {
-            return DetectOrientationCore(session, single);
+            return DetectOrientationCore(session, single, cancellationToken);
         }
         finally
         {
@@ -35,17 +35,26 @@ internal static class AiOperations
         }
     }
 
-    private static OrientationResult DetectOrientationCore<TPixel>(InferenceSession session, Image<TPixel> singleFrame)
+    private static OrientationResult DetectOrientationCore<TPixel>(InferenceSession session, Image<TPixel> singleFrame, CancellationToken cancellationToken = default)
         where TPixel : unmanaged, IPixel<TPixel>
     {
         ModelDescriptor descriptor = ModelRegistry.DocumentOrientation;
-        using Image<TPixel> resized = FrameUtil.ResizeCopy(singleFrame, OrientationSize, OrientationSize, KnownResamplers.Bicubic);
-        float[] input = resized.ToChwTensor(descriptor.Normalization.Mean, descriptor.Normalization.Std);
+        double scale = 256.0 / Math.Min(singleFrame.Width, singleFrame.Height);
+        double scaledWidth = Math.Round(singleFrame.Width * scale), scaledHeight = Math.Round(singleFrame.Height * scale);
+        if (scaledWidth > int.MaxValue || scaledHeight > int.MaxValue || scaledWidth * scaledHeight > 16_000_000)
+        {
+            throw new ModelContractException("Orientation aspect-ratio resize exceeds the supported working pixel budget.");
+        }
+
+        int width = (int)scaledWidth, height = (int)scaledHeight;
+        using Image<TPixel> resized = FrameUtil.ResizeCopy(singleFrame, width, height, KnownResamplers.Bilinear);
+        using Image<TPixel> cropped = FrameUtil.CropCopy(resized, new Rectangle((width - OrientationSize) / 2, (height - OrientationSize) / 2, OrientationSize, OrientationSize));
+        float[] input = cropped.ToChwTensor(descriptor.Normalization.Mean, descriptor.Normalization.Std);
 
         string inputName = OrtRunner.ResolveInputName(session, descriptor.InputName);
         string outputName = OrtRunner.ResolveOutputName(session, null);
-        TensorResult result = OrtRunner.Run(session, inputName, input, [1, 3, OrientationSize, OrientationSize], outputName);
-        if (result.Data.Length < 4)
+        TensorResult result = DocumentDewarpRunner.RunCancelable(session, inputName, input, [1, 3, OrientationSize, OrientationSize], outputName, cancellationToken);
+        if (result.Shape.Length != 2 || result.Shape[0] != 1 || result.Shape[1] != 4 || result.Data.Length != 4 || result.Data.Any(value => !float.IsFinite(value)))
         {
             throw new ModelContractException(
                 $"The orientation classifier returned {result.Data.Length} values (shape [{string.Join(",", result.Shape)}]); expected [1,4].");
@@ -55,12 +64,12 @@ internal static class AiOperations
     }
 
     /// <summary>Uprights every frame in place (each classified individually) and returns the root frame's correction.</summary>
-    public static RotateMode AutoOrient<TPixel>(InferenceSession session, Image<TPixel> image)
+    public static RotateMode AutoOrient<TPixel>(InferenceSession session, Image<TPixel> image, CancellationToken cancellationToken = default)
         where TPixel : unmanaged, IPixel<TPixel>
     {
         if (image.Frames.Count == 1)
         {
-            RotateMode correction = DetectOrientationCore(session, image).Correction;
+            RotateMode correction = DetectOrientationCore(session, image, cancellationToken).Correction;
             if (correction != RotateMode.None)
             {
                 image.Mutate(ctx => ctx.Rotate(correction));
@@ -73,7 +82,7 @@ internal static class AiOperations
         int index = 0;
         ForEachFrame(image, frame =>
         {
-            RotateMode correction = DetectOrientationCore(session, frame).Correction;
+            RotateMode correction = DetectOrientationCore(session, frame, cancellationToken).Correction;
             if (index++ == 0)
             {
                 rootCorrection = correction;
@@ -86,10 +95,10 @@ internal static class AiOperations
 
     // ----- Image-to-image operations -----
 
-    /// <summary>Dewarps every frame in place (UVDoc contract; output resized back to the frame size).</summary>
+    /// <summary>Dewarps every frame in place (dynamic BGR UVDoc image contract, full resolution).</summary>
     public static void Dewarp<TPixel>(InferenceSession session, Image<TPixel> image, CancellationToken cancellationToken)
         where TPixel : unmanaged, IPixel<TPixel>
-        => ForEachFrame(image, frame => ImageModelRunner.Run(session, frame, ImageModels.DocumentDewarp.Contract, cancellationToken));
+        => ForEachFrame(image, frame => DocumentDewarpRunner.Run(session, frame, new DocumentDewarpContract(), cancellationToken).Image);
 
     /// <summary>
     /// Upscales every frame in place by <paramref name="factor"/>: the network's native scale is detected from its

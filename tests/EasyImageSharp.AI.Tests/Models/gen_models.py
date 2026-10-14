@@ -123,6 +123,26 @@ def saliency_brightness() -> None:
     _save("saliency_brightness.onnx", helper.make_graph([node], "saliency_brightness", [inp], [out]))
 
 
+def document_grid(name: str, flip: bool = False) -> None:
+    inp = helper.make_tensor_value_info("image", TensorProto.FLOAT, [1, 3, "height", "width"])
+    out = helper.make_tensor_value_info("grid", TensorProto.FLOAT, [1, 2, 2, 2])
+    x = [[1, -1], [1, -1]] if flip else [[-1, 1], [-1, 1]]
+    grid = [[x, [[-1, -1], [1, 1]]]]
+    _save(name, helper.make_graph([_const("grid", grid)], name, [inp], [out]))
+
+
+def first_channel_image() -> None:
+    inp = helper.make_tensor_value_info("image", TensorProto.FLOAT, [1, 3, "height", "width"])
+    out = helper.make_tensor_value_info("output", TensorProto.FLOAT, [1, 3, "height", "width"])
+    nodes = [
+        helper.make_node("Split", ["image"], ["first", "second", "third"], axis=1),
+        _const("zero", [0.0]),
+        helper.make_node("Mul", ["first", "zero"], ["zeros"]),
+        helper.make_node("Concat", ["first", "zeros", "zeros"], ["output"], axis=1),
+    ]
+    _save("first_channel_image.onnx", helper.make_graph(nodes, "first_channel_image", [inp], [out]))
+
+
 if __name__ == "__main__":
     identity("identity_rgb.onnx", 3)
     identity("identity_gray.onnx", 1)
@@ -132,3 +152,6 @@ if __name__ == "__main__":
     gray_affine("residual_zero_gray.onnx", 0.0, 0.0)
     gray_affine("constant_half_gray.onnx", 0.0, 0.5)
     saliency_brightness()
+    document_grid("document_identity_grid.onnx")
+    document_grid("document_flip_grid.onnx", flip=True)
+    first_channel_image()

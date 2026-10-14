@@ -1,0 +1,1772 @@
+{
+  "manifestSha256": "71118b81d0460a1592edeef3d2ddb98df2bd332a8c788f88ae5ba608406ca8f4",
+  "manifest": {
+    "corpusId": "mdpbench-five-language-v1-digital-largest-text-block-v1",
+    "license": "Apache-2.0 (upstream dataset declaration)",
+    "source": "https://huggingface.co/datasets/Delores-Lin/MDPBench",
+    "revision": "252df132fe1b418dbd5830515ef4b5a06fa7164f",
+    "annotationSha256": "c781fa6e487d4d7e6dcf2a07ac11421e2d4d2c273e8b2537895685e21c30f139",
+    "selection": "Largest polygon area nonempty text_block; fallback largest eligible title/header/footer/figure_caption/table_caption/page_footnote only when none exists; original annotation index breaks ties; no predictions used",
+    "limitations": [
+      "Public benchmark subset, not official full-benchmark score.",
+      "Model training overlap unknown; held-out means held out from local threshold selection.",
+      "Text blocks include layout reading-order conventions; block boxes are not line detection truth.",
+      "Measures OCR recognition with detection on an annotation-selected crop, not full-page end-to-end OCR.",
+      "Only digital pages have usable annotation geometry. Photograph variants repeat clean-page coordinates without registration and are explicitly excluded.",
+      "One largest text block per page; text-category fallback explicitly recorded. This does not represent all page text or difficult tiny text.",
+      "Controlled counterparts are synthetic skew/illumination/blur challenges, not real photographs. They reuse the exact same text label.",
+      "Families remain disjoint across local tuning/held-out splits. Clean and controlled crops from one family are dependent observations.",
+      "Annotation polygon/text errors and partial character clipping can remain; results depend on these public annotations."
+    ],
+    "easyOcrCache": "%LOCALAPPDATA%/EasyOcrSharp/models",
+    "paddleOcrCache": "%LOCALAPPDATA%/PaddleOcrNet/models",
+    "allowModelDownload": true,
+    "images": [
+      {
+        "id": "en_book_2",
+        "path": "images/en_book_2.png",
+        "groundTruthFile": "labels/en_book_2.txt",
+        "category": "digital",
+        "split": "tuning",
+        "family": "en_book_2",
+        "script": "Latin",
+        "language": "en",
+        "sha256": "f32885e1679839a4c4413a6ce086e60d7fb4bd9a6ac4ef5fb34671c8862bd62f",
+        "easyOcrLanguages": [
+          "en"
+        ],
+        "paddleOcrLanguages": [
+          "English"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "e72beab845252ecba56ca31288f8c78277f389c91f7cc297053c70ea66940442",
+        "sourceImage": "en_book_2.png",
+        "annotationIndex": 8,
+        "annotationId": 9,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          345.3333333333333,
+          1134.6666666666667,
+          1350.6666666666667,
+          1134.6666666666667,
+          1350.6666666666667,
+          1436,
+          345.3333333333333,
+          1436
+        ],
+        "sourceCropBox": [
+          345,
+          1134,
+          1351,
+          1436
+        ],
+        "labelSha256": "ca49586da4d3bac86c8b76a9e3e294063832f9aaadf4f65c53dba4d4d6ec1847"
+      },
+      {
+        "id": "en_book_2__controlled",
+        "path": "images/en_book_2__controlled.png",
+        "groundTruthFile": "labels/en_book_2.txt",
+        "category": "controlled",
+        "split": "tuning",
+        "family": "en_book_2",
+        "script": "Latin",
+        "language": "en",
+        "sha256": "a483ef6d514914726b812563fcb3b2499eb0000e1c19f96c9b4a45bf3baeb782",
+        "easyOcrLanguages": [
+          "en"
+        ],
+        "paddleOcrLanguages": [
+          "English"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "e72beab845252ecba56ca31288f8c78277f389c91f7cc297053c70ea66940442",
+        "sourceImage": "en_book_2.png",
+        "annotationIndex": 8,
+        "annotationId": 9,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          345.3333333333333,
+          1134.6666666666667,
+          1350.6666666666667,
+          1134.6666666666667,
+          1350.6666666666667,
+          1436,
+          345.3333333333333,
+          1436
+        ],
+        "sourceCropBox": [
+          345,
+          1134,
+          1351,
+          1436
+        ],
+        "labelSha256": "ca49586da4d3bac86c8b76a9e3e294063832f9aaadf4f65c53dba4d4d6ec1847",
+        "sourceBlockId": "en_book_2",
+        "synthetic": true,
+        "controlledTransform": "12px white border; clockwise2deg bilinear expanded white; left/right166..255 multiplicative illumination; Gaussian blur radius0.45px"
+      },
+      {
+        "id": "en_newspaper_30",
+        "path": "images/en_newspaper_30.png",
+        "groundTruthFile": "labels/en_newspaper_30.txt",
+        "category": "digital",
+        "split": "tuning",
+        "family": "en_newspaper_30",
+        "script": "Latin",
+        "language": "en",
+        "sha256": "dbdad03340ec92c682623bb1496391c92cc48d2a93a130e35b0b9d60eebdd709",
+        "easyOcrLanguages": [
+          "en"
+        ],
+        "paddleOcrLanguages": [
+          "English"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "0fc48b1811994f28bc4ebf73c15fc903d5cfdcb2f0b878580d15a8498e0cb044",
+        "sourceImage": "en_newspaper_30.png",
+        "annotationIndex": 17,
+        "annotationId": 17,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          4712,
+          6142.666666666667,
+          6502.666666666667,
+          6142.666666666667,
+          6502.666666666667,
+          7141.333333333333,
+          4712,
+          7141.333333333333
+        ],
+        "sourceCropBox": [
+          4712,
+          6142,
+          6503,
+          7142
+        ],
+        "labelSha256": "0979a3c269f42f724ccf75d33d0103e1a1d9df87973ce51cb25cad35b4b54cd8"
+      },
+      {
+        "id": "en_newspaper_30__controlled",
+        "path": "images/en_newspaper_30__controlled.png",
+        "groundTruthFile": "labels/en_newspaper_30.txt",
+        "category": "controlled",
+        "split": "tuning",
+        "family": "en_newspaper_30",
+        "script": "Latin",
+        "language": "en",
+        "sha256": "7d8edfb54050235408c3a20e1bc7f64948b0a9d3f765a226c0eaa74fbe98bb81",
+        "easyOcrLanguages": [
+          "en"
+        ],
+        "paddleOcrLanguages": [
+          "English"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "0fc48b1811994f28bc4ebf73c15fc903d5cfdcb2f0b878580d15a8498e0cb044",
+        "sourceImage": "en_newspaper_30.png",
+        "annotationIndex": 17,
+        "annotationId": 17,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          4712,
+          6142.666666666667,
+          6502.666666666667,
+          6142.666666666667,
+          6502.666666666667,
+          7141.333333333333,
+          4712,
+          7141.333333333333
+        ],
+        "sourceCropBox": [
+          4712,
+          6142,
+          6503,
+          7142
+        ],
+        "labelSha256": "0979a3c269f42f724ccf75d33d0103e1a1d9df87973ce51cb25cad35b4b54cd8",
+        "sourceBlockId": "en_newspaper_30",
+        "synthetic": true,
+        "controlledTransform": "12px white border; clockwise2deg bilinear expanded white; left/right166..255 multiplicative illumination; Gaussian blur radius0.45px"
+      },
+      {
+        "id": "en_book_6",
+        "path": "images/en_book_6.png",
+        "groundTruthFile": "labels/en_book_6.txt",
+        "category": "digital",
+        "split": "held-out",
+        "family": "en_book_6",
+        "script": "Latin",
+        "language": "en",
+        "sha256": "5dd91870179b9630ef3a23a4ec379a297e556f048f8ef8fb074024d84d46e9f4",
+        "easyOcrLanguages": [
+          "en"
+        ],
+        "paddleOcrLanguages": [
+          "English"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "2efca2f31729fa6bb0f4ecfd577e5ba3b74250c166ce73fdcd3a226e90554bab",
+        "sourceImage": "en_book_6.png",
+        "annotationIndex": 0,
+        "annotationId": 1,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          236,
+          196,
+          1505.3333333333333,
+          196,
+          1505.3333333333333,
+          476,
+          236,
+          476
+        ],
+        "sourceCropBox": [
+          236,
+          196,
+          1506,
+          476
+        ],
+        "labelSha256": "ca7dc6a29cbd3d3d418e164e0232d5002323d779c404cfa69f9969bd305f19b6"
+      },
+      {
+        "id": "en_book_6__controlled",
+        "path": "images/en_book_6__controlled.png",
+        "groundTruthFile": "labels/en_book_6.txt",
+        "category": "controlled",
+        "split": "held-out",
+        "family": "en_book_6",
+        "script": "Latin",
+        "language": "en",
+        "sha256": "f5a73415e4f92fd13d83d87b09c44e2c1de0deb2bee814f27cbaa2b0135744d6",
+        "easyOcrLanguages": [
+          "en"
+        ],
+        "paddleOcrLanguages": [
+          "English"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "2efca2f31729fa6bb0f4ecfd577e5ba3b74250c166ce73fdcd3a226e90554bab",
+        "sourceImage": "en_book_6.png",
+        "annotationIndex": 0,
+        "annotationId": 1,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          236,
+          196,
+          1505.3333333333333,
+          196,
+          1505.3333333333333,
+          476,
+          236,
+          476
+        ],
+        "sourceCropBox": [
+          236,
+          196,
+          1506,
+          476
+        ],
+        "labelSha256": "ca7dc6a29cbd3d3d418e164e0232d5002323d779c404cfa69f9969bd305f19b6",
+        "sourceBlockId": "en_book_6",
+        "synthetic": true,
+        "controlledTransform": "12px white border; clockwise2deg bilinear expanded white; left/right166..255 multiplicative illumination; Gaussian blur radius0.45px"
+      },
+      {
+        "id": "en_paper_41",
+        "path": "images/en_paper_41.png",
+        "groundTruthFile": "labels/en_paper_41.txt",
+        "category": "digital",
+        "split": "held-out",
+        "family": "en_paper_41",
+        "script": "Latin",
+        "language": "en",
+        "sha256": "7cacd4daeba5a8b995f69ced8003785d511500e80bf77e91b9d1f47bcc400a20",
+        "easyOcrLanguages": [
+          "en"
+        ],
+        "paddleOcrLanguages": [
+          "English"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "519288cd624a4d0071586a6fa8ca8fed88aa31c9e7ec08d3f687d2129696880f",
+        "sourceImage": "en_paper_41.jpg",
+        "annotationIndex": 0,
+        "annotationId": 0,
+        "annotationCategory": "table_caption",
+        "sourcePolygon": [
+          148.35979398715313,
+          970.9937143102985,
+          173.24910948834838,
+          970.9937143102985,
+          173.24910948834838,
+          1984.761202355315,
+          148.35979398715313,
+          1984.761202355315
+        ],
+        "sourceCropBox": [
+          148,
+          970,
+          174,
+          1985
+        ],
+        "labelSha256": "d7f93e4e5bb15f0037f991a83ce4a490662e8c7fdc3798512e40ff26f7fc88cd"
+      },
+      {
+        "id": "en_paper_41__controlled",
+        "path": "images/en_paper_41__controlled.png",
+        "groundTruthFile": "labels/en_paper_41.txt",
+        "category": "controlled",
+        "split": "held-out",
+        "family": "en_paper_41",
+        "script": "Latin",
+        "language": "en",
+        "sha256": "ccb77f05ca51cb4a0591ade3ccda76f2ebf13e7f26644a792035a7a689b25182",
+        "easyOcrLanguages": [
+          "en"
+        ],
+        "paddleOcrLanguages": [
+          "English"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "519288cd624a4d0071586a6fa8ca8fed88aa31c9e7ec08d3f687d2129696880f",
+        "sourceImage": "en_paper_41.jpg",
+        "annotationIndex": 0,
+        "annotationId": 0,
+        "annotationCategory": "table_caption",
+        "sourcePolygon": [
+          148.35979398715313,
+          970.9937143102985,
+          173.24910948834838,
+          970.9937143102985,
+          173.24910948834838,
+          1984.761202355315,
+          148.35979398715313,
+          1984.761202355315
+        ],
+        "sourceCropBox": [
+          148,
+          970,
+          174,
+          1985
+        ],
+        "labelSha256": "d7f93e4e5bb15f0037f991a83ce4a490662e8c7fdc3798512e40ff26f7fc88cd",
+        "sourceBlockId": "en_paper_41",
+        "synthetic": true,
+        "controlledTransform": "12px white border; clockwise2deg bilinear expanded white; left/right166..255 multiplicative illumination; Gaussian blur radius0.45px"
+      },
+      {
+        "id": "ar_book_3",
+        "path": "images/ar_book_3.png",
+        "groundTruthFile": "labels/ar_book_3.txt",
+        "category": "digital",
+        "split": "tuning",
+        "family": "ar_book_3",
+        "script": "Arabic",
+        "language": "ar",
+        "sha256": "af4d02973752419c92056f015e1b9427dd13bd678c44222aca27eeb1a88eb27b",
+        "easyOcrLanguages": [
+          "ar"
+        ],
+        "paddleOcrLanguages": [
+          "Arabic"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "0b3db85f384a9fb796ccd7b7aea792c99bb401cdccde38337c137fd527ff7323",
+        "sourceImage": "ar_book_3.jpg",
+        "annotationIndex": 4,
+        "annotationId": 4,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          150.99999999999972,
+          1123.0000000000002,
+          1171.7269078333866,
+          1123.0000000000002,
+          1171.7269078333866,
+          1772.0,
+          150.99999999999972,
+          1772.0
+        ],
+        "sourceCropBox": [
+          150,
+          1123,
+          1172,
+          1772
+        ],
+        "labelSha256": "b7b400e382bd6d75dd6fc994394fdda4a5d4807f4bfb196e450eb16f1e50398d"
+      },
+      {
+        "id": "ar_book_3__controlled",
+        "path": "images/ar_book_3__controlled.png",
+        "groundTruthFile": "labels/ar_book_3.txt",
+        "category": "controlled",
+        "split": "tuning",
+        "family": "ar_book_3",
+        "script": "Arabic",
+        "language": "ar",
+        "sha256": "f06787bcf655dc21b12e9e4f562aed754edff4d6e1cc2d752d7a8393b1e8f687",
+        "easyOcrLanguages": [
+          "ar"
+        ],
+        "paddleOcrLanguages": [
+          "Arabic"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "0b3db85f384a9fb796ccd7b7aea792c99bb401cdccde38337c137fd527ff7323",
+        "sourceImage": "ar_book_3.jpg",
+        "annotationIndex": 4,
+        "annotationId": 4,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          150.99999999999972,
+          1123.0000000000002,
+          1171.7269078333866,
+          1123.0000000000002,
+          1171.7269078333866,
+          1772.0,
+          150.99999999999972,
+          1772.0
+        ],
+        "sourceCropBox": [
+          150,
+          1123,
+          1172,
+          1772
+        ],
+        "labelSha256": "b7b400e382bd6d75dd6fc994394fdda4a5d4807f4bfb196e450eb16f1e50398d",
+        "sourceBlockId": "ar_book_3",
+        "synthetic": true,
+        "controlledTransform": "12px white border; clockwise2deg bilinear expanded white; left/right166..255 multiplicative illumination; Gaussian blur radius0.45px"
+      },
+      {
+        "id": "ar_academicpaper_33",
+        "path": "images/ar_academicpaper_33.png",
+        "groundTruthFile": "labels/ar_academicpaper_33.txt",
+        "category": "digital",
+        "split": "tuning",
+        "family": "ar_academicpaper_33",
+        "script": "Arabic",
+        "language": "ar",
+        "sha256": "40f69bbe68596c6c25fbe5e91153ae20d07325d3caf0b0f887d4bd773ad3668d",
+        "easyOcrLanguages": [
+          "ar"
+        ],
+        "paddleOcrLanguages": [
+          "Arabic"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "ba81c1ab60b0a541d59d51aca63e5584d729eada9fab5fb14eadd8e9f4efa8ce",
+        "sourceImage": "ar_academicpaper_33.jpg",
+        "annotationIndex": 3,
+        "annotationId": 3,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          151.00000000000003,
+          761.0,
+          1500.0,
+          761.0,
+          1500.0,
+          1985.9999999999998,
+          151.00000000000003,
+          1985.9999999999998
+        ],
+        "sourceCropBox": [
+          151,
+          761,
+          1500,
+          1986
+        ],
+        "labelSha256": "90fbd5768bc39ff611e9b0146aedb8bea5e7da9fb6ff4035c52211d2734593f8"
+      },
+      {
+        "id": "ar_academicpaper_33__controlled",
+        "path": "images/ar_academicpaper_33__controlled.png",
+        "groundTruthFile": "labels/ar_academicpaper_33.txt",
+        "category": "controlled",
+        "split": "tuning",
+        "family": "ar_academicpaper_33",
+        "script": "Arabic",
+        "language": "ar",
+        "sha256": "f4360cd825c8aadd4ec86178e5f2a221092c5e2a8ed70a16d610f72fb9d2ac19",
+        "easyOcrLanguages": [
+          "ar"
+        ],
+        "paddleOcrLanguages": [
+          "Arabic"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "ba81c1ab60b0a541d59d51aca63e5584d729eada9fab5fb14eadd8e9f4efa8ce",
+        "sourceImage": "ar_academicpaper_33.jpg",
+        "annotationIndex": 3,
+        "annotationId": 3,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          151.00000000000003,
+          761.0,
+          1500.0,
+          761.0,
+          1500.0,
+          1985.9999999999998,
+          151.00000000000003,
+          1985.9999999999998
+        ],
+        "sourceCropBox": [
+          151,
+          761,
+          1500,
+          1986
+        ],
+        "labelSha256": "90fbd5768bc39ff611e9b0146aedb8bea5e7da9fb6ff4035c52211d2734593f8",
+        "sourceBlockId": "ar_academicpaper_33",
+        "synthetic": true,
+        "controlledTransform": "12px white border; clockwise2deg bilinear expanded white; left/right166..255 multiplicative illumination; Gaussian blur radius0.45px"
+      },
+      {
+        "id": "ar_academicpaper_37",
+        "path": "images/ar_academicpaper_37.png",
+        "groundTruthFile": "labels/ar_academicpaper_37.txt",
+        "category": "digital",
+        "split": "held-out",
+        "family": "ar_academicpaper_37",
+        "script": "Arabic",
+        "language": "ar",
+        "sha256": "876e98a0f633b5f1fea67a74705a92b99545e21d9a39016557237cbb8bdd40a9",
+        "easyOcrLanguages": [
+          "ar"
+        ],
+        "paddleOcrLanguages": [
+          "Arabic"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "c28ecb217c8a2e5f49b334a228d8fd5ecafad34d12ced4b13c1aa4cf54fa4a91",
+        "sourceImage": "ar_academicpaper_37.jpg",
+        "annotationIndex": 3,
+        "annotationId": 3,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          150.00000000000003,
+          489.0,
+          1503.0,
+          489.0,
+          1503.0,
+          1988.0,
+          150.00000000000003,
+          1988.0
+        ],
+        "sourceCropBox": [
+          150,
+          489,
+          1503,
+          1988
+        ],
+        "labelSha256": "3adf5d121dcc098938add6eeaf75d197de535d97a7c2dea1ad895759c84b3ea2"
+      },
+      {
+        "id": "ar_academicpaper_37__controlled",
+        "path": "images/ar_academicpaper_37__controlled.png",
+        "groundTruthFile": "labels/ar_academicpaper_37.txt",
+        "category": "controlled",
+        "split": "held-out",
+        "family": "ar_academicpaper_37",
+        "script": "Arabic",
+        "language": "ar",
+        "sha256": "26fc0320fb0332274138e3172b702a74211c28fc02f213905dd70da62ee045ee",
+        "easyOcrLanguages": [
+          "ar"
+        ],
+        "paddleOcrLanguages": [
+          "Arabic"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "c28ecb217c8a2e5f49b334a228d8fd5ecafad34d12ced4b13c1aa4cf54fa4a91",
+        "sourceImage": "ar_academicpaper_37.jpg",
+        "annotationIndex": 3,
+        "annotationId": 3,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          150.00000000000003,
+          489.0,
+          1503.0,
+          489.0,
+          1503.0,
+          1988.0,
+          150.00000000000003,
+          1988.0
+        ],
+        "sourceCropBox": [
+          150,
+          489,
+          1503,
+          1988
+        ],
+        "labelSha256": "3adf5d121dcc098938add6eeaf75d197de535d97a7c2dea1ad895759c84b3ea2",
+        "sourceBlockId": "ar_academicpaper_37",
+        "synthetic": true,
+        "controlledTransform": "12px white border; clockwise2deg bilinear expanded white; left/right166..255 multiplicative illumination; Gaussian blur radius0.45px"
+      },
+      {
+        "id": "ar_book_8",
+        "path": "images/ar_book_8.png",
+        "groundTruthFile": "labels/ar_book_8.txt",
+        "category": "digital",
+        "split": "held-out",
+        "family": "ar_book_8",
+        "script": "Arabic",
+        "language": "ar",
+        "sha256": "7fb4cbe4344164a90b6143913d0626770c1fc2b3d486e9fc948f505a511802ef",
+        "easyOcrLanguages": [
+          "ar"
+        ],
+        "paddleOcrLanguages": [
+          "Arabic"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "091533e5e3d3da6378604a4623742714cdbabad9bd6928e7f458fe49a786b491",
+        "sourceImage": "ar_book_8.jpg",
+        "annotationIndex": 8,
+        "annotationId": 8,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          588.0,
+          432.0,
+          1104.0,
+          432.0,
+          1104.0,
+          824.0,
+          588.0,
+          824.0
+        ],
+        "sourceCropBox": [
+          588,
+          432,
+          1104,
+          824
+        ],
+        "labelSha256": "a00ce0086c4c82908966c267bc1e592d2bc522b65c12742bc0c0792af574b734"
+      },
+      {
+        "id": "ar_book_8__controlled",
+        "path": "images/ar_book_8__controlled.png",
+        "groundTruthFile": "labels/ar_book_8.txt",
+        "category": "controlled",
+        "split": "held-out",
+        "family": "ar_book_8",
+        "script": "Arabic",
+        "language": "ar",
+        "sha256": "dc31729d83161e0aa48fdc619f26070454f55daac6c89992be76ef3d2c624e14",
+        "easyOcrLanguages": [
+          "ar"
+        ],
+        "paddleOcrLanguages": [
+          "Arabic"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "091533e5e3d3da6378604a4623742714cdbabad9bd6928e7f458fe49a786b491",
+        "sourceImage": "ar_book_8.jpg",
+        "annotationIndex": 8,
+        "annotationId": 8,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          588.0,
+          432.0,
+          1104.0,
+          432.0,
+          1104.0,
+          824.0,
+          588.0,
+          824.0
+        ],
+        "sourceCropBox": [
+          588,
+          432,
+          1104,
+          824
+        ],
+        "labelSha256": "a00ce0086c4c82908966c267bc1e592d2bc522b65c12742bc0c0792af574b734",
+        "sourceBlockId": "ar_book_8",
+        "synthetic": true,
+        "controlledTransform": "12px white border; clockwise2deg bilinear expanded white; left/right166..255 multiplicative illumination; Gaussian blur radius0.45px"
+      },
+      {
+        "id": "hi_comicbook_28",
+        "path": "images/hi_comicbook_28.png",
+        "groundTruthFile": "labels/hi_comicbook_28.txt",
+        "category": "digital",
+        "split": "tuning",
+        "family": "hi_comicbook_28",
+        "script": "Devanagari",
+        "language": "hi",
+        "sha256": "90ee21134864510617d099753546207a76ba3a178c10ceba285243249acb2cbc",
+        "easyOcrLanguages": [
+          "hi"
+        ],
+        "paddleOcrLanguages": [
+          "Hindi"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "76637a8ca8538f1a1c51accfbe86c3ce39ab202c1c8f5b203e5df4317763f857",
+        "sourceImage": "hi_comicbook_28.jpeg",
+        "annotationIndex": 2,
+        "annotationId": 2,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          652.7479297182633,
+          90.7871240277162,
+          1189.426245173244,
+          90.7871240277162,
+          1189.426245173244,
+          268.91375977829864,
+          652.7479297182633,
+          268.91375977829864
+        ],
+        "sourceCropBox": [
+          652,
+          90,
+          1190,
+          269
+        ],
+        "labelSha256": "467da12c8713802bfe091236a38a8b843e69572b589277218b594cb330b34f1c"
+      },
+      {
+        "id": "hi_comicbook_28__controlled",
+        "path": "images/hi_comicbook_28__controlled.png",
+        "groundTruthFile": "labels/hi_comicbook_28.txt",
+        "category": "controlled",
+        "split": "tuning",
+        "family": "hi_comicbook_28",
+        "script": "Devanagari",
+        "language": "hi",
+        "sha256": "5d67e40e539719b699f762ad594cedf7cb14f850f6ec85baa3f7f99297f95bb5",
+        "easyOcrLanguages": [
+          "hi"
+        ],
+        "paddleOcrLanguages": [
+          "Hindi"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "76637a8ca8538f1a1c51accfbe86c3ce39ab202c1c8f5b203e5df4317763f857",
+        "sourceImage": "hi_comicbook_28.jpeg",
+        "annotationIndex": 2,
+        "annotationId": 2,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          652.7479297182633,
+          90.7871240277162,
+          1189.426245173244,
+          90.7871240277162,
+          1189.426245173244,
+          268.91375977829864,
+          652.7479297182633,
+          268.91375977829864
+        ],
+        "sourceCropBox": [
+          652,
+          90,
+          1190,
+          269
+        ],
+        "labelSha256": "467da12c8713802bfe091236a38a8b843e69572b589277218b594cb330b34f1c",
+        "sourceBlockId": "hi_comicbook_28",
+        "synthetic": true,
+        "controlledTransform": "12px white border; clockwise2deg bilinear expanded white; left/right166..255 multiplicative illumination; Gaussian blur radius0.45px"
+      },
+      {
+        "id": "hi_textbook_34",
+        "path": "images/hi_textbook_34.png",
+        "groundTruthFile": "labels/hi_textbook_34.txt",
+        "category": "digital",
+        "split": "tuning",
+        "family": "hi_textbook_34",
+        "script": "Devanagari",
+        "language": "hi",
+        "sha256": "64e446996515312324b5a60e3313f093cddc3022306aecb7f2f83187be9e1685",
+        "easyOcrLanguages": [
+          "hi"
+        ],
+        "paddleOcrLanguages": [
+          "Hindi"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "fea2d4b82bfee5ccefdf204d717f7662fafe35b66cc7c552007011a38e50465c",
+        "sourceImage": "hi_textbook_34.png",
+        "annotationIndex": 3,
+        "annotationId": 3,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          123.99999999999999,
+          127.99999999999999,
+          916.0,
+          127.99999999999999,
+          916.0,
+          477.0,
+          123.99999999999999,
+          477.0
+        ],
+        "sourceCropBox": [
+          123,
+          127,
+          916,
+          477
+        ],
+        "labelSha256": "e596539c95c8d1c36e1488dcad9bde1c12d6dfc08b8b1d1c21694bceabfcada8"
+      },
+      {
+        "id": "hi_textbook_34__controlled",
+        "path": "images/hi_textbook_34__controlled.png",
+        "groundTruthFile": "labels/hi_textbook_34.txt",
+        "category": "controlled",
+        "split": "tuning",
+        "family": "hi_textbook_34",
+        "script": "Devanagari",
+        "language": "hi",
+        "sha256": "4c18e1c30a243a0204f38a51c0b6dcec00345735fea2eae3f8119ee7f951bf30",
+        "easyOcrLanguages": [
+          "hi"
+        ],
+        "paddleOcrLanguages": [
+          "Hindi"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "fea2d4b82bfee5ccefdf204d717f7662fafe35b66cc7c552007011a38e50465c",
+        "sourceImage": "hi_textbook_34.png",
+        "annotationIndex": 3,
+        "annotationId": 3,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          123.99999999999999,
+          127.99999999999999,
+          916.0,
+          127.99999999999999,
+          916.0,
+          477.0,
+          123.99999999999999,
+          477.0
+        ],
+        "sourceCropBox": [
+          123,
+          127,
+          916,
+          477
+        ],
+        "labelSha256": "e596539c95c8d1c36e1488dcad9bde1c12d6dfc08b8b1d1c21694bceabfcada8",
+        "sourceBlockId": "hi_textbook_34",
+        "synthetic": true,
+        "controlledTransform": "12px white border; clockwise2deg bilinear expanded white; left/right166..255 multiplicative illumination; Gaussian blur radius0.45px"
+      },
+      {
+        "id": "hi_book_15",
+        "path": "images/hi_book_15.png",
+        "groundTruthFile": "labels/hi_book_15.txt",
+        "category": "digital",
+        "split": "held-out",
+        "family": "hi_book_15",
+        "script": "Devanagari",
+        "language": "hi",
+        "sha256": "495197d42c37c788918dfbbfd00a1c818df79f5e4bc19b51199c42b9d3617dad",
+        "easyOcrLanguages": [
+          "hi"
+        ],
+        "paddleOcrLanguages": [
+          "Hindi"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "6b5fcb8db000416e5c55b78ec0a5e48ae3b916cc8b8f83a272414f405ca6752f",
+        "sourceImage": "hi_book_15.png",
+        "annotationIndex": 4,
+        "annotationId": 4,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          29.456626402543158,
+          482.01752295070617,
+          952.4309203488953,
+          482.01752295070617,
+          952.4309203488953,
+          921.1890438613495,
+          29.456626402543158,
+          921.1890438613495
+        ],
+        "sourceCropBox": [
+          29,
+          482,
+          953,
+          922
+        ],
+        "labelSha256": "1a96e907997b243604c9f8d05045406d5873c6f7b35f837c644f826ccf479e52"
+      },
+      {
+        "id": "hi_book_15__controlled",
+        "path": "images/hi_book_15__controlled.png",
+        "groundTruthFile": "labels/hi_book_15.txt",
+        "category": "controlled",
+        "split": "held-out",
+        "family": "hi_book_15",
+        "script": "Devanagari",
+        "language": "hi",
+        "sha256": "e3990d87e0a52e12d7f6fde76cc2e731828623c3ef946532a6ba420ddd0b35fd",
+        "easyOcrLanguages": [
+          "hi"
+        ],
+        "paddleOcrLanguages": [
+          "Hindi"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "6b5fcb8db000416e5c55b78ec0a5e48ae3b916cc8b8f83a272414f405ca6752f",
+        "sourceImage": "hi_book_15.png",
+        "annotationIndex": 4,
+        "annotationId": 4,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          29.456626402543158,
+          482.01752295070617,
+          952.4309203488953,
+          482.01752295070617,
+          952.4309203488953,
+          921.1890438613495,
+          29.456626402543158,
+          921.1890438613495
+        ],
+        "sourceCropBox": [
+          29,
+          482,
+          953,
+          922
+        ],
+        "labelSha256": "1a96e907997b243604c9f8d05045406d5873c6f7b35f837c644f826ccf479e52",
+        "sourceBlockId": "hi_book_15",
+        "synthetic": true,
+        "controlledTransform": "12px white border; clockwise2deg bilinear expanded white; left/right166..255 multiplicative illumination; Gaussian blur radius0.45px"
+      },
+      {
+        "id": "hi_book_17",
+        "path": "images/hi_book_17.png",
+        "groundTruthFile": "labels/hi_book_17.txt",
+        "category": "digital",
+        "split": "held-out",
+        "family": "hi_book_17",
+        "script": "Devanagari",
+        "language": "hi",
+        "sha256": "9003e5c6c42bd81bf76258bb0f41987e2c72d733e156c105c892474ea4b47ba4",
+        "easyOcrLanguages": [
+          "hi"
+        ],
+        "paddleOcrLanguages": [
+          "Hindi"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "f305fb8931cf4120223ad293fb9c56b807d54623d511ad62f4b8d8ab8cb40151",
+        "sourceImage": "hi_book_17.jpg",
+        "annotationIndex": 6,
+        "annotationId": 6,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          192.0409184846087,
+          419.60068302716815,
+          840.6319450647022,
+          419.60068302716815,
+          840.6319450647022,
+          1622.5739837232072,
+          192.0409184846087,
+          1622.5739837232072
+        ],
+        "sourceCropBox": [
+          192,
+          419,
+          841,
+          1623
+        ],
+        "labelSha256": "5242ab693f110917603abe1aa70ea257d19585e1e6ed042088dec0d9d08a46a1"
+      },
+      {
+        "id": "hi_book_17__controlled",
+        "path": "images/hi_book_17__controlled.png",
+        "groundTruthFile": "labels/hi_book_17.txt",
+        "category": "controlled",
+        "split": "held-out",
+        "family": "hi_book_17",
+        "script": "Devanagari",
+        "language": "hi",
+        "sha256": "2b67d409ea7d492ef600677f67c9b73660bf384e6edcb76201d9f68f32cab1ba",
+        "easyOcrLanguages": [
+          "hi"
+        ],
+        "paddleOcrLanguages": [
+          "Hindi"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "f305fb8931cf4120223ad293fb9c56b807d54623d511ad62f4b8d8ab8cb40151",
+        "sourceImage": "hi_book_17.jpg",
+        "annotationIndex": 6,
+        "annotationId": 6,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          192.0409184846087,
+          419.60068302716815,
+          840.6319450647022,
+          419.60068302716815,
+          840.6319450647022,
+          1622.5739837232072,
+          192.0409184846087,
+          1622.5739837232072
+        ],
+        "sourceCropBox": [
+          192,
+          419,
+          841,
+          1623
+        ],
+        "labelSha256": "5242ab693f110917603abe1aa70ea257d19585e1e6ed042088dec0d9d08a46a1",
+        "sourceBlockId": "hi_book_17",
+        "synthetic": true,
+        "controlledTransform": "12px white border; clockwise2deg bilinear expanded white; left/right166..255 multiplicative illumination; Gaussian blur radius0.45px"
+      },
+      {
+        "id": "zh_financialpaper_46",
+        "path": "images/zh_financialpaper_46.png",
+        "groundTruthFile": "labels/zh_financialpaper_46.txt",
+        "category": "digital",
+        "split": "tuning",
+        "family": "zh_financialpaper_46",
+        "script": "Han",
+        "language": "zh",
+        "sha256": "b085bff09b84ab4312677d8cdacc6b923069e42fd13507af1f17323a7a38cc39",
+        "easyOcrLanguages": [
+          "ch_sim"
+        ],
+        "paddleOcrLanguages": [
+          "ChineseSimplified"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "e3c1aa1fbd52efd8288632232b08a52ff20a015ef7cbd8c52b1ee925038079c6",
+        "sourceImage": "zh_financialpaper_46.jpg",
+        "annotationIndex": 15,
+        "annotationId": 11,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          732.5149536132812,
+          1239.676025390625,
+          1599.372802734375,
+          1239.676025390625,
+          1599.372802734375,
+          1562.8577880859375,
+          732.5149536132812,
+          1562.8577880859375
+        ],
+        "sourceCropBox": [
+          732,
+          1239,
+          1600,
+          1563
+        ],
+        "labelSha256": "83cb5b99bd05505215bbc46b3035054899bbfefc53e381c1dd26c359cfd99ce5"
+      },
+      {
+        "id": "zh_financialpaper_46__controlled",
+        "path": "images/zh_financialpaper_46__controlled.png",
+        "groundTruthFile": "labels/zh_financialpaper_46.txt",
+        "category": "controlled",
+        "split": "tuning",
+        "family": "zh_financialpaper_46",
+        "script": "Han",
+        "language": "zh",
+        "sha256": "7e37d1c3b1f4b04200c262d95d2c87cadedb2e073cb0507566a71c0030b56efb",
+        "easyOcrLanguages": [
+          "ch_sim"
+        ],
+        "paddleOcrLanguages": [
+          "ChineseSimplified"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "e3c1aa1fbd52efd8288632232b08a52ff20a015ef7cbd8c52b1ee925038079c6",
+        "sourceImage": "zh_financialpaper_46.jpg",
+        "annotationIndex": 15,
+        "annotationId": 11,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          732.5149536132812,
+          1239.676025390625,
+          1599.372802734375,
+          1239.676025390625,
+          1599.372802734375,
+          1562.8577880859375,
+          732.5149536132812,
+          1562.8577880859375
+        ],
+        "sourceCropBox": [
+          732,
+          1239,
+          1600,
+          1563
+        ],
+        "labelSha256": "83cb5b99bd05505215bbc46b3035054899bbfefc53e381c1dd26c359cfd99ce5",
+        "sourceBlockId": "zh_financialpaper_46",
+        "synthetic": true,
+        "controlledTransform": "12px white border; clockwise2deg bilinear expanded white; left/right166..255 multiplicative illumination; Gaussian blur radius0.45px"
+      },
+      {
+        "id": "zh_newspaper_22",
+        "path": "images/zh_newspaper_22.png",
+        "groundTruthFile": "labels/zh_newspaper_22.txt",
+        "category": "digital",
+        "split": "tuning",
+        "family": "zh_newspaper_22",
+        "script": "Han",
+        "language": "zh",
+        "sha256": "cb09a625854826dacdca7ea2f6be94581005b775fae75667ae2b9fae9b737649",
+        "easyOcrLanguages": [
+          "ch_sim"
+        ],
+        "paddleOcrLanguages": [
+          "ChineseSimplified"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "cf53d10f8d07e67ca77edd36eaae0a6a0b4b7110c3b755479950f264a7b22098",
+        "sourceImage": "zh_newspaper_22.jpg",
+        "annotationIndex": 31,
+        "annotationId": 20,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          2251.8814116759536,
+          917.5133761362252,
+          2752.4041641178933,
+          917.5133761362252,
+          2752.4041641178933,
+          1768.3616477348992,
+          2251.8814116759536,
+          1768.3616477348992
+        ],
+        "sourceCropBox": [
+          2251,
+          917,
+          2753,
+          1769
+        ],
+        "labelSha256": "686a12294323c42f0d3b96e709be2a4a73f8506b7768f6236e12136feb87f44e"
+      },
+      {
+        "id": "zh_newspaper_22__controlled",
+        "path": "images/zh_newspaper_22__controlled.png",
+        "groundTruthFile": "labels/zh_newspaper_22.txt",
+        "category": "controlled",
+        "split": "tuning",
+        "family": "zh_newspaper_22",
+        "script": "Han",
+        "language": "zh",
+        "sha256": "3a3458e30db5843ed495b0411070f6b82911f9ef1c6fc3b396992618606a8763",
+        "easyOcrLanguages": [
+          "ch_sim"
+        ],
+        "paddleOcrLanguages": [
+          "ChineseSimplified"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "cf53d10f8d07e67ca77edd36eaae0a6a0b4b7110c3b755479950f264a7b22098",
+        "sourceImage": "zh_newspaper_22.jpg",
+        "annotationIndex": 31,
+        "annotationId": 20,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          2251.8814116759536,
+          917.5133761362252,
+          2752.4041641178933,
+          917.5133761362252,
+          2752.4041641178933,
+          1768.3616477348992,
+          2251.8814116759536,
+          1768.3616477348992
+        ],
+        "sourceCropBox": [
+          2251,
+          917,
+          2753,
+          1769
+        ],
+        "labelSha256": "686a12294323c42f0d3b96e709be2a4a73f8506b7768f6236e12136feb87f44e",
+        "sourceBlockId": "zh_newspaper_22",
+        "synthetic": true,
+        "controlledTransform": "12px white border; clockwise2deg bilinear expanded white; left/right166..255 multiplicative illumination; Gaussian blur radius0.45px"
+      },
+      {
+        "id": "zh_slide_45",
+        "path": "images/zh_slide_45.png",
+        "groundTruthFile": "labels/zh_slide_45.txt",
+        "category": "digital",
+        "split": "held-out",
+        "family": "zh_slide_45",
+        "script": "Han",
+        "language": "zh",
+        "sha256": "d2702fc8c9dae8a5060007c9b24bd35926f45037204234fa24712fdc90c6af74",
+        "easyOcrLanguages": [
+          "ch_sim"
+        ],
+        "paddleOcrLanguages": [
+          "ChineseSimplified"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "d6fd2c14e36d6d190d5c0a8dd93ca2e5bd8ef422a5bc09ecb58a5c69b4daed3c",
+        "sourceImage": "zh_slide_45.jpg",
+        "annotationIndex": 8,
+        "annotationId": 1,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          171.69999831539863,
+          1278.820932742719,
+          2512.084408886781,
+          1278.820932742719,
+          2512.084408886781,
+          1365.690053585406,
+          171.69999831539863,
+          1365.690053585406
+        ],
+        "sourceCropBox": [
+          171,
+          1278,
+          2513,
+          1366
+        ],
+        "labelSha256": "e4e4ebdf6ccf68b4767b0dbb4ed97f39bcb45dd66a077e14d85033adde7db621"
+      },
+      {
+        "id": "zh_slide_45__controlled",
+        "path": "images/zh_slide_45__controlled.png",
+        "groundTruthFile": "labels/zh_slide_45.txt",
+        "category": "controlled",
+        "split": "held-out",
+        "family": "zh_slide_45",
+        "script": "Han",
+        "language": "zh",
+        "sha256": "f4425973f328f4c38a335693e9886933f72d88a884afc94d0650fc96e537f067",
+        "easyOcrLanguages": [
+          "ch_sim"
+        ],
+        "paddleOcrLanguages": [
+          "ChineseSimplified"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "d6fd2c14e36d6d190d5c0a8dd93ca2e5bd8ef422a5bc09ecb58a5c69b4daed3c",
+        "sourceImage": "zh_slide_45.jpg",
+        "annotationIndex": 8,
+        "annotationId": 1,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          171.69999831539863,
+          1278.820932742719,
+          2512.084408886781,
+          1278.820932742719,
+          2512.084408886781,
+          1365.690053585406,
+          171.69999831539863,
+          1365.690053585406
+        ],
+        "sourceCropBox": [
+          171,
+          1278,
+          2513,
+          1366
+        ],
+        "labelSha256": "e4e4ebdf6ccf68b4767b0dbb4ed97f39bcb45dd66a077e14d85033adde7db621",
+        "sourceBlockId": "zh_slide_45",
+        "synthetic": true,
+        "controlledTransform": "12px white border; clockwise2deg bilinear expanded white; left/right166..255 multiplicative illumination; Gaussian blur radius0.45px"
+      },
+      {
+        "id": "zh_exampaper_35",
+        "path": "images/zh_exampaper_35.png",
+        "groundTruthFile": "labels/zh_exampaper_35.txt",
+        "category": "digital",
+        "split": "held-out",
+        "family": "zh_exampaper_35",
+        "script": "Han",
+        "language": "zh",
+        "sha256": "43d971fd878696dd0ad486b02c1e1c14c2f715846c2c7c5a66adc1301ab39238",
+        "easyOcrLanguages": [
+          "ch_sim"
+        ],
+        "paddleOcrLanguages": [
+          "ChineseSimplified"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "e0cc6c9ca27a76a4da67c61dc8f2fce39c2cf173151749d49a1c020b95c07c27",
+        "sourceImage": "zh_exampaper_35.jpg",
+        "annotationIndex": 9,
+        "annotationId": 35,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          239.6328151237429,
+          1389.2299832687518,
+          1585.4171819270905,
+          1389.2299832687518,
+          1585.4171819270905,
+          1704.7445892383641,
+          239.6328151237429,
+          1704.7445892383641
+        ],
+        "sourceCropBox": [
+          239,
+          1389,
+          1586,
+          1705
+        ],
+        "labelSha256": "07ed5fe18ae1a02c9e79405713a7f44f47b34bcfb36205f17ea2a859b17f8030"
+      },
+      {
+        "id": "zh_exampaper_35__controlled",
+        "path": "images/zh_exampaper_35__controlled.png",
+        "groundTruthFile": "labels/zh_exampaper_35.txt",
+        "category": "controlled",
+        "split": "held-out",
+        "family": "zh_exampaper_35",
+        "script": "Han",
+        "language": "zh",
+        "sha256": "249737562154d0173720f43ee13527ffbe9c80f7457b53d99fe60b1793783059",
+        "easyOcrLanguages": [
+          "ch_sim"
+        ],
+        "paddleOcrLanguages": [
+          "ChineseSimplified"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "e0cc6c9ca27a76a4da67c61dc8f2fce39c2cf173151749d49a1c020b95c07c27",
+        "sourceImage": "zh_exampaper_35.jpg",
+        "annotationIndex": 9,
+        "annotationId": 35,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          239.6328151237429,
+          1389.2299832687518,
+          1585.4171819270905,
+          1389.2299832687518,
+          1585.4171819270905,
+          1704.7445892383641,
+          239.6328151237429,
+          1704.7445892383641
+        ],
+        "sourceCropBox": [
+          239,
+          1389,
+          1586,
+          1705
+        ],
+        "labelSha256": "07ed5fe18ae1a02c9e79405713a7f44f47b34bcfb36205f17ea2a859b17f8030",
+        "sourceBlockId": "zh_exampaper_35",
+        "synthetic": true,
+        "controlledTransform": "12px white border; clockwise2deg bilinear expanded white; left/right166..255 multiplicative illumination; Gaussian blur radius0.45px"
+      },
+      {
+        "id": "jp_magazine_29",
+        "path": "images/jp_magazine_29.png",
+        "groundTruthFile": "labels/jp_magazine_29.txt",
+        "category": "digital",
+        "split": "tuning",
+        "family": "jp_magazine_29",
+        "script": "Japanese",
+        "language": "jp",
+        "sha256": "b6168cfc1bfa73a4c2dc1e635f354d7fcab4dfb9790251baa00f1ada5f65eb61",
+        "easyOcrLanguages": [
+          "ja"
+        ],
+        "paddleOcrLanguages": [
+          "Japanese"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "112eea183d30c0f358ab40b44ef4582f344a0c0807611569799fab037e43f264",
+        "sourceImage": "jp_magazine_29.jpg",
+        "annotationIndex": 156,
+        "annotationId": 156,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          2988.0,
+          5552.999999999999,
+          4789.0,
+          5552.999999999999,
+          4789.0,
+          8889.0,
+          2988.0,
+          8889.0
+        ],
+        "sourceCropBox": [
+          2988,
+          5552,
+          4789,
+          8889
+        ],
+        "labelSha256": "b9743468ec83e9f720936ed7e8655a2e77db433ec1a29a92c8c902f273305640"
+      },
+      {
+        "id": "jp_magazine_29__controlled",
+        "path": "images/jp_magazine_29__controlled.png",
+        "groundTruthFile": "labels/jp_magazine_29.txt",
+        "category": "controlled",
+        "split": "tuning",
+        "family": "jp_magazine_29",
+        "script": "Japanese",
+        "language": "jp",
+        "sha256": "933eba869262577dd955de6c2dc4a2144c2e52bf076788cea66daedb0a742903",
+        "easyOcrLanguages": [
+          "ja"
+        ],
+        "paddleOcrLanguages": [
+          "Japanese"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "112eea183d30c0f358ab40b44ef4582f344a0c0807611569799fab037e43f264",
+        "sourceImage": "jp_magazine_29.jpg",
+        "annotationIndex": 156,
+        "annotationId": 156,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          2988.0,
+          5552.999999999999,
+          4789.0,
+          5552.999999999999,
+          4789.0,
+          8889.0,
+          2988.0,
+          8889.0
+        ],
+        "sourceCropBox": [
+          2988,
+          5552,
+          4789,
+          8889
+        ],
+        "labelSha256": "b9743468ec83e9f720936ed7e8655a2e77db433ec1a29a92c8c902f273305640",
+        "sourceBlockId": "jp_magazine_29",
+        "synthetic": true,
+        "controlledTransform": "12px white border; clockwise2deg bilinear expanded white; left/right166..255 multiplicative illumination; Gaussian blur radius0.45px"
+      },
+      {
+        "id": "jp_note_39",
+        "path": "images/jp_note_39.png",
+        "groundTruthFile": "labels/jp_note_39.txt",
+        "category": "digital",
+        "split": "tuning",
+        "family": "jp_note_39",
+        "script": "Japanese",
+        "language": "jp",
+        "sha256": "fbf390c03324bcdcb74f38a30b20ab9a005b78286fb724274cdb6c02b8105dfa",
+        "easyOcrLanguages": [
+          "ja"
+        ],
+        "paddleOcrLanguages": [
+          "Japanese"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "29734d6ca8159f0394554b451588769265ae7d876c440a73ad83d6330d6f25ca",
+        "sourceImage": "jp_note_39.jpg",
+        "annotationIndex": 28,
+        "annotationId": 28,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          119.0,
+          1164.9999999999998,
+          893.0,
+          1164.9999999999998,
+          893.0,
+          1246.9999999999998,
+          119.0,
+          1246.9999999999998
+        ],
+        "sourceCropBox": [
+          119,
+          1164,
+          893,
+          1247
+        ],
+        "labelSha256": "a3c9e729f47e02199db2118e3fa235bd8ebad0d36c625d7a1e17d97449133aa6"
+      },
+      {
+        "id": "jp_note_39__controlled",
+        "path": "images/jp_note_39__controlled.png",
+        "groundTruthFile": "labels/jp_note_39.txt",
+        "category": "controlled",
+        "split": "tuning",
+        "family": "jp_note_39",
+        "script": "Japanese",
+        "language": "jp",
+        "sha256": "2528edee725d6e7a698db9c9556ba81d49520e6141faf2033e336f2f2ea831ed",
+        "easyOcrLanguages": [
+          "ja"
+        ],
+        "paddleOcrLanguages": [
+          "Japanese"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "29734d6ca8159f0394554b451588769265ae7d876c440a73ad83d6330d6f25ca",
+        "sourceImage": "jp_note_39.jpg",
+        "annotationIndex": 28,
+        "annotationId": 28,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          119.0,
+          1164.9999999999998,
+          893.0,
+          1164.9999999999998,
+          893.0,
+          1246.9999999999998,
+          119.0,
+          1246.9999999999998
+        ],
+        "sourceCropBox": [
+          119,
+          1164,
+          893,
+          1247
+        ],
+        "labelSha256": "a3c9e729f47e02199db2118e3fa235bd8ebad0d36c625d7a1e17d97449133aa6",
+        "sourceBlockId": "jp_note_39",
+        "synthetic": true,
+        "controlledTransform": "12px white border; clockwise2deg bilinear expanded white; left/right166..255 multiplicative illumination; Gaussian blur radius0.45px"
+      },
+      {
+        "id": "jp_book_1",
+        "path": "images/jp_book_1.png",
+        "groundTruthFile": "labels/jp_book_1.txt",
+        "category": "digital",
+        "split": "held-out",
+        "family": "jp_book_1",
+        "script": "Japanese",
+        "language": "jp",
+        "sha256": "abadd68454badb4a8487f002f9cc3668a2bd00ccbf4f5e10235bf60d6ce926fa",
+        "easyOcrLanguages": [
+          "ja"
+        ],
+        "paddleOcrLanguages": [
+          "Japanese"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "4b1bf4e9d96223a960d2418163c24a3d270dfaecf42b7ddae2c87170391bce7c",
+        "sourceImage": "jp_book_1.jpg",
+        "annotationIndex": 5,
+        "annotationId": 5,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          378.00000000000017,
+          2025.9999999999998,
+          2432.9999999999995,
+          2025.9999999999998,
+          2432.9999999999995,
+          3212.0,
+          378.00000000000017,
+          3212.0
+        ],
+        "sourceCropBox": [
+          378,
+          2025,
+          2433,
+          3212
+        ],
+        "labelSha256": "94c9c63412cda0c816ab266531b4137488bbf14ee0c83da43371a8e7400fbd79"
+      },
+      {
+        "id": "jp_book_1__controlled",
+        "path": "images/jp_book_1__controlled.png",
+        "groundTruthFile": "labels/jp_book_1.txt",
+        "category": "controlled",
+        "split": "held-out",
+        "family": "jp_book_1",
+        "script": "Japanese",
+        "language": "jp",
+        "sha256": "83241ff9eeb0a87f060b025616f51cb66c07c5afcbcd8d5968b4d5a867a43929",
+        "easyOcrLanguages": [
+          "ja"
+        ],
+        "paddleOcrLanguages": [
+          "Japanese"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "4b1bf4e9d96223a960d2418163c24a3d270dfaecf42b7ddae2c87170391bce7c",
+        "sourceImage": "jp_book_1.jpg",
+        "annotationIndex": 5,
+        "annotationId": 5,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          378.00000000000017,
+          2025.9999999999998,
+          2432.9999999999995,
+          2025.9999999999998,
+          2432.9999999999995,
+          3212.0,
+          378.00000000000017,
+          3212.0
+        ],
+        "sourceCropBox": [
+          378,
+          2025,
+          2433,
+          3212
+        ],
+        "labelSha256": "94c9c63412cda0c816ab266531b4137488bbf14ee0c83da43371a8e7400fbd79",
+        "sourceBlockId": "jp_book_1",
+        "synthetic": true,
+        "controlledTransform": "12px white border; clockwise2deg bilinear expanded white; left/right166..255 multiplicative illumination; Gaussian blur radius0.45px"
+      },
+      {
+        "id": "jp_slide_6",
+        "path": "images/jp_slide_6.png",
+        "groundTruthFile": "labels/jp_slide_6.txt",
+        "category": "digital",
+        "split": "held-out",
+        "family": "jp_slide_6",
+        "script": "Japanese",
+        "language": "jp",
+        "sha256": "9e32d1c9d86a0b0a3e73ed3b0bfb4e7527278d2ee195658e93c95a206a3341ec",
+        "easyOcrLanguages": [
+          "ja"
+        ],
+        "paddleOcrLanguages": [
+          "Japanese"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "e3afb91d40edae1ee39bfaee639eb49dd4f426112d33f5dd6d5ad4b00b914fb0",
+        "sourceImage": "jp_slide_6.jpg",
+        "annotationIndex": 7,
+        "annotationId": 7,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          105.0,
+          646.0000000000001,
+          1438.0,
+          646.0000000000001,
+          1438.0,
+          898.0000000000001,
+          105.0,
+          898.0000000000001
+        ],
+        "sourceCropBox": [
+          105,
+          646,
+          1438,
+          899
+        ],
+        "labelSha256": "d52c46f995bd2c99e4d44e91d5c7bc8a7dca082d561ec7fd18dcd1a48b2a9b99"
+      },
+      {
+        "id": "jp_slide_6__controlled",
+        "path": "images/jp_slide_6__controlled.png",
+        "groundTruthFile": "labels/jp_slide_6.txt",
+        "category": "controlled",
+        "split": "held-out",
+        "family": "jp_slide_6",
+        "script": "Japanese",
+        "language": "jp",
+        "sha256": "632b55cdda464b79f4bcfc07335722835dbf191cf9938988edc157e9903efcf7",
+        "easyOcrLanguages": [
+          "ja"
+        ],
+        "paddleOcrLanguages": [
+          "Japanese"
+        ],
+        "annotationGranularity": "one annotated text block; eligible text-category fallback only when no text_block exists",
+        "sourceSha256": "e3afb91d40edae1ee39bfaee639eb49dd4f426112d33f5dd6d5ad4b00b914fb0",
+        "sourceImage": "jp_slide_6.jpg",
+        "annotationIndex": 7,
+        "annotationId": 7,
+        "annotationCategory": "text_block",
+        "sourcePolygon": [
+          105.0,
+          646.0000000000001,
+          1438.0,
+          646.0000000000001,
+          1438.0,
+          898.0000000000001,
+          105.0,
+          898.0000000000001
+        ],
+        "sourceCropBox": [
+          105,
+          646,
+          1438,
+          899
+        ],
+        "labelSha256": "d52c46f995bd2c99e4d44e91d5c7bc8a7dca082d561ec7fd18dcd1a48b2a9b99",
+        "sourceBlockId": "jp_slide_6",
+        "synthetic": true,
+        "controlledTransform": "12px white border; clockwise2deg bilinear expanded white; left/right166..255 multiplicative illumination; Gaussian blur radius0.45px"
+      }
+    ],
+    "excludedSourceImages": [
+      {
+        "id": "en_book_2_indoor_light_top_bend-in",
+        "reason": "Photograph annotations reuse clean-page coordinates; no per-photo registration is supplied"
+      },
+      {
+        "id": "en_newspaper_30_indoor_light_left_blur",
+        "reason": "Photograph annotations reuse clean-page coordinates; no per-photo registration is supplied"
+      },
+      {
+        "id": "en_book_6_indoor_light_right_wrinkle_bend-out",
+        "reason": "Photograph annotations reuse clean-page coordinates; no per-photo registration is supplied"
+      },
+      {
+        "id": "en_paper_41_indoor_light_right",
+        "reason": "Photograph annotations reuse clean-page coordinates; no per-photo registration is supplied"
+      },
+      {
+        "id": "ar_book_3_indoor_light_top_bend-out",
+        "reason": "Photograph annotations reuse clean-page coordinates; no per-photo registration is supplied"
+      },
+      {
+        "id": "ar_academicpaper_33_indoor_light_oblique_wrinkle_bend-in",
+        "reason": "Photograph annotations reuse clean-page coordinates; no per-photo registration is supplied"
+      },
+      {
+        "id": "ar_academicpaper_37_indoor_light_shadow_top_crease",
+        "reason": "Photograph annotations reuse clean-page coordinates; no per-photo registration is supplied"
+      },
+      {
+        "id": "ar_book_8_indoor_light_top_crease_hold",
+        "reason": "Photograph annotations reuse clean-page coordinates; no per-photo registration is supplied"
+      },
+      {
+        "id": "hi_comicbook_28_indoor_light_left",
+        "reason": "Photograph annotations reuse clean-page coordinates; no per-photo registration is supplied"
+      },
+      {
+        "id": "hi_textbook_34_indoor_light_top",
+        "reason": "Photograph annotations reuse clean-page coordinates; no per-photo registration is supplied"
+      },
+      {
+        "id": "hi_book_15_indoor_light_top_bend-in",
+        "reason": "Photograph annotations reuse clean-page coordinates; no per-photo registration is supplied"
+      },
+      {
+        "id": "hi_book_17_indoor_light_top_crease",
+        "reason": "Photograph annotations reuse clean-page coordinates; no per-photo registration is supplied"
+      },
+      {
+        "id": "zh_financialpaper_46_indoor_light_top",
+        "reason": "Photograph annotations reuse clean-page coordinates; no per-photo registration is supplied"
+      },
+      {
+        "id": "zh_newspaper_22_indoor_light_top_crease_bend-in_blur",
+        "reason": "Photograph annotations reuse clean-page coordinates; no per-photo registration is supplied"
+      },
+      {
+        "id": "zh_slide_45_indoor_light_right_bend-in",
+        "reason": "Photograph annotations reuse clean-page coordinates; no per-photo registration is supplied"
+      },
+      {
+        "id": "zh_exampaper_35_indoor_light_down_crease",
+        "reason": "Photograph annotations reuse clean-page coordinates; no per-photo registration is supplied"
+      },
+      {
+        "id": "jp_magazine_29_indoor_light_top_crease_bend-in",
+        "reason": "Photograph annotations reuse clean-page coordinates; no per-photo registration is supplied"
+      },
+      {
+        "id": "jp_note_39_indoor_light_right_wrinkle_bend-in",
+        "reason": "Photograph annotations reuse clean-page coordinates; no per-photo registration is supplied"
+      },
+      {
+        "id": "jp_book_1_indoor_light_top_bend-in",
+        "reason": "Photograph annotations reuse clean-page coordinates; no per-photo registration is supplied"
+      },
+      {
+        "id": "jp_slide_6_indoor_light_right_bend-in_wrinkle",
+        "reason": "Photograph annotations reuse clean-page coordinates; no per-photo registration is supplied"
+      }
+    ],
+    "sourceManifestSha256": "aeb463b1485dcfc044859b7dc855ba2d97c8c15f4c0682a8406ddf28660b653d",
+    "preparationPillowVersion": "11.3.0",
+    "pixelPreparation": "Bounding box floor/ceil clipped to source; original polygon retained, outside white; RGB PNG; no resampling, EXIF transform or padding"
+  }
+}

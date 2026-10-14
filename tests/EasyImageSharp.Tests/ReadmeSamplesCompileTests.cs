@@ -25,6 +25,29 @@ public class ReadmeSamplesCompileTests
         Assert.True(true);
     }
 
+    // README: reusable tensor buffer sample
+    private static void ReusableTensor(Image<Rgb24> crop)
+    {
+        int tensorWidth = crop.Width + 16;
+        int planeStride = checked(tensorWidth * crop.Height);
+        float[] batch = new float[checked(2 * 3 * planeStride)];
+        var tensorOptions = new TensorWriteOptions
+        {
+            Channels = TensorChannels.Bgr,
+            DestinationOffset = 3 * planeStride,
+            RowStride = tensorWidth,
+            PlaneStride = planeStride,
+        };
+        crop.WriteTensor(batch, tensorOptions, channelMean: [0.5f], channelStd: [0.5f]);
+    }
+
+    private static void IndependentPages()
+    {
+        using Image<Rgb24> pages = Image.Load<Rgb24>("scans.tiff");
+        pages.Mutate(ctx => ctx.AutoRotateDocumentPages().AutoCropPages());
+        pages.SaveAsTiff("corrected.tiff");
+    }
+
     // README: header sample
     private static void Header()
     {

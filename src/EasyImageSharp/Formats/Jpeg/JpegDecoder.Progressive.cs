@@ -237,6 +237,7 @@ internal sealed partial class JpegDecoderCore
             int offset = 0;
             for (int by = 0; by < component.BlocksPerColumnTotal; by++)
             {
+                OperationExecution.Checkpoint();
                 for (int bx = 0; bx < component.BlocksPerLineTotal; bx++)
                 {
                     for (int k = 0; k < 64; k++)
@@ -245,7 +246,15 @@ internal sealed partial class JpegDecoderCore
                         block[natural] = coefficients[offset + k] * quant[natural];
                     }
 
-                    JpegTables.InverseDct(block, temp);
+                    if (component.BlockSize == 8)
+                    {
+                        JpegTables.InverseDct(block, temp);
+                    }
+                    else
+                    {
+                        JpegReducedIdct.Transform(block, temp, component.BlockSize);
+                    }
+
                     WriteBlock(component, bx, by, block);
                     offset += 64;
                 }

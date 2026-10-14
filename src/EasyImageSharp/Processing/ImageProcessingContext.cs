@@ -312,9 +312,9 @@ internal sealed partial class ImageProcessingContext<TPixel> : IImageProcessingC
     }
 
     /// <summary>The scaled content size plus where it lands on the output canvas.</summary>
-    private readonly record struct ResizePlan(int ContentWidth, int ContentHeight, int CanvasWidth, int CanvasHeight, int OffsetX, int OffsetY);
+    internal readonly record struct ResizePlan(int ContentWidth, int ContentHeight, int CanvasWidth, int CanvasHeight, int OffsetX, int OffsetY);
 
-    private static ResizePlan ComputeResizeTargets(ResizeOptions options, int sourceWidth, int sourceHeight)
+    internal static ResizePlan ComputeResizeTargets(ResizeOptions options, int sourceWidth, int sourceHeight)
     {
         int requestedW = options.Size.Width;
         int requestedH = options.Size.Height;
@@ -326,34 +326,34 @@ internal sealed partial class ImageProcessingContext<TPixel> : IImageProcessingC
         // A zero dimension is computed from the aspect ratio.
         if (requestedW <= 0)
         {
-            requestedW = Math.Max(1, (int)Math.Round((double)sourceWidth * requestedH / sourceHeight));
+            requestedW = CheckedResizeDimension((double)sourceWidth * requestedH / sourceHeight);
         }
         else if (requestedH <= 0)
         {
-            requestedH = Math.Max(1, (int)Math.Round((double)sourceHeight * requestedW / sourceWidth));
+            requestedH = CheckedResizeDimension((double)sourceHeight * requestedW / sourceWidth);
         }
 
         switch (options.Mode)
         {
             case ResizeMode.Stretch:
-                return new ResizePlan(requestedW, requestedH, requestedW, requestedH, 0, 0);
+                return CheckedResizePlan(requestedW, requestedH, requestedW, requestedH, 0, 0);
 
             case ResizeMode.Max:
             {
                 (int w, int h) = ScaleToFit(sourceWidth, sourceHeight, requestedW, requestedH);
-                return new ResizePlan(w, h, w, h, 0, 0);
+                return CheckedResizePlan(w, h, w, h, 0, 0);
             }
 
             case ResizeMode.Min:
             {
                 (int w, int h) = ScaleToCover(sourceWidth, sourceHeight, requestedW, requestedH);
-                return new ResizePlan(w, h, w, h, 0, 0);
+                return CheckedResizePlan(w, h, w, h, 0, 0);
             }
 
             case ResizeMode.Pad:
             {
                 (int w, int h) = ScaleToFit(sourceWidth, sourceHeight, requestedW, requestedH);
-                return new ResizePlan(
+                return CheckedResizePlan(
                     w, h, requestedW, requestedH,
                     FrameOps.AnchorOffset(options.Position, horizontal: true, requestedW, w),
                     FrameOps.AnchorOffset(options.Position, horizontal: false, requestedH, h));
@@ -364,7 +364,7 @@ internal sealed partial class ImageProcessingContext<TPixel> : IImageProcessingC
                 (int w, int h) = sourceWidth <= requestedW && sourceHeight <= requestedH
                     ? (sourceWidth, sourceHeight)
                     : ScaleToFit(sourceWidth, sourceHeight, requestedW, requestedH);
-                return new ResizePlan(
+                return CheckedResizePlan(
                     w, h, requestedW, requestedH,
                     FrameOps.AnchorOffset(options.Position, horizontal: true, requestedW, w),
                     FrameOps.AnchorOffset(options.Position, horizontal: false, requestedH, h));
@@ -372,6 +372,12 @@ internal sealed partial class ImageProcessingContext<TPixel> : IImageProcessingC
 
             case ResizeMode.Crop:
             {
+                if (options.CenterCoordinates is PointF coordinates
+                    && (!float.IsFinite(coordinates.X) || !float.IsFinite(coordinates.Y)))
+                {
+                    throw new ArgumentException("Crop center coordinates must be finite.", nameof(options));
+                }
+
                 (int w, int h) = ScaleToCover(sourceWidth, sourceHeight, requestedW, requestedH);
                 w = Math.Max(w, requestedW);
                 h = Math.Max(h, requestedH);
@@ -391,7 +397,7 @@ internal sealed partial class ImageProcessingContext<TPixel> : IImageProcessingC
                     offsetY = FrameOps.AnchorOffset(options.Position, horizontal: false, requestedH, h);
                 }
 
-                return new ResizePlan(w, h, requestedW, requestedH, offsetX, offsetY);
+                return CheckedResizePlan(w, h, requestedW, requestedH, offsetX, offsetY);
             }
 
             case ResizeMode.Manual:
@@ -402,7 +408,7 @@ internal sealed partial class ImageProcessingContext<TPixel> : IImageProcessingC
                     throw new ArgumentException("ResizeMode.Manual requires a TargetRectangle with a positive width and height.", nameof(options));
                 }
 
-                return new ResizePlan(target.Width, target.Height, requestedW, requestedH, target.X, target.Y);
+                return CheckedResizePlan(target.Width, target.Height, requestedW, requestedH, target.X, target.Y);
             }
 
             default:
@@ -414,14 +420,35 @@ internal sealed partial class ImageProcessingContext<TPixel> : IImageProcessingC
     private static (int Width, int Height) ScaleToFit(int sourceWidth, int sourceHeight, int boxWidth, int boxHeight)
     {
         double scale = Math.Min((double)boxWidth / sourceWidth, (double)boxHeight / sourceHeight);
-        return (Math.Max(1, (int)Math.Round(sourceWidth * scale)), Math.Max(1, (int)Math.Round(sourceHeight * scale)));
+        return (CheckedResizeDimension(sourceWidth * scale), CheckedResizeDimension(sourceHeight * scale));
     }
 
     /// <summary>The smallest size with the source aspect ratio that covers the box.</summary>
     private static (int Width, int Height) ScaleToCover(int sourceWidth, int sourceHeight, int boxWidth, int boxHeight)
     {
         double scale = Math.Max((double)boxWidth / sourceWidth, (double)boxHeight / sourceHeight);
-        return (Math.Max(1, (int)Math.Round(sourceWidth * scale)), Math.Max(1, (int)Math.Round(sourceHeight * scale)));
+        return (CheckedResizeDimension(sourceWidth * scale), CheckedResizeDimension(sourceHeight * scale));
+    }
+
+    private static int CheckedResizeDimension(double value)
+    {
+        double rounded = Math.Round(value);
+        if (!double.IsFinite(rounded) || rounded > int.MaxValue)
+        {
+            throw new InvalidImageContentException("Resized dimensions exceed the supported buffer size.");
+        }
+
+        return Math.Max(1, (int)rounded);
+    }
+
+    private static ResizePlan CheckedResizePlan(int contentWidth, int contentHeight, int canvasWidth, int canvasHeight, int offsetX, int offsetY)
+    {
+        if ((long)contentWidth * contentHeight > int.MaxValue || (long)canvasWidth * canvasHeight > int.MaxValue)
+        {
+            throw new InvalidImageContentException("Resized dimensions exceed the supported buffer size.");
+        }
+
+        return new ResizePlan(contentWidth, contentHeight, canvasWidth, canvasHeight, offsetX, offsetY);
     }
 
     private static byte ClampByte(float value) => (byte)Math.Clamp((int)(value + 0.5f), 0, 255);

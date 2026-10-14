@@ -43,6 +43,46 @@ page.SaveAsPng("clean.png");
 `ImageAiSession` caches one inference session per model and is safe to keep for the lifetime of your
 application. Dispose it when you are done.
 
+### Document profiles with diagnostics
+
+```csharp
+using var processed = await page.PreprocessDocumentAIAsync(ai, new()
+{
+    AutoOrient = true,
+    Dewarp = true,
+    Preprocessing = new() { Profile = DocumentPreprocessingProfile.NeuralOcr },
+});
+processed.Image.SaveAsPng("rectified.png");
+foreach (var stage in processed.Pages[0].Stages)
+    Console.WriteLine($"{stage.Name}: applied={stage.Applied}; {stage.Reason}; {stage.Elapsed}");
+```
+
+The result owns its output image and leaves the source unchanged. Each frame is processed independently.
+Orientation scores below `MinimumOrientationConfidence` cause abstention. Requested AI stages require their
+models; an unavailable model or incompatible export raises an error rather than silently skipping work.
+
+The published UVDoc model consumes **BGR at full resolution**, with edge padding to a multiple of 32,
+and returns a rectified image. It provides no correspondence grid, so both coordinate mapping methods
+return `false` after this stage. Image output is opaque because the model does not return alpha.
+The default 16-million-pixel padded-input budget rejects larger inputs;
+configure `DewarpContract.MaximumInputPixels` according to available memory. It does not silently reduce
+resolution. Explicit `FixedInputSize` is available for exports requiring it; image-output detail is then
+limited by that size.
+
+Custom model overrides can select RGB order, named inputs/outputs, fixed dimensions or a normalized
+`[1,2,H,W]` backward sampling grid through `DocumentDewarpContract`. Grid exports resample the original
+full-resolution image with bilinear premultiplied-alpha sampling and replicated borders. Set
+`SizeMultiple=1` for unpadded grid coordinates. `GridAlignCorners` must match the export. Grid results expose
+processed-to-source mapping; forward mapping remains unavailable because an arbitrary grid may fold.
+Never assume unavailable mapping is identity. `DewarpDocumentWithContractAsync` provides the same explicit
+contract for an in-place operation.
+
+The standard orientation path uses aspect-preserving bilinear resize to short side 256 followed by a
+224-square center crop. These preprocessing corrections also apply to the existing `AutoOrient` and
+`DewarpDocument` methods. Their output changes from the previous stretched classifier input and
+fixed 488-by-712 RGB dewarp path. For generic image models, `ImageModelContract.UseBgrChannelOrder` applies
+normalization in the model's channel order.
+
 ## Operations
 
 | Method | What it does |

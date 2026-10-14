@@ -1,0 +1,95 @@
+{
+  "date": "2026-10-14",
+  "state": "local working tree, planned 1.2.0, not published",
+  "test_command": "dotnet test EasyImageSharp.slnx -c Release --disable-build-servers -m:1",
+  "tests": {
+    "net8.0": {
+      "core": 4372,
+      "ai": 173,
+      "skia": 6,
+      "littlecms": 90
+    },
+    "net10.0": {
+      "core": 4360,
+      "ai": 173,
+      "skia": 6,
+      "littlecms": 90
+    }
+  },
+  "total_solution_passed": 9270,
+  "failed": 0,
+  "skipped": 0,
+  "scalar_net10_core_passed": 4360,
+  "python_evaluator_passed": 29,
+  "consumer_tensor_parity_passed": 6,
+  "trimmed_windows_smoke_passed": 52,
+  "packages": [
+    {
+      "package": "EasyImageSharp.1.2.0.nupkg",
+      "sha256": "f10837e82d918158021df123720be53ce851d34da7c7deeda05213d193a6bb31",
+      "assetsVerified": true
+    },
+    {
+      "package": "EasyImageSharp.AI.1.2.0.nupkg",
+      "sha256": "2fe24c527a39f7201dbe8c6cb46275003a9e7226d75301763b9762a0e623b172",
+      "assetsVerified": true
+    },
+    {
+      "package": "EasyImageSharp.LittleCms.1.2.0.nupkg",
+      "sha256": "66efd36f025887532c28d355690f042efbf95ecb7514e2ba8f53806f8518e1b4",
+      "assetsVerified": true
+    },
+    {
+      "package": "EasyImageSharp.SkiaSharp.1.2.0.nupkg",
+      "sha256": "28a5cdb2271f94a365adc8535b59e498bb2d6bf872be150bb008f08e886e8b54",
+      "assetsVerified": true
+    }
+  ],
+  "limits": [
+    "Physical ARM64 and macOS runner execution remains CI validation; ARM64 local execution used QEMU.",
+    "Windows Native AOT linker unavailable; Linux Native AOT and Windows trimming independently verified.",
+    "Corpus and orientation reports have explicit small-sample, synthetic-data and annotation limitations; they do not prove universal OCR accuracy.",
+    "Performance depends on workload, concurrency and quality contract; no universal speedup is claimed."
+  ],
+  "framework_dependent_windows_smoke_passed": 52,
+  "littlecms_linux_net10_passed": 90,
+  "process_isolation": {
+    "windows_checks": 3,
+    "linux_checks": 4,
+    "reports": "benchmarks/resource-isolation"
+  },
+  "native_aot": {
+    "linux_x64_checks": 52,
+    "qemu_linux_arm64_checks": 52,
+    "failures": 0,
+    "report": "benchmarks/results/native-aot-verification-2026-10-14.json"
+  },
+  "linux_net10_core_passed": 4360,
+  "concurrent_performance_report": "benchmarks/core-throughput-quiet-2026-10-14.json",
+  "fixture_determinism": {
+    "files": 1298,
+    "differences": 0,
+    "comparison_regression_tests": 3,
+    "report": "benchmarks/fixture-determinism-2026-10-14.json"
+  },
+  "ocr_evaluation": {
+    "configurations": 6,
+    "observations": 240,
+    "processing_failures": 0,
+    "regions_per_configuration": 40,
+    "held_out_regions": 20,
+    "held_out_source_pages": 10,
+    "source_release_exact_successful_parity": {
+      "easyocr": 40,
+      "paddleocr": 40
+    },
+    "held_out_character_error_rate": {
+      "paddle_baseline": 0.510391098019964,
+      "paddle_scanned_document": 0.41695303550973656,
+      "paddle_phone_document": 0.47193585337915234,
+      "easyocr_baseline": 0.35174275895925383
+    },
+    "report": "benchmarks/ocr/results/mdp-block-quality-summary.json",
+    "limitations": "Small annotation-selected digital text blocks with paired synthetic challenges; not real-photo/full-page validation. Improvements vary by script and image; defaults unchanged."
+  }
+}

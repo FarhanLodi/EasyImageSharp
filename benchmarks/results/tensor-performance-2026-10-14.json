@@ -1,0 +1,68 @@
+﻿{
+    "measured_date":  "2026-10-14",
+    "scope":  "Exploratory ShortRun; conversion only, no inference. Three measured iterations, one launch, three warmups. Detector timings varied substantially between runs; do not treat these as a stable end-to-end speedup.",
+    "command":  "dotnet run -c Release -f net10.0 --project benchmarks/EasyImageSharp.Benchmarks -- --filter \u0027*TensorBenchmarks*\u0027 --job Short",
+    "environment":  {
+                        "BenchmarkDotNetCaption":  "BenchmarkDotNet",
+                        "BenchmarkDotNetVersion":  "0.15.8",
+                        "OsVersion":  "Windows 11 (10.0.26200.9550/25H2/2025Update/HudsonValley2)",
+                        "ProcessorName":  "AMD Ryzen 5 4600H with Radeon Graphics",
+                        "PhysicalProcessorCount":  1,
+                        "PhysicalCoreCount":  6,
+                        "LogicalCoreCount":  12,
+                        "RuntimeVersion":  ".NET 10.0.12 (10.0.12, 10.0.1226.42308)",
+                        "Architecture":  "X64",
+                        "HasAttachedDebugger":  false,
+                        "HasRyuJit":  true,
+                        "Configuration":  "RELEASE",
+                        "DotNetCliVersion":  "10.0.301",
+                        "ChronometerFrequency":  {
+                                                     "Hertz":  10000000
+                                                 },
+                        "HardwareTimerKind":  "Unknown"
+                    },
+    "benchmarks":  [
+                       {
+                           "method":  "AllocatingRgb",
+                           "parameters":  "Workload=detector",
+                           "mean_ns":  4263943.489583333,
+                           "standard_deviation_ns":  305032.396342338,
+                           "allocated_bytes_per_operation":  11083608
+                       },
+                       {
+                           "method":  "ReusableRgb",
+                           "parameters":  "Workload=detector",
+                           "mean_ns":  2690395.9635416665,
+                           "standard_deviation_ns":  206963.66143060193,
+                           "allocated_bytes_per_operation":  2
+                       },
+                       {
+                           "method":  "ReusableBgr",
+                           "parameters":  "Workload=detector",
+                           "mean_ns":  1733233.7565104167,
+                           "standard_deviation_ns":  8351.311516316575,
+                           "allocated_bytes_per_operation":  1
+                       },
+                       {
+                           "method":  "AllocatingRgb",
+                           "parameters":  "Workload=recognizer",
+                           "mean_ns":  90350.08138020833,
+                           "standard_deviation_ns":  583.1076964028774,
+                           "allocated_bytes_per_operation":  184560
+                       },
+                       {
+                           "method":  "ReusableRgb",
+                           "parameters":  "Workload=recognizer",
+                           "mean_ns":  29839.60673014323,
+                           "standard_deviation_ns":  18.06069189204369,
+                           "allocated_bytes_per_operation":  0
+                       },
+                       {
+                           "method":  "ReusableBgr",
+                           "parameters":  "Workload=recognizer",
+                           "mean_ns":  29895.8246866862,
+                           "standard_deviation_ns":  94.14321869789804,
+                           "allocated_bytes_per_operation":  0
+                       }
+                   ]
+}

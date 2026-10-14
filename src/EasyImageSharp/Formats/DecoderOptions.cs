@@ -8,8 +8,8 @@ namespace EasyImageSharp.Formats;
 /// <para>
 /// Decoders enforce <see cref="MaxPixels"/> immediately after parsing the image header and before any
 /// pixel memory is allocated, so a hostile file that claims enormous dimensions is rejected cheaply with an
-/// <see cref="ImageSizeLimitExceededException"/>. Header inspection via <c>Identify</c> is never limited,
-/// so callers can always inspect the declared size first.
+/// <see cref="ImageSizeLimitExceededException"/>. Header inspection via <c>Identify</c> ignores pixel limits,
+/// so callers can inspect declared dimensions first. Encoded-byte limits and cancellation still apply.
 /// </para>
 /// <para>
 /// <see cref="MaxPixels"/> bounds one frame. Multi-frame formats — animated GIF, animated WebP, APNG,
@@ -35,6 +35,40 @@ public sealed class DecoderOptions
     private long maxPixels = DefaultMaxPixels;
     private long maxTotalPixels = DefaultMaxTotalPixels;
     private int maxFrames = int.MaxValue;
+    private long maxEncodedBytes = int.MaxValue;
+
+    /// <summary>Maximum encoded input bytes accepted, including on non-seekable streams. Defaults to the span decoder address limit.</summary>
+    public long MaxEncodedBytes
+    {
+        get => this.maxEncodedBytes;
+        init => this.maxEncodedBytes = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
+    }
+
+    /// <summary>Optional request-local parallelism, cancellation, and cumulative pixel-buffer allocation policy.</summary>
+    public ImageExecutionOptions? ExecutionOptions { get; init; }
+
+    /// <summary>Optional custom format providers, considered before built-in formats. The collection is copied on initialization.</summary>
+    public IReadOnlyList<ImageFormat> AdditionalFormats
+    {
+        get => this.additionalFormats;
+        init
+        {
+            ArgumentNullException.ThrowIfNull(value);
+            if (value.Any(format => format is null)) throw new ArgumentException("A format provider cannot be null.", nameof(value));
+            this.additionalFormats = Array.AsReadOnly(value.ToArray());
+        }
+    }
+
+    private readonly IReadOnlyList<ImageFormat> additionalFormats = Array.Empty<ImageFormat>();
+
+    internal void EnsureEncodedWithinLimits(long length)
+    {
+        OperationExecution.Checkpoint();
+        if (length > this.maxEncodedBytes || length > int.MaxValue)
+        {
+            throw new ImageSizeLimitExceededException("Encoded image exceeds DecoderOptions.MaxEncodedBytes or the buffered decoder address limit.");
+        }
+    }
 
     /// <summary>The options used when none are supplied.</summary>
     public static DecoderOptions Default { get; } = new();
@@ -105,6 +139,7 @@ public sealed class DecoderOptions
     /// </remarks>
     internal void EnsureFrameWithinLimits(int width, int height, string formatName)
     {
+        OperationExecution.Checkpoint();
         long pixels = (long)width * height;
         if (pixels > this.maxPixels)
         {

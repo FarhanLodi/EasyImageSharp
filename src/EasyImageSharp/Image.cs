@@ -69,40 +69,54 @@ public abstract partial class Image : IDisposable
         where TPixel : unmanaged, IPixel<TPixel>
     {
         ArgumentNullException.ThrowIfNull(options);
-        return ImageFormatDetector.DetectOrThrow(data).CreateDecoder().Decode<TPixel>(data, options);
+        using var execution = OperationExecution.Enter(options.ExecutionOptions);
+        options.EnsureEncodedWithinLimits(data.Length);
+        return ImageFormatDetector.DetectOrThrow(data, options).CreateDecoder().Decode<TPixel>(data, options);
     }
 
     public static Image<TPixel> Load<TPixel>(Stream stream)
         where TPixel : unmanaged, IPixel<TPixel>
-        => Load<TPixel>(ReadAllBytes(stream));
+        => Load<TPixel>(stream, DecoderOptions.Default);
 
     public static Image<TPixel> Load<TPixel>(Stream stream, DecoderOptions options)
         where TPixel : unmanaged, IPixel<TPixel>
-        => Load<TPixel>(ReadAllBytes(stream), options);
+        => Load<TPixel>(BoundedImageInput.Read(stream, options).Span, options);
 
     public static Image<TPixel> Load<TPixel>(string path)
         where TPixel : unmanaged, IPixel<TPixel>
-        => Load<TPixel>(File.ReadAllBytes(path));
+        => Load<TPixel>(path, DecoderOptions.Default);
 
     public static Image<TPixel> Load<TPixel>(string path, DecoderOptions options)
         where TPixel : unmanaged, IPixel<TPixel>
-        => Load<TPixel>(File.ReadAllBytes(path), options);
+    {
+        using FileStream stream = File.OpenRead(path);
+        return Load<TPixel>(stream, options);
+    }
 
     public static async Task<Image<TPixel>> LoadAsync<TPixel>(Stream stream, CancellationToken cancellationToken = default)
         where TPixel : unmanaged, IPixel<TPixel>
-        => Load<TPixel>(await ReadAllBytesAsync(stream, cancellationToken).ConfigureAwait(false));
+        => await LoadAsync<TPixel>(stream, DecoderOptions.Default, cancellationToken).ConfigureAwait(false);
 
     public static async Task<Image<TPixel>> LoadAsync<TPixel>(Stream stream, DecoderOptions options, CancellationToken cancellationToken = default)
         where TPixel : unmanaged, IPixel<TPixel>
-        => Load<TPixel>(await ReadAllBytesAsync(stream, cancellationToken).ConfigureAwait(false), options);
+    {
+        ArgumentNullException.ThrowIfNull(options);
+        using var execution = OperationExecution.Enter(options.ExecutionOptions, cancellationToken);
+        ReadOnlyMemory<byte> bytes = await BoundedImageInput.ReadAsync(stream, options, cancellationToken).ConfigureAwait(false);
+        OperationExecution.Checkpoint();
+        return Load<TPixel>(bytes.Span, options);
+    }
 
     public static async Task<Image<TPixel>> LoadAsync<TPixel>(string path, CancellationToken cancellationToken = default)
         where TPixel : unmanaged, IPixel<TPixel>
-        => Load<TPixel>(await File.ReadAllBytesAsync(path, cancellationToken).ConfigureAwait(false));
+        => await LoadAsync<TPixel>(path, DecoderOptions.Default, cancellationToken).ConfigureAwait(false);
 
     public static async Task<Image<TPixel>> LoadAsync<TPixel>(string path, DecoderOptions options, CancellationToken cancellationToken = default)
         where TPixel : unmanaged, IPixel<TPixel>
-        => Load<TPixel>(await File.ReadAllBytesAsync(path, cancellationToken).ConfigureAwait(false), options);
+    {
+        await using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 65536, FileOptions.Asynchronous);
+        return await LoadAsync<TPixel>(stream, options, cancellationToken).ConfigureAwait(false);
+    }
 
     /// <summary>Loads an image from encoded bytes using <see cref="Rgba32"/> as the pixel format.</summary>
     public static Image Load(ReadOnlySpan<byte> data) => Load<Rgba32>(data);
@@ -137,10 +151,10 @@ public abstract partial class Image : IDisposable
     {
         Guard.MustBePositive(width, nameof(width));
         Guard.MustBePositive(height, nameof(height));
-        if (data.Length < width * height)
+        if (data.Length < (long)width * height)
         {
             throw new ArgumentException(
-                $"The pixel buffer holds {data.Length} pixels but {width}x{height} requires {width * height}.", nameof(data));
+                $"The pixel buffer holds {data.Length} pixels but {width}x{height} requires {(long)width * height}.", nameof(data));
         }
 
         var image = new Image<TPixel>(width, height);
@@ -162,55 +176,44 @@ public abstract partial class Image : IDisposable
     public static ImageInfo Identify(ReadOnlySpan<byte> data, DecoderOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
-        return ImageFormatDetector.DetectOrThrow(data).CreateDecoder().Identify(data, options);
+        using var execution = OperationExecution.Enter(options.ExecutionOptions);
+        options.EnsureEncodedWithinLimits(data.Length);
+        return ImageFormatDetector.DetectOrThrow(data, options).CreateDecoder().Identify(data, options);
     }
 
-    public static ImageInfo Identify(Stream stream) => Identify(ReadAllBytes(stream));
+    public static ImageInfo Identify(Stream stream) => Identify(stream, DecoderOptions.Default);
 
-    public static ImageInfo Identify(Stream stream, DecoderOptions options) => Identify(ReadAllBytes(stream), options);
+    public static ImageInfo Identify(Stream stream, DecoderOptions options) => Identify(BoundedImageInput.Read(stream, options).Span, options);
 
-    public static ImageInfo Identify(string path) => Identify((ReadOnlySpan<byte>)File.ReadAllBytes(path));
+    public static ImageInfo Identify(string path) => Identify(path, DecoderOptions.Default);
 
-    public static ImageInfo Identify(string path, DecoderOptions options) => Identify((ReadOnlySpan<byte>)File.ReadAllBytes(path), options);
+    public static ImageInfo Identify(string path, DecoderOptions options)
+    {
+        using FileStream stream = File.OpenRead(path);
+        return Identify(stream, options);
+    }
 
     public static async Task<ImageInfo> IdentifyAsync(Stream stream, CancellationToken cancellationToken = default)
-        => Identify((ReadOnlySpan<byte>)await ReadAllBytesAsync(stream, cancellationToken).ConfigureAwait(false));
+        => await IdentifyAsync(stream, DecoderOptions.Default, cancellationToken).ConfigureAwait(false);
 
     public static async Task<ImageInfo> IdentifyAsync(Stream stream, DecoderOptions options, CancellationToken cancellationToken = default)
-        => Identify((ReadOnlySpan<byte>)await ReadAllBytesAsync(stream, cancellationToken).ConfigureAwait(false), options);
+    {
+        ArgumentNullException.ThrowIfNull(options);
+        using var execution = OperationExecution.Enter(options.ExecutionOptions, cancellationToken);
+        ReadOnlyMemory<byte> bytes = await BoundedImageInput.ReadAsync(stream, options, cancellationToken).ConfigureAwait(false);
+        return Identify(bytes.Span, options);
+    }
 
     public static async Task<ImageInfo> IdentifyAsync(string path, CancellationToken cancellationToken = default)
-        => Identify((ReadOnlySpan<byte>)await File.ReadAllBytesAsync(path, cancellationToken).ConfigureAwait(false));
+        => await IdentifyAsync(path, DecoderOptions.Default, cancellationToken).ConfigureAwait(false);
 
     public static async Task<ImageInfo> IdentifyAsync(string path, DecoderOptions options, CancellationToken cancellationToken = default)
-        => Identify((ReadOnlySpan<byte>)await File.ReadAllBytesAsync(path, cancellationToken).ConfigureAwait(false), options);
+    {
+        await using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 65536, FileOptions.Asynchronous);
+        return await IdentifyAsync(stream, options, cancellationToken).ConfigureAwait(false);
+    }
 
     /// <summary>Detects the format of encoded image bytes from their magic numbers.</summary>
     public static ImageFormat DetectFormat(ReadOnlySpan<byte> data) => ImageFormatDetector.DetectOrThrow(data);
 
-    // ----- Helpers -----
-
-    private static byte[] ReadAllBytes(Stream stream)
-    {
-        ArgumentNullException.ThrowIfNull(stream);
-        if (stream is MemoryStream ms && ms.TryGetBuffer(out ArraySegment<byte> segment) && segment.Offset == 0 && ms.Position == 0)
-        {
-            // Fast path: use the memory stream's buffer directly.
-            byte[] direct = new byte[ms.Length];
-            Array.Copy(segment.Array!, direct, direct.Length);
-            return direct;
-        }
-
-        using var buffer = new MemoryStream();
-        stream.CopyTo(buffer);
-        return buffer.ToArray();
-    }
-
-    private static async Task<byte[]> ReadAllBytesAsync(Stream stream, CancellationToken cancellationToken)
-    {
-        ArgumentNullException.ThrowIfNull(stream);
-        using var buffer = new MemoryStream();
-        await stream.CopyToAsync(buffer, cancellationToken).ConfigureAwait(false);
-        return buffer.ToArray();
-    }
 }

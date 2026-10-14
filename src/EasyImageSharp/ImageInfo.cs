@@ -14,6 +14,17 @@ public sealed class PixelTypeInfo
 /// <summary>Header-level information about an encoded image, produced by <see cref="Image.Identify(ReadOnlySpan{byte})"/>.</summary>
 public sealed class ImageInfo
 {
+    /// <summary>Creates header information for an external format provider.</summary>
+    public static ImageInfo Create(int width, int height, int bitsPerPixel, int frameCount, ImageFormat format, ImageMetadata? metadata = null)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(width);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(height);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bitsPerPixel);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(frameCount);
+        ArgumentNullException.ThrowIfNull(format);
+        return new ImageInfo(width, height, bitsPerPixel, frameCount, format, metadata);
+    }
+
     internal ImageInfo(int width, int height, int bitsPerPixel, int frameCount, ImageFormat format)
         : this(width, height, bitsPerPixel, frameCount, format, null)
     {

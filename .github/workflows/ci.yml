@@ -54,6 +54,27 @@ jobs:
           key: nuget-${{ matrix.os }}-${{ hashFiles('**/*.csproj', '**/Directory.Build.props') }}
           restore-keys: nuget-${{ matrix.os }}-
 
+      - name: Build pinned Windows Little CMS runtime
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./scripts/build-littlecms.ps1
+
+      - name: Upload reproducible Windows Little CMS runtime
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: littlecms-win-x64
+          path: .artifacts/native/lcms2/win-x64/lcms2.dll
+          if-no-files-found: error
+
+      - name: Install Linux Little CMS runtime
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y liblcms2-dev
+
+      - name: Install macOS Little CMS runtime
+        if: runner.os == 'macOS'
+        run: brew install little-cms2
+
       - name: Restore
         run: dotnet restore EasyImageSharp.slnx
 
@@ -68,6 +89,15 @@ jobs:
       - name: Test net10.0
         run: dotnet test EasyImageSharp.slnx -c Release --no-build -f net10.0 --logger "trx;LogFileName=net10.trx" --results-directory TestResults
 
+      - name: Build isolated image worker
+        if: runner.os != 'macOS'
+        run: dotnet build tools/IsolatedImageWorker -c Release
+
+      - name: Verify native memory limits and worker deadline
+        if: runner.os != 'macOS'
+        timeout-minutes: 3
+        run: dotnet run --project tools/IsolatedImageWorker -c Release --no-build -- --self-test
+
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
@@ -75,6 +105,32 @@ jobs:
           name: test-results-${{ matrix.os }}
           path: TestResults
           if-no-files-found: warn
+
+  core-arm64:
+    name: Core ARM64 and scalar parity
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+      - name: Test ARM64 net8 and net10
+        run: dotnet test tests/EasyImageSharp.Tests -c Release
+      - name: Test scalar paths
+        env:
+          DOTNET_EnableHWIntrinsic: "0"
+        run: dotnet test tests/EasyImageSharp.Tests -c Release -f net10.0 --no-build
+      - name: Publish and run native ARM64 smoke
+        run: |
+          set -euo pipefail
+          dotnet publish samples/AotSmoke -c Release -r linux-arm64 -p:PublishAot=true -o arm64-aot
+          test ! -f arm64-aot/AotSmoke.dll
+          ./arm64-aot/AotSmoke | tee arm64-smoke.log
+          grep -Eq "^AotSmoke: [1-9][0-9]* checks, 0 failures$" arm64-smoke.log
 
   # -------------------------------------------------------------------------------------------------
   # Fixture determinism. Every expected value the test suite asserts against is written by Pillow, not by
@@ -114,6 +170,12 @@ jobs:
       # would require it is little-endian, and Pillow cross-checks that one.
       - name: Install the generators' dependencies
         run: python -m pip install --disable-pip-version-check "pillow==11.3.0" "numpy>=2,<3" "tifffile>=2024.1"
+
+      - name: Validate OCR evaluation metrics
+        run: python -m unittest discover -s benchmarks/ocr -p "test_*.py"
+
+      - name: Validate fixture provenance comparison rules
+        run: python -m unittest discover -s tests/EasyImageSharp.Tests/Fixtures -p "test_determinism.py"
 
       # Exit status 1 is a corpus difference and 2 is a check that could not run at all; both fail the job,
       # and the two are distinguished in the output rather than being collapsed into one failure. The
@@ -335,7 +397,7 @@ jobs:
         run: dotnet run -c Release -f net10.0 --project benchmarks/EasyImageSharp.Benchmarks -- --readme-table
 
   # -------------------------------------------------------------------------------------------------
-  # Pack validation for BOTH packages. A package that is missing its README, licence, icon or symbol
+  # Pack validation for all four packages. A package that is missing its README, licence, icon or symbol
   # file is a package that looks abandoned on NuGet, so the contents are asserted, not just listed.
   # -------------------------------------------------------------------------------------------------
   pack:
@@ -354,11 +416,23 @@ jobs:
             8.0.x
             10.0.x
 
+      - name: Download reproducible Windows Little CMS runtime
+        uses: actions/download-artifact@v4
+        with:
+          name: littlecms-win-x64
+          path: .artifacts/native/lcms2/win-x64
+
       - name: Pack EasyImageSharp
         run: dotnet pack src/EasyImageSharp -c Release -o artifacts -p:ContinuousIntegrationBuild=true
 
       - name: Pack EasyImageSharp.AI
         run: dotnet pack src/EasyImageSharp.AI -c Release -o artifacts -p:ContinuousIntegrationBuild=true
+
+      - name: Pack EasyImageSharp.SkiaSharp
+        run: dotnet pack src/EasyImageSharp.SkiaSharp -c Release -o artifacts -p:ContinuousIntegrationBuild=true
+
+      - name: Pack EasyImageSharp.LittleCms
+        run: dotnet pack src/EasyImageSharp.LittleCms -c Release -o artifacts -p:ContinuousIntegrationBuild=true
 
       - name: Validate package contents
         run: |
@@ -395,14 +469,26 @@ jobs:
           shopt -s nullglob
           core=(artifacts/EasyImageSharp.[0-9]*.nupkg)
           ai=(artifacts/EasyImageSharp.AI.[0-9]*.nupkg)
+          skia=(artifacts/EasyImageSharp.SkiaSharp.[0-9]*.nupkg)
+          lcms=(artifacts/EasyImageSharp.LittleCms.[0-9]*.nupkg)
 
           # With nullglob an empty glob would silently skip every assertion below, so a missing
           # package must fail here rather than pass by default.
           [ ${#core[@]} -gt 0 ] || { echo "::error::No EasyImageSharp nupkg was produced"; exit 1; }
           [ ${#ai[@]} -gt 0 ] || { echo "::error::No EasyImageSharp.AI nupkg was produced"; exit 1; }
+          [ ${#skia[@]} -gt 0 ] || { echo "::error::No EasyImageSharp.SkiaSharp nupkg was produced"; exit 1; }
+
+          [ ${#lcms[@]} -gt 0 ] || { echo "::error::No LittleCms package was produced"; exit 1; }
 
           for pkg in "${core[@]}"; do check "$pkg" "EasyImageSharp"; done
           for pkg in "${ai[@]}"; do check "$pkg" "EasyImageSharp.AI"; done
+          for pkg in "${skia[@]}"; do check "$pkg" "EasyImageSharp.SkiaSharp"; done
+
+          for pkg in "${lcms[@]}"; do
+            check "$pkg" "EasyImageSharp.LittleCms"
+            unzip -Z1 "$pkg" | grep -qx 'runtimes/win-x64/native/lcms2.dll' || { echo "::error::LittleCms Windows runtime missing"; fail=1; }
+            unzip -Z1 "$pkg" | grep -qx 'THIRD_PARTY_NOTICES.txt' || { echo "::error::LittleCms license notice missing"; fail=1; }
+          done
 
           # The core package must stay dependency-free; the AI package must declare ONNX Runtime.
           core_nuspec=$(unzip -p artifacts/EasyImageSharp.[0-9]*.nupkg EasyImageSharp.nuspec)
@@ -484,7 +570,7 @@ jobs:
   ci-passed:
     name: CI passed
     if: always() && github.event_name != 'schedule'
-    needs: [build-test, fixture-determinism, aot-smoke, trim-smoke, samples, benchmarks-smoke, pack]
+    needs: [build-test, core-arm64, fixture-determinism, aot-smoke, trim-smoke, samples, benchmarks-smoke, pack]
     runs-on: ubuntu-latest
     steps:
       - name: Check that every job succeeded

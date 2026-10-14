@@ -26,6 +26,8 @@ public sealed class BmpDecoder : IImageDecoder
         where TPixel : unmanaged, IPixel<TPixel>
     {
         ArgumentNullException.ThrowIfNull(options);
+        using var execution = OperationExecution.Enter(options.ExecutionOptions);
+        options.EnsureEncodedWithinLimits(data.Length);
         try
         {
             return DecodeCore<TPixel>(data, options);
@@ -127,6 +129,8 @@ public sealed class BmpDecoder : IImageDecoder
     public ImageInfo Identify(ReadOnlySpan<byte> data, DecoderOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
+        using var execution = OperationExecution.Enter(options.ExecutionOptions);
+        options.EnsureEncodedWithinLimits(data.Length);
         try
         {
             Header header = ParseHeader(data, readPalette: false);
@@ -273,6 +277,7 @@ public sealed class BmpDecoder : IImageDecoder
         int pos = 0;
         while (pos < src.Length)
         {
+            OperationExecution.Checkpoint();
             if (pos + 2 > src.Length)
             {
                 throw new InvalidImageContentException("BMP RLE data is truncated.");

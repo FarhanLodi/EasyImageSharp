@@ -83,6 +83,7 @@ public sealed class ImageFrameCollection<TPixel> : IReadOnlyList<ImageFrame<TPix
                 $"The pixel buffer holds {pixels.Length} pixels but {width}x{height} requires {required}.", nameof(pixels));
         }
 
+        OperationExecution.ReservePixelBuffer<TPixel>(required);
         var buffer = new TPixel[required];
         pixels[..required].CopyTo(buffer);
         var frame = new ImageFrame<TPixel>(width, height, buffer);

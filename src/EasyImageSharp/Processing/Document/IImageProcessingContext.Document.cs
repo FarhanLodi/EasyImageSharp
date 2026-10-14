@@ -101,8 +101,16 @@ public partial interface IImageProcessingContext
     /// <summary>Estimates which quarter turn makes the page upright (see <see cref="OrientationEstimate"/>).</summary>
     OrientationEstimate DetectOrientation();
 
-    /// <summary>Applies the rotation from <see cref="DetectOrientation"/> when its confidence is at least <paramref name="minConfidence"/>.</summary>
+    /// <summary>Applies the root frame's estimated rotation to all frames when its confidence is at least <paramref name="minConfidence"/>.</summary>
+    /// <exception cref="ArgumentOutOfRangeException">Confidence is not finite or outside [0, 1].</exception>
     IImageProcessingContext AutoRotateDocument(float minConfidence);
+
+    /// <summary>Estimates and corrects each document page's orientation independently when its confidence is at least <paramref name="minConfidence"/>.</summary>
+    /// <remarks>Use for independent pages such as TIFF documents. Frames may end up with different dimensions; animation frames should use <see cref="AutoRotateDocument"/>.</remarks>
+    /// <exception cref="ArgumentOutOfRangeException">Confidence is not finite or outside [0, 1].</exception>
+    /// <exception cref="NotSupportedException">The processing context does not support independent document pages.</exception>
+    IImageProcessingContext AutoRotateDocumentPages(float minConfidence)
+        => throw new NotSupportedException("This processing context does not support independent document page orientation correction.");
 
     /// <summary>
     /// Finds the page quadrilateral (corners TL, TR, BR, BL in continuous pixel coordinates, see
@@ -118,8 +126,14 @@ public partial interface IImageProcessingContext
     /// </summary>
     IImageProcessingContext CorrectPerspective(PointF[] quad, Size? targetSize);
 
-    /// <summary>Detects the page, corrects its perspective and trims dark margins; leaves the image unchanged when no page is found.</summary>
+    /// <summary>Detects the root frame's page, applies that perspective correction to all frames and trims dark margins; leaves the image unchanged when no page is found in the root frame.</summary>
     IImageProcessingContext AutoCropPage();
+
+    /// <summary>Detects and corrects each document page's perspective independently and trims dark margins; leaves individual frames unchanged when no page is found.</summary>
+    /// <remarks>Use for independent pages such as TIFF documents. Frames may end up with different dimensions; animation frames should use <see cref="AutoCropPage"/>.</remarks>
+    /// <exception cref="NotSupportedException">The processing context does not support independent document pages.</exception>
+    IImageProcessingContext AutoCropPages()
+        => throw new NotSupportedException("This processing context does not support independent document page cropping.");
 
     /// <summary>Paints large dark scanner borders touching the image edge white.</summary>
     IImageProcessingContext RemoveBorders();

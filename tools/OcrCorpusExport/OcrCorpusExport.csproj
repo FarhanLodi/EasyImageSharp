@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <DefineConstants Condition="'$(EasyImageSharpSourceProject)' != ''">$(DefineConstants);SOURCE_IMAGING</DefineConstants>
+    <TargetFramework>net10.0</TargetFramework>
+    <EasyOcrSharpProject Condition="'$(EasyOcrSharpProject)' == ''">$(MSBuildThisFileDirectory)../../../EasyOcrSharp/src/EasyOcrSharp/EasyOcrSharp.csproj</EasyOcrSharpProject>
+    <PaddleOcrNetProject Condition="'$(PaddleOcrNetProject)' == ''">$(MSBuildThisFileDirectory)../../../PaddleOcr/src/PaddleOcrNet/PaddleOcrNet.csproj</PaddleOcrNetProject>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(EasyOcrSharpProject)" />
+    <ProjectReference Include="$(PaddleOcrNetProject)" />
+  </ItemGroup>
+</Project>

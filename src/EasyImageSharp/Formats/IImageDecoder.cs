@@ -9,7 +9,7 @@ public interface IImageDecoder
     Image<TPixel> Decode<TPixel>(ReadOnlySpan<byte> data, DecoderOptions options)
         where TPixel : unmanaged, IPixel<TPixel>;
 
-    /// <summary>Reads header-level information without decoding the pixel data. Never subject to size limits.</summary>
+    /// <summary>Reads header-level information without decoding the pixel data. Pixel limits do not apply; encoded-byte limits and cancellation do.</summary>
     ImageInfo Identify(ReadOnlySpan<byte> data, DecoderOptions options);
 }
 
