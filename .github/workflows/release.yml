@@ -161,6 +161,19 @@ jobs:
             8.0.x
             10.0.x
 
+      - name: Build pinned Windows Little CMS runtime
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./scripts/build-littlecms.ps1
+
+      - name: Install Linux Little CMS runtime
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y liblcms2-dev
+
+      - name: Install macOS Little CMS runtime
+        if: runner.os == 'macOS'
+        run: brew install little-cms2
+
       - name: Build (warnings are errors)
         run: dotnet build EasyImageSharp.slnx -c Release -p:Version=${{ needs.prepare.outputs.version }}
 
