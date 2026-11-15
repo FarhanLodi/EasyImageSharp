@@ -10,8 +10,8 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="4.0.0" />
     <!-- Code coverage data collector (MIT), used by the "XPlat Code Coverage" collector of dotnet test; see docs/COVERAGE.md. -->
     <PackageReference Include="coverlet.collector" Version="10.1.0" PrivateAssets="all" />
-    <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="4.153.1" />
-    <PackageReference Include="HarfBuzzSharp.NativeAssets.Linux" Version="14.2.1.301" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="4.156.1" />
+    <PackageReference Include="HarfBuzzSharp.NativeAssets.Linux" Version="14.4.0.101" />
     <ProjectReference Include="../../src/EasyImageSharp.SkiaSharp/EasyImageSharp.SkiaSharp.csproj" />
     <None Include="Fixtures/**" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>

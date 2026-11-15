@@ -29,8 +29,8 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../EasyImageSharp/EasyImageSharp.csproj" />
-    <PackageReference Include="SkiaSharp" Version="4.153.1" />
-    <PackageReference Include="SkiaSharp.HarfBuzz" Version="4.153.1" />
+    <PackageReference Include="SkiaSharp" Version="4.156.1" />
+    <PackageReference Include="SkiaSharp.HarfBuzz" Version="4.156.1" />
     <None Include="README.md" Pack="true" PackagePath="" />
     <None Include="../../LICENSE" Pack="true" PackagePath="" />
     <None Include="../EasyImageSharp/Assets/icon.png" Pack="true" PackagePath="" Visible="false" />
