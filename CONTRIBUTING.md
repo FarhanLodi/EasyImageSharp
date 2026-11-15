@@ -595,37 +595,42 @@ network access the first time, to restore DocFX and the packages of the projects
 - **API reference.** It is only as good as the XML documentation comments, which every public member
   needs anyway (see [Public API changes](#public-api-changes)).
 
-`.github/workflows/docs.yml` builds the site on pull requests that touch Markdown, `src/` or `docs/`, and
-deploys it to GitHub Pages from `main`.
+`.github/workflows/docs.yml` builds the site on pushes and pull requests that touch Markdown, `src/` or
+`docs/`, as a check that it still builds; it is not deployed.
 
 ---
 
 ## Releasing
 
-Releases are tag-driven through `.github/workflows/release.yml`. The header of that file is the reference
-for the secrets and variables it uses. The steps:
+Releases are published by hand; there is no release workflow. The CI `pack` job packs and validates every
+push to `main`, so a green CI run means the packages build. The steps:
 
-1. **Version.** Set `<Version>` and `<PackageReleaseNotes>` in all four `src/*/*.csproj` files. The
-   packages are released together with one version number.
-2. **Changelog.** Move the `## [Unreleased]` entries under `## [X.Y.Z] - YYYY-MM-DD`. The workflow refuses
-   a tag that has no such section.
+1. **Version.** Set `<Version>` and `<PackageReleaseNotes>` in every `src/*/*.csproj` file. The packages are
+   released together with one version number.
+2. **Changelog.** Move the `## [Unreleased]` entries under `## [X.Y.Z] - YYYY-MM-DD`.
 3. **Public API.** Promote `PublicAPI.Unshipped.txt` into `PublicAPI.Shipped.txt`, as described in
    [`src/EasyImageSharp/PublicAPI/README.md`](src/EasyImageSharp/PublicAPI/README.md).
-4. **Rehearse if the pipeline changed.** Running the Release workflow by hand keeps `dry_run` on by
-   default: it builds, tests, packs, validates and writes the SBOMs for an existing tag, and publishes
-   nothing. The CI `pack` job already packs and validates every push to `main`.
-5. **Tag.** `git tag vX.Y.Z && git push origin vX.Y.Z`. The workflow tests on Windows, Linux and macOS,
-   packs the four packages (each pack runs package validation), writes one CycloneDX SBOM per package,
-   author-signs the `.nupkg` files when a signing certificate is configured, records a build-provenance
-   attestation for every `.nupkg` and `.snupkg`, pushes to NuGet, and creates the GitHub release with
-   the packages and SBOMs attached.
-6. **Check.** Download a package from the GitHub release (`gh release download vX.Y.Z --pattern "*.nupkg"`)
-   and run `gh attestation verify EasyImageSharp.X.Y.Z.nupkg --repo FarhanLodi/EasyImageSharp`: it proves
-   the file is the one this workflow built. The copy on nuget.org carries an extra repository signature
-   that nuget.org adds after the push, so its digest differs; `dotnet nuget verify` checks that copy.
-7. **Move the baselines.** After a stable release, set `PackageValidationBaselineVersion` in each
-   `src/*/*.csproj` to the version just published, so the next release is compared against it. An add-on
-   that has no baseline yet gets one the first time its project version moves past a published release.
+4. **Native runtimes.** On Windows, run `./scripts/build-littlecms.ps1`, `./scripts/build-libjxl.ps1` and
+   `./scripts/build-libavif.ps1`; packing `EasyImageSharp.Codecs` fails without them.
+5. **Build, test and pack.**
+
+   ```bash
+   dotnet test EasyImageSharp.slnx -c Release
+   dotnet pack EasyImageSharp.slnx -c Release -o artifacts
+   ```
+
+6. **Push to NuGet**, core first so the add-ons' dependency exists when they appear:
+
+   ```bash
+   dotnet nuget push artifacts/EasyImageSharp.X.Y.Z.nupkg --api-key <key> --source https://api.nuget.org/v3/index.json
+   dotnet nuget push "artifacts/*.nupkg" --api-key <key> --source https://api.nuget.org/v3/index.json --skip-duplicate
+   ```
+
+   The `.snupkg` symbol packages next to each `.nupkg` are pushed with it.
+7. **Tag and release.** `git tag vX.Y.Z && git push origin vX.Y.Z`, then create the GitHub release for the tag.
+8. **Move the baselines.** Set `PackageValidationBaselineVersion` in each `src/*/*.csproj` to the version just
+   published, so the next release is compared against it. A package with no baseline yet gets one the first
+   time its project version moves past a published release.
 
 **Package validation** runs on every `dotnet pack`, locally as well as in CI. It fails the pack when the
 package breaks binary compatibility with its baseline release, which restore downloads from nuget.org. A break that is intended can only ship in a major

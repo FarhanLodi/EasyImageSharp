@@ -8,13 +8,6 @@
         "docfx"
       ],
       "rollForward": false
-    },
-    "cyclonedx": {
-      "version": "6.3.1",
-      "commands": [
-        "dotnet-CycloneDX"
-      ],
-      "rollForward": false
     }
   }
 }
