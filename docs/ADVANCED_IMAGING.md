@@ -1,8 +1,8 @@
 # Advanced imaging and OCR recipes
 
-The matrix below covers the 1.2.0 release (published) and the 1.3.0 additions (unreleased; marked **1.3**).
+The matrix below covers the 1.2.0 release (published) and the 1.3.1 additions (unreleased; marked **1.3**).
 Package files built locally are not a published NuGet release. See the [changelog](../CHANGELOG.md) for the
-full 1.3.0 list.
+full 1.3.1 list.
 
 ## Capability matrix
 
@@ -33,8 +33,8 @@ full 1.3.0 list.
 | **1.3** Processing | Bilateral/guided denoise, 3D `.cube` LUTs, smart crop, watermarks, dominant colors, BlurHash/ThumbHash, quality metrics | Smart-crop and no-reference quality scores are heuristics, not perceptual guarantees. |
 | **1.3** Memory/telemetry | Pooled, unmanaged and GC allocators; `ActivitySource`/`Meter` named `EasyImageSharp` | Native libraries (ONNX Runtime, libavif, libjxl, LittleCMS, Skia) allocate outside the configured allocator. Pooling trades retained memory for fewer allocations; measure before changing the default. |
 | **1.3** AI | Face detection/redaction, inpainting, moderation, embeddings, quality assessment; batched inference | Models required; outputs are only as good as the model. Moderation scores are not a policy decision. |
-| **1.3** Integration packages | `EasyImageSharp.Extensions.DependencyInjection`, `EasyImageSharp.Web` (ASP.NET Core middleware, signed URLs, caching) | Web processing exposes CPU/memory cost to callers; keep signing, limits and concurrency limiting enabled. |
-| **1.3** Native codecs | Optional `EasyImageSharp.Avif` (libavif) and `EasyImageSharp.JpegXl` (libjxl) providers, win-x64 runtimes bundled | Linux/macOS need the system library. AVIF `irot`/`imir`/`clap` are reported, not applied. The bundled libaom has no assembly SIMD, so encoding is slow. |
+| **1.3** Integration package | `EasyImageSharp.Web`: ASP.NET Core middleware (signed URLs, caching) plus the `AddEasyImageSharp` dependency-injection integration | Web processing exposes CPU/memory cost to callers; keep signing, limits and concurrency limiting enabled. |
+| **1.3** Native codecs | Optional `EasyImageSharp.Codecs`: AVIF (libavif) and JPEG XL (libjxl) providers plus LittleCMS transforms, win-x64 runtimes bundled | Linux/macOS need the system library. AVIF `irot`/`imir`/`clap` are reported, not applied. The bundled libaom has no assembly SIMD, so encoding is slow. |
 | **1.3** Conformance | PngSuite, libjpeg-turbo, libtiff and (local) libwebp suites against independent decoders, all passing; fuzz harness | Lossy formats (JPEG, JPEG-in-TIFF) are held to a 40 dB PSNR floor, not bit-exactness. The libwebp vectors are not committed and must be built locally. |
 
 The managed core remains independent of ONNX, Skia and LittleCMS. See the [Skia adapter](../src/EasyImageSharp.SkiaSharp/README.md) and [AI package](../src/EasyImageSharp.AI/README.md) for native/model requirements.

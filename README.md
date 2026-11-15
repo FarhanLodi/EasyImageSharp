@@ -31,14 +31,15 @@ image.Mutate(ctx => ctx.AutoOrient().Resize(800, 0));
 image.SaveAsWebp("thumbnail.webp");
 ```
 
-## Next release: 1.3.0
+## Next release: 1.3.1
 
 1.2.0 (tensors, adaptive document preprocessing, precision geometry, bounded execution, TIFF regions,
 reduced-IDCT JPEG, LittleCMS and Skia/HarfBuzz adapters) is published on NuGet. The working tree targets
-**1.3.0**, which has not been published. It adds HDR and OpenEXR codecs, 12-bit and lossless JPEG, BigTIFF
-writing, IPTC metadata, row-streaming `Image.Transcode`, managed vector drawing and font text, tone mapping,
-LUTs, denoising, smart crop, watermarks, placeholder hashes, quality metrics, telemetry, new AI operations,
-and new DI, ASP.NET Core, AVIF and JPEG XL packages.
+**1.3.1**, which has not been published. It targets .NET 10 only and adds HDR and OpenEXR codecs, 12-bit,
+lossless and arithmetic-coded JPEG, BigTIFF writing, IPTC metadata, row-streaming `Image.Transcode`, managed
+vector drawing and font text, tone mapping, LUTs, denoising, smart crop, watermarks, placeholder hashes,
+quality metrics, telemetry, new AI operations, the `EasyImageSharp.Codecs` package (AVIF, JPEG XL and
+LittleCMS) and the `EasyImageSharp.Web` package (ASP.NET Core middleware and dependency injection).
 
 Start with the [capability matrix and recipes](docs/ADVANCED_IMAGING.md),
 the [changelog](CHANGELOG.md), and the
@@ -62,8 +63,8 @@ precision, mapping and native dependency limits; no library can guarantee correc
   `AutoOrient()`.
 - **Hardened against untrusted input.** Size limits enforced before allocation, a closed exception
   contract, around 150 corrupt-input tests and a fuzz pass on every build.
-- **Fast, and checkable.** SIMD kernels, pooled buffers, copy-on-write clones, row-parallel execution
-  and — on .NET 8 — a managed DEFLATE decoder for PNG. Every figure in [Performance](#performance) is
+- **Fast, and checkable.** SIMD kernels, pooled buffers, copy-on-write clones and row-parallel
+  execution. Every figure in [Performance](#performance) is
   produced by a benchmark in `benchmarks/` against a corpus a script rebuilds.
 - **ONNX-ready.** Image-to-tensor bridges in the core, plus an optional `EasyImageSharp.AI` package with
   six pre-wired models and a checksum-verified model hub.
@@ -111,7 +112,7 @@ dotnet add package EasyImageSharp          # core library
 dotnet add package EasyImageSharp.AI       # optional ONNX-powered operations
 ```
 
-Targets **.NET 8.0** and **.NET 10.0**.
+Targets **.NET 10.0** (from 1.3.1; 1.2.0 remains available for .NET 8).
 
 ## Getting started
 
@@ -332,9 +333,8 @@ including tiny regions from multi-gigabyte and gigapixel sources without materia
 
 **Not implemented**, and reported as `NotSupportedException` with a message naming the feature:
 progressive, lossless and hierarchical arithmetic-coded JPEG (sequential arithmetic coding, 12-bit and lossless
-Huffman JPEG are decoded from 1.3.0); old-style JPEG-in-TIFF (compression 6); JBIG. HEIC/HEIF is not planned
-(patent-encumbered). AVIF and JPEG XL ship as the opt-in native `EasyImageSharp.Avif` and `EasyImageSharp.JpegXl`
-packages.
+Huffman JPEG are decoded from 1.3.1); old-style JPEG-in-TIFF (compression 6); JBIG. HEIC/HEIF is not planned
+(patent-encumbered). AVIF and JPEG XL ship in the opt-in native `EasyImageSharp.Codecs` package.
 
 ## Processing
 
@@ -446,11 +446,8 @@ is in
 [benchmarks/README.md](https://github.com/FarhanLodi/EasyImageSharp/blob/main/benchmarks/README.md).
 
 Hot paths use SIMD pixel kernels, pooled buffers and copy-on-write cloning. PNG decode is dominated by
-inflating the IDAT stream rather than by the pixel code around it, and which inflater does that work
-depends on the target framework: on .NET 8 it is this library's own managed DEFLATE decoder, 1.27–1.49×
-faster end to end than the runtime's `ZLibStream` over native zlib; on .NET 10 `ZLibStream` is backed by
-zlib-ng with hand-written SIMD, beats a managed implementation, and is kept. The decoded pixels are
-identical either way, and there is nothing to configure.
+inflating the IDAT stream rather than by the pixel code around it. On .NET 10 the runtime's `ZLibStream`
+is backed by zlib-ng with hand-written SIMD and beats a managed implementation, so it does that work.
 
 ## AI operations
 
@@ -599,13 +596,13 @@ when none is present. Full details in the
 | **EasyImageSharp** | Codecs, `Image<TPixel>`, processing pipeline, document operators, drawing, metadata, pixel formats, tensor bridges | None beyond the framework |
 | **EasyImageSharp.AI** | ONNX-powered orientation, dewarping, super-resolution, denoising, background removal and binarisation; model hub | `Microsoft.ML.OnnxRuntime` |
 | **EasyImageSharp.SkiaSharp** | Native bitmap interop, paths, brushes, gradients and HarfBuzz shaped text runs | SkiaSharp, SkiaSharp.HarfBuzz |
-| **EasyImageSharp.LittleCms** | ICC matrix/LUT transforms, RGB/CMYK/Gray/Lab/XYZ, intents and BPC | Native LittleCMS; packaged win-x64 runtime, system library elsewhere |
-| **EasyImageSharp.Extensions.DependencyInjection** (new in 1.3.0) | `AddEasyImageSharp`, options binding and validation, `IImageOptionsFactory` | Microsoft.Extensions.DependencyInjection.Abstractions, Options, Configuration.Binder |
-| **EasyImageSharp.Web** (new in 1.3.0) | ASP.NET Core image-processing middleware: signed URLs, format negotiation, caching, limits | ASP.NET Core shared framework |
-| **EasyImageSharp.Avif** (new in 1.3.0) | AVIF decode/encode provider | Native libavif |
-| **EasyImageSharp.JpegXl** (new in 1.3.0) | JPEG XL decode/encode provider | Native libjxl |
+| **EasyImageSharp.Codecs** (new in 1.3.1) | AVIF and JPEG XL decode/encode providers; ICC matrix/LUT transforms (RGB/CMYK/Gray/Lab/XYZ, intents, BPC) | Native libavif, libjxl and LittleCMS; win-x64 runtimes bundled, system libraries elsewhere |
+| **EasyImageSharp.Web** (new in 1.3.1) | ASP.NET Core image-processing middleware (signed URLs, format negotiation, caching, limits) and the `AddEasyImageSharp` dependency-injection integration | ASP.NET Core shared framework |
 
-The core includes Lab/LCh/HSL/HSV/XYZ converters and, from 1.3.0, a managed vector rasterizer with
+`EasyImageSharp.LittleCms` 1.3.1 is a forwarding package: its types moved to `EasyImageSharp.Codecs` with the
+same namespace, so existing references keep working. New code should reference `EasyImageSharp.Codecs`.
+
+The core includes Lab/LCh/HSL/HSV/XYZ converters and, from 1.3.1, a managed vector rasterizer with
 left-to-right font text. Complex-script shaping and bidi (use the Skia/HarfBuzz adapter), bundled
 document rasterizers and int8 AI model variants remain outside the core.
 The native adapters are optional; the core annotation API remains available without them.
@@ -617,9 +614,9 @@ dependencies are never taken.
 
 ## Deployment notes
 
-**Target frameworks.** .NET 8.0 and .NET 10.0. There is deliberately no `netstandard` target: the pixel
-abstraction uses static abstract interface members, which require .NET 7 or later. Both targets are
-AOT- and trimming-compatible with no conditional compilation.
+**Target framework.** .NET 10.0. Version 1.3.1 dropped .NET 8.0; applications on .NET 8 can stay on 1.2.0.
+There is deliberately no `netstandard` target: the pixel abstraction uses static abstract interface members.
+The packages are AOT- and trimming-compatible.
 
 **Thread safety.** A single `Image<TPixel>` instance is not thread-safe and must not be mutated
 concurrently. Decoding, encoding and processing distinct images in parallel is fully supported.
@@ -650,18 +647,19 @@ pixel-accessing member throws `ObjectDisposedException`.
   the [Performance](#performance) table can be regenerated rather than taken on trust.
 - **Documentation that cannot drift.** The C# examples in this file are transcribed into the test suite
   and compiled, so a rename breaks the build rather than the docs.
-- **Scale.** The current 1.3.0 Windows run passes 14,004 tests across both frameworks and all eight packages,
-  with the AVIF and JPEG XL tests running against the real native libraries; only tests that need an absent AI
+- **Scale.** The current 1.3.1 Windows run passes 6,997 tests on .NET 10 across all six packages, with the
+  AVIF and JPEG XL tests running against the real native libraries; only tests that need an absent AI
   model file are reported as skipped. Linux core/native
   checks and native deployment smoke are recorded in [platform verification](docs/platform-verification.md).
   CI is configured for Windows, Ubuntu and macOS; local execution and remote CI evidence are distinguished.
 
 ## Building from source
 
-Requires the .NET 10 SDK; the `net8.0` test leg additionally requires the .NET 8 runtime.
-Full-solution tests include optional native packages: on Windows run `./scripts/build-littlecms.ps1`
-after cloning; on Ubuntu install `liblcms2-dev`; on macOS install Homebrew `little-cms2`.
-See [LittleCMS deployment](src/EasyImageSharp.LittleCms/README.md) for supported native paths.
+Requires the .NET 10 SDK. Full-solution tests include the native codecs: on Windows run
+`./scripts/build-littlecms.ps1`, `./scripts/build-libjxl.ps1` and `./scripts/build-libavif.ps1` after
+cloning; on Linux and macOS install the distribution's LittleCMS, libjxl and libavif packages (tests that
+need a missing library are reported as skipped). See [EasyImageSharp.Codecs](src/EasyImageSharp.Codecs/README.md)
+for supported native paths.
 The core-only test project is `tests/EasyImageSharp.Tests` and has no native library requirement.
 
 ```bash
@@ -673,8 +671,8 @@ dotnet test  EasyImageSharp.slnx -c Release
 dotnet pack  src/EasyImageSharp  -c Release -o artifacts
 ```
 
-The samples and the benchmark suite are deliberately outside `EasyImageSharp.slnx` — they single-target
-`net10.0`, which a solution-wide `net8.0` test leg cannot build — so they are run by path:
+The samples and the benchmark suite are deliberately outside `EasyImageSharp.slnx`, so they are run by
+path:
 
 ```bash
 # Native AOT and trimming smoke publishes.

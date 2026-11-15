@@ -33,8 +33,7 @@ By participating you agree to abide by the [Code of Conduct](CODE_OF_CONDUCT.md)
 
 | Requirement | Version | Needed for |
 |---|---|---|
-| .NET SDK | **10.0** | building everything; it also builds the `net8.0` leg |
-| .NET Runtime | **8.0** | running the tests on the `net8.0` target |
+| .NET SDK | **10.0** | building and testing everything (the only target framework since 1.3.1) |
 | Python | **3.11+** | regenerating the test fixtures (optional; only when you touch them) |
 | Pillow, NumPy | Pillow 11, NumPy 2 | ditto |
 
@@ -62,10 +61,9 @@ benchmarks/EasyImageSharp.Benchmarks/   the BenchmarkDotNet suite behind the REA
 benchmarks/corpus/             the script that generates the benchmark inputs; the inputs are not committed
 ```
 
-`samples/` and `benchmarks/` are deliberately **not** in `EasyImageSharp.slnx`. They single-target
-`net10.0` — `PublishAot` and `PublishTrimmed` have no meaning on a multi-targeted project, and the
-benchmark host picks its own runtime — and a single-TFM project inside the solution breaks the
-solution-wide `dotnet test -f net8.0` leg. They are built and run by path instead, as shown in
+`samples/` and `benchmarks/` are deliberately **not** in `EasyImageSharp.slnx`: the AOT and trimming
+samples are published, not tested, and the benchmark host picks its own runtime. They are built and run
+by path instead, as shown in
 [Samples and deployment smokes](#samples-and-deployment-smokes) and [Benchmarks](#benchmarks).
 
 ---
@@ -76,23 +74,22 @@ The build treats **warnings as errors** (`Directory.Build.props`), so a build th
 is a build that fails in CI.
 
 ```bash
-# Build every project on both target frameworks.
+# Build every project.
 dotnet build EasyImageSharp.slnx -c Release
 
-# Run the whole suite on net8.0 and net10.0.
+# Run the whole suite.
 dotnet test EasyImageSharp.slnx -c Release
 
-# Run one target framework while iterating.
-dotnet test tests/EasyImageSharp.Tests -c Release -f net10.0
+# Run only the core tests while iterating.
+dotnet test tests/EasyImageSharp.Tests -c Release
 
 # Run one test class.
 dotnet test tests/EasyImageSharp.Tests -c Release --filter FullyQualifiedName~CodecRoundtripTests
 ```
 
-Both libraries multi-target `net8.0` and `net10.0`. **Always run both.** The `net10.0` leg picks up
-newer BCL intrinsics and API shapes, and it is routine for a change to compile on one and not the
-other — for example when a newer overload resolution or a `System.Numerics.Tensors` API only exists
-on the newer runtime.
+Every project targets `net10.0` only. Version 1.3.1 dropped `net8.0`; the intentional removal is
+recorded in each published package's `CompatibilitySuppressions.xml`, so package validation still checks
+everything else against the 1.2.0 baseline.
 
 ### The AI tests
 
@@ -429,13 +426,12 @@ default are all breaking. Say so explicitly in the pull request and in `CHANGELO
 wait for the next major version.
 
 **How it is enforced.** `Microsoft.CodeAnalysis.PublicApiAnalyzers` tracks the surface as text files in
-the repository, one pair per target framework:
+the repository, one pair per project:
 
 ```
-src/EasyImageSharp/PublicAPI/net8.0/PublicAPI.Shipped.txt      the surface that has already shipped
-src/EasyImageSharp/PublicAPI/net8.0/PublicAPI.Unshipped.txt    additions since the last release
-src/EasyImageSharp/PublicAPI/net10.0/...                       the same pair for the other framework
-src/EasyImageSharp.AI/PublicAPI/...                            and the same four files for the add-on
+src/EasyImageSharp/PublicAPI/net10.0/PublicAPI.Shipped.txt      the surface that has already shipped
+src/EasyImageSharp/PublicAPI/net10.0/PublicAPI.Unshipped.txt    additions since the last release
+src/EasyImageSharp.AI/PublicAPI/net10.0/...                     the same pair for each add-on
 ```
 
 Every public member must appear in one of them. `RS0016` fails the build on a member that appears in
@@ -533,11 +529,8 @@ performance claim worth putting in a pull request. Quote the hardware and the ru
 any number you report. What each README row maps to is documented in
 [`benchmarks/README.md`](benchmarks/README.md).
 
-Some questions are per-target-framework and have to be measured on both. `InflateBenchmarks` exists
-because .NET 8's `ZLibStream` wraps classic native zlib while .NET 10's wraps zlib-ng, and the library's
-managed inflater is the right choice on the first and the wrong one on the second. If you touch a path
-where the runtime's own implementation may differ between the two, run `-f net8.0` and `-f net10.0`
-before concluding anything.
+`InflateBenchmarks` compares the library's managed inflater with the runtime's `ZLibStream` (zlib-ng on
+.NET 10). It decided which backend the PNG decoder uses; re-run it if you touch that path.
 
 ---
 
@@ -546,9 +539,9 @@ before concluding anything.
 Before you open it:
 
 - [ ] `dotnet build EasyImageSharp.slnx -c Release` is **warning-free**
-- [ ] `dotnet test EasyImageSharp.slnx -c Release` is green on **net8.0 and net10.0**
+- [ ] `dotnet test EasyImageSharp.slnx -c Release` is green
 - [ ] New behaviour has a test whose expected values came from somewhere other than this library
-- [ ] Public API additions are in `PublicAPI.Unshipped.txt` for **both** target frameworks and carry XML documentation
+- [ ] Public API additions are in `PublicAPI.Unshipped.txt` and carry XML documentation
 - [ ] Fixtures, if touched, were regenerated by their script and `python check_determinism.py` reports no differences
 - [ ] A new C# block in `README.md` was transcribed into `tests/EasyImageSharp.Tests/ReadmeSamplesCompileTests.cs`
 - [ ] `CHANGELOG.md` has an entry under `## [Unreleased]` for anything user-visible
@@ -558,7 +551,7 @@ commit messages in the imperative mood, describing the effect rather than the me
 ("Reject negative PNG chunk lengths" rather than "fix bug in decoder").
 
 Pull requests need a green CI run on all three operating systems before review. If CI fails only on
-macOS or only on `net8.0`, that is a real finding about your change, not a flaky runner.
+macOS, that is a real finding about your change, not a flaky runner.
 
 ### What gets a fast review
 
@@ -635,8 +628,7 @@ for the secrets and variables it uses. The steps:
    that has no baseline yet gets one the first time its project version moves past a published release.
 
 **Package validation** runs on every `dotnet pack`, locally as well as in CI. It fails the pack when the
-`net8.0` and `net10.0` assets disagree, or when the package breaks binary compatibility with its baseline
-release, which restore downloads from nuget.org. A break that is intended can only ship in a major
+package breaks binary compatibility with its baseline release, which restore downloads from nuget.org. A break that is intended can only ship in a major
 version; record it by packing once with `-p:ApiCompatGenerateSuppressionFile=true`, which writes
 `CompatibilitySuppressions.xml` next to the project, and commit that file with the change so the
 decision is reviewed.

@@ -1,0 +1,31 @@
+#nullable enable
+EasyImageSharp.LittleCms.IccColorModel
+EasyImageSharp.LittleCms.IccColorModel.Cmyk = 2 -> EasyImageSharp.LittleCms.IccColorModel
+EasyImageSharp.LittleCms.IccColorModel.Gray = 0 -> EasyImageSharp.LittleCms.IccColorModel
+EasyImageSharp.LittleCms.IccColorModel.Lab = 3 -> EasyImageSharp.LittleCms.IccColorModel
+EasyImageSharp.LittleCms.IccColorModel.Rgb = 1 -> EasyImageSharp.LittleCms.IccColorModel
+EasyImageSharp.LittleCms.IccColorModel.Xyz = 4 -> EasyImageSharp.LittleCms.IccColorModel
+EasyImageSharp.LittleCms.IccImageExtensions
+EasyImageSharp.LittleCms.IccRenderingIntent
+EasyImageSharp.LittleCms.IccRenderingIntent.AbsoluteColorimetric = 3 -> EasyImageSharp.LittleCms.IccRenderingIntent
+EasyImageSharp.LittleCms.IccRenderingIntent.Perceptual = 0 -> EasyImageSharp.LittleCms.IccRenderingIntent
+EasyImageSharp.LittleCms.IccRenderingIntent.RelativeColorimetric = 1 -> EasyImageSharp.LittleCms.IccRenderingIntent
+EasyImageSharp.LittleCms.IccRenderingIntent.Saturation = 2 -> EasyImageSharp.LittleCms.IccRenderingIntent
+EasyImageSharp.LittleCms.IccTransform
+EasyImageSharp.LittleCms.IccTransform.Dispose() -> void
+EasyImageSharp.LittleCms.IccTransform.InputChannels.get -> int
+EasyImageSharp.LittleCms.IccTransform.InputModel.get -> EasyImageSharp.LittleCms.IccColorModel
+EasyImageSharp.LittleCms.IccTransform.OutputChannels.get -> int
+EasyImageSharp.LittleCms.IccTransform.OutputModel.get -> EasyImageSharp.LittleCms.IccColorModel
+EasyImageSharp.LittleCms.IccTransform.Transform(System.ReadOnlySpan<float> source, System.Span<float> destination, int pixelCount, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> void
+EasyImageSharp.LittleCms.IccTransformOptions
+EasyImageSharp.LittleCms.IccTransformOptions.BlackPointCompensation.get -> bool
+EasyImageSharp.LittleCms.IccTransformOptions.BlackPointCompensation.init -> void
+EasyImageSharp.LittleCms.IccTransformOptions.IccTransformOptions() -> void
+EasyImageSharp.LittleCms.IccTransformOptions.Intent.get -> EasyImageSharp.LittleCms.IccRenderingIntent
+EasyImageSharp.LittleCms.IccTransformOptions.Intent.init -> void
+static EasyImageSharp.LittleCms.IccImageExtensions.ConvertWithIcc<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.Metadata.Icc.IccProfile! source, EasyImageSharp.Metadata.Icc.IccProfile! destination, EasyImageSharp.LittleCms.IccTransformOptions? options = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> EasyImageSharp.Image<TPixel>!
+static EasyImageSharp.LittleCms.IccImageExtensions.FromCmyk<TPixel>(System.ReadOnlySpan<float> cmyk, int width, int height, EasyImageSharp.Metadata.Icc.IccProfile! source, EasyImageSharp.Metadata.Icc.IccProfile! destination, EasyImageSharp.LittleCms.IccTransformOptions? options = null, int rowStride = 0, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> EasyImageSharp.Image<TPixel>!
+static EasyImageSharp.LittleCms.IccTransform.Create(EasyImageSharp.Metadata.Icc.IccProfile! source, EasyImageSharp.Metadata.Icc.IccProfile! destination, EasyImageSharp.LittleCms.IccTransformOptions? options = null) -> EasyImageSharp.LittleCms.IccTransform!
+static EasyImageSharp.LittleCms.IccTransform.CreateSrgbProfile() -> EasyImageSharp.Metadata.Icc.IccProfile!
+static EasyImageSharp.LittleCms.IccTransform.NativeVersion.get -> int

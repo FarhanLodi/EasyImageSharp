@@ -12,7 +12,7 @@ no binary is checked into source control: everything lands under -WorkDirectory,
 CMake 3.22 or newer must be available (pass -CMake when it is not on PATH). libaom is configured with
 AOM_TARGET_CPU=generic, i.e. portable C without NASM-assembled SIMD kernels; this is correct but slower than a
 distribution build. Linux and macOS consumers should install their platform's libavif package instead, see
-src/EasyImageSharp.Avif/README.md.
+src/EasyImageSharp.Codecs/README.md.
 
 .EXAMPLE
 pwsh scripts/build-libavif.ps1 -CMake "D:/Program Files/CMake/bin/cmake.exe"

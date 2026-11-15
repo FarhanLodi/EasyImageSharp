@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+    <TargetFramework>net10.0</TargetFramework>
     <IsPackable>false</IsPackable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
@@ -10,7 +10,7 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="4.0.0" />
     <!-- Code coverage data collector (MIT), used by the "XPlat Code Coverage" collector of dotnet test; see docs/COVERAGE.md. -->
     <PackageReference Include="coverlet.collector" Version="10.1.0" PrivateAssets="all" />
-    <ProjectReference Include="../../src/EasyImageSharp.LittleCms/EasyImageSharp.LittleCms.csproj" />
+    <ProjectReference Include="../../src/EasyImageSharp.Codecs/EasyImageSharp.Codecs.csproj" />
     <None Include="Fixtures/**" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

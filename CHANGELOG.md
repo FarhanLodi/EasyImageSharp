@@ -5,12 +5,26 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.3.0] - Unreleased
+## [1.3.1] - Unreleased
 
-Additive release: new codecs, managed drawing and text, row-streaming transcode, new processing operations,
-four new packages and more AI operations. Package validation against the published 1.2.0 packages passes;
-no public API was removed. New `IImageProcessingContext` members have default implementations that throw
+New codecs, managed drawing and text, row-streaming transcode, new processing operations and more AI
+operations, with the packages consolidated and **.NET 10 as the only target framework**. Version 1.3.0 was
+never published; 1.3.1 is the first release after 1.2.0.
+
+No public API was removed, and package validation against the published 1.2.0 packages passes; the only
+recorded exception is the dropped `net8.0` target (`CompatibilitySuppressions.xml` in each published
+project). New `IImageProcessingContext` members have default implementations that throw
 `NotSupportedException`, so third-party implementations of the interface keep compiling and loading.
+
+The release ships five packages: **EasyImageSharp**, **EasyImageSharp.AI**, **EasyImageSharp.SkiaSharp**,
+**EasyImageSharp.Codecs** (new) and **EasyImageSharp.Web** (new), plus **EasyImageSharp.LittleCms** as a
+forwarding package for existing users.
+
+### Breaking
+
+- **.NET 8 is no longer supported.** Every package targets `net10.0` only. Applications on .NET 8 can stay
+  on 1.2.0. The PNG decoder's managed inflate path, which only ran on .NET 8, is now unused; on .NET 10 the
+  runtime's zlib-ng `ZLibStream` decodes IDAT data, as it already did.
 
 ### Added
 
@@ -54,21 +68,26 @@ no public API was removed. New `IImageProcessingContext` members have default im
   content moderation; image embeddings; aesthetic/technical quality assessment. Batched ONNX inference
   and quantized-model resolution in `ModelRegistry`. All need user-supplied or registry models.
 - **New packages.**
-  - `EasyImageSharp.Extensions.DependencyInjection`: `AddEasyImageSharp` with code and
-    `IConfiguration` overloads, `ValidateOnStart` and `IImageOptionsFactory`.
+  - `EasyImageSharp.Codecs`: the optional native codecs and colour management in one package. AVIF
+    (libavif with libaom) and JPEG XL (libjxl) decode/encode providers, and the LittleCMS ICC transforms
+    previously shipped as `EasyImageSharp.LittleCms`. Namespaces are unchanged (`EasyImageSharp.Avif`,
+    `EasyImageSharp.JpegXl`, `EasyImageSharp.LittleCms`). The Windows x64 runtimes of all three libraries are
+    bundled, built or fetched from pinned, checksum-verified upstream sources by `scripts/build-libavif.ps1`,
+    `scripts/build-libjxl.ps1` and `scripts/build-littlecms.ps1`; Linux and macOS use the system libraries.
+    The three bindings share one native library resolver, as the runtime allows only one per assembly.
   - `EasyImageSharp.Web`: ASP.NET Core middleware for on-the-fly processing, signed URLs, format
-    negotiation, HTTP and server-side caching, limits, concurrency limiting and a health check.
-    `samples/WebSample` shows it in use.
-  - `EasyImageSharp.Avif` (libavif) and `EasyImageSharp.JpegXl` (libjxl): optional native codec providers.
-    Packing them requires building the pinned native runtimes with `scripts/build-libavif.ps1` and
-    `scripts/build-libjxl.ps1`.
+    negotiation, HTTP and server-side caching, limits, concurrency limiting and a health check, plus the
+    dependency-injection integration (`AddEasyImageSharp` with code and `IConfiguration` overloads,
+    `ValidateOnStart` and `IImageOptionsFactory`, namespace `EasyImageSharp.Extensions.DependencyInjection`),
+    usable without the middleware. `samples/WebSample` shows it in use.
 - **Verification.** Third-party conformance suites (PngSuite, libjpeg-turbo, libtiff, plus locally built
   libwebp-test-data) checked against independent decoders. A SharpFuzz/libFuzzer harness with
   dictionaries and an OSS-Fuzz project definition (`fuzz/`). A coverlet coverage collector
   ([docs/COVERAGE.md](docs/COVERAGE.md)).
-- **Repository.** CodeQL, OpenSSF Scorecard, Dependabot and DocFX site workflows; release workflow with
-  dry run, CycloneDX SBOMs, build-provenance attestations and optional NuGet author signing;
-  `SUPPORT.md`.
+- **Repository.** CodeQL, OpenSSF Scorecard, Dependabot and a DocFX site build check; a release workflow with
+  dry run, CycloneDX SBOMs, build-provenance attestations and optional NuGet author signing; `SUPPORT.md`.
+  CI and the release workflow now build the libjxl and libavif runtimes and pack, verify and describe all
+  six packages (previously only four were packed).
 
 ### Changed
 
@@ -81,8 +100,14 @@ no public API was removed. New `IImageProcessingContext` members have default im
   returned the premultiplied samples unchanged. They now return straight colour (divided by alpha, rounded
   to nearest), matching libtiff and Pillow and every other alpha source in the library. Semi-transparent
   pixels from such files therefore decode lighter than before.
+- **`EasyImageSharp.LittleCms` moved into `EasyImageSharp.Codecs`.** The 1.3.1 `EasyImageSharp.LittleCms`
+  package contains no code: it depends on `EasyImageSharp.Codecs` and forwards its five public types there,
+  so existing references keep compiling and binaries built against 1.2.0 keep running. Replace the
+  reference with `EasyImageSharp.Codecs` at your convenience.
 - Package validation now uses 1.2.0 as the baseline for all four previously published packages
   (SkiaSharp and LittleCms had no baseline before).
+- CI no longer runs the fixture-determinism job (`check_determinism.py` remains for local use), and the
+  docs workflow only checks that the site builds instead of deploying it to GitHub Pages.
 
 ### Fixed
 
@@ -94,7 +119,7 @@ no public API was removed. New `IImageProcessingContext` members have default im
   and `32bpp-None` now match their references.
 - A still lossless WebP whose header declares no alpha is decoded opaque even where a damaged stream produces
   transparent pixels (an out-of-range colour index), as libwebp-based readers and browsers show it.
-- `EasyImageSharp.JpegXl`: limiting an animation with `MaxFrames` no longer fails with "decoding failed while
+- JPEG XL: limiting an animation with `MaxFrames` no longer fails with "decoding failed while
   skipping a frame"; libjxl only accepts the skip once it asks for the frame's output buffer.
 - `scripts/build-libavif.ps1` failed with "Unknown argument -" when `-Jobs` was not given: a one-element
   argument array was unwrapped to a string and splatted character by character.
@@ -104,11 +129,13 @@ no public API was removed. New `IImageProcessingContext` members have default im
 - The PngSuite, libjpeg-turbo, libtiff and (locally built) libwebp conformance suites pass with no known failures
   and no skips. JPEG-compressed TIFF pages are held to the same 40 dB PSNR floor as standalone JPEG (lossy
   decoders may round the IDCT and upsampling differently); the tiled libtiff sample decodes at 67.8 dB.
-- `EasyImageSharp.Avif` has its own test project: round trips (exact lossless, wide bit depths, animation,
+- AVIF has its own test project: round trips (exact lossless, wide bit depths, animation,
   metadata, limits, malformed input) and fixtures written and decoded by an independent libavif build (Pillow's),
   matched within one level at 4:4:4 and above 50 dB when chroma is subsampled.
-- `EasyImageSharp.JpegXl` and `EasyImageSharp.Avif` tests now run against the real native libraries. Both native
-  packages pack with their win-x64 runtimes, README and verbatim third-party licence notices.
+- The JPEG XL and AVIF tests run against the real native libraries, and a test loads LittleCMS, libavif and
+  libjxl in one process to cover the shared resolver. `EasyImageSharp.Codecs` packs with all three win-x64
+  runtimes, a README and verbatim third-party licence notices.
+- 6,997 tests pass on .NET 10; the only skips are AI tests whose model files are absent.
 
 ### Known limits
 

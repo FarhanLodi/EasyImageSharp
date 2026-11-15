@@ -3,12 +3,10 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <!--
-      Both shipped target frameworks. The README table is quoted for .NET 10, so that is the framework the
-      committed numbers come from. The second framework is here for InflateBenchmarks: the PNG inflate backend
-      is chosen per framework, because .NET 8 and .NET 10 ship different zlib implementations, and that choice
-      can only be re-checked when both frameworks can be measured. Pass -f net10.0 or -f net8.0 to dotnet run.
+      The only shipped target framework since 1.3.1. The README table is quoted for .NET 10, so that is the
+      framework the committed numbers come from.
     -->
-    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+    <TargetFramework>net10.0</TargetFramework>
     <RootNamespace>EasyImageSharp.Benchmarks</RootNamespace>
     <AssemblyName>EasyImageSharp.Benchmarks</AssemblyName>
     <LangVersion>latest</LangVersion>

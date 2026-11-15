@@ -1,0 +1,164 @@
+#nullable enable
+EasyImageSharp.Avif.AvifChromaSubsampling
+EasyImageSharp.Avif.AvifChromaSubsampling.Yuv400 = 4 -> EasyImageSharp.Avif.AvifChromaSubsampling
+EasyImageSharp.Avif.AvifChromaSubsampling.Yuv420 = 3 -> EasyImageSharp.Avif.AvifChromaSubsampling
+EasyImageSharp.Avif.AvifChromaSubsampling.Yuv422 = 2 -> EasyImageSharp.Avif.AvifChromaSubsampling
+EasyImageSharp.Avif.AvifChromaSubsampling.Yuv444 = 1 -> EasyImageSharp.Avif.AvifChromaSubsampling
+EasyImageSharp.Avif.AvifDecoder
+EasyImageSharp.Avif.AvifDecoder.AvifDecoder() -> void
+EasyImageSharp.Avif.AvifDecoder.Decode<TPixel>(System.ReadOnlySpan<byte> data, EasyImageSharp.Formats.DecoderOptions! options) -> EasyImageSharp.Image<TPixel>!
+EasyImageSharp.Avif.AvifDecoder.Identify(System.ReadOnlySpan<byte> data, EasyImageSharp.Formats.DecoderOptions! options) -> EasyImageSharp.ImageInfo!
+EasyImageSharp.Avif.AvifEncoder
+EasyImageSharp.Avif.AvifEncoder.AlphaQuality.get -> int
+EasyImageSharp.Avif.AvifEncoder.AlphaQuality.init -> void
+EasyImageSharp.Avif.AvifEncoder.AvifEncoder() -> void
+EasyImageSharp.Avif.AvifEncoder.BitDepth.get -> int?
+EasyImageSharp.Avif.AvifEncoder.BitDepth.init -> void
+EasyImageSharp.Avif.AvifEncoder.ChromaSubsampling.get -> EasyImageSharp.Avif.AvifChromaSubsampling?
+EasyImageSharp.Avif.AvifEncoder.ChromaSubsampling.init -> void
+EasyImageSharp.Avif.AvifEncoder.Encode<TPixel>(EasyImageSharp.Image<TPixel>! image, System.IO.Stream! stream) -> void
+EasyImageSharp.Avif.AvifEncoder.FrameDuration.get -> System.TimeSpan?
+EasyImageSharp.Avif.AvifEncoder.FrameDuration.init -> void
+EasyImageSharp.Avif.AvifEncoder.Lossless.get -> bool
+EasyImageSharp.Avif.AvifEncoder.Lossless.init -> void
+EasyImageSharp.Avif.AvifEncoder.MaxThreads.get -> int?
+EasyImageSharp.Avif.AvifEncoder.MaxThreads.init -> void
+EasyImageSharp.Avif.AvifEncoder.Quality.get -> int
+EasyImageSharp.Avif.AvifEncoder.Quality.init -> void
+EasyImageSharp.Avif.AvifEncoder.RepetitionCount.get -> int?
+EasyImageSharp.Avif.AvifEncoder.RepetitionCount.init -> void
+EasyImageSharp.Avif.AvifEncoder.SkipMetadata.get -> bool
+EasyImageSharp.Avif.AvifEncoder.SkipMetadata.init -> void
+EasyImageSharp.Avif.AvifEncoder.Speed.get -> int
+EasyImageSharp.Avif.AvifEncoder.Speed.init -> void
+EasyImageSharp.Avif.AvifFormat
+EasyImageSharp.Avif.AvifFrameMetadata
+EasyImageSharp.Avif.AvifFrameMetadata.AvifFrameMetadata() -> void
+EasyImageSharp.Avif.AvifFrameMetadata.DeepClone() -> EasyImageSharp.Avif.AvifFrameMetadata!
+EasyImageSharp.Avif.AvifFrameMetadata.Duration.get -> System.TimeSpan
+EasyImageSharp.Avif.AvifFrameMetadata.Duration.set -> void
+EasyImageSharp.Avif.AvifFrameMetadata.DurationInTimescales.get -> ulong
+EasyImageSharp.Avif.AvifFrameMetadata.DurationInTimescales.set -> void
+EasyImageSharp.Avif.AvifImageExtensions
+EasyImageSharp.Avif.AvifMetadata
+EasyImageSharp.Avif.AvifMetadata.AlphaPremultiplied.get -> bool
+EasyImageSharp.Avif.AvifMetadata.AlphaPremultiplied.set -> void
+EasyImageSharp.Avif.AvifMetadata.AvifMetadata() -> void
+EasyImageSharp.Avif.AvifMetadata.BitDepth.get -> int
+EasyImageSharp.Avif.AvifMetadata.BitDepth.set -> void
+EasyImageSharp.Avif.AvifMetadata.ChromaSubsampling.get -> EasyImageSharp.Avif.AvifChromaSubsampling?
+EasyImageSharp.Avif.AvifMetadata.ChromaSubsampling.set -> void
+EasyImageSharp.Avif.AvifMetadata.ColorPrimaries.get -> int
+EasyImageSharp.Avif.AvifMetadata.ColorPrimaries.set -> void
+EasyImageSharp.Avif.AvifMetadata.DeepClone() -> EasyImageSharp.Avif.AvifMetadata!
+EasyImageSharp.Avif.AvifMetadata.FullRange.get -> bool
+EasyImageSharp.Avif.AvifMetadata.FullRange.set -> void
+EasyImageSharp.Avif.AvifMetadata.HasAlpha.get -> bool
+EasyImageSharp.Avif.AvifMetadata.HasAlpha.set -> void
+EasyImageSharp.Avif.AvifMetadata.IsAnimated.get -> bool
+EasyImageSharp.Avif.AvifMetadata.IsAnimated.set -> void
+EasyImageSharp.Avif.AvifMetadata.MatrixCoefficients.get -> int
+EasyImageSharp.Avif.AvifMetadata.MatrixCoefficients.set -> void
+EasyImageSharp.Avif.AvifMetadata.MirrorAxis.get -> int?
+EasyImageSharp.Avif.AvifMetadata.MirrorAxis.set -> void
+EasyImageSharp.Avif.AvifMetadata.RepetitionCount.get -> int
+EasyImageSharp.Avif.AvifMetadata.RepetitionCount.set -> void
+EasyImageSharp.Avif.AvifMetadata.RotationDegrees.get -> int
+EasyImageSharp.Avif.AvifMetadata.RotationDegrees.set -> void
+EasyImageSharp.Avif.AvifMetadata.Timescale.get -> ulong
+EasyImageSharp.Avif.AvifMetadata.Timescale.set -> void
+EasyImageSharp.Avif.AvifMetadata.TransferCharacteristics.get -> int
+EasyImageSharp.Avif.AvifMetadata.TransferCharacteristics.set -> void
+static EasyImageSharp.Avif.AvifFormat.CanDecode.get -> bool
+static EasyImageSharp.Avif.AvifFormat.CanEncode.get -> bool
+static EasyImageSharp.Avif.AvifFormat.Instance.get -> EasyImageSharp.Formats.ImageFormat!
+static EasyImageSharp.Avif.AvifFormat.IsAvif(System.ReadOnlySpan<byte> data) -> bool
+static EasyImageSharp.Avif.AvifFormat.IsNativeLibraryAvailable.get -> bool
+static EasyImageSharp.Avif.AvifFormat.NativeCodecVersions.get -> string!
+static EasyImageSharp.Avif.AvifFormat.NativeVersion.get -> string!
+static EasyImageSharp.Avif.AvifImageExtensions.SaveAsAvif(this EasyImageSharp.Image! image, System.IO.Stream! stream) -> void
+static EasyImageSharp.Avif.AvifImageExtensions.SaveAsAvif(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.Avif.AvifEncoder! encoder) -> void
+static EasyImageSharp.Avif.AvifImageExtensions.SaveAsAvif(this EasyImageSharp.Image! image, string! path) -> void
+static EasyImageSharp.Avif.AvifImageExtensions.SaveAsAvif(this EasyImageSharp.Image! image, string! path, EasyImageSharp.Avif.AvifEncoder! encoder) -> void
+static EasyImageSharp.Avif.AvifImageExtensions.SaveAsAvifAsync(this EasyImageSharp.Image! image, System.IO.Stream! stream) -> System.Threading.Tasks.Task!
+static EasyImageSharp.Avif.AvifImageExtensions.SaveAsAvifAsync(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.Avif.AvifEncoder! encoder, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
+static EasyImageSharp.Avif.AvifImageExtensions.SaveAsAvifAsync(this EasyImageSharp.Image! image, System.IO.Stream! stream, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
+static EasyImageSharp.Avif.AvifImageExtensions.SaveAsAvifAsync(this EasyImageSharp.Image! image, string! path) -> System.Threading.Tasks.Task!
+static EasyImageSharp.Avif.AvifImageExtensions.SaveAsAvifAsync(this EasyImageSharp.Image! image, string! path, EasyImageSharp.Avif.AvifEncoder! encoder, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
+static EasyImageSharp.Avif.AvifImageExtensions.SaveAsAvifAsync(this EasyImageSharp.Image! image, string! path, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
+EasyImageSharp.JpegXl.JpegXlDecoder
+EasyImageSharp.JpegXl.JpegXlDecoder.Decode<TPixel>(System.ReadOnlySpan<byte> data, EasyImageSharp.Formats.DecoderOptions! options) -> EasyImageSharp.Image<TPixel>!
+EasyImageSharp.JpegXl.JpegXlDecoder.Identify(System.ReadOnlySpan<byte> data, EasyImageSharp.Formats.DecoderOptions! options) -> EasyImageSharp.ImageInfo!
+EasyImageSharp.JpegXl.JpegXlDecoder.JpegXlDecoder() -> void
+EasyImageSharp.JpegXl.JpegXlEncoder
+EasyImageSharp.JpegXl.JpegXlEncoder.BitsPerSample.get -> int?
+EasyImageSharp.JpegXl.JpegXlEncoder.BitsPerSample.init -> void
+EasyImageSharp.JpegXl.JpegXlEncoder.CompressMetadataBoxes.get -> bool
+EasyImageSharp.JpegXl.JpegXlEncoder.CompressMetadataBoxes.init -> void
+EasyImageSharp.JpegXl.JpegXlEncoder.Distance.get -> float
+EasyImageSharp.JpegXl.JpegXlEncoder.Distance.init -> void
+EasyImageSharp.JpegXl.JpegXlEncoder.Effort.get -> int
+EasyImageSharp.JpegXl.JpegXlEncoder.Effort.init -> void
+EasyImageSharp.JpegXl.JpegXlEncoder.Encode<TPixel>(EasyImageSharp.Image<TPixel>! image, System.IO.Stream! stream) -> void
+EasyImageSharp.JpegXl.JpegXlEncoder.FrameDuration.get -> System.TimeSpan?
+EasyImageSharp.JpegXl.JpegXlEncoder.FrameDuration.init -> void
+EasyImageSharp.JpegXl.JpegXlEncoder.JpegXlEncoder() -> void
+EasyImageSharp.JpegXl.JpegXlEncoder.LoopCount.get -> int?
+EasyImageSharp.JpegXl.JpegXlEncoder.LoopCount.init -> void
+EasyImageSharp.JpegXl.JpegXlEncoder.Lossless.get -> bool
+EasyImageSharp.JpegXl.JpegXlEncoder.Lossless.init -> void
+EasyImageSharp.JpegXl.JpegXlEncoder.MaxThreads.get -> int?
+EasyImageSharp.JpegXl.JpegXlEncoder.MaxThreads.init -> void
+EasyImageSharp.JpegXl.JpegXlEncoder.SkipMetadata.get -> bool
+EasyImageSharp.JpegXl.JpegXlEncoder.SkipMetadata.init -> void
+EasyImageSharp.JpegXl.JpegXlFormat
+EasyImageSharp.JpegXl.JpegXlFrameMetadata
+EasyImageSharp.JpegXl.JpegXlFrameMetadata.DeepClone() -> EasyImageSharp.JpegXl.JpegXlFrameMetadata!
+EasyImageSharp.JpegXl.JpegXlFrameMetadata.Duration.get -> System.TimeSpan
+EasyImageSharp.JpegXl.JpegXlFrameMetadata.Duration.set -> void
+EasyImageSharp.JpegXl.JpegXlFrameMetadata.DurationTicks.get -> uint
+EasyImageSharp.JpegXl.JpegXlFrameMetadata.DurationTicks.set -> void
+EasyImageSharp.JpegXl.JpegXlFrameMetadata.JpegXlFrameMetadata() -> void
+EasyImageSharp.JpegXl.JpegXlImageExtensions
+EasyImageSharp.JpegXl.JpegXlMetadata
+EasyImageSharp.JpegXl.JpegXlMetadata.AlphaPremultiplied.get -> bool
+EasyImageSharp.JpegXl.JpegXlMetadata.AlphaPremultiplied.set -> void
+EasyImageSharp.JpegXl.JpegXlMetadata.BitsPerSample.get -> int
+EasyImageSharp.JpegXl.JpegXlMetadata.BitsPerSample.set -> void
+EasyImageSharp.JpegXl.JpegXlMetadata.DeepClone() -> EasyImageSharp.JpegXl.JpegXlMetadata!
+EasyImageSharp.JpegXl.JpegXlMetadata.ExponentBitsPerSample.get -> int
+EasyImageSharp.JpegXl.JpegXlMetadata.ExponentBitsPerSample.set -> void
+EasyImageSharp.JpegXl.JpegXlMetadata.HasAlpha.get -> bool
+EasyImageSharp.JpegXl.JpegXlMetadata.HasAlpha.set -> void
+EasyImageSharp.JpegXl.JpegXlMetadata.HasContainer.get -> bool
+EasyImageSharp.JpegXl.JpegXlMetadata.HasContainer.set -> void
+EasyImageSharp.JpegXl.JpegXlMetadata.IntensityTarget.get -> float
+EasyImageSharp.JpegXl.JpegXlMetadata.IntensityTarget.set -> void
+EasyImageSharp.JpegXl.JpegXlMetadata.IsAnimated.get -> bool
+EasyImageSharp.JpegXl.JpegXlMetadata.IsAnimated.set -> void
+EasyImageSharp.JpegXl.JpegXlMetadata.IsGray.get -> bool
+EasyImageSharp.JpegXl.JpegXlMetadata.IsGray.set -> void
+EasyImageSharp.JpegXl.JpegXlMetadata.JpegXlMetadata() -> void
+EasyImageSharp.JpegXl.JpegXlMetadata.LoopCount.get -> int
+EasyImageSharp.JpegXl.JpegXlMetadata.LoopCount.set -> void
+EasyImageSharp.JpegXl.JpegXlMetadata.TicksPerSecondDenominator.get -> uint
+EasyImageSharp.JpegXl.JpegXlMetadata.TicksPerSecondDenominator.set -> void
+EasyImageSharp.JpegXl.JpegXlMetadata.TicksPerSecondNumerator.get -> uint
+EasyImageSharp.JpegXl.JpegXlMetadata.TicksPerSecondNumerator.set -> void
+EasyImageSharp.JpegXl.JpegXlMetadata.UsesOriginalProfile.get -> bool
+EasyImageSharp.JpegXl.JpegXlMetadata.UsesOriginalProfile.set -> void
+static EasyImageSharp.JpegXl.JpegXlFormat.Instance.get -> EasyImageSharp.Formats.ImageFormat!
+static EasyImageSharp.JpegXl.JpegXlFormat.IsJpegXl(System.ReadOnlySpan<byte> data) -> bool
+static EasyImageSharp.JpegXl.JpegXlFormat.IsNativeLibraryAvailable.get -> bool
+static EasyImageSharp.JpegXl.JpegXlFormat.IsThreadRunnerAvailable.get -> bool
+static EasyImageSharp.JpegXl.JpegXlFormat.NativeVersion.get -> string!
+static EasyImageSharp.JpegXl.JpegXlImageExtensions.SaveAsJxl(this EasyImageSharp.Image! image, System.IO.Stream! stream) -> void
+static EasyImageSharp.JpegXl.JpegXlImageExtensions.SaveAsJxl(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.JpegXl.JpegXlEncoder! encoder) -> void
+static EasyImageSharp.JpegXl.JpegXlImageExtensions.SaveAsJxl(this EasyImageSharp.Image! image, string! path) -> void
+static EasyImageSharp.JpegXl.JpegXlImageExtensions.SaveAsJxl(this EasyImageSharp.Image! image, string! path, EasyImageSharp.JpegXl.JpegXlEncoder! encoder) -> void
+static EasyImageSharp.JpegXl.JpegXlImageExtensions.SaveAsJxlAsync(this EasyImageSharp.Image! image, System.IO.Stream! stream) -> System.Threading.Tasks.Task!
+static EasyImageSharp.JpegXl.JpegXlImageExtensions.SaveAsJxlAsync(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.JpegXl.JpegXlEncoder! encoder, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
+static EasyImageSharp.JpegXl.JpegXlImageExtensions.SaveAsJxlAsync(this EasyImageSharp.Image! image, System.IO.Stream! stream, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
+static EasyImageSharp.JpegXl.JpegXlImageExtensions.SaveAsJxlAsync(this EasyImageSharp.Image! image, string! path) -> System.Threading.Tasks.Task!
+static EasyImageSharp.JpegXl.JpegXlImageExtensions.SaveAsJxlAsync(this EasyImageSharp.Image! image, string! path, EasyImageSharp.JpegXl.JpegXlEncoder! encoder, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
+static EasyImageSharp.JpegXl.JpegXlImageExtensions.SaveAsJxlAsync(this EasyImageSharp.Image! image, string! path, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!

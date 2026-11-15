@@ -4,7 +4,7 @@ _layout: landing
 
 # EasyImageSharp
 
-A fully managed 2D imaging library for .NET 8 and .NET 10: ten codecs, a fluent processing pipeline,
+A fully managed 2D imaging library for .NET 10: ten codecs, a fluent processing pipeline,
 EXIF metadata, document-imaging operators and ONNX tensor bridges in one dependency-free assembly, with
 optional add-on packages for ONNX Runtime models, SkiaSharp interop and Little CMS colour management.
 MIT licensed.

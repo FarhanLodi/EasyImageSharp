@@ -146,17 +146,14 @@ measurement.
 
 ## Which inflate backend
 
-Which decompressor the PNG decoder should use is a per-target-framework question, not a matter of taste.
-.NET 8's `ZLibStream` calls the classic native zlib; .NET 10's calls zlib-ng, which is hand-written SIMD and
-much faster on some inputs. So the same managed inflater can be the right choice on one framework and the
-wrong one on the next, and the answer moves whenever the runtime's zlib does.
-
-`InflateBenchmarks` is the measurement that question is settled by. Run it on both frameworks — the ratio
-column is the answer, and it is not the same number on both:
+Which decompressor the PNG decoder should use is measured, not a matter of taste. .NET 10's `ZLibStream`
+calls zlib-ng, which is hand-written SIMD and faster than the library's managed inflater, so the decoder uses
+it. (On .NET 8, which classic zlib backed, the managed inflater won; that is why it exists. Version 1.3.1
+dropped .NET 8.) The answer moves whenever the runtime's zlib does, so re-run `InflateBenchmarks` after a
+runtime upgrade; the ratio column is the answer:
 
 ```bash
-dotnet run -c Release -f net8.0  --project benchmarks/EasyImageSharp.Benchmarks -- --filter "*Inflate*"
-dotnet run -c Release -f net10.0 --project benchmarks/EasyImageSharp.Benchmarks -- --filter "*Inflate*"
+dotnet run -c Release --project benchmarks/EasyImageSharp.Benchmarks -- --filter "*Inflate*"
 ```
 
 `ZLibStreamRows` is the shape the decoder used before the managed backend existed — every IDAT chunk
@@ -232,14 +229,9 @@ and the lossy ones are within a PSNR bound before it writes the manifest.
 
 ## Why this project is outside EasyImageSharp.slnx
 
-The solution's test leg builds and runs with `-f net8.0` and `-f net10.0` explicitly, and every project in the
-solution has to answer to both. Keeping the benchmarks out of the solution keeps that leg honest and keeps a
-`BenchmarkDotNet` package reference out of the packaging graph entirely; `samples/` is excluded for the same
-reason and is likewise referenced by path.
-
-The project itself targets both `net8.0` and `net10.0`, because the inflate-backend comparison above is only
-meaningful when both can be measured. `dotnet run` therefore needs an explicit `-f`; the committed table is
-measured on `net10.0`.
+Keeping the benchmarks out of the solution keeps a `BenchmarkDotNet` package reference out of the packaging
+graph entirely; `samples/` is likewise referenced by path. The project targets `net10.0`, the framework the
+committed table is measured on.
 
 
 ## Detection geometry and model export tools

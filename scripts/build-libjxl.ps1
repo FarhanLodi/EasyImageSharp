@@ -14,7 +14,7 @@ Nothing is installed system-wide and no binary is checked into source control: e
 unpacks the upstream cjxl/djxl command-line tools into tools/, which regenerate the test fixtures.
 
 Linux and macOS consumers should install their platform's libjxl package instead, see
-src/EasyImageSharp.JpegXl/README.md.
+src/EasyImageSharp.Codecs/README.md.
 #>
 param(
     [string]$WorkDirectory,

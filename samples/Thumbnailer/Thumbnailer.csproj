@@ -13,8 +13,7 @@
 
     Single-target net10.0 on purpose. The publish passes no target framework and the job installs only the
     10.0.x SDK, so a multi-targeting project would fail immediately with the "project has multiple target
-    frameworks" publish error. That single TFM is also why this project is not a member of EasyImageSharp.slnx:
-    the test legs run against net8.0 as well, which fails for any solution project without a net8.0 build.
+    frameworks" publish error. It is published on its own rather than as a member of EasyImageSharp.slnx.
 
     InvariantGlobalization is deliberately NOT set. This job exists to catch trim warnings, and leaving
     globalization in the published closure keeps it closer to what a real consumer actually ships.

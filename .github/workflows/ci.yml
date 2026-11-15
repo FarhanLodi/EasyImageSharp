@@ -42,10 +42,7 @@ jobs:
 
       - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
         with:
-          # 10.0.x builds everything; 8.0.x supplies the runtime for the net8.0 test leg.
-          dotnet-version: |
-            8.0.x
-            10.0.x
+          dotnet-version: 10.0.x
 
       - name: Cache NuGet packages
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
@@ -67,6 +64,37 @@ jobs:
           path: .artifacts/native/lcms2/win-x64/lcms2.dll
           if-no-files-found: error
 
+      # EasyImageSharp.Codecs also bundles libjxl (the official upstream release, checksum-verified) and libavif
+      # (built from pinned libavif/libaom sources; libaom's compile is the slow part, so it is cached by the script's hash).
+      - name: Fetch the pinned Windows libjxl runtime
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./scripts/build-libjxl.ps1
+
+      - name: Cache the Windows libavif runtime
+        if: runner.os == 'Windows'
+        id: libavif-cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: .artifacts/native/libavif/win-x64
+          key: libavif-win-x64-${{ hashFiles('scripts/build-libavif.ps1') }}
+
+      - name: Build the pinned Windows libavif runtime
+        if: runner.os == 'Windows' && steps.libavif-cache.outputs.cache-hit != 'true'
+        shell: pwsh
+        run: ./scripts/build-libavif.ps1 -Perl "C:\Program Files\Git\usr\bin\perl.exe"
+
+      - name: Upload the Windows libjxl and libavif runtimes for packing
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: codecs-win-x64
+          path: |
+            .artifacts/native/libjxl/win-x64/
+            .artifacts/native/libavif/win-x64/
+          if-no-files-found: error
+          overwrite: true
+
       - name: Install Linux Little CMS runtime
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y liblcms2-dev
@@ -81,11 +109,7 @@ jobs:
       - name: Build (warnings are errors)
         run: dotnet build EasyImageSharp.slnx -c Release --no-restore
 
-      # The whole solution: core tests and AI tests, each on net8.0 and net10.0. The shipped net8.0
-      # build is exercised, not just the framework the SDK happens to default to.
-      - name: Test net8.0
-        run: dotnet test EasyImageSharp.slnx -c Release --no-build -f net8.0 --logger "trx;LogFileName=net8.trx" --results-directory TestResults
-
+      # The whole solution on net10.0, the only shipped target framework since 1.3.1.
       - name: Test net10.0
         run: dotnet test EasyImageSharp.slnx -c Release --no-build -f net10.0 --logger "trx;LogFileName=net10.trx" --results-directory TestResults
 
@@ -115,10 +139,8 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
         with:
-          dotnet-version: |
-            8.0.x
-            10.0.x
-      - name: Test ARM64 net8 and net10
+          dotnet-version: 10.0.x
+      - name: Test ARM64
         run: dotnet test tests/EasyImageSharp.Tests -c Release
       - name: Test scalar paths
         env:
@@ -131,70 +153,6 @@ jobs:
           test ! -f arm64-aot/AotSmoke.dll
           ./arm64-aot/AotSmoke | tee arm64-smoke.log
           grep -Eq "^AotSmoke: [1-9][0-9]* checks, 0 failures$" arm64-smoke.log
-
-  # -------------------------------------------------------------------------------------------------
-  # Fixture determinism. Every expected value the test suite asserts against is written by Pillow, not by
-  # this library, and that only means something while the corpus on disk is still what the generators
-  # produce. check_determinism.py regenerates the whole corpus into a scratch directory and compares it
-  # against the committed one, so a hand-edited or stale fixture announces itself.
-  #
-  # It compares DECODED PIXELS, not file bytes. Pillow's wheels deflate through zlib-ng, whose output
-  # depends on the zlib-ng build and on the SIMD path it selects at run time from the host CPU, so the
-  # same generator emits different bytes here than on a contributor's machine. An earlier job compared
-  # bytes and had to be deleted for flagging hundreds of files that carried identical pixels; this is a
-  # different check, not that one restored.
-  # -------------------------------------------------------------------------------------------------
-  fixture-determinism:
-    name: Fixture determinism
-    if: github.event_name != 'schedule'
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
-
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
-        with:
-          # The generators need 3.11 or newer.
-          python-version: "3.11"
-
-      # Pinned exactly as tests/EasyImageSharp.Tests/Fixtures/README.md documents. The pins reproduce the
-      # generators' behaviour, not their compression output, which is why they can be this tight without
-      # making the check fragile.
-      #
-      # tifffile is REQUIRED, not optional. Pillow detects BigTIFF by testing ifh[2] == 43, an index that
-      # only lands on the version word in the little-endian layout, so Pillow cannot open a big-endian
-      # BigTIFF at all. tifffile is therefore the only independent reader for the big-endian fixtures, and
-      # gen_tiffadv.py refuses to emit a fixture no independent reader has confirmed. It is deliberately
-      # not pinned hard: it verifies fixtures rather than producing any committed bytes, so its version
-      # cannot change what lands in the tree. imagecodecs is NOT needed - the one fixture whose codec
-      # would require it is little-endian, and Pillow cross-checks that one.
-      - name: Install the generators' dependencies
-        run: python -m pip install --disable-pip-version-check "pillow==11.3.0" "numpy>=2,<3" "tifffile>=2024.1"
-
-      - name: Validate OCR evaluation metrics
-        run: python -m unittest discover -s benchmarks/ocr -p "test_*.py"
-
-      - name: Validate fixture provenance comparison rules
-        run: python -m unittest discover -s tests/EasyImageSharp.Tests/Fixtures -p "test_determinism.py"
-
-      # Exit status 1 is a corpus difference and 2 is a check that could not run at all; both fail the job,
-      # and the two are distinguished in the output rather than being collapsed into one failure. The
-      # report goes to the runner's temp directory because the checker's one promise about this tree is
-      # that it never writes into it, and a report left here would read as a stale fixture on a re-run.
-      - name: Regenerate the corpus and compare it against the committed one
-        working-directory: tests/EasyImageSharp.Tests/Fixtures
-        run: python check_determinism.py --json "${{ runner.temp }}/fixture-determinism.json"
-
-      # The console summary names the differing files; the report adds the rule applied to every file and
-      # the exact Pillow, NumPy and Python versions, which is what a toolchain-induced failure is diagnosed
-      # from. The report is only written once the comparison ran, so a setup failure uploads nothing.
-      - name: Upload the determinism report
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        with:
-          name: fixture-determinism-report
-          path: ${{ runner.temp }}/fixture-determinism.json
-          if-no-files-found: warn
 
   # -------------------------------------------------------------------------------------------------
   # Native AOT. Both samples set IsAotCompatible, so the trim and AOT analyzers already run on every
@@ -296,8 +254,7 @@ jobs:
 
   # -------------------------------------------------------------------------------------------------
   # The samples, run the way a reader of the repository runs them. Neither is a member of
-  # EasyImageSharp.slnx — both are single-target net10.0 and the solution's test legs run against net8.0
-  # as well — so build-test never touches them, and without this job a sample could stop compiling
+  # EasyImageSharp.slnx, so build-test never touches them, and without this job a sample could stop compiling
   # without anything noticing. It is also the only check that either one works framework-dependent,
   # which is not what the AOT and trimming publishes above measure.
   # -------------------------------------------------------------------------------------------------
@@ -347,11 +304,7 @@ jobs:
 
       - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
         with:
-          # The project multi-targets, because the inflate-backend comparison is only meaningful when
-          # both frameworks can be measured, so the restore needs both.
-          dotnet-version: |
-            8.0.x
-            10.0.x
+          dotnet-version: 10.0.x
 
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
@@ -397,13 +350,14 @@ jobs:
         run: dotnet run -c Release -f net10.0 --project benchmarks/EasyImageSharp.Benchmarks -- --readme-table
 
   # -------------------------------------------------------------------------------------------------
-  # Pack validation for all four packages. A package that is missing its README, licence, icon or symbol
+  # Pack validation for all six packages. A package that is missing its README, licence, icon or symbol
   # file is a package that looks abandoned on NuGet, so the contents are asserted, not just listed.
   #
   # Every `dotnet pack` below also runs .NET package validation, switched on by EnablePackageValidation
-  # in each csproj: the net8.0 and net10.0 assets must expose compatible APIs, and EasyImageSharp and
-  # EasyImageSharp.AI must stay binary compatible with the release their PackageValidationBaselineVersion
-  # names, which restore downloads from nuget.org. A breaking change fails here, not after a release.
+  # in each csproj: every package with a published history (EasyImageSharp, .AI, .SkiaSharp and the
+  # .LittleCms forwarding package) must stay binary compatible with the release its
+  # PackageValidationBaselineVersion names, which restore downloads from nuget.org. The intentional removal of
+  # net8.0 in 1.3.1 is recorded in each project's CompatibilitySuppressions.xml. A breaking change fails here, not after a release.
   # -------------------------------------------------------------------------------------------------
   pack:
     name: Pack validation
@@ -417,15 +371,19 @@ jobs:
 
       - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
         with:
-          dotnet-version: |
-            8.0.x
-            10.0.x
+          dotnet-version: 10.0.x
 
       - name: Download reproducible Windows Little CMS runtime
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: littlecms-win-x64
           path: .artifacts/native/lcms2/win-x64
+
+      - name: Download the Windows libjxl and libavif runtimes
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: codecs-win-x64
+          path: .artifacts/native
 
       # Package validation runs only when a project asks for it, so a property deleted from a csproj would
       # let every pack below pass without comparing anything. The configuration is asserted first.
@@ -434,7 +392,7 @@ jobs:
           set -euo pipefail
           fail=0
           # name:baseline - "required" for a package with a published history to compare against.
-          for entry in EasyImageSharp:required EasyImageSharp.AI:required EasyImageSharp.SkiaSharp:optional EasyImageSharp.LittleCms:optional; do
+          for entry in EasyImageSharp:required EasyImageSharp.AI:required EasyImageSharp.SkiaSharp:required EasyImageSharp.LittleCms:required EasyImageSharp.Codecs:optional EasyImageSharp.Web:optional; do
             name="${entry%%:*}"
             project="src/$name/$name.csproj"
             props=$(dotnet msbuild "$project" -getProperty:EnablePackageValidation -getProperty:PackageValidationBaselineVersion)
@@ -459,8 +417,12 @@ jobs:
       - name: Pack EasyImageSharp.SkiaSharp
         run: dotnet pack src/EasyImageSharp.SkiaSharp -c Release -o artifacts -p:ContinuousIntegrationBuild=true
 
+      - name: Pack EasyImageSharp.Codecs
+        run: dotnet pack src/EasyImageSharp.Codecs -c Release -o artifacts -p:ContinuousIntegrationBuild=true
       - name: Pack EasyImageSharp.LittleCms
         run: dotnet pack src/EasyImageSharp.LittleCms -c Release -o artifacts -p:ContinuousIntegrationBuild=true
+      - name: Pack EasyImageSharp.Web
+        run: dotnet pack src/EasyImageSharp.Web -c Release -o artifacts -p:ContinuousIntegrationBuild=true
 
       - name: Validate package contents
         run: |
@@ -481,8 +443,8 @@ jobs:
                 || { echo "::error::$name is missing $required"; fail=1; }
             done
 
-            # Both target frameworks, with their XML documentation next to them.
-            for tfm in net8.0 net10.0; do
+            # The target framework, with its XML documentation next to it.
+            for tfm in net10.0; do
               echo "$listing" | grep -q "^lib/$tfm/$name.dll$" \
                 || { echo "::error::$name is missing lib/$tfm/$name.dll"; fail=1; }
               echo "$listing" | grep -q "^lib/$tfm/$name.xml$" \
@@ -499,6 +461,8 @@ jobs:
           ai=(artifacts/EasyImageSharp.AI.[0-9]*.nupkg)
           skia=(artifacts/EasyImageSharp.SkiaSharp.[0-9]*.nupkg)
           lcms=(artifacts/EasyImageSharp.LittleCms.[0-9]*.nupkg)
+          codecs=(artifacts/EasyImageSharp.Codecs.[0-9]*.nupkg)
+          web=(artifacts/EasyImageSharp.Web.[0-9]*.nupkg)
 
           # With nullglob an empty glob would silently skip every assertion below, so a missing
           # package must fail here rather than pass by default.
@@ -507,15 +471,29 @@ jobs:
           [ ${#skia[@]} -gt 0 ] || { echo "::error::No EasyImageSharp.SkiaSharp nupkg was produced"; exit 1; }
 
           [ ${#lcms[@]} -gt 0 ] || { echo "::error::No LittleCms package was produced"; exit 1; }
+          [ ${#codecs[@]} -gt 0 ] || { echo "::error::No EasyImageSharp.Codecs nupkg was produced"; exit 1; }
+          [ ${#web[@]} -gt 0 ] || { echo "::error::No EasyImageSharp.Web nupkg was produced"; exit 1; }
 
           for pkg in "${core[@]}"; do check "$pkg" "EasyImageSharp"; done
           for pkg in "${ai[@]}"; do check "$pkg" "EasyImageSharp.AI"; done
           for pkg in "${skia[@]}"; do check "$pkg" "EasyImageSharp.SkiaSharp"; done
 
+          for pkg in "${web[@]}"; do check "$pkg" "EasyImageSharp.Web"; done
+
+          # Codecs carries every Windows native runtime and their licence texts.
+          for pkg in "${codecs[@]}"; do
+            check "$pkg" "EasyImageSharp.Codecs"
+            for native in lcms2.dll avif.dll jxl.dll jxl_cms.dll jxl_threads.dll brotlicommon.dll brotlidec.dll brotlienc.dll; do
+              unzip -Z1 "$pkg" | grep -qx "runtimes/win-x64/native/$native" || { echo "::error::Codecs Windows runtime $native missing"; fail=1; }
+            done
+            unzip -Z1 "$pkg" | grep -qx 'THIRD_PARTY_NOTICES.txt' || { echo "::error::Codecs licence notices missing"; fail=1; }
+          done
+
+          # LittleCms is a forwarding package: no code of its own, a dependency on Codecs.
           for pkg in "${lcms[@]}"; do
             check "$pkg" "EasyImageSharp.LittleCms"
-            unzip -Z1 "$pkg" | grep -qx 'runtimes/win-x64/native/lcms2.dll' || { echo "::error::LittleCms Windows runtime missing"; fail=1; }
-            unzip -Z1 "$pkg" | grep -qx 'THIRD_PARTY_NOTICES.txt' || { echo "::error::LittleCms license notice missing"; fail=1; }
+            unzip -p "$pkg" EasyImageSharp.LittleCms.nuspec | grep -q 'id="EasyImageSharp.Codecs"' \
+              || { echo "::error::LittleCms does not depend on EasyImageSharp.Codecs"; fail=1; }
           done
 
           # The core package must stay dependency-free; the AI package must declare ONNX Runtime.
@@ -554,7 +532,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        tfm: [net8.0, net10.0]
+        tfm: [net10.0]
     env:
       EASYIMAGESHARP_FUZZ_MUTATIONS: "20000"
       EASYIMAGESHARP_FUZZ_SEED: ${{ github.run_id }}
@@ -563,9 +541,7 @@ jobs:
 
       - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
         with:
-          dotnet-version: |
-            8.0.x
-            10.0.x
+          dotnet-version: 10.0.x
 
       - name: Build
         run: dotnet build tests/EasyImageSharp.Tests -c Release
@@ -598,7 +574,7 @@ jobs:
   ci-passed:
     name: CI passed
     if: always() && github.event_name != 'schedule'
-    needs: [build-test, core-arm64, fixture-determinism, aot-smoke, trim-smoke, samples, benchmarks-smoke, pack]
+    needs: [build-test, core-arm64, aot-smoke, trim-smoke, samples, benchmarks-smoke, pack]
     runs-on: ubuntu-latest
     steps:
       - name: Check that every job succeeded

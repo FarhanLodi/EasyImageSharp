@@ -7,16 +7,14 @@ RS0022, RS0024-RS0027, RS0036, RS0037 are all `warning`), and `Directory.Build.p
 
 ## Layout
 
-Both shipping projects multi-target `net8.0` and `net10.0`, and the two surfaces are allowed to
-differ, so the baselines are per target framework:
+The projects target `net10.0` only (since 1.3.1), so each has one pair of baselines:
 
 ```
 PublicAPI/
-  net8.0/{PublicAPI.Shipped.txt,PublicAPI.Unshipped.txt}
   net10.0/{PublicAPI.Shipped.txt,PublicAPI.Unshipped.txt}
 ```
 
-The csproj wires them with `<AdditionalFiles Include="PublicAPI/$(TargetFramework)/..." />`. All four
+The csproj wires them with `<AdditionalFiles Include="PublicAPI/$(TargetFramework)/..." />`. Both
 files must exist even when they hold nothing but `#nullable enable` - a missing file is itself reported.
 
 ## File format
@@ -34,8 +32,7 @@ A removal is a `*REMOVED*` line carrying the old signature. Removals are breakin
 
 ## Adding public API
 
-Put the new lines in `PublicAPI/<tfm>/PublicAPI.Unshipped.txt` for **both** target frameworks unless
-the member genuinely exists on only one. In an IDE, the "Add to public API" code fix writes the entry
+Put the new lines in `PublicAPI/net10.0/PublicAPI.Unshipped.txt`. In an IDE, the "Add to public API" code fix writes the entry
 for you; from the command line, build once and each RS0016 diagnostic quotes the exact line to add:
 
 ```

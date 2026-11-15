@@ -15,10 +15,11 @@ name: Release
 # ---------------------------------------------------------------------------------------------------
 # WHAT A RELEASE PUBLISHES
 # ---------------------------------------------------------------------------------------------------
-#   - EasyImageSharp, EasyImageSharp.AI, EasyImageSharp.SkiaSharp and EasyImageSharp.LittleCms, each as a
-#     .nupkg with its .snupkg symbol package, pushed to nuget.org.
+#   - EasyImageSharp, EasyImageSharp.AI, EasyImageSharp.SkiaSharp, EasyImageSharp.Codecs,
+#     EasyImageSharp.LittleCms (a forwarding package) and EasyImageSharp.Web, each as a .nupkg with its
+#     .snupkg symbol package, pushed to nuget.org.
 #   - One CycloneDX 1.6 SBOM per package (<id>.<version>.cdx.json), attached to the GitHub release. The
-#     LittleCms SBOM also lists the native lcms2.dll the package carries, with its SHA-256.
+#     Codecs SBOM also lists the native lcms2.dll the package carries, with its SHA-256.
 #   - A signed SLSA build-provenance attestation for every .nupkg and .snupkg, stored by GitHub. It
 #     covers the exact files attached to the GitHub release, which are the bytes pushed to nuget.org.
 #     nuget.org then adds its own repository signature, which changes the file, so a package downloaded
@@ -163,7 +164,7 @@ jobs:
       - name: Compare the tag against the project versions
         run: |
           version="${{ steps.version.outputs.version }}"
-          for name in EasyImageSharp EasyImageSharp.AI EasyImageSharp.SkiaSharp EasyImageSharp.LittleCms; do
+          for name in EasyImageSharp EasyImageSharp.AI EasyImageSharp.SkiaSharp EasyImageSharp.Codecs EasyImageSharp.LittleCms EasyImageSharp.Web; do
             proj="src/$name/$name.csproj"
             declared=$(grep -oPm1 '(?<=<Version>)[^<]+' "$proj" || echo "")
             if [ "$declared" != "$version" ]; then
@@ -201,9 +202,7 @@ jobs:
 
       - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
         with:
-          dotnet-version: |
-            8.0.x
-            10.0.x
+          dotnet-version: 10.0.x
 
       - name: Build pinned Windows Little CMS runtime
         if: runner.os == 'Windows'
@@ -219,6 +218,29 @@ jobs:
           if-no-files-found: error
           overwrite: true
 
+      # EasyImageSharp.Codecs also bundles libjxl (the official upstream release, checksum-verified) and libavif
+      # (built from pinned libavif/libaom sources; libaom's compile is the slow part).
+      - name: Fetch the pinned Windows libjxl runtime
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./scripts/build-libjxl.ps1
+
+      - name: Build the pinned Windows libavif runtime
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./scripts/build-libavif.ps1 -Perl "C:\Program Files\Git\usr\bin\perl.exe"
+
+      - name: Upload the Windows libjxl and libavif runtimes for packing
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: codecs-win-x64
+          path: |
+            .artifacts/native/libjxl/win-x64/
+            .artifacts/native/libavif/win-x64/
+          if-no-files-found: error
+          overwrite: true
+
       - name: Install Linux Little CMS runtime
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y liblcms2-dev
@@ -229,9 +251,6 @@ jobs:
 
       - name: Build (warnings are errors)
         run: dotnet build EasyImageSharp.slnx -c Release -p:Version=${{ needs.prepare.outputs.version }}
-
-      - name: Test net8.0
-        run: dotnet test EasyImageSharp.slnx -c Release --no-build -f net8.0
 
       - name: Test net10.0
         run: dotnet test EasyImageSharp.slnx -c Release --no-build -f net10.0
@@ -255,9 +274,7 @@ jobs:
 
       - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
         with:
-          dotnet-version: |
-            8.0.x
-            10.0.x
+          dotnet-version: 10.0.x
 
       - name: Download the Windows Little CMS runtime
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
@@ -265,10 +282,16 @@ jobs:
           name: littlecms-win-x64
           path: .artifacts/native/lcms2/win-x64
 
+      - name: Download the Windows libjxl and libavif runtimes
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: codecs-win-x64
+          path: .artifacts/native
+
       - name: Pack every package
         run: |
           set -euo pipefail
-          for name in EasyImageSharp EasyImageSharp.AI EasyImageSharp.SkiaSharp EasyImageSharp.LittleCms; do
+          for name in EasyImageSharp EasyImageSharp.AI EasyImageSharp.SkiaSharp EasyImageSharp.Codecs EasyImageSharp.LittleCms EasyImageSharp.Web; do
             dotnet pack "src/$name/$name.csproj" \
               -c Release \
               -o artifacts \
@@ -287,7 +310,7 @@ jobs:
           version="${{ needs.prepare.outputs.version }}"
           fail=0
 
-          for name in EasyImageSharp EasyImageSharp.AI EasyImageSharp.SkiaSharp EasyImageSharp.LittleCms; do
+          for name in EasyImageSharp EasyImageSharp.AI EasyImageSharp.SkiaSharp EasyImageSharp.Codecs EasyImageSharp.LittleCms EasyImageSharp.Web; do
             nupkg="artifacts/$name.$version.nupkg"
             snupkg="artifacts/$name.$version.snupkg"
 
@@ -298,17 +321,25 @@ jobs:
             for required in README.md LICENSE icon.png; do
               echo "$listing" | grep -qx "$required" || { echo "::error::$nupkg is missing $required"; fail=1; }
             done
-            for tfm in net8.0 net10.0; do
+            for tfm in net10.0; do
               echo "$listing" | grep -q "^lib/$tfm/$name.dll$" || { echo "::error::$nupkg is missing lib/$tfm/$name.dll"; fail=1; }
               echo "$listing" | grep -q "^lib/$tfm/$name.xml$" || { echo "::error::$nupkg is missing lib/$tfm/$name.xml"; fail=1; }
             done
           done
 
-          lcms="artifacts/EasyImageSharp.LittleCms.$version.nupkg"
-          if [ -f "$lcms" ]; then
-            for required in runtimes/win-x64/native/lcms2.dll THIRD_PARTY_NOTICES.txt; do
-              unzip -Z1 "$lcms" | grep -qx "$required" || { echo "::error::$lcms is missing $required"; fail=1; }
+          codecs="artifacts/EasyImageSharp.Codecs.$version.nupkg"
+          if [ -f "$codecs" ]; then
+            for required in THIRD_PARTY_NOTICES.txt runtimes/win-x64/native/lcms2.dll runtimes/win-x64/native/avif.dll \
+                runtimes/win-x64/native/jxl.dll runtimes/win-x64/native/jxl_cms.dll runtimes/win-x64/native/jxl_threads.dll \
+                runtimes/win-x64/native/brotlicommon.dll runtimes/win-x64/native/brotlidec.dll runtimes/win-x64/native/brotlienc.dll; do
+              unzip -Z1 "$codecs" | grep -qx "$required" || { echo "::error::$codecs is missing $required"; fail=1; }
             done
+          fi
+
+          # LittleCms is a forwarding package and must depend on Codecs.
+          lcms="artifacts/EasyImageSharp.LittleCms.$version.nupkg"
+          if [ -f "$lcms" ] && ! unzip -p "$lcms" EasyImageSharp.LittleCms.nuspec | grep -q 'id="EasyImageSharp.Codecs"'; then
+            echo "::error::$lcms does not depend on EasyImageSharp.Codecs"; fail=1
           fi
 
           # The core package must stay dependency-free.
@@ -333,7 +364,7 @@ jobs:
           set -euo pipefail
           version="${{ needs.prepare.outputs.version }}"
           mkdir -p sbom
-          for name in EasyImageSharp EasyImageSharp.AI EasyImageSharp.SkiaSharp EasyImageSharp.LittleCms; do
+          for name in EasyImageSharp EasyImageSharp.AI EasyImageSharp.SkiaSharp EasyImageSharp.Codecs EasyImageSharp.LittleCms EasyImageSharp.Web; do
             dotnet CycloneDX "src/$name/$name.csproj" \
               --output sbom \
               --filename "$name.$version.cdx.json" \
@@ -362,9 +393,9 @@ jobs:
             exit 1
           fi
 
-          sha=$(unzip -p "artifacts/EasyImageSharp.LittleCms.$version.nupkg" runtimes/win-x64/native/lcms2.dll | sha256sum | cut -d' ' -f1)
-          sbom="sbom/EasyImageSharp.LittleCms.$version.cdx.json"
-          root="pkg:nuget/EasyImageSharp.LittleCms@$version"
+          sha=$(unzip -p "artifacts/EasyImageSharp.Codecs.$version.nupkg" runtimes/win-x64/native/lcms2.dll | sha256sum | cut -d' ' -f1)
+          sbom="sbom/EasyImageSharp.Codecs.$version.cdx.json"
+          root="pkg:nuget/EasyImageSharp.Codecs@$version"
           purl="pkg:github/mm2/Little-CMS@$tag"
 
           jq -e --arg root "$root" 'any(.dependencies[]?; .ref == $root)' "$sbom" > /dev/null \
@@ -397,7 +428,7 @@ jobs:
           set -euo pipefail
           version="${{ needs.prepare.outputs.version }}"
           fail=0
-          for name in EasyImageSharp EasyImageSharp.AI EasyImageSharp.SkiaSharp EasyImageSharp.LittleCms; do
+          for name in EasyImageSharp EasyImageSharp.AI EasyImageSharp.SkiaSharp EasyImageSharp.Codecs EasyImageSharp.LittleCms EasyImageSharp.Web; do
             sbom="sbom/$name.$version.cdx.json"
             [ -s "$sbom" ] || { echo "::error::$sbom was not produced"; fail=1; continue; }
             jq -e --arg name "$name" --arg v "$version" '
@@ -567,7 +598,7 @@ jobs:
             echo
             echo "- Version: \`$version\`"
             echo "- Prerelease: ${{ needs.prepare.outputs.prerelease }}"
-            echo "- Packages: EasyImageSharp, EasyImageSharp.AI, EasyImageSharp.SkiaSharp, EasyImageSharp.LittleCms (with .snupkg symbols)"
+            echo "- Packages: EasyImageSharp, EasyImageSharp.AI, EasyImageSharp.SkiaSharp, EasyImageSharp.Codecs, EasyImageSharp.LittleCms, EasyImageSharp.Web (with .snupkg symbols)"
             echo "- SBOMs: one CycloneDX file per package, attached to the GitHub release"
             echo "- Provenance: \`gh attestation verify EasyImageSharp.$version.nupkg --repo ${{ github.repository }}\` against the release assets"
             echo

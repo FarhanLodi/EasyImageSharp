@@ -13,11 +13,11 @@ namespace EasyImageSharp.Benchmarks;
 /// .NET 8's <see cref="ZLibStream"/> calls the classic native zlib, .NET 10's calls zlib-ng, which is
 /// hand-written SIMD and much faster on some inputs. The same managed inflater can therefore be the right
 /// choice on one framework and the wrong one on the next, and the answer moves again whenever the runtime's
-/// zlib does. Do not carry a ratio forward from a previous release; re-run both frameworks:
+/// zlib does. Only .NET 10 is targeted since 1.3.1. Do not carry a ratio forward from a previous release;
+/// re-run it after a runtime upgrade:
 /// </para>
 /// <code>
-/// dotnet run -c Release -f net8.0  --project benchmarks/EasyImageSharp.Benchmarks -- --filter "*Inflate*"
-/// dotnet run -c Release -f net10.0 --project benchmarks/EasyImageSharp.Benchmarks -- --filter "*Inflate*"
+/// dotnet run -c Release --project benchmarks/EasyImageSharp.Benchmarks -- --filter "*Inflate*"
 /// </code>
 /// <para>
 /// The comparison is deliberately unfair to the managed inflater: <see cref="ZLibStreamRows"/> is the shape

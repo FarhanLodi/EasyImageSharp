@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+    <TargetFramework>net10.0</TargetFramework>
     <RootNamespace>EasyImageSharp.Web</RootNamespace>
     <AssemblyName>EasyImageSharp.Web</AssemblyName>
     <IsAotCompatible>true</IsAotCompatible>
@@ -17,16 +17,16 @@
 
   <PropertyGroup Label="Package">
     <PackageId>EasyImageSharp.Web</PackageId>
-    <Version>1.3.0</Version>
+    <Version>1.3.1</Version>
     <Authors>Farhan Lodi</Authors>
     <Title>EasyImageSharp.Web</Title>
-    <Description>ASP.NET Core image middleware for EasyImageSharp: app.UseEasyImageSharp() resizes, crops, pads, re-orients and transcodes images on the fly from query commands (width, height, mode, anchor, format, quality, bgcolor, autoorient, sampler, rotate, flip), with HMAC-SHA256 signed URLs (key rotation, optional expiry), Accept-header WebP negotiation with Vary: Accept, ETag / Last-Modified / 304 handling, HEAD support, path-traversal-safe file sources, physical-disk and IDistributedCache output caches with atomic writes, output limits, a concurrency limiter that answers 503 when saturated, cancellation on client abort and a health check. Fully managed; depends only on the ASP.NET Core shared framework.</Description>
+    <Description>ASP.NET Core image middleware for EasyImageSharp: app.UseEasyImageSharp() resizes, crops, pads, re-orients and transcodes images on the fly from query commands (width, height, mode, anchor, format, quality, bgcolor, autoorient, sampler, rotate, flip), with HMAC-SHA256 signed URLs (key rotation, optional expiry), Accept-header WebP negotiation with Vary: Accept, ETag / Last-Modified / 304 handling, HEAD support, path-traversal-safe file sources, physical-disk and IDistributedCache output caches with atomic writes, output limits, a concurrency limiter that answers 503 when saturated, cancellation on client abort and a health check. Also includes the dependency-injection integration (services.AddEasyImageSharp(): decoder limits, pixel-buffer budget and parallelism from code or IConfiguration, validated on start, with ready-made DecoderOptions and ImageExecutionOptions), usable without the middleware. Fully managed; depends only on the ASP.NET Core shared framework.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>icon.png</PackageIcon>
     <PackageProjectUrl>https://github.com/FarhanLodi/EasyImageSharp</PackageProjectUrl>
-    <PackageTags>image;imaging;aspnetcore;middleware;resize;thumbnail;webp;cdn;image-server;signed-url;hmac;cache;managed;aot</PackageTags>
-    <PackageReleaseNotes>1.3.0: first release. On-the-fly processing middleware, signed URLs, format negotiation, HTTP and server-side caching, limits, concurrency limiting and a health check. See CHANGELOG.md.</PackageReleaseNotes>
+    <PackageTags>image;imaging;aspnetcore;middleware;dependency-injection;options;configuration;resize;thumbnail;webp;cdn;image-server;signed-url;hmac;cache;managed;aot</PackageTags>
+    <PackageReleaseNotes>1.3.1: first release. On-the-fly processing middleware, signed URLs, format negotiation, HTTP and server-side caching, limits, concurrency limiting, a health check, and the AddEasyImageSharp dependency-injection integration. See CHANGELOG.md.</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/FarhanLodi/EasyImageSharp</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -54,7 +54,6 @@
 
   <ItemGroup>
     <ProjectReference Include="../EasyImageSharp/EasyImageSharp.csproj" />
-    <ProjectReference Include="../EasyImageSharp.Extensions.DependencyInjection/EasyImageSharp.Extensions.DependencyInjection.csproj" />
   </ItemGroup>
 
   <ItemGroup>
