@@ -84,7 +84,7 @@ forwarding package for existing users.
   libwebp-test-data) checked against independent decoders. A SharpFuzz/libFuzzer harness with
   dictionaries and an OSS-Fuzz project definition (`fuzz/`). A coverlet coverage collector
   ([docs/COVERAGE.md](docs/COVERAGE.md)).
-- **Repository.** CodeQL, OpenSSF Scorecard, Dependabot and a DocFX site build check; a release workflow with
+- **Repository.** CodeQL, OpenSSF Scorecard and a DocFX site build check; a release workflow with
   dry run, CycloneDX SBOMs, build-provenance attestations and optional NuGet author signing; `SUPPORT.md`.
   CI and the release workflow now build the libjxl and libavif runtimes and pack, verify and describe all
   six packages (previously only four were packed).
