@@ -6,6 +6,11 @@ namespace EasyImageSharp.Formats.Webp;
 /// The pixel-level primitives of the VP8 decoder (RFC 6386 sections 12, 14 and 15): the exact integer
 /// inverse DCT and Walsh-Hadamard transforms, the luma/chroma intra predictors and the simple and normal
 /// in-loop deblocking filters. Everything is written to be bit-exact with the reference decoder.
+/// <para>
+/// The hot primitives dispatch to the vector kernels of <see cref="Vp8DspSimd"/> when those are enabled; the
+/// scalar bodies stay here as the reference implementation (the <c>*Scalar</c> methods) that the vector
+/// kernels are tested against and that <see cref="SimdConfig.ForceScalarFallback"/> selects.
+/// </para>
 /// </summary>
 internal static class Vp8Dsp
 {
@@ -35,6 +40,18 @@ internal static class Vp8Dsp
 
     /// <summary>Full 4x4 inverse DCT of <paramref name="input"/> (16 coefficients at <paramref name="inOff"/>) added onto the prediction.</summary>
     public static void TransformOne(short[] input, int inOff, byte[] dst, int off)
+    {
+        if (Vp8DspSimd.IsEnabled)
+        {
+            Vp8DspSimd.TransformOne(input, inOff, dst, off);
+            return;
+        }
+
+        TransformOneScalar(input, inOff, dst, off);
+    }
+
+    /// <summary>Scalar reference implementation of <see cref="TransformOne"/>.</summary>
+    internal static void TransformOneScalar(short[] input, int inOff, byte[] dst, int off)
     {
         Span<int> tmp = stackalloc int[16];
         int t = 0;
@@ -68,6 +85,18 @@ internal static class Vp8Dsp
     /// <summary>Simplified inverse DCT for blocks whose only non-zero coefficients are at positions 0, 1 and 4.</summary>
     public static void TransformAc3(short[] input, int inOff, byte[] dst, int off)
     {
+        if (Vp8DspSimd.IsEnabled)
+        {
+            Vp8DspSimd.TransformAc3(input, inOff, dst, off);
+            return;
+        }
+
+        TransformAc3Scalar(input, inOff, dst, off);
+    }
+
+    /// <summary>Scalar reference implementation of <see cref="TransformAc3"/>.</summary>
+    internal static void TransformAc3Scalar(short[] input, int inOff, byte[] dst, int off)
+    {
         int a = input[inOff] + 4;
         int c4 = Mul2(input[inOff + 4]);
         int d4 = Mul1(input[inOff + 4]);
@@ -89,6 +118,18 @@ internal static class Vp8Dsp
 
     /// <summary>Inverse DCT for a DC-only block.</summary>
     public static void TransformDc(short[] input, int inOff, byte[] dst, int off)
+    {
+        if (Vp8DspSimd.IsEnabled)
+        {
+            Vp8DspSimd.TransformDc(input, inOff, dst, off);
+            return;
+        }
+
+        TransformDcScalar(input, inOff, dst, off);
+    }
+
+    /// <summary>Scalar reference implementation of <see cref="TransformDc"/>.</summary>
+    internal static void TransformDcScalar(short[] input, int inOff, byte[] dst, int off)
     {
         int dc = input[inOff] + 4;
         for (int j = 0; j < 4; j++)
@@ -168,6 +209,18 @@ internal static class Vp8Dsp
     // ----- Intra prediction (section 12) -----
 
     private static void TrueMotion(byte[] dst, int off, int size)
+    {
+        if (size != 4 && Vp8DspSimd.IsEnabled)
+        {
+            Vp8DspSimd.TrueMotion(dst, off, size);
+            return;
+        }
+
+        TrueMotionScalar(dst, off, size);
+    }
+
+    /// <summary>Scalar reference implementation of the TrueMotion predictor (any block size).</summary>
+    internal static void TrueMotionScalar(byte[] dst, int off, int size)
     {
         int top = off - Bps;
         int topLeft = dst[top - 1];
@@ -644,6 +697,18 @@ internal static class Vp8Dsp
     /// <summary>Simple filter across a horizontal edge (16 pixels wide).</summary>
     public static void SimpleVFilter16(byte[] p, int off, int stride, int thresh)
     {
+        if (Vp8DspSimd.IsEnabled)
+        {
+            Vp8DspSimd.SimpleVFilter16(p, off, stride, thresh);
+            return;
+        }
+
+        SimpleVFilter16Scalar(p, off, stride, thresh);
+    }
+
+    /// <summary>Scalar reference implementation of <see cref="SimpleVFilter16"/>.</summary>
+    internal static void SimpleVFilter16Scalar(byte[] p, int off, int stride, int thresh)
+    {
         int thresh2 = (2 * thresh) + 1;
         for (int i = 0; i < 16; i++)
         {
@@ -656,6 +721,18 @@ internal static class Vp8Dsp
 
     /// <summary>Simple filter across a vertical edge (16 pixels tall).</summary>
     public static void SimpleHFilter16(byte[] p, int off, int stride, int thresh)
+    {
+        if (Vp8DspSimd.IsEnabled)
+        {
+            Vp8DspSimd.SimpleHFilter16(p, off, stride, thresh);
+            return;
+        }
+
+        SimpleHFilter16Scalar(p, off, stride, thresh);
+    }
+
+    /// <summary>Scalar reference implementation of <see cref="SimpleHFilter16"/>.</summary>
+    internal static void SimpleHFilter16Scalar(byte[] p, int off, int stride, int thresh)
     {
         int thresh2 = (2 * thresh) + 1;
         for (int i = 0; i < 16; i++)
@@ -685,7 +762,8 @@ internal static class Vp8Dsp
         }
     }
 
-    private static void FilterLoop26(byte[] p, int off, int hstride, int vstride, int size, int thresh, int ithresh, int hevThresh)
+    /// <summary>Scalar macroblock-edge filter: <paramref name="size"/> positions, <paramref name="hstride"/> across the edge.</summary>
+    internal static void FilterLoop26(byte[] p, int off, int hstride, int vstride, int size, int thresh, int ithresh, int hevThresh)
     {
         int thresh2 = (2 * thresh) + 1;
         while (size-- > 0)
@@ -706,7 +784,8 @@ internal static class Vp8Dsp
         }
     }
 
-    private static void FilterLoop24(byte[] p, int off, int hstride, int vstride, int size, int thresh, int ithresh, int hevThresh)
+    /// <summary>Scalar inner-edge filter: <paramref name="size"/> positions, <paramref name="hstride"/> across the edge.</summary>
+    internal static void FilterLoop24(byte[] p, int off, int hstride, int vstride, int size, int thresh, int ithresh, int hevThresh)
     {
         int thresh2 = (2 * thresh) + 1;
         while (size-- > 0)
@@ -729,40 +808,104 @@ internal static class Vp8Dsp
 
     /// <summary>Normal filter across the top macroblock edge of a 16-wide luma block.</summary>
     public static void VFilter16(byte[] p, int off, int stride, int thresh, int ithresh, int hevThresh)
-        => FilterLoop26(p, off, stride, 1, 16, thresh, ithresh, hevThresh);
+    {
+        if (Vp8DspSimd.IsEnabled)
+        {
+            Vp8DspSimd.VFilter(p, off, stride, 16, macroblockEdge: true, thresh, ithresh, hevThresh);
+            return;
+        }
+
+        FilterLoop26(p, off, stride, 1, 16, thresh, ithresh, hevThresh);
+    }
 
     /// <summary>Normal filter across the left macroblock edge of a 16-tall luma block.</summary>
     public static void HFilter16(byte[] p, int off, int stride, int thresh, int ithresh, int hevThresh)
-        => FilterLoop26(p, off, 1, stride, 16, thresh, ithresh, hevThresh);
+    {
+        if (Vp8DspSimd.IsEnabled)
+        {
+            Vp8DspSimd.HFilter(p, off, stride, 16, macroblockEdge: true, thresh, ithresh, hevThresh);
+            return;
+        }
+
+        FilterLoop26(p, off, 1, stride, 16, thresh, ithresh, hevThresh);
+    }
 
     public static void VFilter16i(byte[] p, int off, int stride, int thresh, int ithresh, int hevThresh)
     {
+        bool vector = Vp8DspSimd.IsEnabled;
         for (int k = 3; k > 0; k--)
         {
             off += 4 * stride;
-            FilterLoop24(p, off, stride, 1, 16, thresh, ithresh, hevThresh);
+            if (vector)
+            {
+                Vp8DspSimd.VFilter(p, off, stride, 16, macroblockEdge: false, thresh, ithresh, hevThresh);
+            }
+            else
+            {
+                FilterLoop24(p, off, stride, 1, 16, thresh, ithresh, hevThresh);
+            }
         }
     }
 
     public static void HFilter16i(byte[] p, int off, int stride, int thresh, int ithresh, int hevThresh)
     {
+        bool vector = Vp8DspSimd.IsEnabled;
         for (int k = 3; k > 0; k--)
         {
             off += 4;
-            FilterLoop24(p, off, 1, stride, 16, thresh, ithresh, hevThresh);
+            if (vector)
+            {
+                Vp8DspSimd.HFilter(p, off, stride, 16, macroblockEdge: false, thresh, ithresh, hevThresh);
+            }
+            else
+            {
+                FilterLoop24(p, off, 1, stride, 16, thresh, ithresh, hevThresh);
+            }
         }
     }
 
     /// <summary>Normal filter across the top macroblock edge of an 8-wide chroma block.</summary>
     public static void VFilter8(byte[] p, int off, int stride, int thresh, int ithresh, int hevThresh)
-        => FilterLoop26(p, off, stride, 1, 8, thresh, ithresh, hevThresh);
+    {
+        if (Vp8DspSimd.IsEnabled)
+        {
+            Vp8DspSimd.VFilter(p, off, stride, 8, macroblockEdge: true, thresh, ithresh, hevThresh);
+            return;
+        }
+
+        FilterLoop26(p, off, stride, 1, 8, thresh, ithresh, hevThresh);
+    }
 
     public static void HFilter8(byte[] p, int off, int stride, int thresh, int ithresh, int hevThresh)
-        => FilterLoop26(p, off, 1, stride, 8, thresh, ithresh, hevThresh);
+    {
+        if (Vp8DspSimd.IsEnabled)
+        {
+            Vp8DspSimd.HFilter(p, off, stride, 8, macroblockEdge: true, thresh, ithresh, hevThresh);
+            return;
+        }
+
+        FilterLoop26(p, off, 1, stride, 8, thresh, ithresh, hevThresh);
+    }
 
     public static void VFilter8i(byte[] p, int off, int stride, int thresh, int ithresh, int hevThresh)
-        => FilterLoop24(p, off + (4 * stride), stride, 1, 8, thresh, ithresh, hevThresh);
+    {
+        if (Vp8DspSimd.IsEnabled)
+        {
+            Vp8DspSimd.VFilter(p, off + (4 * stride), stride, 8, macroblockEdge: false, thresh, ithresh, hevThresh);
+            return;
+        }
+
+        FilterLoop24(p, off + (4 * stride), stride, 1, 8, thresh, ithresh, hevThresh);
+    }
 
     public static void HFilter8i(byte[] p, int off, int stride, int thresh, int ithresh, int hevThresh)
-        => FilterLoop24(p, off + 4, 1, stride, 8, thresh, ithresh, hevThresh);
+    {
+        if (Vp8DspSimd.IsEnabled)
+        {
+            Vp8DspSimd.HFilter(p, off + 4, stride, 8, macroblockEdge: false, thresh, ithresh, hevThresh);
+            return;
+        }
+
+        FilterLoop24(p, off + 4, 1, stride, 8, thresh, ithresh, hevThresh);
+    }
 }

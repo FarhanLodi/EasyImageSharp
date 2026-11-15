@@ -77,6 +77,7 @@ internal static class Program
         ProcessingPipeline(report);
         OcrPreprocessing.RunAll(report);
         AdvancedDocumentChecks.RunAll(report);
+        FeatureChecks.RunAll(report);
         MetadataSurvival(report);
         await StreamAndAsyncSurface(report).ConfigureAwait(false);
         ResourceLimits(report);

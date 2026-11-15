@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 namespace EasyImageSharp.Formats.Webp;
 
 /// <summary>
@@ -574,15 +576,15 @@ internal sealed class Vp8LDecoder
             switch (transform.Type)
             {
                 case SubtractGreenTransform:
-                    AddGreenToBlueAndRed(pixels, transform.XSize * transform.YSize);
+                    AddGreenToBlueAndRed(pixels, transform.XSize * transform.YSize, Vp8LTransformsSimd.IsEnabled);
                     break;
 
                 case PredictorTransform:
-                    PredictorInverse(transform, pixels);
+                    PredictorInverse(pixels, transform.XSize, transform.YSize, transform.Bits, transform.Data, Vp8LTransformsSimd.IsEnabled);
                     break;
 
                 case CrossColorTransform:
-                    CrossColorInverse(transform, pixels);
+                    CrossColorInverse(pixels, transform.XSize, transform.YSize, transform.Bits, transform.Data, Vp8LTransformsSimd.IsEnabled);
                     break;
 
                 case ColorIndexingTransform:
@@ -592,8 +594,15 @@ internal sealed class Vp8LDecoder
         }
     }
 
-    private static void AddGreenToBlueAndRed(uint[] pixels, int count)
+    /// <summary>Inverse subtract-green; <paramref name="vector"/> selects <see cref="Vp8LTransformsSimd"/> over the scalar reference.</summary>
+    internal static void AddGreenToBlueAndRed(uint[] pixels, int count, bool vector)
     {
+        if (vector)
+        {
+            Vp8LTransformsSimd.AddGreenToBlueAndRed(pixels.AsSpan(0, count));
+            return;
+        }
+
         for (int i = 0; i < count; i++)
         {
             uint argb = pixels[i];
@@ -605,13 +614,13 @@ internal sealed class Vp8LDecoder
         }
     }
 
-    private static void PredictorInverse(Transform transform, uint[] pixels)
+    /// <summary>
+    /// Inverse predictor transform. With <paramref name="vector"/> set, runs of the modes that read only the row above
+    /// go through <see cref="Vp8LTransformsSimd.PredictRun"/>; every other pixel takes the scalar path.
+    /// </summary>
+    internal static void PredictorInverse(uint[] pixels, int width, int height, int bits, uint[] modes, bool vector)
     {
-        int width = transform.XSize;
-        int height = transform.YSize;
-        int bits = transform.Bits;
         int tilesPerRow = SubSampleSize(width, bits);
-        uint[] modes = transform.Data;
 
         // First row: top-left pixel predicts black, the rest predict from the left.
         pixels[0] = AddPixels(pixels[0], 0xff000000u);
@@ -627,42 +636,72 @@ internal sealed class Vp8LDecoder
 
             // First column predicts from the top.
             pixels[rowStart] = AddPixels(pixels[rowStart], pixels[rowStart - width]);
+            if (vector)
+            {
+                for (int x = 1; x < width;)
+                {
+                    int tileEnd = Math.Min(width, ((x >> bits) + 1) << bits);
+                    int mode = (int)((modes[modeRow + (x >> bits)] >> 8) & 0xf);
+                    if (Vp8LTransformsSimd.IsTopRowMode(mode))
+                    {
+                        Vp8LTransformsSimd.PredictRun(pixels, rowStart + x, tileEnd - x, width, mode);
+                        x = tileEnd;
+                        continue;
+                    }
+
+                    for (; x < tileEnd; x++)
+                    {
+                        PredictPixel(pixels, rowStart + x, width, mode);
+                    }
+                }
+
+                continue;
+            }
+
             for (int x = 1; x < width; x++)
             {
-                int i = rowStart + x;
-                int mode = (int)((modes[modeRow + (x >> bits)] >> 8) & 0xf);
-                uint left = pixels[i - 1];
-                uint top = pixels[i - width];
-                uint pred = mode switch
-                {
-                    0 => 0xff000000u,
-                    1 => left,
-                    2 => top,
-                    3 => pixels[i - width + 1],
-                    4 => pixels[i - width - 1],
-                    5 => Average2(Average2(left, pixels[i - width + 1]), top),
-                    6 => Average2(left, pixels[i - width - 1]),
-                    7 => Average2(left, top),
-                    8 => Average2(pixels[i - width - 1], top),
-                    9 => Average2(top, pixels[i - width + 1]),
-                    10 => Average2(Average2(left, pixels[i - width - 1]), Average2(top, pixels[i - width + 1])),
-                    11 => Select(top, left, pixels[i - width - 1]),
-                    12 => ClampedAddSubtractFull(left, top, pixels[i - width - 1]),
-                    13 => ClampedAddSubtractHalf(left, top, pixels[i - width - 1]),
-                    _ => 0xff000000u,
-                };
-                pixels[i] = AddPixels(pixels[i], pred);
+                PredictPixel(pixels, rowStart + x, width, (int)((modes[modeRow + (x >> bits)] >> 8) & 0xf));
             }
         }
     }
 
-    private static void CrossColorInverse(Transform transform, uint[] pixels)
+    /// <summary>Reconstructs pixel <paramref name="i"/> (not in the first row or column) with predictor <paramref name="mode"/>.</summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void PredictPixel(uint[] pixels, int i, int width, int mode)
     {
-        int width = transform.XSize;
-        int height = transform.YSize;
-        int bits = transform.Bits;
+        uint left = pixels[i - 1];
+        uint top = pixels[i - width];
+        uint pred = mode switch
+        {
+            0 => 0xff000000u,
+            1 => left,
+            2 => top,
+            3 => pixels[i - width + 1],
+            4 => pixels[i - width - 1],
+            5 => Average2(Average2(left, pixels[i - width + 1]), top),
+            6 => Average2(left, pixels[i - width - 1]),
+            7 => Average2(left, top),
+            8 => Average2(pixels[i - width - 1], top),
+            9 => Average2(top, pixels[i - width + 1]),
+            10 => Average2(Average2(left, pixels[i - width - 1]), Average2(top, pixels[i - width + 1])),
+            11 => Select(top, left, pixels[i - width - 1]),
+            12 => ClampedAddSubtractFull(left, top, pixels[i - width - 1]),
+            13 => ClampedAddSubtractHalf(left, top, pixels[i - width - 1]),
+            _ => 0xff000000u,
+        };
+        pixels[i] = AddPixels(pixels[i], pred);
+    }
+
+    /// <summary>Inverse cross-colour transform; <paramref name="vector"/> selects <see cref="Vp8LTransformsSimd"/> over the scalar reference.</summary>
+    internal static void CrossColorInverse(uint[] pixels, int width, int height, int bits, uint[] data, bool vector)
+    {
+        if (vector)
+        {
+            Vp8LTransformsSimd.CrossColorInverse(pixels, width, height, bits, data);
+            return;
+        }
+
         int tilesPerRow = SubSampleSize(width, bits);
-        uint[] data = transform.Data;
 
         for (int y = 0; y < height; y++)
         {

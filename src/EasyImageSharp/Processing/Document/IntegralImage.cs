@@ -44,10 +44,22 @@ internal sealed class IntegralImage
             }
         });
 
+        bool vector = IntegralImageSimd.IsEnabled;
         for (int y = 2; y <= height; y++)
         {
             int row = y * localStride;
             int prev = (y - 1) * localStride;
+            if (vector)
+            {
+                IntegralImageSimd.AddRow(s.AsSpan(row + 1, width), s.AsSpan(prev + 1, width));
+                if (sq is not null)
+                {
+                    IntegralImageSimd.AddRow(sq.AsSpan(row + 1, width), sq.AsSpan(prev + 1, width));
+                }
+
+                continue;
+            }
+
             for (int x = 1; x <= width; x++)
             {
                 s[row + x] += s[prev + x];
@@ -95,6 +107,33 @@ internal sealed class IntegralImage
         mean = (double)this.Sum(x1, y1, x2, y2) / area;
         double meanSq = (double)this.SumOfSquares(x1, y1, x2, y2) / area;
         variance = Math.Max(0, meanSq - (mean * mean));
+    }
+
+    /// <summary>
+    /// <see cref="WindowStats"/> for every pixel of row <paramref name="y"/> (requires <c>withSquares</c>). With
+    /// <paramref name="vector"/> set, the interior pixels - those whose window is not clipped horizontally, so every
+    /// window of the row has the same size - are computed by <see cref="IntegralImageSimd"/>; the results are
+    /// bit-identical either way.
+    /// </summary>
+    public void RowWindowStats(int y, int half, Span<double> mean, Span<double> variance, Span<int> area, bool vector)
+    {
+        int width = this.Width;
+        int x = 0;
+        if (vector && this.sumSq is not null && half < width - 1 - half)
+        {
+            for (; x < half; x++)
+            {
+                this.WindowStats(x, y, half, out mean[x], out variance[x], out area[x]);
+            }
+
+            x = IntegralImageSimd.InteriorRowStats(
+                this.sum, this.sumSq, this.stride, this.Height, y, half, x, width - 1 - half, mean, variance, area);
+        }
+
+        for (; x < width; x++)
+        {
+            this.WindowStats(x, y, half, out mean[x], out variance[x], out area[x]);
+        }
     }
 
     /// <summary>Mean of the clamped window centred at (x, y).</summary>

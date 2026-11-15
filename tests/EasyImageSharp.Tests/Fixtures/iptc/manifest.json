@@ -1,0 +1,1612 @@
+{
+ "fixtures": [
+  {
+   "container": "jpeg",
+   "file": "jpeg_utf8.jpg",
+   "height": 16,
+   "iptc": {
+    "datasets": [
+     {
+      "dataset": 0,
+      "hex": "0004",
+      "record": 1
+     },
+     {
+      "dataset": 90,
+      "hex": "1b2547",
+      "record": 1
+     },
+     {
+      "dataset": 0,
+      "hex": "0004",
+      "record": 2
+     },
+     {
+      "dataset": 5,
+      "hex": "4c6973626f6120c3a0206e6f697465",
+      "record": 2,
+      "text": "Lisboa \u00e0 noite"
+     },
+     {
+      "dataset": 10,
+      "hex": "35",
+      "record": 2,
+      "text": "5"
+     },
+     {
+      "dataset": 15,
+      "hex": "545256",
+      "record": 2,
+      "text": "TRV"
+     },
+     {
+      "dataset": 20,
+      "hex": "5472616e73706f72746573",
+      "record": 2,
+      "text": "Transportes"
+     },
+     {
+      "dataset": 20,
+      "hex": "43696461646573",
+      "record": 2,
+      "text": "Cidades"
+     },
+     {
+      "dataset": 25,
+      "hex": "4c6973626f61",
+      "record": 2,
+      "text": "Lisboa"
+     },
+     {
+      "dataset": 25,
+      "hex": "6e6f697465",
+      "record": 2,
+      "text": "noite"
+     },
+     {
+      "dataset": 25,
+      "hex": "656cc3a9747269636f",
+      "record": 2,
+      "text": "el\u00e9trico"
+     },
+     {
+      "dataset": 40,
+      "hex": "456d626172676f206174c3a920323032362d30322d3031",
+      "record": 2,
+      "text": "Embargo at\u00e9 2026-02-01"
+     },
+     {
+      "dataset": 55,
+      "hex": "3230323630313135",
+      "record": 2,
+      "text": "20260115"
+     },
+     {
+      "dataset": 60,
+      "hex": "3231333030302b30303030",
+      "record": 2,
+      "text": "213000+0000"
+     },
+     {
+      "dataset": 80,
+      "hex": "496ec3aa7320476f6ec3a7616c766573",
+      "record": 2,
+      "text": "In\u00eas Gon\u00e7alves"
+     },
+     {
+      "dataset": 85,
+      "hex": "466f74c3b36772616661",
+      "record": 2,
+      "text": "Fot\u00f3grafa"
+     },
+     {
+      "dataset": 90,
+      "hex": "4c6973626f61",
+      "record": 2,
+      "text": "Lisboa"
+     },
+     {
+      "dataset": 92,
+      "hex": "416c66616d61",
+      "record": 2,
+      "text": "Alfama"
+     },
+     {
+      "dataset": 95,
+      "hex": "4c6973626f61",
+      "record": 2,
+      "text": "Lisboa"
+     },
+     {
+      "dataset": 100,
+      "hex": "505254",
+      "record": 2,
+      "text": "PRT"
+     },
+     {
+      "dataset": 101,
+      "hex": "506f72747567616c",
+      "record": 2,
+      "text": "Portugal"
+     },
+     {
+      "dataset": 103,
+      "hex": "4a4f422d30303432",
+      "record": 2,
+      "text": "JOB-0042"
+     },
+     {
+      "dataset": 105,
+      "hex": "456cc3a9747269636f20323820736f6265206120636f6c696e61",
+      "record": 2,
+      "text": "El\u00e9trico 28 sobe a colina"
+     },
+     {
+      "dataset": 110,
+      "hex": "4167c3aa6e636961204578656d706c6f",
+      "record": 2,
+      "text": "Ag\u00eancia Exemplo"
+     },
+     {
+      "dataset": 115,
+      "hex": "4172717569766f204578656d706c6f",
+      "record": 2,
+      "text": "Arquivo Exemplo"
+     },
+     {
+      "dataset": 116,
+      "hex": "c2a9203230323620496ec3aa7320476f6ec3a7616c766573",
+      "record": 2,
+      "text": "\u00a9 2026 In\u00eas Gon\u00e7alves"
+     },
+     {
+      "dataset": 120,
+      "hex": "556d20656cc3a9747269636f20616d6172656c6f20c3a0206e6f69746520e2809420e5a49ce381aee8b7afe99da2e99bbbe8bb8a2c20d182d180d0b0d0bcd0b2d0b0d0b92e",
+      "record": 2,
+      "text": "Um el\u00e9trico amarelo \u00e0 noite \u2014 \u591c\u306e\u8def\u9762\u96fb\u8eca, \u0442\u0440\u0430\u043c\u0432\u0430\u0439."
+     },
+     {
+      "dataset": 122,
+      "hex": "45642049746f72",
+      "record": 2,
+      "text": "Ed Itor"
+     }
+    ],
+    "utf8": true
+   },
+   "irb": "3842494d03ed000000000010004800000001000100480000000100013842494d04040000000001d21c0100000200041c015a00031b25471c0200000200041c0205000f4c6973626f6120c3a0206e6f6974651c020a0001351c020f00035452561c0214000b5472616e73706f727465731c02140007436964616465731c021900064c6973626f611c021900056e6f6974651c02190009656cc3a9747269636f1c02280017456d626172676f206174c3a920323032362d30322d30311c0237000832303236303131351c023c000b3231333030302b303030301c02500010496ec3aa7320476f6ec3a7616c7665731c0255000a466f74c3b367726166611c025a00064c6973626f611c025c0006416c66616d611c025f00064c6973626f611c026400035052541c02650008506f72747567616c1c026700084a4f422d303034321c0269001a456cc3a9747269636f20323820736f6265206120636f6c696e611c026e00104167c3aa6e636961204578656d706c6f1c0273000f4172717569766f204578656d706c6f1c02740018c2a9203230323620496ec3aa7320476f6ec3a7616c7665731c02780045556d20656cc3a9747269636f20616d6172656c6f20c3a0206e6f69746520e2809420e5a49ce381aee8b7afe99da2e99bbbe8bb8a2c20d182d180d0b0d0bcd0b2d0b0d0b92e1c027a000745642049746f723842494d0425000000000010e8c8e7849fc1997945c88a057e5d41f53842494d0fa00b45495320706c75672d696e00000006706c7567696e",
+   "name": "jpeg_utf8",
+   "notes": "UTF-8 (1:90 ESC % G) IPTC as resource 0x0404 between resolution info and a matching MD5 digest",
+   "resources": [
+    {
+     "hex": "00480000000100010048000000010001",
+     "id": 1005,
+     "name": ""
+    },
+    {
+     "hex": "e8c8e7849fc1997945c88a057e5d41f5",
+     "id": 1061,
+     "name": ""
+    },
+    {
+     "hex": "706c7567696e",
+     "id": 4000,
+     "name": "EIS plug-in"
+    }
+   ],
+   "width": 24
+  },
+  {
+   "container": "jpeg",
+   "file": "jpeg_multisegment.jpg",
+   "height": 16,
+   "iptc": {
+    "datasets": [
+     {
+      "dataset": 0,
+      "hex": "0004",
+      "record": 1
+     },
+     {
+      "dataset": 90,
+      "hex": "1b2547",
+      "record": 1
+     },
+     {
+      "dataset": 0,
+      "hex": "0004",
+      "record": 2
+     },
+     {
+      "dataset": 5,
+      "hex": "4c6973626f6120c3a0206e6f697465",
+      "record": 2,
+      "text": "Lisboa \u00e0 noite"
+     },
+     {
+      "dataset": 10,
+      "hex": "35",
+      "record": 2,
+      "text": "5"
+     },
+     {
+      "dataset": 15,
+      "hex": "545256",
+      "record": 2,
+      "text": "TRV"
+     },
+     {
+      "dataset": 20,
+      "hex": "5472616e73706f72746573",
+      "record": 2,
+      "text": "Transportes"
+     },
+     {
+      "dataset": 20,
+      "hex": "43696461646573",
+      "record": 2,
+      "text": "Cidades"
+     },
+     {
+      "dataset": 25,
+      "hex": "4c6973626f61",
+      "record": 2,
+      "text": "Lisboa"
+     },
+     {
+      "dataset": 25,
+      "hex": "6e6f697465",
+      "record": 2,
+      "text": "noite"
+     },
+     {
+      "dataset": 25,
+      "hex": "656cc3a9747269636f",
+      "record": 2,
+      "text": "el\u00e9trico"
+     },
+     {
+      "dataset": 40,
+      "hex": "456d626172676f206174c3a920323032362d30322d3031",
+      "record": 2,
+      "text": "Embargo at\u00e9 2026-02-01"
+     },
+     {
+      "dataset": 55,
+      "hex": "3230323630313135",
+      "record": 2,
+      "text": "20260115"
+     },
+     {
+      "dataset": 60,
+      "hex": "3231333030302b30303030",
+      "record": 2,
+      "text": "213000+0000"
+     },
+     {
+      "dataset": 80,
+      "hex": "496ec3aa7320476f6ec3a7616c766573",
+      "record": 2,
+      "text": "In\u00eas Gon\u00e7alves"
+     },
+     {
+      "dataset": 85,
+      "hex": "466f74c3b36772616661",
+      "record": 2,
+      "text": "Fot\u00f3grafa"
+     },
+     {
+      "dataset": 90,
+      "hex": "4c6973626f61",
+      "record": 2,
+      "text": "Lisboa"
+     },
+     {
+      "dataset": 92,
+      "hex": "416c66616d61",
+      "record": 2,
+      "text": "Alfama"
+     },
+     {
+      "dataset": 95,
+      "hex": "4c6973626f61",
+      "record": 2,
+      "text": "Lisboa"
+     },
+     {
+      "dataset": 100,
+      "hex": "505254",
+      "record": 2,
+      "text": "PRT"
+     },
+     {
+      "dataset": 101,
+      "hex": "506f72747567616c",
+      "record": 2,
+      "text": "Portugal"
+     },
+     {
+      "dataset": 103,
+      "hex": "4a4f422d30303432",
+      "record": 2,
+      "text": "JOB-0042"
+     },
+     {
+      "dataset": 105,
+      "hex": "456cc3a9747269636f20323820736f6265206120636f6c696e61",
+      "record": 2,
+      "text": "El\u00e9trico 28 sobe a colina"
+     },
+     {
+      "dataset": 110,
+      "hex": "4167c3aa6e636961204578656d706c6f",
+      "record": 2,
+      "text": "Ag\u00eancia Exemplo"
+     },
+     {
+      "dataset": 115,
+      "hex": "4172717569766f204578656d706c6f",
+      "record": 2,
+      "text": "Arquivo Exemplo"
+     },
+     {
+      "dataset": 116,
+      "hex": "c2a9203230323620496ec3aa7320476f6ec3a7616c766573",
+      "record": 2,
+      "text": "\u00a9 2026 In\u00eas Gon\u00e7alves"
+     },
+     {
+      "dataset": 120,
+      "hex": "556d20656cc3a9747269636f20616d6172656c6f20c3a0206e6f69746520e2809420e5a49ce381aee8b7afe99da2e99bbbe8bb8a2c20d182d180d0b0d0bcd0b2d0b0d0b92e",
+      "record": 2,
+      "text": "Um el\u00e9trico amarelo \u00e0 noite \u2014 \u591c\u306e\u8def\u9762\u96fb\u8eca, \u0442\u0440\u0430\u043c\u0432\u0430\u0439."
+     },
+     {
+      "dataset": 122,
+      "hex": "45642049746f72",
+      "record": 2,
+      "text": "Ed Itor"
+     }
+    ],
+    "utf8": true
+   },
+   "irb": "3842494d03ed000000000010004800000001000100480000000100013842494d04040000000001d21c0100000200041c015a00031b25471c0200000200041c0205000f4c6973626f6120c3a0206e6f6974651c020a0001351c020f00035452561c0214000b5472616e73706f727465731c02140007436964616465731c021900064c6973626f611c021900056e6f6974651c02190009656cc3a9747269636f1c02280017456d626172676f206174c3a920323032362d30322d30311c0237000832303236303131351c023c000b3231333030302b303030301c02500010496ec3aa7320476f6ec3a7616c7665731c0255000a466f74c3b367726166611c025a00064c6973626f611c025c0006416c66616d611c025f00064c6973626f611c026400035052541c02650008506f72747567616c1c026700084a4f422d303034321c0269001a456cc3a9747269636f20323820736f6265206120636f6c696e611c026e00104167c3aa6e636961204578656d706c6f1c0273000f4172717569766f204578656d706c6f1c02740018c2a9203230323620496ec3aa7320476f6ec3a7616c7665731c02780045556d20656cc3a9747269636f20616d6172656c6f20c3a0206e6f69746520e2809420e5a49ce381aee8b7afe99da2e99bbbe8bb8a2c20d182d180d0b0d0bcd0b2d0b0d0b92e1c027a000745642049746f723842494d0425000000000010e8c8e7849fc1997945c88a057e5d41f53842494d0fa00b45495320706c75672d696e00000006706c7567696e",
+   "name": "jpeg_multisegment",
+   "notes": "jpeg_utf8's resource block split at byte 281 (inside resource 0x0404) across two APP13 segments",
+   "resources": [
+    {
+     "hex": "00480000000100010048000000010001",
+     "id": 1005,
+     "name": ""
+    },
+    {
+     "hex": "e8c8e7849fc1997945c88a057e5d41f5",
+     "id": 1061,
+     "name": ""
+    },
+    {
+     "hex": "706c7567696e",
+     "id": 4000,
+     "name": "EIS plug-in"
+    }
+   ],
+   "twin": "jpeg_utf8",
+   "width": 24
+  },
+  {
+   "container": "jpeg",
+   "file": "jpeg_latin1.jpg",
+   "height": 16,
+   "iptc": {
+    "datasets": [
+     {
+      "dataset": 0,
+      "hex": "0004",
+      "record": 2
+     },
+     {
+      "dataset": 5,
+      "hex": "436166e920696e205afc72696368",
+      "record": 2,
+      "text": "Caf\u00e9 in Z\u00fcrich"
+     },
+     {
+      "dataset": 25,
+      "hex": "636166e9",
+      "record": 2,
+      "text": "caf\u00e9"
+     },
+     {
+      "dataset": 25,
+      "hex": "706c61696e206173636969",
+      "record": 2,
+      "text": "plain ascii"
+     },
+     {
+      "dataset": 80,
+      "hex": "4a6f73e9204d75f16f7a",
+      "record": 2,
+      "text": "Jos\u00e9 Mu\u00f1oz"
+     },
+     {
+      "dataset": 90,
+      "hex": "53e36f205061756c6f",
+      "record": 2,
+      "text": "S\u00e3o Paulo"
+     },
+     {
+      "dataset": 116,
+      "hex": "a92032303235204a6f73e9204d75f16f7a",
+      "record": 2,
+      "text": "\u00a9 2025 Jos\u00e9 Mu\u00f1oz"
+     }
+    ],
+    "utf8": false
+   },
+   "name": "jpeg_latin1",
+   "notes": "No 1:90: ISO 8859-1 text (invalid as UTF-8) must decode as Latin-1",
+   "resources": [],
+   "width": 24
+  },
+  {
+   "container": "jpeg",
+   "file": "jpeg_stale_digest.jpg",
+   "height": 16,
+   "iptc": {
+    "datasets": [
+     {
+      "dataset": 0,
+      "hex": "0004",
+      "record": 2
+     },
+     {
+      "dataset": 5,
+      "hex": "436166e920696e205afc72696368",
+      "record": 2,
+      "text": "Caf\u00e9 in Z\u00fcrich"
+     },
+     {
+      "dataset": 25,
+      "hex": "636166e9",
+      "record": 2,
+      "text": "caf\u00e9"
+     },
+     {
+      "dataset": 25,
+      "hex": "706c61696e206173636969",
+      "record": 2,
+      "text": "plain ascii"
+     },
+     {
+      "dataset": 80,
+      "hex": "4a6f73e9204d75f16f7a",
+      "record": 2,
+      "text": "Jos\u00e9 Mu\u00f1oz"
+     },
+     {
+      "dataset": 90,
+      "hex": "53e36f205061756c6f",
+      "record": 2,
+      "text": "S\u00e3o Paulo"
+     },
+     {
+      "dataset": 116,
+      "hex": "a92032303235204a6f73e9204d75f16f7a",
+      "record": 2,
+      "text": "\u00a9 2025 Jos\u00e9 Mu\u00f1oz"
+     }
+    ],
+    "utf8": false
+   },
+   "name": "jpeg_stale_digest",
+   "notes": "Resource 0x0425 holds the MD5 of different data; a decoder must keep it unchanged",
+   "resources": [
+    {
+     "hex": "d01e9deff3c5db6ff1cd2f51cb86ef82",
+     "id": 1061,
+     "name": ""
+    }
+   ],
+   "width": 24
+  },
+  {
+   "container": "jpeg",
+   "file": "jpeg_unknown_records.jpg",
+   "height": 16,
+   "iptc": {
+    "datasets": [
+     {
+      "dataset": 0,
+      "hex": "0004",
+      "record": 1
+     },
+     {
+      "dataset": 5,
+      "hex": "444553542d41",
+      "record": 1,
+      "text": "DEST-A"
+     },
+     {
+      "dataset": 5,
+      "hex": "444553542d42",
+      "record": 1,
+      "text": "DEST-B"
+     },
+     {
+      "dataset": 20,
+      "hex": "0001",
+      "record": 1
+     },
+     {
+      "dataset": 0,
+      "hex": "0004",
+      "record": 2
+     },
+     {
+      "dataset": 5,
+      "hex": "556e6b6e6f776e207265636f726473",
+      "record": 2,
+      "text": "Unknown records"
+     },
+     {
+      "dataset": 231,
+      "hex": "686973746f727920656e747279206b65707420766572626174696d",
+      "record": 2,
+      "text": "history entry kept verbatim"
+     },
+     {
+      "dataset": 10,
+      "hex": "01020304",
+      "record": 3,
+      "text": "\u0001\u0002\u0003\u0004"
+     },
+     {
+      "dataset": 10,
+      "hex": "0000002a",
+      "record": 7,
+      "text": "\u0000\u0000\u0000*"
+     },
+     {
+      "dataset": 10,
+      "hex": "00001000",
+      "record": 9,
+      "text": "\u0000\u0000\u0010"
+     }
+    ],
+    "utf8": false
+   },
+   "name": "jpeg_unknown_records",
+   "notes": "Records 1, 2, 3, 7 and 9 and the unnamed dataset 2:231; every dataset must survive a re-encode",
+   "resources": [],
+   "width": 24
+  },
+  {
+   "container": "jpeg",
+   "file": "jpeg_extended.jpg",
+   "height": 16,
+   "iptc": {
+    "datasets": [
+     {
+      "dataset": 0,
+      "hex": "0004",
+      "record": 2
+     },
+     {
+      "dataset": 5,
+      "hex": "457874656e6465642064617461736574",
+      "record": 2,
+      "text": "Extended dataset"
+     },
+     {
+      "dataset": 200,
+      "hex": "000b",
+      "record": 2
+     },
+     {
+      "dataset": 201,
+      "hex": "0001",
+      "record": 2
+     },
+     {
+      "contentSha256": "0be0be8da02b66ff2662abd133c8ac8b3b7d33d14253a3305214dfea624d3952",
+      "dataset": 202,
+      "length": 33000,
+      "record": 2
+     }
+    ],
+    "utf8": false
+   },
+   "name": "jpeg_extended",
+   "notes": "2:202 preview data of 33000 bytes in the extended length form (0x8004 + 4-byte length)",
+   "resources": [],
+   "width": 24
+  },
+  {
+   "container": "jpeg",
+   "file": "jpeg_corrupt_truncated_dataset.jpg",
+   "height": 16,
+   "iptc": {
+    "datasets": [
+     {
+      "dataset": 0,
+      "hex": "0004",
+      "record": 1
+     },
+     {
+      "dataset": 90,
+      "hex": "1b2547",
+      "record": 1
+     },
+     {
+      "dataset": 0,
+      "hex": "0004",
+      "record": 2
+     },
+     {
+      "dataset": 5,
+      "hex": "4c6973626f6120c3a0206e6f697465",
+      "record": 2,
+      "text": "Lisboa \u00e0 noite"
+     }
+    ],
+    "utf8": true
+   },
+   "name": "jpeg_corrupt_truncated_dataset",
+   "notes": "The fifth dataset declares 500 bytes but 20 remain: the four before it are kept",
+   "resources": [],
+   "width": 24
+  },
+  {
+   "container": "jpeg",
+   "file": "jpeg_corrupt_resource_size.jpg",
+   "height": 16,
+   "iptc": null,
+   "name": "jpeg_corrupt_resource_size",
+   "notes": "Resource 0x0404 declares 100000 bytes in a short block: dropped, the resource before it kept",
+   "resources": [
+    {
+     "hex": "00480000000100010048000000010001",
+     "id": 1005,
+     "name": ""
+    }
+   ],
+   "width": 24
+  },
+  {
+   "container": "jpeg",
+   "file": "jpeg_corrupt_not_iim.jpg",
+   "height": 16,
+   "iptc": null,
+   "name": "jpeg_corrupt_not_iim",
+   "notes": "Resource 0x0404 does not start with a dataset tag marker: no IPTC, other resources kept",
+   "resources": [
+    {
+     "hex": "00480000000100010048000000010001",
+     "id": 1005,
+     "name": ""
+    }
+   ],
+   "width": 24
+  },
+  {
+   "container": "jpeg",
+   "file": "jpeg_corrupt_bad_signature.jpg",
+   "height": 16,
+   "iptc": null,
+   "name": "jpeg_corrupt_bad_signature",
+   "notes": "The second resource has an unknown signature: the block ends there",
+   "resources": [
+    {
+     "hex": "00480000000100010048000000010001",
+     "id": 1005,
+     "name": ""
+    }
+   ],
+   "width": 24
+  },
+  {
+   "container": "jpeg",
+   "file": "jpeg_corrupt_extended_length.jpg",
+   "height": 16,
+   "iptc": {
+    "datasets": [
+     {
+      "dataset": 0,
+      "hex": "0004",
+      "record": 1
+     },
+     {
+      "dataset": 90,
+      "hex": "1b2547",
+      "record": 1
+     },
+     {
+      "dataset": 0,
+      "hex": "0004",
+      "record": 2
+     },
+     {
+      "dataset": 5,
+      "hex": "4c6973626f6120c3a0206e6f697465",
+      "record": 2,
+      "text": "Lisboa \u00e0 noite"
+     }
+    ],
+    "utf8": true
+   },
+   "name": "jpeg_corrupt_extended_length",
+   "notes": "An extended dataset whose length-of-length is zero: the datasets before it are kept",
+   "resources": [],
+   "width": 24
+  },
+  {
+   "byteOrder": "II",
+   "container": "tiff",
+   "file": "tiff_le_long.tif",
+   "height": 16,
+   "iptc": {
+    "datasets": [
+     {
+      "dataset": 0,
+      "hex": "0004",
+      "record": 1
+     },
+     {
+      "dataset": 90,
+      "hex": "1b2547",
+      "record": 1
+     },
+     {
+      "dataset": 0,
+      "hex": "0004",
+      "record": 2
+     },
+     {
+      "dataset": 5,
+      "hex": "4c6973626f6120c3a0206e6f697465",
+      "record": 2,
+      "text": "Lisboa \u00e0 noite"
+     },
+     {
+      "dataset": 10,
+      "hex": "35",
+      "record": 2,
+      "text": "5"
+     },
+     {
+      "dataset": 15,
+      "hex": "545256",
+      "record": 2,
+      "text": "TRV"
+     },
+     {
+      "dataset": 20,
+      "hex": "5472616e73706f72746573",
+      "record": 2,
+      "text": "Transportes"
+     },
+     {
+      "dataset": 20,
+      "hex": "43696461646573",
+      "record": 2,
+      "text": "Cidades"
+     },
+     {
+      "dataset": 25,
+      "hex": "4c6973626f61",
+      "record": 2,
+      "text": "Lisboa"
+     },
+     {
+      "dataset": 25,
+      "hex": "6e6f697465",
+      "record": 2,
+      "text": "noite"
+     },
+     {
+      "dataset": 25,
+      "hex": "656cc3a9747269636f",
+      "record": 2,
+      "text": "el\u00e9trico"
+     },
+     {
+      "dataset": 40,
+      "hex": "456d626172676f206174c3a920323032362d30322d3031",
+      "record": 2,
+      "text": "Embargo at\u00e9 2026-02-01"
+     },
+     {
+      "dataset": 55,
+      "hex": "3230323630313135",
+      "record": 2,
+      "text": "20260115"
+     },
+     {
+      "dataset": 60,
+      "hex": "3231333030302b30303030",
+      "record": 2,
+      "text": "213000+0000"
+     },
+     {
+      "dataset": 80,
+      "hex": "496ec3aa7320476f6ec3a7616c766573",
+      "record": 2,
+      "text": "In\u00eas Gon\u00e7alves"
+     },
+     {
+      "dataset": 85,
+      "hex": "466f74c3b36772616661",
+      "record": 2,
+      "text": "Fot\u00f3grafa"
+     },
+     {
+      "dataset": 90,
+      "hex": "4c6973626f61",
+      "record": 2,
+      "text": "Lisboa"
+     },
+     {
+      "dataset": 92,
+      "hex": "416c66616d61",
+      "record": 2,
+      "text": "Alfama"
+     },
+     {
+      "dataset": 95,
+      "hex": "4c6973626f61",
+      "record": 2,
+      "text": "Lisboa"
+     },
+     {
+      "dataset": 100,
+      "hex": "505254",
+      "record": 2,
+      "text": "PRT"
+     },
+     {
+      "dataset": 101,
+      "hex": "506f72747567616c",
+      "record": 2,
+      "text": "Portugal"
+     },
+     {
+      "dataset": 103,
+      "hex": "4a4f422d30303432",
+      "record": 2,
+      "text": "JOB-0042"
+     },
+     {
+      "dataset": 105,
+      "hex": "456cc3a9747269636f20323820736f6265206120636f6c696e61",
+      "record": 2,
+      "text": "El\u00e9trico 28 sobe a colina"
+     },
+     {
+      "dataset": 110,
+      "hex": "4167c3aa6e636961204578656d706c6f",
+      "record": 2,
+      "text": "Ag\u00eancia Exemplo"
+     },
+     {
+      "dataset": 115,
+      "hex": "4172717569766f204578656d706c6f",
+      "record": 2,
+      "text": "Arquivo Exemplo"
+     },
+     {
+      "dataset": 116,
+      "hex": "c2a9203230323620496ec3aa7320476f6ec3a7616c766573",
+      "record": 2,
+      "text": "\u00a9 2026 In\u00eas Gon\u00e7alves"
+     },
+     {
+      "dataset": 120,
+      "hex": "556d20656cc3a9747269636f20616d6172656c6f20c3a0206e6f69746520e2809420e5a49ce381aee8b7afe99da2e99bbbe8bb8a2c20d182d180d0b0d0bcd0b2d0b0d0b92e",
+      "record": 2,
+      "text": "Um el\u00e9trico amarelo \u00e0 noite \u2014 \u591c\u306e\u8def\u9762\u96fb\u8eca, \u0442\u0440\u0430\u043c\u0432\u0430\u0439."
+     },
+     {
+      "dataset": 122,
+      "hex": "45642049746f72",
+      "record": 2,
+      "text": "Ed Itor"
+     }
+    ],
+    "utf8": true
+   },
+   "iptcType": "LONG",
+   "irb": "3842494d03ed000000000010004800000001000100480000000100013842494d0425000000000010e8c8e7849fc1997945c88a057e5d41f5",
+   "name": "tiff_le_long",
+   "notes": "IPTC-NAA (33723) typed 4 in a little-endian file; Photoshop block (34377) with resolution info and the IPTC digest",
+   "resources": [
+    {
+     "hex": "00480000000100010048000000010001",
+     "id": 1005,
+     "name": ""
+    },
+    {
+     "hex": "e8c8e7849fc1997945c88a057e5d41f5",
+     "id": 1061,
+     "name": ""
+    }
+   ],
+   "rgba": "tiff_le_long.rgba",
+   "width": 24
+  },
+  {
+   "byteOrder": "MM",
+   "container": "tiff",
+   "file": "tiff_be_long.tif",
+   "height": 16,
+   "iptc": {
+    "datasets": [
+     {
+      "dataset": 0,
+      "hex": "0004",
+      "record": 1
+     },
+     {
+      "dataset": 90,
+      "hex": "1b2547",
+      "record": 1
+     },
+     {
+      "dataset": 0,
+      "hex": "0004",
+      "record": 2
+     },
+     {
+      "dataset": 5,
+      "hex": "4c6973626f6120c3a0206e6f697465",
+      "record": 2,
+      "text": "Lisboa \u00e0 noite"
+     },
+     {
+      "dataset": 10,
+      "hex": "35",
+      "record": 2,
+      "text": "5"
+     },
+     {
+      "dataset": 15,
+      "hex": "545256",
+      "record": 2,
+      "text": "TRV"
+     },
+     {
+      "dataset": 20,
+      "hex": "5472616e73706f72746573",
+      "record": 2,
+      "text": "Transportes"
+     },
+     {
+      "dataset": 20,
+      "hex": "43696461646573",
+      "record": 2,
+      "text": "Cidades"
+     },
+     {
+      "dataset": 25,
+      "hex": "4c6973626f61",
+      "record": 2,
+      "text": "Lisboa"
+     },
+     {
+      "dataset": 25,
+      "hex": "6e6f697465",
+      "record": 2,
+      "text": "noite"
+     },
+     {
+      "dataset": 25,
+      "hex": "656cc3a9747269636f",
+      "record": 2,
+      "text": "el\u00e9trico"
+     },
+     {
+      "dataset": 40,
+      "hex": "456d626172676f206174c3a920323032362d30322d3031",
+      "record": 2,
+      "text": "Embargo at\u00e9 2026-02-01"
+     },
+     {
+      "dataset": 55,
+      "hex": "3230323630313135",
+      "record": 2,
+      "text": "20260115"
+     },
+     {
+      "dataset": 60,
+      "hex": "3231333030302b30303030",
+      "record": 2,
+      "text": "213000+0000"
+     },
+     {
+      "dataset": 80,
+      "hex": "496ec3aa7320476f6ec3a7616c766573",
+      "record": 2,
+      "text": "In\u00eas Gon\u00e7alves"
+     },
+     {
+      "dataset": 85,
+      "hex": "466f74c3b36772616661",
+      "record": 2,
+      "text": "Fot\u00f3grafa"
+     },
+     {
+      "dataset": 90,
+      "hex": "4c6973626f61",
+      "record": 2,
+      "text": "Lisboa"
+     },
+     {
+      "dataset": 92,
+      "hex": "416c66616d61",
+      "record": 2,
+      "text": "Alfama"
+     },
+     {
+      "dataset": 95,
+      "hex": "4c6973626f61",
+      "record": 2,
+      "text": "Lisboa"
+     },
+     {
+      "dataset": 100,
+      "hex": "505254",
+      "record": 2,
+      "text": "PRT"
+     },
+     {
+      "dataset": 101,
+      "hex": "506f72747567616c",
+      "record": 2,
+      "text": "Portugal"
+     },
+     {
+      "dataset": 103,
+      "hex": "4a4f422d30303432",
+      "record": 2,
+      "text": "JOB-0042"
+     },
+     {
+      "dataset": 105,
+      "hex": "456cc3a9747269636f20323820736f6265206120636f6c696e61",
+      "record": 2,
+      "text": "El\u00e9trico 28 sobe a colina"
+     },
+     {
+      "dataset": 110,
+      "hex": "4167c3aa6e636961204578656d706c6f",
+      "record": 2,
+      "text": "Ag\u00eancia Exemplo"
+     },
+     {
+      "dataset": 115,
+      "hex": "4172717569766f204578656d706c6f",
+      "record": 2,
+      "text": "Arquivo Exemplo"
+     },
+     {
+      "dataset": 116,
+      "hex": "c2a9203230323620496ec3aa7320476f6ec3a7616c766573",
+      "record": 2,
+      "text": "\u00a9 2026 In\u00eas Gon\u00e7alves"
+     },
+     {
+      "dataset": 120,
+      "hex": "556d20656cc3a9747269636f20616d6172656c6f20c3a0206e6f69746520e2809420e5a49ce381aee8b7afe99da2e99bbbe8bb8a2c20d182d180d0b0d0bcd0b2d0b0d0b92e",
+      "record": 2,
+      "text": "Um el\u00e9trico amarelo \u00e0 noite \u2014 \u591c\u306e\u8def\u9762\u96fb\u8eca, \u0442\u0440\u0430\u043c\u0432\u0430\u0439."
+     },
+     {
+      "dataset": 122,
+      "hex": "45642049746f72",
+      "record": 2,
+      "text": "Ed Itor"
+     }
+    ],
+    "utf8": true
+   },
+   "iptcType": "LONG",
+   "irb": "3842494d03ed000000000010004800000001000100480000000100013842494d0425000000000010e8c8e7849fc1997945c88a057e5d41f5",
+   "name": "tiff_be_long",
+   "notes": "IPTC-NAA (33723) typed 4 in a big-endian file; Photoshop block (34377) with resolution info and the IPTC digest",
+   "resources": [
+    {
+     "hex": "00480000000100010048000000010001",
+     "id": 1005,
+     "name": ""
+    },
+    {
+     "hex": "e8c8e7849fc1997945c88a057e5d41f5",
+     "id": 1061,
+     "name": ""
+    }
+   ],
+   "rgba": "tiff_be_long.rgba",
+   "width": 24
+  },
+  {
+   "byteOrder": "II",
+   "container": "tiff",
+   "file": "tiff_le_undefined.tif",
+   "height": 16,
+   "iptc": {
+    "datasets": [
+     {
+      "dataset": 0,
+      "hex": "0004",
+      "record": 1
+     },
+     {
+      "dataset": 90,
+      "hex": "1b2547",
+      "record": 1
+     },
+     {
+      "dataset": 0,
+      "hex": "0004",
+      "record": 2
+     },
+     {
+      "dataset": 5,
+      "hex": "4c6973626f6120c3a0206e6f697465",
+      "record": 2,
+      "text": "Lisboa \u00e0 noite"
+     },
+     {
+      "dataset": 10,
+      "hex": "35",
+      "record": 2,
+      "text": "5"
+     },
+     {
+      "dataset": 15,
+      "hex": "545256",
+      "record": 2,
+      "text": "TRV"
+     },
+     {
+      "dataset": 20,
+      "hex": "5472616e73706f72746573",
+      "record": 2,
+      "text": "Transportes"
+     },
+     {
+      "dataset": 20,
+      "hex": "43696461646573",
+      "record": 2,
+      "text": "Cidades"
+     },
+     {
+      "dataset": 25,
+      "hex": "4c6973626f61",
+      "record": 2,
+      "text": "Lisboa"
+     },
+     {
+      "dataset": 25,
+      "hex": "6e6f697465",
+      "record": 2,
+      "text": "noite"
+     },
+     {
+      "dataset": 25,
+      "hex": "656cc3a9747269636f",
+      "record": 2,
+      "text": "el\u00e9trico"
+     },
+     {
+      "dataset": 40,
+      "hex": "456d626172676f206174c3a920323032362d30322d3031",
+      "record": 2,
+      "text": "Embargo at\u00e9 2026-02-01"
+     },
+     {
+      "dataset": 55,
+      "hex": "3230323630313135",
+      "record": 2,
+      "text": "20260115"
+     },
+     {
+      "dataset": 60,
+      "hex": "3231333030302b30303030",
+      "record": 2,
+      "text": "213000+0000"
+     },
+     {
+      "dataset": 80,
+      "hex": "496ec3aa7320476f6ec3a7616c766573",
+      "record": 2,
+      "text": "In\u00eas Gon\u00e7alves"
+     },
+     {
+      "dataset": 85,
+      "hex": "466f74c3b36772616661",
+      "record": 2,
+      "text": "Fot\u00f3grafa"
+     },
+     {
+      "dataset": 90,
+      "hex": "4c6973626f61",
+      "record": 2,
+      "text": "Lisboa"
+     },
+     {
+      "dataset": 92,
+      "hex": "416c66616d61",
+      "record": 2,
+      "text": "Alfama"
+     },
+     {
+      "dataset": 95,
+      "hex": "4c6973626f61",
+      "record": 2,
+      "text": "Lisboa"
+     },
+     {
+      "dataset": 100,
+      "hex": "505254",
+      "record": 2,
+      "text": "PRT"
+     },
+     {
+      "dataset": 101,
+      "hex": "506f72747567616c",
+      "record": 2,
+      "text": "Portugal"
+     },
+     {
+      "dataset": 103,
+      "hex": "4a4f422d30303432",
+      "record": 2,
+      "text": "JOB-0042"
+     },
+     {
+      "dataset": 105,
+      "hex": "456cc3a9747269636f20323820736f6265206120636f6c696e61",
+      "record": 2,
+      "text": "El\u00e9trico 28 sobe a colina"
+     },
+     {
+      "dataset": 110,
+      "hex": "4167c3aa6e636961204578656d706c6f",
+      "record": 2,
+      "text": "Ag\u00eancia Exemplo"
+     },
+     {
+      "dataset": 115,
+      "hex": "4172717569766f204578656d706c6f",
+      "record": 2,
+      "text": "Arquivo Exemplo"
+     },
+     {
+      "dataset": 116,
+      "hex": "c2a9203230323620496ec3aa7320476f6ec3a7616c766573",
+      "record": 2,
+      "text": "\u00a9 2026 In\u00eas Gon\u00e7alves"
+     },
+     {
+      "dataset": 120,
+      "hex": "556d20656cc3a9747269636f20616d6172656c6f20c3a0206e6f69746520e2809420e5a49ce381aee8b7afe99da2e99bbbe8bb8a2c20d182d180d0b0d0bcd0b2d0b0d0b92e",
+      "record": 2,
+      "text": "Um el\u00e9trico amarelo \u00e0 noite \u2014 \u591c\u306e\u8def\u9762\u96fb\u8eca, \u0442\u0440\u0430\u043c\u0432\u0430\u0439."
+     },
+     {
+      "dataset": 122,
+      "hex": "45642049746f72",
+      "record": 2,
+      "text": "Ed Itor"
+     }
+    ],
+    "utf8": true
+   },
+   "iptcType": "UNDEFINED",
+   "irb": null,
+   "name": "tiff_le_undefined",
+   "notes": "IPTC-NAA (33723) typed 7 in a little-endian file",
+   "resources": [],
+   "rgba": "tiff_le_undefined.rgba",
+   "width": 24
+  },
+  {
+   "byteOrder": "MM",
+   "container": "tiff",
+   "file": "tiff_be_byte.tif",
+   "height": 16,
+   "iptc": {
+    "datasets": [
+     {
+      "dataset": 0,
+      "hex": "0004",
+      "record": 1
+     },
+     {
+      "dataset": 90,
+      "hex": "1b2547",
+      "record": 1
+     },
+     {
+      "dataset": 0,
+      "hex": "0004",
+      "record": 2
+     },
+     {
+      "dataset": 5,
+      "hex": "4c6973626f6120c3a0206e6f697465",
+      "record": 2,
+      "text": "Lisboa \u00e0 noite"
+     },
+     {
+      "dataset": 10,
+      "hex": "35",
+      "record": 2,
+      "text": "5"
+     },
+     {
+      "dataset": 15,
+      "hex": "545256",
+      "record": 2,
+      "text": "TRV"
+     },
+     {
+      "dataset": 20,
+      "hex": "5472616e73706f72746573",
+      "record": 2,
+      "text": "Transportes"
+     },
+     {
+      "dataset": 20,
+      "hex": "43696461646573",
+      "record": 2,
+      "text": "Cidades"
+     },
+     {
+      "dataset": 25,
+      "hex": "4c6973626f61",
+      "record": 2,
+      "text": "Lisboa"
+     },
+     {
+      "dataset": 25,
+      "hex": "6e6f697465",
+      "record": 2,
+      "text": "noite"
+     },
+     {
+      "dataset": 25,
+      "hex": "656cc3a9747269636f",
+      "record": 2,
+      "text": "el\u00e9trico"
+     },
+     {
+      "dataset": 40,
+      "hex": "456d626172676f206174c3a920323032362d30322d3031",
+      "record": 2,
+      "text": "Embargo at\u00e9 2026-02-01"
+     },
+     {
+      "dataset": 55,
+      "hex": "3230323630313135",
+      "record": 2,
+      "text": "20260115"
+     },
+     {
+      "dataset": 60,
+      "hex": "3231333030302b30303030",
+      "record": 2,
+      "text": "213000+0000"
+     },
+     {
+      "dataset": 80,
+      "hex": "496ec3aa7320476f6ec3a7616c766573",
+      "record": 2,
+      "text": "In\u00eas Gon\u00e7alves"
+     },
+     {
+      "dataset": 85,
+      "hex": "466f74c3b36772616661",
+      "record": 2,
+      "text": "Fot\u00f3grafa"
+     },
+     {
+      "dataset": 90,
+      "hex": "4c6973626f61",
+      "record": 2,
+      "text": "Lisboa"
+     },
+     {
+      "dataset": 92,
+      "hex": "416c66616d61",
+      "record": 2,
+      "text": "Alfama"
+     },
+     {
+      "dataset": 95,
+      "hex": "4c6973626f61",
+      "record": 2,
+      "text": "Lisboa"
+     },
+     {
+      "dataset": 100,
+      "hex": "505254",
+      "record": 2,
+      "text": "PRT"
+     },
+     {
+      "dataset": 101,
+      "hex": "506f72747567616c",
+      "record": 2,
+      "text": "Portugal"
+     },
+     {
+      "dataset": 103,
+      "hex": "4a4f422d30303432",
+      "record": 2,
+      "text": "JOB-0042"
+     },
+     {
+      "dataset": 105,
+      "hex": "456cc3a9747269636f20323820736f6265206120636f6c696e61",
+      "record": 2,
+      "text": "El\u00e9trico 28 sobe a colina"
+     },
+     {
+      "dataset": 110,
+      "hex": "4167c3aa6e636961204578656d706c6f",
+      "record": 2,
+      "text": "Ag\u00eancia Exemplo"
+     },
+     {
+      "dataset": 115,
+      "hex": "4172717569766f204578656d706c6f",
+      "record": 2,
+      "text": "Arquivo Exemplo"
+     },
+     {
+      "dataset": 116,
+      "hex": "c2a9203230323620496ec3aa7320476f6ec3a7616c766573",
+      "record": 2,
+      "text": "\u00a9 2026 In\u00eas Gon\u00e7alves"
+     },
+     {
+      "dataset": 120,
+      "hex": "556d20656cc3a9747269636f20616d6172656c6f20c3a0206e6f69746520e2809420e5a49ce381aee8b7afe99da2e99bbbe8bb8a2c20d182d180d0b0d0bcd0b2d0b0d0b92e",
+      "record": 2,
+      "text": "Um el\u00e9trico amarelo \u00e0 noite \u2014 \u591c\u306e\u8def\u9762\u96fb\u8eca, \u0442\u0440\u0430\u043c\u0432\u0430\u0439."
+     },
+     {
+      "dataset": 122,
+      "hex": "45642049746f72",
+      "record": 2,
+      "text": "Ed Itor"
+     }
+    ],
+    "utf8": true
+   },
+   "iptcType": "BYTE",
+   "irb": null,
+   "name": "tiff_be_byte",
+   "notes": "IPTC-NAA (33723) typed 1 in a big-endian file",
+   "resources": [],
+   "rgba": "tiff_be_byte.rgba",
+   "width": 24
+  },
+  {
+   "byteOrder": "II",
+   "container": "tiff",
+   "file": "tiff_photoshop_only.tif",
+   "height": 16,
+   "iptc": {
+    "datasets": [
+     {
+      "dataset": 0,
+      "hex": "0004",
+      "record": 2
+     },
+     {
+      "dataset": 5,
+      "hex": "436166e920696e205afc72696368",
+      "record": 2,
+      "text": "Caf\u00e9 in Z\u00fcrich"
+     },
+     {
+      "dataset": 25,
+      "hex": "636166e9",
+      "record": 2,
+      "text": "caf\u00e9"
+     },
+     {
+      "dataset": 25,
+      "hex": "706c61696e206173636969",
+      "record": 2,
+      "text": "plain ascii"
+     },
+     {
+      "dataset": 80,
+      "hex": "4a6f73e9204d75f16f7a",
+      "record": 2,
+      "text": "Jos\u00e9 Mu\u00f1oz"
+     },
+     {
+      "dataset": 90,
+      "hex": "53e36f205061756c6f",
+      "record": 2,
+      "text": "S\u00e3o Paulo"
+     },
+     {
+      "dataset": 116,
+      "hex": "a92032303235204a6f73e9204d75f16f7a",
+      "record": 2,
+      "text": "\u00a9 2025 Jos\u00e9 Mu\u00f1oz"
+     }
+    ],
+    "utf8": false
+   },
+   "iptcType": null,
+   "name": "tiff_photoshop_only",
+   "notes": "No tag 33723; the IPTC block is resource 0x0404 of the Photoshop tag 34377",
+   "resources": [
+    {
+     "hex": "00480000000100010048000000010001",
+     "id": 1005,
+     "name": ""
+    }
+   ],
+   "rgba": "tiff_photoshop_only.rgba",
+   "width": 24
+  },
+  {
+   "byteOrder": "II",
+   "container": "tiff",
+   "file": "tiff_corrupt_count.tif",
+   "height": 16,
+   "iptc": null,
+   "iptcType": "UNDEFINED",
+   "name": "tiff_corrupt_count",
+   "notes": "The 33723 entry's element count is patched to 0x7FFFFFF0, far past the file: the entry is skipped",
+   "resources": [],
+   "rgba": "tiff_corrupt_count.rgba",
+   "width": 24
+  },
+  {
+   "byteOrder": "II",
+   "container": "tiff",
+   "file": "tiff_corrupt_iim.tif",
+   "height": 16,
+   "iptc": {
+    "datasets": [
+     {
+      "dataset": 0,
+      "hex": "0004",
+      "record": 1
+     },
+     {
+      "dataset": 90,
+      "hex": "1b2547",
+      "record": 1
+     },
+     {
+      "dataset": 0,
+      "hex": "0004",
+      "record": 2
+     },
+     {
+      "dataset": 5,
+      "hex": "4c6973626f6120c3a0206e6f697465",
+      "record": 2,
+      "text": "Lisboa \u00e0 noite"
+     }
+    ],
+    "utf8": true
+   },
+   "iptcType": "LONG",
+   "name": "tiff_corrupt_iim",
+   "notes": "The IPTC stream's fifth dataset runs past the end: the four before it are kept",
+   "resources": [],
+   "rgba": "tiff_corrupt_iim.rgba",
+   "width": 24
+  }
+ ]
+}

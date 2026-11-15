@@ -1,0 +1,16 @@
+# libFuzzer/AFL dictionary for the ICO and CUR containers (entries are BMP DIBs or PNG streams; the ico target
+# also merges png.dict and bmp.dict).
+
+ico_header="\x00\x00\x01\x00"
+cur_header="\x00\x00\x02\x00"
+one_image="\x01\x00"
+dib_info_40="\x28\x00\x00\x00"
+png_signature="\x89PNG\x0d\x0a\x1a\x0a"
+
+# Directory entry: 0 (= 256) x 0 (= 256), no palette, 1 plane, 32 bpp
+entry_256_32bpp="\x00\x00\x00\x00\x01\x00\x20\x00"
+
+# Directory entry: 16x16, 16-colour palette, 1 plane, 4 bpp
+entry_16_4bpp="\x10\x10\x10\x00\x01\x00\x04\x00"
+
+size_max="\xff\xff\xff\xff"

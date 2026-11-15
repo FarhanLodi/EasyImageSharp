@@ -1,3 +1,4 @@
+using EasyImageSharp.Diagnostics;
 using EasyImageSharp.Formats;
 using EasyImageSharp.Formats.Bmp;
 using EasyImageSharp.Formats.Jpeg;
@@ -14,14 +15,14 @@ public static partial class ImageExtensions
     {
         ArgumentNullException.ThrowIfNull(image);
         using FileStream stream = File.Create(path);
-        image.AcceptEncoder(ImageFormatDetector.FormatForPath(path).CreateEncoder(), stream);
+        ImageInstrumentation.Encode(image, ImageFormatDetector.FormatForPath(path).CreateEncoder(), stream);
     }
 
     public static void Save(this Image image, Stream stream, IImageEncoder encoder)
     {
         ArgumentNullException.ThrowIfNull(image);
         ArgumentNullException.ThrowIfNull(encoder);
-        image.AcceptEncoder(encoder, stream);
+        ImageInstrumentation.Encode(image, encoder, stream);
     }
 
     public static async Task SaveAsync(this Image image, string path, CancellationToken cancellationToken = default)

@@ -126,6 +126,9 @@ scratch/
 tmp/
 .artifacts/
 
+# Fuzzing output (fuzz/scripts/fuzz.sh, fuzz.ps1): instrumented binaries, the growing corpus and crash reproducers.
+fuzz/out/
+
 # ---------------------------------------------------------------------------------------------------
 # Local planning notes — kept out of version control deliberately
 # ---------------------------------------------------------------------------------------------------

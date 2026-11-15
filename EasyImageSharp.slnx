@@ -4,11 +4,19 @@
     <Project Path="src/EasyImageSharp.AI/EasyImageSharp.AI.csproj" />
     <Project Path="src/EasyImageSharp.SkiaSharp/EasyImageSharp.SkiaSharp.csproj" />
     <Project Path="src/EasyImageSharp.LittleCms/EasyImageSharp.LittleCms.csproj" />
+    <Project Path="src/EasyImageSharp.Extensions.DependencyInjection/EasyImageSharp.Extensions.DependencyInjection.csproj" />
+    <Project Path="src/EasyImageSharp.Web/EasyImageSharp.Web.csproj" />
+    <Project Path="src/EasyImageSharp.Avif/EasyImageSharp.Avif.csproj" />
+    <Project Path="src/EasyImageSharp.JpegXl/EasyImageSharp.JpegXl.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/EasyImageSharp.Tests/EasyImageSharp.Tests.csproj" />
     <Project Path="tests/EasyImageSharp.AI.Tests/EasyImageSharp.AI.Tests.csproj" />
     <Project Path="tests/EasyImageSharp.SkiaSharp.Tests/EasyImageSharp.SkiaSharp.Tests.csproj" />
     <Project Path="tests/EasyImageSharp.LittleCms.Tests/EasyImageSharp.LittleCms.Tests.csproj" />
+    <Project Path="tests/EasyImageSharp.Extensions.DependencyInjection.Tests/EasyImageSharp.Extensions.DependencyInjection.Tests.csproj" />
+    <Project Path="tests/EasyImageSharp.Web.Tests/EasyImageSharp.Web.Tests.csproj" />
+    <Project Path="tests/EasyImageSharp.Avif.Tests/EasyImageSharp.Avif.Tests.csproj" />
+    <Project Path="tests/EasyImageSharp.JpegXl.Tests/EasyImageSharp.JpegXl.Tests.csproj" />
   </Folder>
 </Solution>

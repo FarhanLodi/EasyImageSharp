@@ -1,0 +1,7 @@
+# DocFX output: the site, the repository files build.ps1 stages for it, and the API pages generated
+# from the XML documentation on every build.
+_site/
+_repo/
+obj/
+api/*.yml
+api/.manifest

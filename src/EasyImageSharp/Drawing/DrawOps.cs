@@ -3,7 +3,7 @@ using EasyImageSharp.PixelFormats;
 namespace EasyImageSharp.Drawing;
 
 /// <summary>Frame-level implementations of the drawing operations.</summary>
-internal static class DrawOps
+internal static partial class DrawOps
 {
     public static void Fill<TPixel>(ImageFrame<TPixel> frame, Color color, DrawingOptions options)
         where TPixel : unmanaged, IPixel<TPixel>
@@ -11,6 +11,12 @@ internal static class DrawOps
         var painter = new FramePainter<TPixel>(frame, color, options.BlendPercentage);
         if (painter.IsNoOp)
         {
+            return;
+        }
+
+        if (options.ClipPath is not null)
+        {
+            FillClipped(frame, painter, options);
             return;
         }
 
@@ -99,7 +105,7 @@ internal static class DrawOps
 
         var rasterizer = new PolygonRasterizer();
         rasterizer.AddPolygon(polygon);
-        Render(frame, rasterizer, color, options);
+        Render(frame, rasterizer, color, options, options.FillRule);
     }
 
     public static void DrawPath<TPixel>(ImageFrame<TPixel> frame, Color color, float thickness, ReadOnlySpan<PointF> points, bool closed, DrawingOptions options)
@@ -159,6 +165,14 @@ internal static class DrawOps
         {
             return;
         }
+
+        CoverageMask? clip = CreateClipMask(frame, drawingOptions);
+        if (clip is { IsEmpty: true })
+        {
+            return;
+        }
+
+        var sink = new ClippedSink<FramePainter<TPixel>>(painter, clip);
 
         int textLeft = boxX + padding;
         int textTop = boxY + padding;
@@ -228,7 +242,7 @@ internal static class DrawOps
                     int y = rowTop + sy;
                     if ((uint)y < (uint)frame.Height)
                     {
-                        painter.Blend(y, clipStart, visible);
+                        sink.Blend(y, clipStart, visible);
                     }
                 }
             }
@@ -274,6 +288,11 @@ internal static class DrawOps
 
     private static void Render<TPixel>(ImageFrame<TPixel> frame, PolygonRasterizer rasterizer, Color color, DrawingOptions options)
         where TPixel : unmanaged, IPixel<TPixel>
+        => Render(frame, rasterizer, color, options, FillRule.NonZero);
+
+    /// <summary>Paints the rasterised polygons in one colour under <paramref name="fillRule"/>, honouring the clip path of <paramref name="options"/>.</summary>
+    internal static void Render<TPixel>(ImageFrame<TPixel> frame, PolygonRasterizer rasterizer, Color color, DrawingOptions options, FillRule fillRule)
+        where TPixel : unmanaged, IPixel<TPixel>
     {
         if (rasterizer.IsEmpty)
         {
@@ -286,7 +305,54 @@ internal static class DrawOps
             return;
         }
 
-        rasterizer.Rasterize(frame.Width, frame.Height, options.Antialias, ref painter);
+        RenderCoverage(frame, rasterizer, options, fillRule, painter);
+    }
+
+    /// <summary>
+    /// Rasterises into <paramref name="sink"/>, multiplying by the clip mask of <paramref name="options"/> when it
+    /// has a clip path. Without one this is exactly a whole-frame rasterisation.
+    /// </summary>
+    internal static void RenderCoverage<TPixel, TSink>(ImageFrame<TPixel> frame, PolygonRasterizer rasterizer, DrawingOptions options, FillRule fillRule, TSink sink)
+        where TPixel : unmanaged, IPixel<TPixel>
+        where TSink : struct, ICoverageSink
+    {
+        if (options.ClipPath is null)
+        {
+            rasterizer.Rasterize(frame.Width, frame.Height, options.Antialias, fillRule, ref sink);
+            return;
+        }
+
+        CoverageMask? mask = CreateClipMask(frame, options);
+        if (mask is null || mask.IsEmpty)
+        {
+            return;
+        }
+
+        var clipped = new ClippedSink<TSink>(sink, mask);
+        rasterizer.Rasterize(mask.Bounds, options.Antialias, fillRule, ref clipped);
+    }
+
+    /// <summary>The coverage mask of the clip path of <paramref name="options"/> for this frame, or <see langword="null"/> without one.</summary>
+    internal static CoverageMask? CreateClipMask<TPixel>(ImageFrame<TPixel> frame, DrawingOptions options)
+        where TPixel : unmanaged, IPixel<TPixel>
+        => options.GetClipMask(frame.Width, frame.Height);
+
+    /// <summary>Fills the clip region of a whole-frame fill: every row of the mask, as coverage.</summary>
+    private static void FillClipped<TPixel, TSink>(ImageFrame<TPixel> frame, TSink sink, DrawingOptions options)
+        where TPixel : unmanaged, IPixel<TPixel>
+        where TSink : struct, ICoverageSink
+    {
+        CoverageMask? mask = CreateClipMask(frame, options);
+        if (mask is null || mask.IsEmpty)
+        {
+            return;
+        }
+
+        Rectangle r = mask.Bounds;
+        for (int y = r.Y; y < r.Y + r.Height; y++)
+        {
+            sink.Blend(y, r.X, mask.GetRow(y));
+        }
     }
 
     /// <summary>Flips rectangles with negative width or height so they describe the same area with positive size.</summary>

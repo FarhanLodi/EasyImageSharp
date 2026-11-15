@@ -1,0 +1,59 @@
+[
+  {
+    "name": "pillow_rgb8_q90_444",
+    "file": "pillow_rgb8_q90_444.avif",
+    "reference": "pillow_rgb8_q90_444.rgba",
+    "width": 48,
+    "height": 32,
+    "frames": 1,
+    "durations_ms": null,
+    "has_alpha": false,
+    "subsampling": "4:4:4",
+    "oracle": "Pillow 11.3.0 (libavif 1.3.0)",
+    "notes": "8-bit RGB still, quality 90, 4:4:4"
+  },
+  {
+    "name": "pillow_rgb8_q60_420",
+    "file": "pillow_rgb8_q60_420.avif",
+    "reference": "pillow_rgb8_q60_420.rgba",
+    "width": 47,
+    "height": 33,
+    "frames": 1,
+    "durations_ms": null,
+    "has_alpha": false,
+    "subsampling": "4:2:0",
+    "oracle": "Pillow 11.3.0 (libavif 1.3.0)",
+    "notes": "8-bit RGB still, quality 60, 4:2:0, odd dimensions"
+  },
+  {
+    "name": "pillow_rgba8_q90",
+    "file": "pillow_rgba8_q90.avif",
+    "reference": "pillow_rgba8_q90.rgba",
+    "width": 40,
+    "height": 24,
+    "frames": 1,
+    "durations_ms": null,
+    "has_alpha": true,
+    "subsampling": "4:4:4",
+    "oracle": "Pillow 11.3.0 (libavif 1.3.0)",
+    "notes": "8-bit RGBA still with a varying alpha plane, quality 90"
+  },
+  {
+    "name": "pillow_anim3",
+    "file": "pillow_anim3.avif",
+    "reference": "pillow_anim3.rgba",
+    "width": 24,
+    "height": 16,
+    "frames": 3,
+    "durations_ms": [
+      100,
+      250,
+      40
+    ],
+    "loop": null,
+    "has_alpha": false,
+    "subsampling": "4:2:0",
+    "oracle": "Pillow 11.3.0 (libavif 1.3.0)",
+    "notes": "three-frame image sequence, durations 100/250/40 ms, loop 3"
+  }
+]

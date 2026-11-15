@@ -72,6 +72,12 @@ HAND_WRITTEN = frozenset({
 # Directories skipped wherever they appear.
 EXCLUDED_DIRS = frozenset({"__pycache__", ".git"})
 
+# Corpus trees written by their own generators rather than generate.py, because those need toolchains outside
+# the pinned Pillow set: libjpeg-turbo through imagecodecs for 12-bit and lossless JPEG, and the OpenEXR
+# bindings plus the openexr-images download for EXR. Each tree is verified by its own script instead
+# (jpeg12/generate.py, jpeglossless/generate.py, and `python exr/build_exr_fixtures.py --check`).
+EXTERNAL_DIRS = ("exr/", "jpeg12/", "jpeglossless/")
+
 # Manifest keys that describe the ENCODED bytes rather than the content: a hash of the compressed
 # stream, its length, or the encoder that produced it. zlib-ng and libwebp make exactly these
 # non-reproducible across machines. Extending this set weakens the check, so add a key only after
@@ -127,6 +133,8 @@ class SetupError(Exception):
 def is_excluded(relative_path: str) -> bool:
     """True for paths that are not part of the generated corpus."""
     if relative_path in HAND_WRITTEN or relative_path.endswith(".py"):
+        return True
+    if relative_path.startswith(EXTERNAL_DIRS):
         return True
     return any(part in EXCLUDED_DIRS for part in relative_path.split("/"))
 

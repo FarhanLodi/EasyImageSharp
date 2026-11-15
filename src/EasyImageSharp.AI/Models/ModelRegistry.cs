@@ -3,9 +3,9 @@ using System.Collections.Frozen;
 namespace EasyImageSharp.AI;
 
 /// <summary>
-/// The catalogue of models the built-in operations use. Two entries (document orientation and dewarp) are
-/// published today with pinned checksums; the remaining entries are placeholders that document the exact
-/// file name and I/O contract the operations expect, so an export you produce yourself (supplied through
+/// The catalogue of models the built-in operations use. Entries with a pinned checksum are published (see
+/// <see cref="Published"/>); the remaining entries are placeholders that document the exact file name and I/O
+/// contract the operations expect, so an export you produce yourself (supplied through
 /// <see cref="ImageAiOptions.ModelPathOverrides"/>) or a future first-party publication drops straight in.
 /// Files are flat (single path segment) under the base URL; a published file is never overwritten.
 /// </summary>
@@ -43,6 +43,21 @@ public static class ModelRegistry
         ["u2netp.onnx"] = "2B5D0563269555FC84FFCA01B24AF5081581D38614F858ECF913331DF0E2ED88",
         ["u2net.onnx"] = "8D10D2F3BB75AE3B6D527C77944FC5E7DCD94B29809D47A739A7A728A912B491",
         ["sauvolanet.onnx"] = "948AAEA4882D4D6734C0FEC4739381857BE97F62526AD8BA8CA067A353106160",
+
+        // YuNet 2026may: byte-identical to opencv/opencv_zoo models/face_detection_yunet at commit
+        // 26cc381e4d2594bb9f47a26eb8fd96c94a13660d (the Git LFS pointer there pins the same SHA-256).
+        ["face_detection_yunet_2026may.onnx"] = "EBAFCE4E3C118D6554634BE5C27AB333B4C047A9A8C3FAF1D7CF93101C22F0F0",
+
+        // int8 static QDQ variants produced and evaluated by tools/ModelExport/quantize_int8.py (onnxruntime 1.29);
+        // each met its pre-declared accuracy tolerance against the fp32 file (metrics in the model card).
+        ["face_detection_yunet_2026may.int8.onnx"] = "BAFA17FB45FF43BD99C55654EFFC89724E4A78068ABE2C5630116B0158436578",
+        ["sauvolanet.int8.onnx"] = "9368A0B1C8B25DEA4643F6D11688A1A61AA92A94BDEA3D9B9E5DF414F8FBDAA4",
+        ["PP-LCNet_x1_0_doc_ori.int8.onnx"] = "7DBFAEA1CD5D11FA4E35C99B7312D5A3AE1F482654B1F424071C0C00194DB836",
+        ["clip-vit-base-patch32-vision.onnx"] = "FD6E1402A588279D1723C7534D4BCBA5BC0B14B47DFAB0E46F8C47B8270D7D40",
+        ["clip-vit-base-patch32-vision.int8.onnx"] = "583FD1110A514667812FEE7D684952AAF82A99B959760C8D7DCA7E0AB9839299",
+        ["big-lama-512.onnx"] = "1FAEF5301D78DB7DDA502FE59966957EC4B79DD64E16F03ED96913C7A4EB68D6",
+        ["nsfw-vit-tiny-384.onnx"] = "03D3AAB4390315F122E2A1827349C4818655776499CC36C1034AF69314BF56E2",
+        ["nima-mobilenet-quality.onnx"] = "F311E55DDC1115BBE32306CA6F511787B4913B60E1F788CCDC704B83D548667B",
     }.ToFrozenDictionary(StringComparer.Ordinal);
 
     /// <summary>
@@ -56,6 +71,8 @@ public static class ModelRegistry
         Name = "doc-orientation",
         FileName = "PP-LCNet_x1_0_doc_ori.onnx",
         Sha256 = Checksums["PP-LCNet_x1_0_doc_ori.onnx"],
+        Int8FileName = "PP-LCNet_x1_0_doc_ori.int8.onnx",
+        Int8Sha256 = Checksums.GetValueOrDefault("PP-LCNet_x1_0_doc_ori.int8.onnx"),
         BaseUrl = DefaultBaseUrl,
         License = "Apache-2.0",
         InputName = "x",
@@ -199,6 +216,130 @@ public static class ModelRegistry
         Provenance = "Leedeng/SauvolaNet exported with dynamic H/W and a /255 input scale, opset 17.",
     };
 
+    /// <summary>
+    /// YuNet face detector (OpenCV Zoo <c>face_detection_yunet_2026may</c>, the dynamic-shape re-export of the 2023mar
+    /// weights). Contract: input <c>input</c> <c>[1,3,H,W]</c> BGR raw 0-255 (no mean/std), H and W zero-padded at the
+    /// bottom / right to multiples of 32; outputs <c>cls_s</c> / <c>obj_s</c> <c>[1,N,1]</c>, <c>bbox_s</c>
+    /// <c>[1,N,4]</c> and <c>kps_s</c> <c>[1,N,10]</c> for strides s = 8, 16, 32 over the row-major anchor grid
+    /// (N = H/s * W/s). Finds faces of roughly 10-300 pixels at the network resolution. MIT (Shiqi Yu).
+    /// </summary>
+    public static ModelDescriptor FaceDetection { get; } = new()
+    {
+        Name = "face-detection",
+        FileName = "face_detection_yunet_2026may.onnx",
+        Sha256 = Checksums.GetValueOrDefault("face_detection_yunet_2026may.onnx"),
+        Int8FileName = "face_detection_yunet_2026may.int8.onnx",
+        Int8Sha256 = Checksums.GetValueOrDefault("face_detection_yunet_2026may.int8.onnx"),
+        BaseUrl = DefaultBaseUrl,
+        License = "MIT",
+        InputName = "input",
+        InputShape = [1, 3, -1, -1],
+        Normalization = TensorNormalization.Byte,
+        Task = ImageModelTask.FaceDetection,
+        SizeBytes = 229_738,
+        Provenance = "opencv/opencv_zoo models/face_detection_yunet/face_detection_yunet_2026may.onnx at commit 26cc381e4d2594bb9f47a26eb8fd96c94a13660d (MIT, Shiqi Yu), redistributed unchanged.",
+    };
+
+    /// <summary>
+    /// OpenAI CLIP ViT-B/32 image tower with its visual projection, used by <c>GetImageEmbedding</c>. Contract: input
+    /// <c>pixel_values</c> <c>[N,3,224,224]</c> RGB, shorter side resized to 224 with bicubic sampling (longer side
+    /// truncated), centred 224x224 crop, CLIP mean (0.48145466, 0.4578275, 0.40821073) / std (0.26862954, 0.26130258,
+    /// 0.27577711) on 0-1 values; output <c>image_embeds</c> <c>[N,512]</c> (not normalised; the operation
+    /// L2-normalises it). The int8 variant is a dynamic quantisation whose embeddings keep a cosine similarity of about
+    /// 0.98 with the fp32 ones. MIT.
+    /// </summary>
+    public static ModelDescriptor ImageEmbedding { get; } = new()
+    {
+        Name = "image-embedding",
+        FileName = "clip-vit-base-patch32-vision.onnx",
+        Sha256 = Checksums.GetValueOrDefault("clip-vit-base-patch32-vision.onnx"),
+        Int8FileName = "clip-vit-base-patch32-vision.int8.onnx",
+        Int8Sha256 = Checksums.GetValueOrDefault("clip-vit-base-patch32-vision.int8.onnx"),
+        BaseUrl = DefaultBaseUrl,
+        License = "MIT",
+        InputName = "pixel_values",
+        InputShape = [1, 3, 224, 224],
+        Normalization = new TensorNormalization
+        {
+            Mean = [0.48145466f, 0.4578275f, 0.40821073f],
+            Std = [0.26862954f, 0.26130258f, 0.27577711f],
+        },
+        Task = ImageModelTask.Embedding,
+        SizeBytes = 351_685_709,
+        Provenance = "openai/clip-vit-base-patch32 vision tower + visual projection; byte-identical to the ONNX export " +
+            "Xenova/clip-vit-base-patch32 onnx/vision_model.onnx (int8: onnx/vision_model_quantized.onnx) at revision " +
+            "6b7c523703ae26e39be4b03774966f8571c7f523, verified against the official weights (tools/ModelExport/VisionModels/verify_clip.py).",
+    };
+
+    /// <summary>
+    /// big-lama (LaMa, resolution-robust large-mask inpainting with Fourier convolutions), used by <c>Inpaint</c>.
+    /// Contract: inputs <c>image</c> <c>[1,3,512,512]</c> RGB in 0-1 and <c>mask</c> <c>[1,1,512,512]</c> with 1 = hole,
+    /// 0 = keep; output <c>output</c> <c>[1,3,512,512]</c> RGB in <b>0-255</b>, already composited over the input. The
+    /// operation crops around each masked region, scales or pads the crop to 512x512 and blends only the hole pixels back
+    /// at full resolution. Apache-2.0.
+    /// </summary>
+    public static ModelDescriptor Inpainting { get; } = new()
+    {
+        Name = "inpainting",
+        FileName = "big-lama-512.onnx",
+        Sha256 = Checksums.GetValueOrDefault("big-lama-512.onnx"),
+        BaseUrl = DefaultBaseUrl,
+        License = "Apache-2.0",
+        InputName = "image",
+        InputShape = [1, 3, 512, 512],
+        Normalization = TensorNormalization.Unit,
+        Task = ImageModelTask.Inpainting,
+        SizeBytes = 208_044_816,
+        Provenance = "advimman/lama big-lama; byte-identical to Carve/LaMa-ONNX lama_fp32.onnx (torch.onnx.export, opset 17) " +
+            "at revision c3c0c9e468934d62e79c329e35d82dd09ff8c444 (tools/ModelExport/VisionModels/verify_lama.py).",
+    };
+
+    /// <summary>
+    /// A small NSFW / SFW image classifier (ViT-Tiny, patch 16, 384 px), used by <c>ClassifyContent</c>. Contract: input
+    /// <c>pixel_values</c> <c>[N,3,384,384]</c> RGB, shorter side resized to 384 with bicubic sampling (longer side
+    /// truncated), centred 384x384 crop, <c>(byte / 255 - 0.5) / 0.5</c>; output <c>logits</c> <c>[N,2]</c> over
+    /// (NSFW, SFW), with the class names also stored in the model metadata under <c>labels</c>. A statistical
+    /// classifier, not a guarantee: see the content-moderation remarks. Apache-2.0.
+    /// </summary>
+    public static ModelDescriptor ContentModeration { get; } = new()
+    {
+        Name = "content-moderation",
+        FileName = "nsfw-vit-tiny-384.onnx",
+        Sha256 = Checksums.GetValueOrDefault("nsfw-vit-tiny-384.onnx"),
+        BaseUrl = DefaultBaseUrl,
+        License = "Apache-2.0",
+        InputName = "pixel_values",
+        InputShape = [1, 3, 384, 384],
+        Normalization = TensorNormalization.Symmetric,
+        Task = ImageModelTask.ContentModeration,
+        SizeBytes = 22_509_796,
+        Provenance = "Marqo/nsfw-image-detection-384 (timm vit_tiny_patch16_384) at revision 0c26ec22111b83f106d72a55f611ec35962bcb65, " +
+            "exported from model.safetensors with torch.onnx.export, opset 17 (tools/ModelExport/VisionModels/export_moderation.py).",
+    };
+
+    /// <summary>
+    /// NIMA (neural image assessment) on MobileNet v1, two heads in one graph, used by <c>AssessQuality</c>. Contract:
+    /// input <c>pixel_values</c> <c>[N,3,224,224]</c> RGB, the image stretched to 224x224 with nearest-neighbour
+    /// sampling (the upstream evaluation pipeline), <c>(byte / 255 - 0.5) / 0.5</c>; outputs <c>technical</c> and
+    /// <c>aesthetic</c> <c>[N,10]</c>, softmax distributions over the ratings 1..10 (technical quality trained on
+    /// TID2013, aesthetics on AVA). Apache-2.0.
+    /// </summary>
+    public static ModelDescriptor QualityAssessment { get; } = new()
+    {
+        Name = "quality-assessment",
+        FileName = "nima-mobilenet-quality.onnx",
+        Sha256 = Checksums.GetValueOrDefault("nima-mobilenet-quality.onnx"),
+        BaseUrl = DefaultBaseUrl,
+        License = "Apache-2.0",
+        InputName = "pixel_values",
+        InputShape = [1, 3, 224, 224],
+        Normalization = TensorNormalization.Symmetric,
+        Task = ImageModelTask.QualityAssessment,
+        SizeBytes = 25_702_841,
+        Provenance = "idealo/image-quality-assessment weights_mobilenet_technical_0.11.hdf5 + weights_mobilenet_aesthetic_0.07.hdf5 " +
+            "(Keras 2.1.6 MobileNet layout) converted with tf2onnx, opset 17 (tools/ModelExport/VisionModels/export_nima.py).",
+    };
+
     /// <summary>Every built-in descriptor, published or placeholder.</summary>
     public static IReadOnlyList<ModelDescriptor> All { get; } =
     [
@@ -209,6 +350,11 @@ public static class ModelRegistry
         Saliency,
         SaliencyFast,
         Binarization,
+        FaceDetection,
+        ImageEmbedding,
+        Inpainting,
+        ContentModeration,
+        QualityAssessment,
     ];
 
     /// <summary>Only the descriptors whose fp32 file has a pinned checksum today.</summary>

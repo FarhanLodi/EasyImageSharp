@@ -83,6 +83,7 @@ public class ModelRegistryTests
             ModelRegistry.All.Where(d => d.Sha256 is not null).ToArray(),
             ModelRegistry.Published.ToArray());
         Assert.All(ModelRegistry.Published, d => Assert.True(d.IsPublished));
+        Assert.True(ModelRegistry.FaceDetection.IsPublished);
 
         // Anything without a pinned checksum cannot be downloaded, so it must also be reachable by an
         // override: the operation names below are what a caller passes to ImageAiOptions.ModelPathOverrides.
@@ -127,8 +128,8 @@ public class ModelRegistryTests
     [Fact]
     public void Int8UrlIsNullWhenNoVariantExists()
     {
-        Assert.Null(ModelRegistry.DocumentOrientation.Int8FileName);
-        Assert.Null(ModelRegistry.DocumentOrientation.Int8Url);
+        Assert.Null(ModelRegistry.DocumentDewarp.Int8FileName);
+        Assert.Null(ModelRegistry.DocumentDewarp.Int8Url);
         Assert.NotNull(ModelRegistry.SuperResolutionX4.Int8Url);
         Assert.EndsWith(ModelRegistry.SuperResolutionX4.Int8FileName!, ModelRegistry.SuperResolutionX4.Int8Url!, StringComparison.Ordinal);
     }

@@ -8,14 +8,19 @@ namespace EasyImageSharp.Processing;
 /// runs use one van Herk pass per element row; arbitrary masks fall back to a direct scan. Pixels outside the
 /// image are ignored (they never contribute to a minimum or maximum), so the result equals a scan over the
 /// in-bounds part of the neighbourhood.
+/// <para>
+/// When vectors are enabled the row and column passes, the per-row combination of element rows and the pixel-wise
+/// combinations run through <see cref="MorphologySimd"/>. Minimum and maximum are exact, so the result is identical
+/// to the scalar van Herk / Gil-Werman passes here, which stay as the reference implementation.
+/// </para>
 /// </summary>
 internal static class MorphologyOps
 {
     public static byte[] Erode(byte[] plane, int width, int height, StructuringElement element)
-        => Filter(plane, width, height, element, isMin: true);
+        => Filter(plane, width, height, element, isMin: true, MorphologySimd.IsEnabled);
 
     public static byte[] Dilate(byte[] plane, int width, int height, StructuringElement element)
-        => Filter(plane, width, height, element, isMin: false);
+        => Filter(plane, width, height, element, isMin: false, MorphologySimd.IsEnabled);
 
     public static byte[] Open(byte[] plane, int width, int height, StructuringElement element)
         => Dilate(Erode(plane, width, height, element), width, height, element);
@@ -49,6 +54,12 @@ internal static class MorphologyOps
             {
                 byte[] opened = Open(plane, width, height, element);
                 result = new byte[plane.Length];
+                if (MorphologySimd.IsEnabled)
+                {
+                    MorphologySimd.Subtract(plane, opened, result);
+                    break;
+                }
+
                 for (int i = 0; i < plane.Length; i++)
                 {
                     result[i] = (byte)(plane[i] - opened[i]);
@@ -61,6 +72,12 @@ internal static class MorphologyOps
             {
                 byte[] closed = Close(plane, width, height, element);
                 result = new byte[plane.Length];
+                if (MorphologySimd.IsEnabled)
+                {
+                    MorphologySimd.Subtract(closed, plane, result);
+                    break;
+                }
+
                 for (int i = 0; i < plane.Length; i++)
                 {
                     result[i] = (byte)(closed[i] - plane[i]);
@@ -83,7 +100,11 @@ internal static class MorphologyOps
         BlackHat,
     }
 
-    private static byte[] Filter(byte[] src, int width, int height, StructuringElement element, bool isMin)
+    /// <summary>
+    /// Erosion (<paramref name="isMin"/>) or dilation by <paramref name="element"/>, with an explicit choice between the
+    /// vector kernels and the scalar reference so the two can be compared directly.
+    /// </summary>
+    internal static byte[] Filter(byte[] src, int width, int height, StructuringElement element, bool isMin, bool vector)
     {
         if (element.Width == 1 && element.Height == 1)
         {
@@ -92,15 +113,21 @@ internal static class MorphologyOps
 
         if (element.Shape == StructuringElementShape.Rectangle)
         {
-            byte[] horizontal = FilterRows(src, width, height, element.AnchorX, element.AnchorX, isMin);
-            return FilterColumns(horizontal, width, height, element.AnchorY, element.AnchorY, isMin);
+            byte[] horizontal = FilterRows(src, width, height, element.AnchorX, element.AnchorX, isMin, vector);
+            return FilterColumns(horizontal, width, height, element.AnchorY, element.AnchorY, isMin, vector);
         }
 
         if (element.Shape == StructuringElementShape.Cross)
         {
-            byte[] horizontal = FilterRows(src, width, height, element.AnchorX, element.AnchorX, isMin);
-            byte[] vertical = FilterColumns(src, width, height, element.AnchorY, element.AnchorY, isMin);
+            byte[] horizontal = FilterRows(src, width, height, element.AnchorX, element.AnchorX, isMin, vector);
+            byte[] vertical = FilterColumns(src, width, height, element.AnchorY, element.AnchorY, isMin, vector);
             var combined = new byte[src.Length];
+            if (vector)
+            {
+                MorphologySimd.Combine(horizontal, vertical, combined, isMin);
+                return combined;
+            }
+
             for (int i = 0; i < combined.Length; i++)
             {
                 combined[i] = isMin ? Math.Min(horizontal[i], vertical[i]) : Math.Max(horizontal[i], vertical[i]);
@@ -111,7 +138,7 @@ internal static class MorphologyOps
 
         if (element.TryGetRowRuns(out int[] starts, out int[] ends))
         {
-            return FilterRowRuns(src, width, height, element, starts, ends, isMin);
+            return FilterRowRuns(src, width, height, element, starts, ends, isMin, vector);
         }
 
         return FilterNaive(src, width, height, element, isMin);
@@ -119,6 +146,10 @@ internal static class MorphologyOps
 
     /// <summary>1D filter of every row with the asymmetric window [x - left, x + right].</summary>
     public static byte[] FilterRows(byte[] src, int width, int height, int left, int right, bool isMin)
+        => FilterRows(src, width, height, left, right, isMin, MorphologySimd.IsEnabled);
+
+    /// <summary><see cref="FilterRows(byte[], int, int, int, int, bool)"/> with an explicit choice of path.</summary>
+    internal static byte[] FilterRows(byte[] src, int width, int height, int left, int right, bool isMin, bool vector)
     {
         var dst = new byte[src.Length];
         int k = left + right + 1;
@@ -126,6 +157,16 @@ internal static class MorphologyOps
         ParallelRowIterator.IterateRows(width, height, (start, end) =>
         {
             var f = new byte[padded];
+            if (vector)
+            {
+                for (int y = start; y < end; y++)
+                {
+                    MorphologySimd.FilterRow(src.AsSpan(y * width, width), dst.AsSpan(y * width, width), left, right, isMin, f);
+                }
+
+                return;
+            }
+
             var g = new byte[padded];
             var h = new byte[padded];
             for (int y = start; y < end; y++)
@@ -138,7 +179,16 @@ internal static class MorphologyOps
 
     /// <summary>1D filter of every column with the asymmetric window [y - up, y + down].</summary>
     public static byte[] FilterColumns(byte[] src, int width, int height, int up, int down, bool isMin)
+        => FilterColumns(src, width, height, up, down, isMin, MorphologySimd.IsEnabled);
+
+    /// <summary><see cref="FilterColumns(byte[], int, int, int, int, bool)"/> with an explicit choice of path.</summary>
+    internal static byte[] FilterColumns(byte[] src, int width, int height, int up, int down, bool isMin, bool vector)
     {
+        if (vector)
+        {
+            return MorphologySimd.FilterColumns(src, width, height, up, down, isMin);
+        }
+
         var dst = new byte[src.Length];
         int k = up + down + 1;
         int padded = PaddedLength(height, k);
@@ -166,7 +216,7 @@ internal static class MorphologyOps
         return dst;
     }
 
-    private static byte[] FilterRowRuns(byte[] src, int width, int height, StructuringElement element, int[] starts, int[] ends, bool isMin)
+    private static byte[] FilterRowRuns(byte[] src, int width, int height, StructuringElement element, int[] starts, int[] ends, bool isMin, bool vector)
     {
         var dst = new byte[src.Length];
         int anchorX = element.AnchorX;
@@ -210,6 +260,13 @@ internal static class MorphologyOps
 
                     int left = anchorX - starts[j];
                     int right = ends[j] - anchorX;
+                    if (vector)
+                    {
+                        MorphologySimd.FilterRow(src.AsSpan(sy * width, width), temp, left, right, isMin, f);
+                        MorphologySimd.Combine(outRow, temp, outRow, isMin);
+                        continue;
+                    }
+
                     Filter1D(src.AsSpan(sy * width, width), temp, left, right, isMin, f, g, h);
                     if (isMin)
                     {
@@ -282,6 +339,7 @@ internal static class MorphologyOps
         return dst;
     }
 
+    /// <summary>Scratch length of a van Herk pass over <paramref name="n"/> samples; also at least <c>n + k - 1</c>, which <see cref="MorphologySimd.FilterRow"/> needs.</summary>
     private static int PaddedLength(int n, int k) => ((n + k - 1 + k - 1) / k) * k;
 
     /// <summary>

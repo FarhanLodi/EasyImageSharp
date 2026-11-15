@@ -1,12 +1,13 @@
 using System.Diagnostics.CodeAnalysis;
 using EasyImageSharp.Metadata.Exif;
 using EasyImageSharp.Metadata.Icc;
+using EasyImageSharp.Metadata.Iptc;
 using EasyImageSharp.Metadata.Xmp;
 
 namespace EasyImageSharp.Metadata;
 
 /// <summary>
-/// Metadata attached to a single frame: optional per-frame EXIF/ICC/XMP profiles (TIFF pages carry their own)
+/// Metadata attached to a single frame: optional per-frame EXIF/ICC/XMP/IPTC profiles (TIFF pages carry their own)
 /// and format-specific containers such as <see cref="GifFrameMetadata"/> or <see cref="TiffFrameMetadata"/>.
 /// </summary>
 public sealed class ImageFrameMetadata : IDeepCloneable<ImageFrameMetadata>
@@ -23,6 +24,8 @@ public sealed class ImageFrameMetadata : IDeepCloneable<ImageFrameMetadata>
         this.ExifProfile = other.ExifProfile?.DeepClone();
         this.IccProfile = other.IccProfile?.DeepClone();
         this.XmpProfile = other.XmpProfile?.DeepClone();
+        this.IptcProfile = other.IptcProfile?.DeepClone();
+        this.PhotoshopResources = other.PhotoshopResources?.DeepClone();
         foreach (KeyValuePair<Type, IFormatMetadata> pair in other.formatMetadata)
         {
             this.formatMetadata[pair.Key] = pair.Value.DeepClone();
@@ -37,6 +40,12 @@ public sealed class ImageFrameMetadata : IDeepCloneable<ImageFrameMetadata>
 
     /// <summary>The frame's own XMP packet (TIFF pages), or <see langword="null"/>.</summary>
     public XmpProfile? XmpProfile { get; set; }
+
+    /// <summary>The frame's own IPTC-IIM metadata (TIFF pages, tag 33723), or <see langword="null"/>.</summary>
+    public IptcProfile? IptcProfile { get; set; }
+
+    /// <summary>The frame's own Photoshop image resources other than IPTC (TIFF pages, tag 34377), or <see langword="null"/>.</summary>
+    public PhotoshopResources? PhotoshopResources { get; set; }
 
     /// <summary>Gets the format-specific frame metadata of type <typeparamref name="T"/>, creating a default instance on first access.</summary>
     public T GetFormatMetadata<T>()

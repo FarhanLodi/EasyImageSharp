@@ -140,7 +140,7 @@ public static class DocumentAiProcessingExtensions
                     DocumentPagePreprocessingResult report = processed.Pages[0];
                     stages.AddRange(report.Stages);
                     ImageFrame<TPixel> frame = processed.Image.Frames.RootFrame;
-                    output.Frames[index].ReplaceBuffer(frame.PixelArray, frame.Width, frame.Height);
+                    output.Frames[index].TakeBuffer(frame);
                     pages.Add(new DocumentPagePreprocessingResult(index, analysis, report.OutputSize,
                         new CompositeDocumentMap(geometry, report.Coordinates), stages.AsReadOnly()));
                 }

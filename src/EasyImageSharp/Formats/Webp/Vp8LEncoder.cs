@@ -164,7 +164,7 @@ internal static class Vp8LEncoder
         {
             writer.PutBits(1, 1);
             writer.PutBits(2, 2);
-            SubtractGreen(data);
+            SubtractGreen(data, Vp8LTransformsSimd.IsEnabled);
             prefix |= TransformSet.SubtractGreen;
         }
 
@@ -190,7 +190,7 @@ internal static class Vp8LEncoder
             writer.PutBits(1, 2);
             writer.PutBits((uint)(bits - 2), 3);
             WriteSubImage(writer, multipliers, SubSampleSize(codedWidth, bits), SubSampleSize(height, bits), quality, parseEffort);
-            ApplyCrossColor(data, codedWidth, height, bits, multipliers);
+            ApplyCrossColor(data, codedWidth, height, bits, multipliers, Vp8LTransformsSimd.IsEnabled);
         }
 
         writer.PutBits(0, 1);
@@ -340,8 +340,15 @@ internal static class Vp8LEncoder
         return (pixel & 0xff00ff00u) | (red << 16) | blue;
     }
 
-    private static void SubtractGreen(uint[] data)
+    /// <summary>Forward subtract-green; <paramref name="vector"/> selects <see cref="Vp8LTransformsSimd"/> over the scalar reference.</summary>
+    internal static void SubtractGreen(uint[] data, bool vector)
     {
+        if (vector)
+        {
+            Vp8LTransformsSimd.SubtractGreen(data);
+            return;
+        }
+
         for (int i = 0; i < data.Length; i++)
         {
             data[i] = ToSubtractGreen(data[i]);
@@ -681,8 +688,15 @@ internal static class Vp8LEncoder
         return cost + (total == 0 ? 0 : (total * Vp8LHistogram.FastLog2(total)) - sum);
     }
 
-    private static void ApplyCrossColor(uint[] data, int width, int height, int bits, uint[] multipliers)
+    /// <summary>Forward cross-colour transform; <paramref name="vector"/> selects <see cref="Vp8LTransformsSimd"/> over the scalar reference.</summary>
+    internal static void ApplyCrossColor(uint[] data, int width, int height, int bits, uint[] multipliers, bool vector)
     {
+        if (vector)
+        {
+            Vp8LTransformsSimd.CrossColorForward(data, width, height, bits, multipliers);
+            return;
+        }
+
         int tilesX = SubSampleSize(width, bits);
         for (int y = 0; y < height; y++)
         {

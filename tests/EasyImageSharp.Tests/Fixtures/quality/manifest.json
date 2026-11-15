@@ -1,0 +1,104 @@
+{
+  "notes": "numpy references written from the papers; see the module docstring of gen_quality.py",
+  "comparisons": [
+    {
+      "reference": "ref.png",
+      "distorted": "noise.png",
+      "psnr_luma": 33.6727904775,
+      "ssim_luma": 0.815630940947,
+      "msssim_luma": 0.978573756372,
+      "psnr_rgb": 30.1873459647,
+      "ssim_rgb": 0.744585489276,
+      "msssim_rgb": 0.967426479326
+    },
+    {
+      "reference": "ref.png",
+      "distorted": "blur.png",
+      "psnr_luma": 23.6195054771,
+      "ssim_luma": 0.89077682153,
+      "msssim_luma": 0.963020520425,
+      "psnr_rgb": 22.9434485207,
+      "ssim_rgb": 0.891762929368,
+      "msssim_rgb": 0.96691264492
+    },
+    {
+      "reference": "ref.png",
+      "distorted": "posterize.png",
+      "psnr_luma": 24.9517840431,
+      "ssim_luma": 0.799188918077,
+      "msssim_luma": 0.912486276511,
+      "psnr_rgb": 21.9575359633,
+      "ssim_rgb": 0.662559807246,
+      "msssim_rgb": 0.918956415515
+    },
+    {
+      "reference": "ref.png",
+      "distorted": "bright.png",
+      "psnr_luma": 20.792851004,
+      "ssim_luma": 0.970254025354,
+      "msssim_luma": 0.995512172762,
+      "psnr_rgb": 20.7688409711,
+      "ssim_rgb": 0.940414052786,
+      "msssim_rgb": 0.995986673
+    },
+    {
+      "reference": "ref.png",
+      "distorted": "ref.png",
+      "psnr_luma": null,
+      "ssim_luma": 1.0,
+      "msssim_luma": 1.0,
+      "psnr_rgb": null,
+      "ssim_rgb": 1.0,
+      "msssim_rgb": 1.0
+    }
+  ],
+  "no_reference": [
+    {
+      "file": "ref.png",
+      "laplacian_variance": 1722.64098527,
+      "tenengrad": 22430.8200239,
+      "noise_sigma": 0.951040299974
+    },
+    {
+      "file": "noise.png",
+      "laplacian_variance": 2251.71867823,
+      "tenengrad": 22995.6295931,
+      "noise_sigma": 5.90935555952
+    },
+    {
+      "file": "blur.png",
+      "laplacian_variance": 53.2757558977,
+      "tenengrad": 5409.310673,
+      "noise_sigma": 0.171900348923
+    },
+    {
+      "file": "posterize.png",
+      "laplacian_variance": 2525.6441571,
+      "tenengrad": 30672.5934922,
+      "noise_sigma": 2.71874251808
+    },
+    {
+      "file": "bright.png",
+      "laplacian_variance": 1660.89361489,
+      "tenengrad": 21875.8874046,
+      "noise_sigma": 0.921882827352
+    },
+    {
+      "file": "flatnoise.png",
+      "laplacian_variance": 488.190929224,
+      "tenengrad": 609.187124932,
+      "noise_sigma": 4.84852972752
+    }
+  ],
+  "exposure": {
+    "file": "exposure.png",
+    "pixels": 2976,
+    "mean_luma": 0.395558507274,
+    "shadow": 0.258064516129,
+    "highlight": 0.129032258065,
+    "channel_shadow": 0.322580645161,
+    "channel_highlight": 0.193548387097,
+    "median_luma_sorted": 0.501960784314
+  },
+  "flatnoise_true_sigma": 5.0
+}

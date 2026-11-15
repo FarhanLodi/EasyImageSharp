@@ -1,4 +1,13 @@
 #nullable enable
+abstract EasyImageSharp.Image.Dispose() -> void
+abstract EasyImageSharp.Image.Height.get -> int
+abstract EasyImageSharp.Image.Width.get -> int
+const EasyImageSharp.Formats.DecoderOptions.DefaultMaxPixels = 268435456 -> long
+const EasyImageSharp.Formats.DecoderOptions.DefaultMaxTotalPixels = 1073741824 -> long
+const EasyImageSharp.Formats.Webp.WebpEncoder.MaxDimension = 16383 -> int
+const EasyImageSharp.Metadata.ImageMetadata.DefaultHorizontalResolution = 96 -> double
+const EasyImageSharp.Metadata.ImageMetadata.DefaultVerticalResolution = 96 -> double
+const EasyImageSharp.Processing.Quantization.QuantizerOptions.DefaultTransparencyThreshold = 0.2509804 -> float
 EasyImageSharp.Color
 EasyImageSharp.Color.A.get -> byte
 EasyImageSharp.Color.B.get -> byte
@@ -11,6 +20,7 @@ EasyImageSharp.Color.ToHex() -> string!
 EasyImageSharp.Color.ToPixel<TPixel>() -> TPixel
 EasyImageSharp.Color.ToRgba32() -> EasyImageSharp.PixelFormats.Rgba32
 EasyImageSharp.Color.WithAlpha(byte alpha) -> EasyImageSharp.Color
+EasyImageSharp.ColorSpaces.ColorSpaceConverter
 EasyImageSharp.Configuration
 EasyImageSharp.Configuration.Configuration() -> void
 EasyImageSharp.Configuration.MaxDegreeOfParallelism.get -> int
@@ -67,11 +77,19 @@ EasyImageSharp.Formats.Bmp.BmpEncoder.Encode<TPixel>(EasyImageSharp.Image<TPixel
 EasyImageSharp.Formats.Bmp.BmpEncoder.Quantizer.get -> EasyImageSharp.Processing.Quantization.IQuantizer?
 EasyImageSharp.Formats.Bmp.BmpEncoder.Quantizer.init -> void
 EasyImageSharp.Formats.DecoderOptions
+EasyImageSharp.Formats.DecoderOptions.AdditionalFormats.get -> System.Collections.Generic.IReadOnlyList<EasyImageSharp.Formats.ImageFormat!>!
+EasyImageSharp.Formats.DecoderOptions.AdditionalFormats.init -> void
 EasyImageSharp.Formats.DecoderOptions.DecoderOptions() -> void
+EasyImageSharp.Formats.DecoderOptions.ExecutionOptions.get -> EasyImageSharp.ImageExecutionOptions?
+EasyImageSharp.Formats.DecoderOptions.ExecutionOptions.init -> void
+EasyImageSharp.Formats.DecoderOptions.MaxEncodedBytes.get -> long
+EasyImageSharp.Formats.DecoderOptions.MaxEncodedBytes.init -> void
 EasyImageSharp.Formats.DecoderOptions.MaxFrames.get -> int
 EasyImageSharp.Formats.DecoderOptions.MaxFrames.init -> void
 EasyImageSharp.Formats.DecoderOptions.MaxPixels.get -> long
 EasyImageSharp.Formats.DecoderOptions.MaxPixels.init -> void
+EasyImageSharp.Formats.DecoderOptions.MaxTotalPixels.get -> long
+EasyImageSharp.Formats.DecoderOptions.MaxTotalPixels.init -> void
 EasyImageSharp.Formats.Gif.GifColorTableMode
 EasyImageSharp.Formats.Gif.GifColorTableMode.Global = 0 -> EasyImageSharp.Formats.Gif.GifColorTableMode
 EasyImageSharp.Formats.Gif.GifColorTableMode.Local = 1 -> EasyImageSharp.Formats.Gif.GifColorTableMode
@@ -94,11 +112,6 @@ EasyImageSharp.Formats.Gif.GifEncoder.Quantizer.get -> EasyImageSharp.Processing
 EasyImageSharp.Formats.Gif.GifEncoder.Quantizer.init -> void
 EasyImageSharp.Formats.Gif.GifEncoder.RepeatCount.get -> int
 EasyImageSharp.Formats.Gif.GifEncoder.RepeatCount.init -> void
-EasyImageSharp.Formats.IImageDecoder
-EasyImageSharp.Formats.IImageDecoder.Decode<TPixel>(System.ReadOnlySpan<byte> data, EasyImageSharp.Formats.DecoderOptions! options) -> EasyImageSharp.Image<TPixel>!
-EasyImageSharp.Formats.IImageDecoder.Identify(System.ReadOnlySpan<byte> data, EasyImageSharp.Formats.DecoderOptions! options) -> EasyImageSharp.ImageInfo!
-EasyImageSharp.Formats.IImageEncoder
-EasyImageSharp.Formats.IImageEncoder.Encode<TPixel>(EasyImageSharp.Image<TPixel>! image, System.IO.Stream! stream) -> void
 EasyImageSharp.Formats.Ico.IcoDecoder
 EasyImageSharp.Formats.Ico.IcoDecoder.Decode<TPixel>(System.ReadOnlySpan<byte> data, EasyImageSharp.Formats.DecoderOptions! options) -> EasyImageSharp.Image<TPixel>!
 EasyImageSharp.Formats.Ico.IcoDecoder.IcoDecoder() -> void
@@ -116,6 +129,11 @@ EasyImageSharp.Formats.Ico.IcoEntryFormat
 EasyImageSharp.Formats.Ico.IcoEntryFormat.Auto = 0 -> EasyImageSharp.Formats.Ico.IcoEntryFormat
 EasyImageSharp.Formats.Ico.IcoEntryFormat.Bmp = 1 -> EasyImageSharp.Formats.Ico.IcoEntryFormat
 EasyImageSharp.Formats.Ico.IcoEntryFormat.Png = 2 -> EasyImageSharp.Formats.Ico.IcoEntryFormat
+EasyImageSharp.Formats.IImageDecoder
+EasyImageSharp.Formats.IImageDecoder.Decode<TPixel>(System.ReadOnlySpan<byte> data, EasyImageSharp.Formats.DecoderOptions! options) -> EasyImageSharp.Image<TPixel>!
+EasyImageSharp.Formats.IImageDecoder.Identify(System.ReadOnlySpan<byte> data, EasyImageSharp.Formats.DecoderOptions! options) -> EasyImageSharp.ImageInfo!
+EasyImageSharp.Formats.IImageEncoder
+EasyImageSharp.Formats.IImageEncoder.Encode<TPixel>(EasyImageSharp.Image<TPixel>! image, System.IO.Stream! stream) -> void
 EasyImageSharp.Formats.ImageDecoderExtensions
 EasyImageSharp.Formats.ImageFormat
 EasyImageSharp.Formats.ImageFormat.CanDecode.get -> bool
@@ -124,8 +142,10 @@ EasyImageSharp.Formats.ImageFormat.DefaultMimeType.get -> string!
 EasyImageSharp.Formats.ImageFormat.FileExtensions.get -> System.Collections.Generic.IReadOnlyList<string!>!
 EasyImageSharp.Formats.ImageFormat.Matches(System.ReadOnlySpan<byte> data) -> bool
 EasyImageSharp.Formats.ImageFormat.Name.get -> string!
+EasyImageSharp.Formats.ImageFormatMatcher
 EasyImageSharp.Formats.Jpeg.JpegDecoder
 EasyImageSharp.Formats.Jpeg.JpegDecoder.Decode<TPixel>(System.ReadOnlySpan<byte> data, EasyImageSharp.Formats.DecoderOptions! options) -> EasyImageSharp.Image<TPixel>!
+EasyImageSharp.Formats.Jpeg.JpegDecoder.DecodeReduced<TPixel>(System.ReadOnlySpan<byte> data, int scaleDenominator, EasyImageSharp.Formats.DecoderOptions? options = null) -> EasyImageSharp.Image<TPixel>!
 EasyImageSharp.Formats.Jpeg.JpegDecoder.Identify(System.ReadOnlySpan<byte> data, EasyImageSharp.Formats.DecoderOptions! options) -> EasyImageSharp.ImageInfo!
 EasyImageSharp.Formats.Jpeg.JpegDecoder.JpegDecoder() -> void
 EasyImageSharp.Formats.Jpeg.JpegEncoder
@@ -204,11 +224,15 @@ EasyImageSharp.Formats.Png.PngEncoder.CompressionLevel.init -> void
 EasyImageSharp.Formats.Png.PngEncoder.Encode<TPixel>(EasyImageSharp.Image<TPixel>! image, System.IO.Stream! stream) -> void
 EasyImageSharp.Formats.Png.PngEncoder.FilterMethod.get -> EasyImageSharp.Formats.Png.PngFilterMethod
 EasyImageSharp.Formats.Png.PngEncoder.FilterMethod.init -> void
+EasyImageSharp.Formats.Png.PngEncoder.FrameDelay.get -> int
+EasyImageSharp.Formats.Png.PngEncoder.FrameDelay.init -> void
 EasyImageSharp.Formats.Png.PngEncoder.InterlaceMethod.get -> EasyImageSharp.Formats.Png.PngInterlaceMethod
 EasyImageSharp.Formats.Png.PngEncoder.InterlaceMethod.init -> void
 EasyImageSharp.Formats.Png.PngEncoder.PngEncoder() -> void
 EasyImageSharp.Formats.Png.PngEncoder.Quantizer.get -> EasyImageSharp.Processing.Quantization.IQuantizer?
 EasyImageSharp.Formats.Png.PngEncoder.Quantizer.init -> void
+EasyImageSharp.Formats.Png.PngEncoder.RepeatCount.get -> int
+EasyImageSharp.Formats.Png.PngEncoder.RepeatCount.init -> void
 EasyImageSharp.Formats.Png.PngEncoder.TransparentColorMode.get -> EasyImageSharp.Formats.Png.PngTransparentColorMode
 EasyImageSharp.Formats.Png.PngEncoder.TransparentColorMode.init -> void
 EasyImageSharp.Formats.Png.PngFilterMethod
@@ -276,6 +300,7 @@ EasyImageSharp.Formats.Tiff.TiffCompression.None = 0 -> EasyImageSharp.Formats.T
 EasyImageSharp.Formats.Tiff.TiffCompression.PackBits = 3 -> EasyImageSharp.Formats.Tiff.TiffCompression
 EasyImageSharp.Formats.Tiff.TiffDecoder
 EasyImageSharp.Formats.Tiff.TiffDecoder.Decode<TPixel>(System.ReadOnlySpan<byte> data, EasyImageSharp.Formats.DecoderOptions! options) -> EasyImageSharp.Image<TPixel>!
+EasyImageSharp.Formats.Tiff.TiffDecoder.DecodePages<TPixel>(System.ReadOnlyMemory<byte> data, EasyImageSharp.Formats.DecoderOptions? options = null) -> System.Collections.Generic.IEnumerable<EasyImageSharp.Image<TPixel>!>!
 EasyImageSharp.Formats.Tiff.TiffDecoder.Identify(System.ReadOnlySpan<byte> data, EasyImageSharp.Formats.DecoderOptions! options) -> EasyImageSharp.ImageInfo!
 EasyImageSharp.Formats.Tiff.TiffDecoder.TiffDecoder() -> void
 EasyImageSharp.Formats.Tiff.TiffEncoder
@@ -289,6 +314,50 @@ EasyImageSharp.Formats.Tiff.TiffEncoder.PhotometricInterpretation.init -> void
 EasyImageSharp.Formats.Tiff.TiffEncoder.Predictor.get -> EasyImageSharp.Metadata.TiffPredictor
 EasyImageSharp.Formats.Tiff.TiffEncoder.Predictor.init -> void
 EasyImageSharp.Formats.Tiff.TiffEncoder.TiffEncoder() -> void
+EasyImageSharp.Formats.Tiff.TiffRegion
+EasyImageSharp.Formats.Tiff.TiffRegion.Deconstruct(out long X, out long Y, out int Width, out int Height) -> void
+EasyImageSharp.Formats.Tiff.TiffRegion.Equals(EasyImageSharp.Formats.Tiff.TiffRegion other) -> bool
+EasyImageSharp.Formats.Tiff.TiffRegion.Height.get -> int
+EasyImageSharp.Formats.Tiff.TiffRegion.Height.init -> void
+EasyImageSharp.Formats.Tiff.TiffRegion.TiffRegion() -> void
+EasyImageSharp.Formats.Tiff.TiffRegion.TiffRegion(long X, long Y, int Width, int Height) -> void
+EasyImageSharp.Formats.Tiff.TiffRegion.Width.get -> int
+EasyImageSharp.Formats.Tiff.TiffRegion.Width.init -> void
+EasyImageSharp.Formats.Tiff.TiffRegion.X.get -> long
+EasyImageSharp.Formats.Tiff.TiffRegion.X.init -> void
+EasyImageSharp.Formats.Tiff.TiffRegion.Y.get -> long
+EasyImageSharp.Formats.Tiff.TiffRegion.Y.init -> void
+EasyImageSharp.Formats.Tiff.TiffRegionOptions
+EasyImageSharp.Formats.Tiff.TiffRegionOptions.ExecutionOptions.get -> EasyImageSharp.ImageExecutionOptions?
+EasyImageSharp.Formats.Tiff.TiffRegionOptions.ExecutionOptions.init -> void
+EasyImageSharp.Formats.Tiff.TiffRegionOptions.MaxDecodedSegmentBytes.get -> int
+EasyImageSharp.Formats.Tiff.TiffRegionOptions.MaxDecodedSegmentBytes.init -> void
+EasyImageSharp.Formats.Tiff.TiffRegionOptions.MaxDirectoryEntries.get -> int
+EasyImageSharp.Formats.Tiff.TiffRegionOptions.MaxDirectoryEntries.init -> void
+EasyImageSharp.Formats.Tiff.TiffRegionOptions.MaxEncodedSegmentBytes.get -> int
+EasyImageSharp.Formats.Tiff.TiffRegionOptions.MaxEncodedSegmentBytes.init -> void
+EasyImageSharp.Formats.Tiff.TiffRegionOptions.MaxPages.get -> int
+EasyImageSharp.Formats.Tiff.TiffRegionOptions.MaxPages.init -> void
+EasyImageSharp.Formats.Tiff.TiffRegionOptions.MaxReadBytes.get -> long
+EasyImageSharp.Formats.Tiff.TiffRegionOptions.MaxReadBytes.init -> void
+EasyImageSharp.Formats.Tiff.TiffRegionOptions.MaxRegionPixels.get -> long
+EasyImageSharp.Formats.Tiff.TiffRegionOptions.MaxRegionPixels.init -> void
+EasyImageSharp.Formats.Tiff.TiffRegionOptions.MaxTiles.get -> long
+EasyImageSharp.Formats.Tiff.TiffRegionOptions.MaxTiles.init -> void
+EasyImageSharp.Formats.Tiff.TiffRegionOptions.TiffRegionOptions() -> void
+EasyImageSharp.Formats.Tiff.TiffRegionReader
+EasyImageSharp.Formats.Tiff.TiffRegionReader.Dispose() -> void
+EasyImageSharp.Formats.Tiff.TiffRegionReader.Height.get -> long
+EasyImageSharp.Formats.Tiff.TiffRegionReader.IsBigTiff.get -> bool
+EasyImageSharp.Formats.Tiff.TiffRegionReader.IsTiled.get -> bool
+EasyImageSharp.Formats.Tiff.TiffRegionReader.PageIndex.get -> int
+EasyImageSharp.Formats.Tiff.TiffRegionReader.ReadRegion<TPixel>(EasyImageSharp.Formats.Tiff.TiffRegion region, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> EasyImageSharp.Image<TPixel>!
+EasyImageSharp.Formats.Tiff.TiffRegionReader.ReadTiles<TPixel>(int tileWidth = 512, int tileHeight = 512, EasyImageSharp.Formats.Tiff.TiffRegion? region = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Collections.Generic.IEnumerable<EasyImageSharp.Formats.Tiff.TiffRegionTile<TPixel>!>!
+EasyImageSharp.Formats.Tiff.TiffRegionReader.Width.get -> long
+EasyImageSharp.Formats.Tiff.TiffRegionTile<TPixel>
+EasyImageSharp.Formats.Tiff.TiffRegionTile<TPixel>.Dispose() -> void
+EasyImageSharp.Formats.Tiff.TiffRegionTile<TPixel>.Image.get -> EasyImageSharp.Image<TPixel>!
+EasyImageSharp.Formats.Tiff.TiffRegionTile<TPixel>.Region.get -> EasyImageSharp.Formats.Tiff.TiffRegion
 EasyImageSharp.Formats.Webp.WebpAlphaCompression
 EasyImageSharp.Formats.Webp.WebpAlphaCompression.Lossless = 1 -> EasyImageSharp.Formats.Webp.WebpAlphaCompression
 EasyImageSharp.Formats.Webp.WebpAlphaCompression.None = 0 -> EasyImageSharp.Formats.Webp.WebpAlphaCompression
@@ -371,8 +440,8 @@ EasyImageSharp.Image.ToBase64String(EasyImageSharp.Formats.IImageEncoder! encode
 EasyImageSharp.Image<TPixel>
 EasyImageSharp.Image<TPixel>.Clone() -> EasyImageSharp.Image<TPixel>!
 EasyImageSharp.Image<TPixel>.CloneAs<TPixel2>() -> EasyImageSharp.Image<TPixel2>!
-EasyImageSharp.Image<TPixel>.CopyPixelDataTo(System.Span<TPixel> destination) -> void
 EasyImageSharp.Image<TPixel>.CopyPixelDataTo(System.Span<byte> destination) -> void
+EasyImageSharp.Image<TPixel>.CopyPixelDataTo(System.Span<TPixel> destination) -> void
 EasyImageSharp.Image<TPixel>.DangerousTryGetSinglePixelMemory(out System.Memory<TPixel> memory) -> bool
 EasyImageSharp.Image<TPixel>.Frames.get -> EasyImageSharp.ImageFrameCollection<TPixel>!
 EasyImageSharp.Image<TPixel>.Image(int width, int height) -> void
@@ -382,21 +451,29 @@ EasyImageSharp.Image<TPixel>.ProcessPixelRows<TPixel2, TPixel3>(EasyImageSharp.I
 EasyImageSharp.Image<TPixel>.ProcessPixelRows<TPixel2>(EasyImageSharp.Image<TPixel2>! second, EasyImageSharp.PixelAccessorAction<TPixel, TPixel2>! processPixels) -> void
 EasyImageSharp.Image<TPixel>.this[int x, int y].get -> TPixel
 EasyImageSharp.Image<TPixel>.this[int x, int y].set -> void
+EasyImageSharp.ImageExecutionOptions
+EasyImageSharp.ImageExecutionOptions.CancellationToken.get -> System.Threading.CancellationToken
+EasyImageSharp.ImageExecutionOptions.CancellationToken.init -> void
+EasyImageSharp.ImageExecutionOptions.Configuration.get -> EasyImageSharp.Configuration?
+EasyImageSharp.ImageExecutionOptions.Configuration.init -> void
+EasyImageSharp.ImageExecutionOptions.ImageExecutionOptions() -> void
+EasyImageSharp.ImageExecutionOptions.MaxPixelBufferBytes.get -> long
+EasyImageSharp.ImageExecutionOptions.MaxPixelBufferBytes.init -> void
 EasyImageSharp.ImageExtensions
 EasyImageSharp.ImageFormatException
 EasyImageSharp.ImageFormatException.ImageFormatException(string! message) -> void
 EasyImageSharp.ImageFormatException.ImageFormatException(string! message, System.Exception! innerException) -> void
 EasyImageSharp.ImageFrame<TPixel>
-EasyImageSharp.ImageFrame<TPixel>.CopyPixelDataTo(System.Span<TPixel> destination) -> void
 EasyImageSharp.ImageFrame<TPixel>.CopyPixelDataTo(System.Span<byte> destination) -> void
+EasyImageSharp.ImageFrame<TPixel>.CopyPixelDataTo(System.Span<TPixel> destination) -> void
 EasyImageSharp.ImageFrame<TPixel>.DangerousTryGetSinglePixelMemory(out System.Memory<TPixel> memory) -> bool
 EasyImageSharp.ImageFrame<TPixel>.GetRowSpan(int rowIndex) -> System.Span<TPixel>
 EasyImageSharp.ImageFrame<TPixel>.Height.get -> int
 EasyImageSharp.ImageFrame<TPixel>.Metadata.get -> EasyImageSharp.Metadata.ImageFrameMetadata!
 EasyImageSharp.ImageFrame<TPixel>.ProcessPixelRows(EasyImageSharp.PixelAccessorAction<TPixel>! processPixels) -> void
-EasyImageSharp.ImageFrame<TPixel>.Width.get -> int
 EasyImageSharp.ImageFrame<TPixel>.this[int x, int y].get -> TPixel
 EasyImageSharp.ImageFrame<TPixel>.this[int x, int y].set -> void
+EasyImageSharp.ImageFrame<TPixel>.Width.get -> int
 EasyImageSharp.ImageFrameCollection<TPixel>
 EasyImageSharp.ImageFrameCollection<TPixel>.AddFrame(EasyImageSharp.ImageFrame<TPixel>! frame) -> EasyImageSharp.ImageFrame<TPixel>!
 EasyImageSharp.ImageFrameCollection<TPixel>.AddFrame(System.ReadOnlySpan<TPixel> pixels) -> EasyImageSharp.ImageFrame<TPixel>!
@@ -410,6 +487,11 @@ EasyImageSharp.ImageFrameCollection<TPixel>.MoveFrame(int from, int to) -> void
 EasyImageSharp.ImageFrameCollection<TPixel>.RemoveFrame(int index) -> void
 EasyImageSharp.ImageFrameCollection<TPixel>.RootFrame.get -> EasyImageSharp.ImageFrame<TPixel>!
 EasyImageSharp.ImageFrameCollection<TPixel>.this[int index].get -> EasyImageSharp.ImageFrame<TPixel>!
+EasyImageSharp.ImageHeaderInfo
+EasyImageSharp.ImageHeaderInfo.Format.get -> EasyImageSharp.Formats.ImageFormat!
+EasyImageSharp.ImageHeaderInfo.Height.get -> int
+EasyImageSharp.ImageHeaderInfo.Size.get -> EasyImageSharp.Size
+EasyImageSharp.ImageHeaderInfo.Width.get -> int
 EasyImageSharp.ImageInfo
 EasyImageSharp.ImageInfo.Format.get -> EasyImageSharp.Formats.ImageFormat!
 EasyImageSharp.ImageInfo.FrameCount.get -> int
@@ -443,11 +525,14 @@ EasyImageSharp.Metadata.Exif.ExifDataType.Ascii = 2 -> EasyImageSharp.Metadata.E
 EasyImageSharp.Metadata.Exif.ExifDataType.Byte = 1 -> EasyImageSharp.Metadata.Exif.ExifDataType
 EasyImageSharp.Metadata.Exif.ExifDataType.DoubleFloat = 12 -> EasyImageSharp.Metadata.Exif.ExifDataType
 EasyImageSharp.Metadata.Exif.ExifDataType.Ifd = 13 -> EasyImageSharp.Metadata.Exif.ExifDataType
+EasyImageSharp.Metadata.Exif.ExifDataType.Ifd8 = 18 -> EasyImageSharp.Metadata.Exif.ExifDataType
 EasyImageSharp.Metadata.Exif.ExifDataType.Long = 4 -> EasyImageSharp.Metadata.Exif.ExifDataType
+EasyImageSharp.Metadata.Exif.ExifDataType.Long8 = 16 -> EasyImageSharp.Metadata.Exif.ExifDataType
 EasyImageSharp.Metadata.Exif.ExifDataType.Rational = 5 -> EasyImageSharp.Metadata.Exif.ExifDataType
 EasyImageSharp.Metadata.Exif.ExifDataType.Short = 3 -> EasyImageSharp.Metadata.Exif.ExifDataType
 EasyImageSharp.Metadata.Exif.ExifDataType.SignedByte = 6 -> EasyImageSharp.Metadata.Exif.ExifDataType
 EasyImageSharp.Metadata.Exif.ExifDataType.SignedLong = 9 -> EasyImageSharp.Metadata.Exif.ExifDataType
+EasyImageSharp.Metadata.Exif.ExifDataType.SignedLong8 = 17 -> EasyImageSharp.Metadata.Exif.ExifDataType
 EasyImageSharp.Metadata.Exif.ExifDataType.SignedRational = 10 -> EasyImageSharp.Metadata.Exif.ExifDataType
 EasyImageSharp.Metadata.Exif.ExifDataType.SignedShort = 8 -> EasyImageSharp.Metadata.Exif.ExifDataType
 EasyImageSharp.Metadata.Exif.ExifDataType.SingleFloat = 11 -> EasyImageSharp.Metadata.Exif.ExifDataType
@@ -538,9 +623,12 @@ EasyImageSharp.Metadata.GifMetadata.GlobalColorTableLength.get -> int
 EasyImageSharp.Metadata.GifMetadata.GlobalColorTableLength.set -> void
 EasyImageSharp.Metadata.GifMetadata.RepeatCount.get -> ushort
 EasyImageSharp.Metadata.GifMetadata.RepeatCount.set -> void
-EasyImageSharp.Metadata.IDeepCloneable<T>
-EasyImageSharp.Metadata.IDeepCloneable<T>.DeepClone() -> T
-EasyImageSharp.Metadata.IFormatMetadata
+EasyImageSharp.Metadata.Icc.IccMatrixProfile
+EasyImageSharp.Metadata.Icc.IccMatrixProfile.ConvertToSrgb<TPixel>(EasyImageSharp.Image<TPixel>! source) -> EasyImageSharp.Image<TPixel>!
+EasyImageSharp.Metadata.Icc.IccMatrixProfile.FromSrgb(System.Numerics.Vector3 rgb) -> System.Numerics.Vector3
+EasyImageSharp.Metadata.Icc.IccMatrixProfile.FromXyzD50(System.Numerics.Vector3 xyz) -> System.Numerics.Vector3
+EasyImageSharp.Metadata.Icc.IccMatrixProfile.ToSrgb(System.Numerics.Vector3 rgb) -> System.Numerics.Vector3
+EasyImageSharp.Metadata.Icc.IccMatrixProfile.ToXyzD50(System.Numerics.Vector3 rgb) -> System.Numerics.Vector3
 EasyImageSharp.Metadata.Icc.IccProfile
 EasyImageSharp.Metadata.Icc.IccProfile.DeepClone() -> EasyImageSharp.Metadata.Icc.IccProfile!
 EasyImageSharp.Metadata.Icc.IccProfile.Header.get -> EasyImageSharp.Metadata.Icc.IccProfileHeader!
@@ -559,6 +647,9 @@ EasyImageSharp.Metadata.Icc.IccProfileHeader.PreferredCmm.get -> string!
 EasyImageSharp.Metadata.Icc.IccProfileHeader.ProfileClass.get -> string!
 EasyImageSharp.Metadata.Icc.IccProfileHeader.Size.get -> uint
 EasyImageSharp.Metadata.Icc.IccProfileHeader.Version.get -> System.Version!
+EasyImageSharp.Metadata.IDeepCloneable<T>
+EasyImageSharp.Metadata.IDeepCloneable<T>.DeepClone() -> T
+EasyImageSharp.Metadata.IFormatMetadata
 EasyImageSharp.Metadata.ImageFrameMetadata
 EasyImageSharp.Metadata.ImageFrameMetadata.DeepClone() -> EasyImageSharp.Metadata.ImageFrameMetadata!
 EasyImageSharp.Metadata.ImageFrameMetadata.ExifProfile.get -> EasyImageSharp.Metadata.Exif.ExifProfile?
@@ -640,6 +731,8 @@ EasyImageSharp.Metadata.PngFrameMetadata.FrameDelay.get -> EasyImageSharp.Metada
 EasyImageSharp.Metadata.PngFrameMetadata.FrameDelay.set -> void
 EasyImageSharp.Metadata.PngFrameMetadata.PngFrameMetadata() -> void
 EasyImageSharp.Metadata.PngMetadata
+EasyImageSharp.Metadata.PngMetadata.AnimateRootFrame.get -> bool
+EasyImageSharp.Metadata.PngMetadata.AnimateRootFrame.set -> void
 EasyImageSharp.Metadata.PngMetadata.BitDepth.get -> EasyImageSharp.Formats.Png.PngBitDepth?
 EasyImageSharp.Metadata.PngMetadata.BitDepth.set -> void
 EasyImageSharp.Metadata.PngMetadata.ColorType.get -> EasyImageSharp.Formats.Png.PngColorType?
@@ -649,7 +742,11 @@ EasyImageSharp.Metadata.PngMetadata.Gamma.get -> float?
 EasyImageSharp.Metadata.PngMetadata.Gamma.set -> void
 EasyImageSharp.Metadata.PngMetadata.Interlaced.get -> bool
 EasyImageSharp.Metadata.PngMetadata.Interlaced.set -> void
+EasyImageSharp.Metadata.PngMetadata.IsAnimated.get -> bool
+EasyImageSharp.Metadata.PngMetadata.IsAnimated.set -> void
 EasyImageSharp.Metadata.PngMetadata.PngMetadata() -> void
+EasyImageSharp.Metadata.PngMetadata.RepeatCount.get -> uint
+EasyImageSharp.Metadata.PngMetadata.RepeatCount.set -> void
 EasyImageSharp.Metadata.PngMetadata.TextData.get -> System.Collections.Generic.IList<EasyImageSharp.Metadata.PngTextData>!
 EasyImageSharp.Metadata.PngTextData
 EasyImageSharp.Metadata.PngTextData.Equals(EasyImageSharp.Metadata.PngTextData other) -> bool
@@ -692,6 +789,8 @@ EasyImageSharp.Metadata.TiffFrameMetadata.TiffFrameMetadata() -> void
 EasyImageSharp.Metadata.TiffFrameMetadata.Tiled.get -> bool
 EasyImageSharp.Metadata.TiffFrameMetadata.Tiled.set -> void
 EasyImageSharp.Metadata.TiffMetadata
+EasyImageSharp.Metadata.TiffMetadata.BigTiff.get -> bool
+EasyImageSharp.Metadata.TiffMetadata.BigTiff.set -> void
 EasyImageSharp.Metadata.TiffMetadata.ByteOrder.get -> EasyImageSharp.Metadata.ByteOrder
 EasyImageSharp.Metadata.TiffMetadata.ByteOrder.set -> void
 EasyImageSharp.Metadata.TiffMetadata.DeepClone() -> EasyImageSharp.Metadata.TiffMetadata!
@@ -1025,14 +1124,14 @@ EasyImageSharp.Processing.DenseMatrix<T>
 EasyImageSharp.Processing.DenseMatrix<T>.Columns.get -> int
 EasyImageSharp.Processing.DenseMatrix<T>.Count.get -> int
 EasyImageSharp.Processing.DenseMatrix<T>.DenseMatrix() -> void
-EasyImageSharp.Processing.DenseMatrix<T>.DenseMatrix(T[,]! values) -> void
 EasyImageSharp.Processing.DenseMatrix<T>.DenseMatrix(int columns, int rows, System.ReadOnlySpan<T> values) -> void
+EasyImageSharp.Processing.DenseMatrix<T>.DenseMatrix(T[,]! values) -> void
 EasyImageSharp.Processing.DenseMatrix<T>.Equals(EasyImageSharp.Processing.DenseMatrix<T> other) -> bool
 EasyImageSharp.Processing.DenseMatrix<T>.Memory.get -> System.ReadOnlyMemory<T>
 EasyImageSharp.Processing.DenseMatrix<T>.Rows.get -> int
 EasyImageSharp.Processing.DenseMatrix<T>.Span.get -> System.ReadOnlySpan<T>
-EasyImageSharp.Processing.DenseMatrix<T>.Transpose() -> EasyImageSharp.Processing.DenseMatrix<T>
 EasyImageSharp.Processing.DenseMatrix<T>.this[int row, int column].get -> T
+EasyImageSharp.Processing.DenseMatrix<T>.Transpose() -> EasyImageSharp.Processing.DenseMatrix<T>
 EasyImageSharp.Processing.DeskewMethod
 EasyImageSharp.Processing.DeskewMethod.Hough = 1 -> EasyImageSharp.Processing.DeskewMethod
 EasyImageSharp.Processing.DeskewMethod.Projection = 0 -> EasyImageSharp.Processing.DeskewMethod
@@ -1058,6 +1157,65 @@ EasyImageSharp.Processing.Dithering.KnownDitherings
 EasyImageSharp.Processing.Dithering.OrderedDither
 EasyImageSharp.Processing.Dithering.OrderedDither.Apply<TPixel>(EasyImageSharp.ImageFrame<TPixel>! frame, EasyImageSharp.Rectangle bounds, EasyImageSharp.Processing.Quantization.IPaletteMap! paletteMap, float scale, System.Memory<byte> indices, bool replacePixels) -> void
 EasyImageSharp.Processing.Dithering.OrderedDither.OrderedDither(int[,]! thresholdMatrix) -> void
+EasyImageSharp.Processing.DocumentAnalysis
+EasyImageSharp.Processing.DocumentAnalysis.BackgroundSpread.get -> double
+EasyImageSharp.Processing.DocumentAnalysis.BrightPixelFraction.get -> double
+EasyImageSharp.Processing.DocumentAnalysis.Contrast.get -> double
+EasyImageSharp.Processing.DocumentAnalysis.DarkPixelFraction.get -> double
+EasyImageSharp.Processing.DocumentAnalysis.IsLikelyBlank.get -> bool
+EasyImageSharp.Processing.DocumentAnalysis.LaplacianVariance.get -> double
+EasyImageSharp.Processing.DocumentAnalysis.LuminanceStandardDeviation.get -> double
+EasyImageSharp.Processing.DocumentAnalysis.MeanLuminance.get -> double
+EasyImageSharp.Processing.DocumentAnalysis.PerceptualHash.get -> ulong
+EasyImageSharp.Processing.DocumentAnalysis.PerceptualSimilarity(EasyImageSharp.Processing.DocumentAnalysis! other) -> double
+EasyImageSharp.Processing.DocumentAnalysis.SampleSize.get -> EasyImageSharp.Size
+EasyImageSharp.Processing.DocumentAnalysis.Size.get -> EasyImageSharp.Size
+EasyImageSharp.Processing.DocumentPagePreprocessingResult
+EasyImageSharp.Processing.DocumentPagePreprocessingResult.Analysis.get -> EasyImageSharp.Processing.DocumentAnalysis!
+EasyImageSharp.Processing.DocumentPagePreprocessingResult.Coordinates.get -> EasyImageSharp.Processing.IDocumentCoordinateMap!
+EasyImageSharp.Processing.DocumentPagePreprocessingResult.FrameIndex.get -> int
+EasyImageSharp.Processing.DocumentPagePreprocessingResult.OutputSize.get -> EasyImageSharp.Size
+EasyImageSharp.Processing.DocumentPagePreprocessingResult.Stages.get -> System.Collections.Generic.IReadOnlyList<EasyImageSharp.Processing.DocumentPreprocessingStage!>!
+EasyImageSharp.Processing.DocumentPreprocessingOptions
+EasyImageSharp.Processing.DocumentPreprocessingOptions.AutoOrient.get -> bool?
+EasyImageSharp.Processing.DocumentPreprocessingOptions.AutoOrient.set -> void
+EasyImageSharp.Processing.DocumentPreprocessingOptions.Binarize.get -> bool?
+EasyImageSharp.Processing.DocumentPreprocessingOptions.Binarize.set -> void
+EasyImageSharp.Processing.DocumentPreprocessingOptions.CorrectPerspective.get -> bool?
+EasyImageSharp.Processing.DocumentPreprocessingOptions.CorrectPerspective.set -> void
+EasyImageSharp.Processing.DocumentPreprocessingOptions.Deskew.get -> bool?
+EasyImageSharp.Processing.DocumentPreprocessingOptions.Deskew.set -> void
+EasyImageSharp.Processing.DocumentPreprocessingOptions.DocumentPreprocessingOptions() -> void
+EasyImageSharp.Processing.DocumentPreprocessingOptions.ExecutionOptions.get -> EasyImageSharp.ImageExecutionOptions?
+EasyImageSharp.Processing.DocumentPreprocessingOptions.ExecutionOptions.set -> void
+EasyImageSharp.Processing.DocumentPreprocessingOptions.MaximumSampleDimension.get -> int
+EasyImageSharp.Processing.DocumentPreprocessingOptions.MaximumSampleDimension.set -> void
+EasyImageSharp.Processing.DocumentPreprocessingOptions.MaximumSkewAngle.get -> float
+EasyImageSharp.Processing.DocumentPreprocessingOptions.MaximumSkewAngle.set -> void
+EasyImageSharp.Processing.DocumentPreprocessingOptions.MinimumOrientationConfidence.get -> float
+EasyImageSharp.Processing.DocumentPreprocessingOptions.MinimumOrientationConfidence.set -> void
+EasyImageSharp.Processing.DocumentPreprocessingOptions.MinimumSkewAngle.get -> float
+EasyImageSharp.Processing.DocumentPreprocessingOptions.MinimumSkewAngle.set -> void
+EasyImageSharp.Processing.DocumentPreprocessingOptions.NormalizeBackground.get -> bool?
+EasyImageSharp.Processing.DocumentPreprocessingOptions.NormalizeBackground.set -> void
+EasyImageSharp.Processing.DocumentPreprocessingOptions.Profile.get -> EasyImageSharp.Processing.DocumentPreprocessingProfile
+EasyImageSharp.Processing.DocumentPreprocessingOptions.Profile.set -> void
+EasyImageSharp.Processing.DocumentPreprocessingProfile
+EasyImageSharp.Processing.DocumentPreprocessingProfile.NeuralOcr = 0 -> EasyImageSharp.Processing.DocumentPreprocessingProfile
+EasyImageSharp.Processing.DocumentPreprocessingProfile.PhoneDocument = 2 -> EasyImageSharp.Processing.DocumentPreprocessingProfile
+EasyImageSharp.Processing.DocumentPreprocessingProfile.ScannedDocument = 1 -> EasyImageSharp.Processing.DocumentPreprocessingProfile
+EasyImageSharp.Processing.DocumentPreprocessingProfile.Screenshot = 3 -> EasyImageSharp.Processing.DocumentPreprocessingProfile
+EasyImageSharp.Processing.DocumentPreprocessingResult<TPixel>
+EasyImageSharp.Processing.DocumentPreprocessingResult<TPixel>.Dispose() -> void
+EasyImageSharp.Processing.DocumentPreprocessingResult<TPixel>.Image.get -> EasyImageSharp.Image<TPixel>!
+EasyImageSharp.Processing.DocumentPreprocessingResult<TPixel>.Pages.get -> System.Collections.Generic.IReadOnlyList<EasyImageSharp.Processing.DocumentPagePreprocessingResult!>!
+EasyImageSharp.Processing.DocumentPreprocessingStage
+EasyImageSharp.Processing.DocumentPreprocessingStage.Applied.get -> bool
+EasyImageSharp.Processing.DocumentPreprocessingStage.Confidence.get -> double?
+EasyImageSharp.Processing.DocumentPreprocessingStage.Elapsed.get -> System.TimeSpan
+EasyImageSharp.Processing.DocumentPreprocessingStage.Name.get -> string!
+EasyImageSharp.Processing.DocumentPreprocessingStage.Reason.get -> string!
+EasyImageSharp.Processing.DocumentProcessingExtensions
 EasyImageSharp.Processing.EdgeDetector2DKernel
 EasyImageSharp.Processing.EdgeDetector2DKernel.EdgeDetector2DKernel() -> void
 EasyImageSharp.Processing.EdgeDetector2DKernel.EdgeDetector2DKernel(EasyImageSharp.Processing.DenseMatrix<float> kernelX, EasyImageSharp.Processing.DenseMatrix<float> kernelY) -> void
@@ -1122,14 +1280,19 @@ EasyImageSharp.Processing.HistogramEqualizationOptions.Method.get -> EasyImageSh
 EasyImageSharp.Processing.HistogramEqualizationOptions.Method.set -> void
 EasyImageSharp.Processing.HistogramEqualizationOptions.NumberOfTiles.get -> int
 EasyImageSharp.Processing.HistogramEqualizationOptions.NumberOfTiles.set -> void
+EasyImageSharp.Processing.IDocumentCoordinateMap
+EasyImageSharp.Processing.IDocumentCoordinateMap.TryMapToProcessed(EasyImageSharp.PointF source, out EasyImageSharp.PointF processed) -> bool
+EasyImageSharp.Processing.IDocumentCoordinateMap.TryMapToSource(EasyImageSharp.PointF processed, out EasyImageSharp.PointF source) -> bool
 EasyImageSharp.Processing.IImageProcessingContext
 EasyImageSharp.Processing.IImageProcessingContext.AdaptiveThreshold(EasyImageSharp.Color upperColor, EasyImageSharp.Color lowerColor, float thresholdLimit) -> EasyImageSharp.Processing.IImageProcessingContext!
 EasyImageSharp.Processing.IImageProcessingContext.AdaptiveThreshold(EasyImageSharp.Color upperColor, EasyImageSharp.Color lowerColor, float thresholdLimit, EasyImageSharp.Rectangle rectangle) -> EasyImageSharp.Processing.IImageProcessingContext!
 EasyImageSharp.Processing.IImageProcessingContext.AdaptiveThreshold(int windowSize, float thresholdLimit) -> EasyImageSharp.Processing.IImageProcessingContext!
 EasyImageSharp.Processing.IImageProcessingContext.AutoCropPage() -> EasyImageSharp.Processing.IImageProcessingContext!
+EasyImageSharp.Processing.IImageProcessingContext.AutoCropPages() -> EasyImageSharp.Processing.IImageProcessingContext!
 EasyImageSharp.Processing.IImageProcessingContext.AutoLevels() -> EasyImageSharp.Processing.IImageProcessingContext!
 EasyImageSharp.Processing.IImageProcessingContext.AutoOrient() -> EasyImageSharp.Processing.IImageProcessingContext!
 EasyImageSharp.Processing.IImageProcessingContext.AutoRotateDocument(float minConfidence) -> EasyImageSharp.Processing.IImageProcessingContext!
+EasyImageSharp.Processing.IImageProcessingContext.AutoRotateDocumentPages(float minConfidence) -> EasyImageSharp.Processing.IImageProcessingContext!
 EasyImageSharp.Processing.IImageProcessingContext.BackgroundColor(EasyImageSharp.Color color) -> EasyImageSharp.Processing.IImageProcessingContext!
 EasyImageSharp.Processing.IImageProcessingContext.BackgroundNormalize(int backgroundRadius) -> EasyImageSharp.Processing.IImageProcessingContext!
 EasyImageSharp.Processing.IImageProcessingContext.Binarize(EasyImageSharp.Processing.BinarizeOptions! options) -> EasyImageSharp.Processing.IImageProcessingContext!
@@ -1368,6 +1531,11 @@ EasyImageSharp.Processing.ProjectiveTransformBuilder.ProjectiveTransformBuilder(
 EasyImageSharp.Processing.Quantization.ColorMatchingMode
 EasyImageSharp.Processing.Quantization.ColorMatchingMode.Coarse = 1 -> EasyImageSharp.Processing.Quantization.ColorMatchingMode
 EasyImageSharp.Processing.Quantization.ColorMatchingMode.Exact = 0 -> EasyImageSharp.Processing.Quantization.ColorMatchingMode
+EasyImageSharp.Processing.Quantization.IndexedImageFrame<TPixel>
+EasyImageSharp.Processing.Quantization.IndexedImageFrame<TPixel>.GetRowSpan(int rowIndex) -> System.ReadOnlySpan<byte>
+EasyImageSharp.Processing.Quantization.IndexedImageFrame<TPixel>.Height.get -> int
+EasyImageSharp.Processing.Quantization.IndexedImageFrame<TPixel>.Palette.get -> System.ReadOnlyMemory<TPixel>
+EasyImageSharp.Processing.Quantization.IndexedImageFrame<TPixel>.Width.get -> int
 EasyImageSharp.Processing.Quantization.IPaletteMap
 EasyImageSharp.Processing.Quantization.IPaletteMap.GetPaletteIndex(EasyImageSharp.PixelFormats.Rgba32 color, out EasyImageSharp.PixelFormats.Rgba32 match) -> int
 EasyImageSharp.Processing.Quantization.IPaletteMap.Palette.get -> System.ReadOnlySpan<EasyImageSharp.PixelFormats.Rgba32>
@@ -1383,11 +1551,6 @@ EasyImageSharp.Processing.Quantization.IQuantizer<TPixel>.Options.get -> EasyIma
 EasyImageSharp.Processing.Quantization.IQuantizer<TPixel>.Palette.get -> System.ReadOnlyMemory<TPixel>
 EasyImageSharp.Processing.Quantization.IQuantizer<TPixel>.QuantizeFrame(EasyImageSharp.ImageFrame<TPixel>! frame) -> EasyImageSharp.Processing.Quantization.IndexedImageFrame<TPixel>!
 EasyImageSharp.Processing.Quantization.IQuantizer<TPixel>.QuantizeFrame(EasyImageSharp.ImageFrame<TPixel>! frame, EasyImageSharp.Rectangle bounds) -> EasyImageSharp.Processing.Quantization.IndexedImageFrame<TPixel>!
-EasyImageSharp.Processing.Quantization.IndexedImageFrame<TPixel>
-EasyImageSharp.Processing.Quantization.IndexedImageFrame<TPixel>.GetRowSpan(int rowIndex) -> System.ReadOnlySpan<byte>
-EasyImageSharp.Processing.Quantization.IndexedImageFrame<TPixel>.Height.get -> int
-EasyImageSharp.Processing.Quantization.IndexedImageFrame<TPixel>.Palette.get -> System.ReadOnlyMemory<TPixel>
-EasyImageSharp.Processing.Quantization.IndexedImageFrame<TPixel>.Width.get -> int
 EasyImageSharp.Processing.Quantization.KnownQuantizers
 EasyImageSharp.Processing.Quantization.OctreeQuantizer
 EasyImageSharp.Processing.Quantization.OctreeQuantizer.CreatePixelSpecificQuantizer<TPixel>() -> EasyImageSharp.Processing.Quantization.IQuantizer<TPixel>!
@@ -1470,8 +1633,8 @@ EasyImageSharp.Processing.StructuringElement.AnchorX.get -> int
 EasyImageSharp.Processing.StructuringElement.AnchorY.get -> int
 EasyImageSharp.Processing.StructuringElement.Height.get -> int
 EasyImageSharp.Processing.StructuringElement.Shape.get -> EasyImageSharp.Processing.StructuringElementShape
-EasyImageSharp.Processing.StructuringElement.Width.get -> int
 EasyImageSharp.Processing.StructuringElement.this[int x, int y].get -> bool
+EasyImageSharp.Processing.StructuringElement.Width.get -> int
 EasyImageSharp.Processing.StructuringElementShape
 EasyImageSharp.Processing.StructuringElementShape.Cross = 2 -> EasyImageSharp.Processing.StructuringElementShape
 EasyImageSharp.Processing.StructuringElementShape.Custom = 3 -> EasyImageSharp.Processing.StructuringElementShape
@@ -1565,17 +1728,39 @@ EasyImageSharp.SizeF.SizeF(float value) -> void
 EasyImageSharp.SizeF.SizeF(float width, float height) -> void
 EasyImageSharp.SizeF.Width.get -> float
 EasyImageSharp.Tensors.ImageTensorExtensions
+EasyImageSharp.Tensors.TensorChannels
+EasyImageSharp.Tensors.TensorChannels.Bgr = 1 -> EasyImageSharp.Tensors.TensorChannels
+EasyImageSharp.Tensors.TensorChannels.Grayscale = 2 -> EasyImageSharp.Tensors.TensorChannels
+EasyImageSharp.Tensors.TensorChannels.Rgb = 0 -> EasyImageSharp.Tensors.TensorChannels
 EasyImageSharp.Tensors.TensorImage
+EasyImageSharp.Tensors.TensorLayout
+EasyImageSharp.Tensors.TensorLayout.Chw = 0 -> EasyImageSharp.Tensors.TensorLayout
+EasyImageSharp.Tensors.TensorLayout.Hwc = 1 -> EasyImageSharp.Tensors.TensorLayout
+EasyImageSharp.Tensors.TensorResizeMapping
+EasyImageSharp.Tensors.TensorResizeMapping.ContentBounds.get -> EasyImageSharp.Rectangle
+EasyImageSharp.Tensors.TensorResizeMapping.OutputSize.get -> EasyImageSharp.Size
+EasyImageSharp.Tensors.TensorResizeMapping.ScaleX.get -> double
+EasyImageSharp.Tensors.TensorResizeMapping.ScaleY.get -> double
+EasyImageSharp.Tensors.TensorResizeMapping.SourceSize.get -> EasyImageSharp.Size
+EasyImageSharp.Tensors.TensorResizeMapping.TensorResizeMapping() -> void
+EasyImageSharp.Tensors.TensorResizeMapping.ToSource(EasyImageSharp.PointF tensor) -> EasyImageSharp.PointF
+EasyImageSharp.Tensors.TensorResizeMapping.ToTensor(EasyImageSharp.PointF source) -> EasyImageSharp.PointF
+EasyImageSharp.Tensors.TensorWriteOptions
+EasyImageSharp.Tensors.TensorWriteOptions.Channels.get -> EasyImageSharp.Tensors.TensorChannels
+EasyImageSharp.Tensors.TensorWriteOptions.Channels.init -> void
+EasyImageSharp.Tensors.TensorWriteOptions.DestinationOffset.get -> int
+EasyImageSharp.Tensors.TensorWriteOptions.DestinationOffset.init -> void
+EasyImageSharp.Tensors.TensorWriteOptions.ExecutionOptions.get -> EasyImageSharp.ImageExecutionOptions?
+EasyImageSharp.Tensors.TensorWriteOptions.ExecutionOptions.init -> void
+EasyImageSharp.Tensors.TensorWriteOptions.Layout.get -> EasyImageSharp.Tensors.TensorLayout
+EasyImageSharp.Tensors.TensorWriteOptions.Layout.init -> void
+EasyImageSharp.Tensors.TensorWriteOptions.PlaneStride.get -> int
+EasyImageSharp.Tensors.TensorWriteOptions.PlaneStride.init -> void
+EasyImageSharp.Tensors.TensorWriteOptions.RowStride.get -> int
+EasyImageSharp.Tensors.TensorWriteOptions.RowStride.init -> void
+EasyImageSharp.Tensors.TensorWriteOptions.TensorWriteOptions() -> void
 EasyImageSharp.UnknownImageFormatException
 EasyImageSharp.UnknownImageFormatException.UnknownImageFormatException(string! message) -> void
-abstract EasyImageSharp.Image.Dispose() -> void
-abstract EasyImageSharp.Image.Height.get -> int
-abstract EasyImageSharp.Image.Width.get -> int
-const EasyImageSharp.Formats.DecoderOptions.DefaultMaxPixels = 268435456 -> long
-const EasyImageSharp.Formats.Webp.WebpEncoder.MaxDimension = 16383 -> int
-const EasyImageSharp.Metadata.ImageMetadata.DefaultHorizontalResolution = 96 -> double
-const EasyImageSharp.Metadata.ImageMetadata.DefaultVerticalResolution = 96 -> double
-const EasyImageSharp.Processing.Quantization.QuantizerOptions.DefaultTransparencyThreshold = 0.2509804 -> float
 override EasyImageSharp.Color.Equals(object? obj) -> bool
 override EasyImageSharp.Color.GetHashCode() -> int
 override EasyImageSharp.Color.ToString() -> string!
@@ -1583,6 +1768,7 @@ override EasyImageSharp.Drawing.Pen.Equals(object? obj) -> bool
 override EasyImageSharp.Drawing.Pen.GetHashCode() -> int
 override EasyImageSharp.Drawing.Pen.ToString() -> string!
 override EasyImageSharp.Formats.ImageFormat.ToString() -> string!
+override EasyImageSharp.Formats.Tiff.TiffRegion.GetHashCode() -> int
 override EasyImageSharp.Image<TPixel>.Dispose() -> void
 override EasyImageSharp.Image<TPixel>.Height.get -> int
 override EasyImageSharp.Image<TPixel>.Width.get -> int
@@ -1737,6 +1923,8 @@ static EasyImageSharp.Color.GreenYellow.get -> EasyImageSharp.Color
 static EasyImageSharp.Color.Grey.get -> EasyImageSharp.Color
 static EasyImageSharp.Color.Honeydew.get -> EasyImageSharp.Color
 static EasyImageSharp.Color.HotPink.get -> EasyImageSharp.Color
+static EasyImageSharp.Color.implicit operator EasyImageSharp.Color(EasyImageSharp.PixelFormats.Rgba32 pixel) -> EasyImageSharp.Color
+static EasyImageSharp.Color.implicit operator EasyImageSharp.PixelFormats.Rgba32(EasyImageSharp.Color color) -> EasyImageSharp.PixelFormats.Rgba32
 static EasyImageSharp.Color.IndianRed.get -> EasyImageSharp.Color
 static EasyImageSharp.Color.Indigo.get -> EasyImageSharp.Color
 static EasyImageSharp.Color.Ivory.get -> EasyImageSharp.Color
@@ -1783,6 +1971,8 @@ static EasyImageSharp.Color.Navy.get -> EasyImageSharp.Color
 static EasyImageSharp.Color.OldLace.get -> EasyImageSharp.Color
 static EasyImageSharp.Color.Olive.get -> EasyImageSharp.Color
 static EasyImageSharp.Color.OliveDrab.get -> EasyImageSharp.Color
+static EasyImageSharp.Color.operator !=(EasyImageSharp.Color left, EasyImageSharp.Color right) -> bool
+static EasyImageSharp.Color.operator ==(EasyImageSharp.Color left, EasyImageSharp.Color right) -> bool
 static EasyImageSharp.Color.Orange.get -> EasyImageSharp.Color
 static EasyImageSharp.Color.OrangeRed.get -> EasyImageSharp.Color
 static EasyImageSharp.Color.Orchid.get -> EasyImageSharp.Color
@@ -1831,10 +2021,20 @@ static EasyImageSharp.Color.White.get -> EasyImageSharp.Color
 static EasyImageSharp.Color.WhiteSmoke.get -> EasyImageSharp.Color
 static EasyImageSharp.Color.Yellow.get -> EasyImageSharp.Color
 static EasyImageSharp.Color.YellowGreen.get -> EasyImageSharp.Color
-static EasyImageSharp.Color.implicit operator EasyImageSharp.Color(EasyImageSharp.PixelFormats.Rgba32 pixel) -> EasyImageSharp.Color
-static EasyImageSharp.Color.implicit operator EasyImageSharp.PixelFormats.Rgba32(EasyImageSharp.Color color) -> EasyImageSharp.PixelFormats.Rgba32
-static EasyImageSharp.Color.operator !=(EasyImageSharp.Color left, EasyImageSharp.Color right) -> bool
-static EasyImageSharp.Color.operator ==(EasyImageSharp.Color left, EasyImageSharp.Color right) -> bool
+static EasyImageSharp.ColorSpaces.ColorSpaceConverter.HslToSrgb(System.Numerics.Vector3 hsl) -> System.Numerics.Vector3
+static EasyImageSharp.ColorSpaces.ColorSpaceConverter.HsvToSrgb(System.Numerics.Vector3 hsv) -> System.Numerics.Vector3
+static EasyImageSharp.ColorSpaces.ColorSpaceConverter.LabToLch(System.Numerics.Vector3 lab) -> System.Numerics.Vector3
+static EasyImageSharp.ColorSpaces.ColorSpaceConverter.LabToXyz(System.Numerics.Vector3 lab) -> System.Numerics.Vector3
+static EasyImageSharp.ColorSpaces.ColorSpaceConverter.LchToLab(System.Numerics.Vector3 lch) -> System.Numerics.Vector3
+static EasyImageSharp.ColorSpaces.ColorSpaceConverter.LinearToSrgb(System.Numerics.Vector3 rgb) -> System.Numerics.Vector3
+static EasyImageSharp.ColorSpaces.ColorSpaceConverter.SrgbToHsl(System.Numerics.Vector3 rgb) -> System.Numerics.Vector3
+static EasyImageSharp.ColorSpaces.ColorSpaceConverter.SrgbToHsv(System.Numerics.Vector3 rgb) -> System.Numerics.Vector3
+static EasyImageSharp.ColorSpaces.ColorSpaceConverter.SrgbToLinear(System.Numerics.Vector3 rgb) -> System.Numerics.Vector3
+static EasyImageSharp.ColorSpaces.ColorSpaceConverter.SrgbToXyz(System.Numerics.Vector3 rgb) -> System.Numerics.Vector3
+static EasyImageSharp.ColorSpaces.ColorSpaceConverter.XyzD50ToD65(System.Numerics.Vector3 xyz) -> System.Numerics.Vector3
+static EasyImageSharp.ColorSpaces.ColorSpaceConverter.XyzD65ToD50(System.Numerics.Vector3 xyz) -> System.Numerics.Vector3
+static EasyImageSharp.ColorSpaces.ColorSpaceConverter.XyzToLab(System.Numerics.Vector3 xyz) -> System.Numerics.Vector3
+static EasyImageSharp.ColorSpaces.ColorSpaceConverter.XyzToSrgb(System.Numerics.Vector3 xyz) -> System.Numerics.Vector3
 static EasyImageSharp.Configuration.Default.get -> EasyImageSharp.Configuration!
 static EasyImageSharp.Drawing.BitmapFont.Default.get -> EasyImageSharp.Drawing.BitmapFont!
 static EasyImageSharp.Drawing.DrawingOptions.Default.get -> EasyImageSharp.Drawing.DrawingOptions!
@@ -1846,6 +2046,7 @@ static EasyImageSharp.Formats.ImageDecoderExtensions.Decode<TPixel>(this EasyIma
 static EasyImageSharp.Formats.ImageDecoderExtensions.Identify(this EasyImageSharp.Formats.IImageDecoder! decoder, System.ReadOnlySpan<byte> data) -> EasyImageSharp.ImageInfo!
 static EasyImageSharp.Formats.ImageFormat.All.get -> System.Collections.Generic.IReadOnlyList<EasyImageSharp.Formats.ImageFormat!>!
 static EasyImageSharp.Formats.ImageFormat.Bmp.get -> EasyImageSharp.Formats.ImageFormat!
+static EasyImageSharp.Formats.ImageFormat.Create(string! name, string! mimeType, System.Collections.Generic.IEnumerable<string!>! fileExtensions, EasyImageSharp.Formats.ImageFormatMatcher! matcher, System.Func<EasyImageSharp.Formats.IImageDecoder!>! decoderFactory, System.Func<EasyImageSharp.Formats.IImageEncoder!>? encoderFactory = null) -> EasyImageSharp.Formats.ImageFormat!
 static EasyImageSharp.Formats.ImageFormat.Gif.get -> EasyImageSharp.Formats.ImageFormat!
 static EasyImageSharp.Formats.ImageFormat.Ico.get -> EasyImageSharp.Formats.ImageFormat!
 static EasyImageSharp.Formats.ImageFormat.Jpeg.get -> EasyImageSharp.Formats.ImageFormat!
@@ -1855,120 +2056,130 @@ static EasyImageSharp.Formats.ImageFormat.Qoi.get -> EasyImageSharp.Formats.Imag
 static EasyImageSharp.Formats.ImageFormat.Tga.get -> EasyImageSharp.Formats.ImageFormat!
 static EasyImageSharp.Formats.ImageFormat.Tiff.get -> EasyImageSharp.Formats.ImageFormat!
 static EasyImageSharp.Formats.ImageFormat.Webp.get -> EasyImageSharp.Formats.ImageFormat!
+static EasyImageSharp.Formats.Tiff.TiffRegion.operator !=(EasyImageSharp.Formats.Tiff.TiffRegion left, EasyImageSharp.Formats.Tiff.TiffRegion right) -> bool
+static EasyImageSharp.Formats.Tiff.TiffRegion.operator ==(EasyImageSharp.Formats.Tiff.TiffRegion left, EasyImageSharp.Formats.Tiff.TiffRegion right) -> bool
 static EasyImageSharp.Image.DetectFormat(System.ReadOnlySpan<byte> data) -> EasyImageSharp.Formats.ImageFormat!
+static EasyImageSharp.Image.Identify(string! path) -> EasyImageSharp.ImageInfo!
+static EasyImageSharp.Image.Identify(string! path, EasyImageSharp.Formats.DecoderOptions! options) -> EasyImageSharp.ImageInfo!
 static EasyImageSharp.Image.Identify(System.IO.Stream! stream) -> EasyImageSharp.ImageInfo!
 static EasyImageSharp.Image.Identify(System.IO.Stream! stream, EasyImageSharp.Formats.DecoderOptions! options) -> EasyImageSharp.ImageInfo!
 static EasyImageSharp.Image.Identify(System.ReadOnlySpan<byte> data) -> EasyImageSharp.ImageInfo!
 static EasyImageSharp.Image.Identify(System.ReadOnlySpan<byte> data, EasyImageSharp.Formats.DecoderOptions! options) -> EasyImageSharp.ImageInfo!
-static EasyImageSharp.Image.Identify(string! path) -> EasyImageSharp.ImageInfo!
-static EasyImageSharp.Image.Identify(string! path, EasyImageSharp.Formats.DecoderOptions! options) -> EasyImageSharp.ImageInfo!
-static EasyImageSharp.Image.IdentifyAsync(System.IO.Stream! stream, EasyImageSharp.Formats.DecoderOptions! options, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<EasyImageSharp.ImageInfo!>!
-static EasyImageSharp.Image.IdentifyAsync(System.IO.Stream! stream, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<EasyImageSharp.ImageInfo!>!
 static EasyImageSharp.Image.IdentifyAsync(string! path, EasyImageSharp.Formats.DecoderOptions! options, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<EasyImageSharp.ImageInfo!>!
 static EasyImageSharp.Image.IdentifyAsync(string! path, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<EasyImageSharp.ImageInfo!>!
+static EasyImageSharp.Image.IdentifyAsync(System.IO.Stream! stream, EasyImageSharp.Formats.DecoderOptions! options, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<EasyImageSharp.ImageInfo!>!
+static EasyImageSharp.Image.IdentifyAsync(System.IO.Stream! stream, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<EasyImageSharp.ImageInfo!>!
+static EasyImageSharp.Image.IdentifyHeader(System.IO.Stream! stream, int maxHeaderBytes = 1048576, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> EasyImageSharp.ImageHeaderInfo!
+static EasyImageSharp.Image.IdentifyHeaderAsync(System.IO.Stream! stream, int maxHeaderBytes = 1048576, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<EasyImageSharp.ImageHeaderInfo!>!
+static EasyImageSharp.Image.Load(string! path) -> EasyImageSharp.Image!
+static EasyImageSharp.Image.Load(string! path, EasyImageSharp.Formats.DecoderOptions! options) -> EasyImageSharp.Image!
 static EasyImageSharp.Image.Load(System.IO.Stream! stream) -> EasyImageSharp.Image!
 static EasyImageSharp.Image.Load(System.IO.Stream! stream, EasyImageSharp.Formats.DecoderOptions! options) -> EasyImageSharp.Image!
 static EasyImageSharp.Image.Load(System.ReadOnlySpan<byte> data) -> EasyImageSharp.Image!
 static EasyImageSharp.Image.Load(System.ReadOnlySpan<byte> data, EasyImageSharp.Formats.DecoderOptions! options) -> EasyImageSharp.Image!
-static EasyImageSharp.Image.Load(string! path) -> EasyImageSharp.Image!
-static EasyImageSharp.Image.Load(string! path, EasyImageSharp.Formats.DecoderOptions! options) -> EasyImageSharp.Image!
+static EasyImageSharp.Image.Load<TPixel>(string! path) -> EasyImageSharp.Image<TPixel>!
+static EasyImageSharp.Image.Load<TPixel>(string! path, EasyImageSharp.Formats.DecoderOptions! options) -> EasyImageSharp.Image<TPixel>!
 static EasyImageSharp.Image.Load<TPixel>(System.IO.Stream! stream) -> EasyImageSharp.Image<TPixel>!
 static EasyImageSharp.Image.Load<TPixel>(System.IO.Stream! stream, EasyImageSharp.Formats.DecoderOptions! options) -> EasyImageSharp.Image<TPixel>!
 static EasyImageSharp.Image.Load<TPixel>(System.ReadOnlySpan<byte> data) -> EasyImageSharp.Image<TPixel>!
 static EasyImageSharp.Image.Load<TPixel>(System.ReadOnlySpan<byte> data, EasyImageSharp.Formats.DecoderOptions! options) -> EasyImageSharp.Image<TPixel>!
-static EasyImageSharp.Image.Load<TPixel>(string! path) -> EasyImageSharp.Image<TPixel>!
-static EasyImageSharp.Image.Load<TPixel>(string! path, EasyImageSharp.Formats.DecoderOptions! options) -> EasyImageSharp.Image<TPixel>!
-static EasyImageSharp.Image.LoadAsync(System.IO.Stream! stream, EasyImageSharp.Formats.DecoderOptions! options, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<EasyImageSharp.Image!>!
-static EasyImageSharp.Image.LoadAsync(System.IO.Stream! stream, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<EasyImageSharp.Image!>!
 static EasyImageSharp.Image.LoadAsync(string! path, EasyImageSharp.Formats.DecoderOptions! options, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<EasyImageSharp.Image!>!
 static EasyImageSharp.Image.LoadAsync(string! path, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<EasyImageSharp.Image!>!
-static EasyImageSharp.Image.LoadAsync<TPixel>(System.IO.Stream! stream, EasyImageSharp.Formats.DecoderOptions! options, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<EasyImageSharp.Image<TPixel>!>!
-static EasyImageSharp.Image.LoadAsync<TPixel>(System.IO.Stream! stream, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<EasyImageSharp.Image<TPixel>!>!
+static EasyImageSharp.Image.LoadAsync(System.IO.Stream! stream, EasyImageSharp.Formats.DecoderOptions! options, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<EasyImageSharp.Image!>!
+static EasyImageSharp.Image.LoadAsync(System.IO.Stream! stream, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<EasyImageSharp.Image!>!
 static EasyImageSharp.Image.LoadAsync<TPixel>(string! path, EasyImageSharp.Formats.DecoderOptions! options, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<EasyImageSharp.Image<TPixel>!>!
 static EasyImageSharp.Image.LoadAsync<TPixel>(string! path, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<EasyImageSharp.Image<TPixel>!>!
+static EasyImageSharp.Image.LoadAsync<TPixel>(System.IO.Stream! stream, EasyImageSharp.Formats.DecoderOptions! options, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<EasyImageSharp.Image<TPixel>!>!
+static EasyImageSharp.Image.LoadAsync<TPixel>(System.IO.Stream! stream, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<EasyImageSharp.Image<TPixel>!>!
 static EasyImageSharp.Image.LoadPixelData(System.ReadOnlyMemory<byte> data, int width, int height, int stride) -> EasyImageSharp.Image<EasyImageSharp.PixelFormats.Rgba32>!
 static EasyImageSharp.Image.LoadPixelData<TPixel>(System.ReadOnlyMemory<byte> data, int width, int height, int stride) -> EasyImageSharp.Image<TPixel>!
-static EasyImageSharp.Image.LoadPixelData<TPixel>(System.ReadOnlySpan<TPixel> data, int width, int height) -> EasyImageSharp.Image<TPixel>!
 static EasyImageSharp.Image.LoadPixelData<TPixel>(System.ReadOnlySpan<byte> data, int width, int height) -> EasyImageSharp.Image<TPixel>!
-static EasyImageSharp.Image<TPixel>.WrapMemory(System.Memory<TPixel> memory, int width, int height) -> EasyImageSharp.Image<TPixel>!
+static EasyImageSharp.Image.LoadPixelData<TPixel>(System.ReadOnlySpan<TPixel> data, int width, int height) -> EasyImageSharp.Image<TPixel>!
+static EasyImageSharp.Image.LoadTiffPages<TPixel>(string! path) -> System.Collections.Generic.IEnumerable<EasyImageSharp.Image<TPixel>!>!
+static EasyImageSharp.Image.LoadTiffPages<TPixel>(string! path, EasyImageSharp.Formats.DecoderOptions? options) -> System.Collections.Generic.IEnumerable<EasyImageSharp.Image<TPixel>!>!
+static EasyImageSharp.Image.LoadTiffPages<TPixel>(System.IO.Stream! stream) -> System.Collections.Generic.IEnumerable<EasyImageSharp.Image<TPixel>!>!
+static EasyImageSharp.Image.LoadTiffPages<TPixel>(System.IO.Stream! stream, EasyImageSharp.Formats.DecoderOptions? options) -> System.Collections.Generic.IEnumerable<EasyImageSharp.Image<TPixel>!>!
+static EasyImageSharp.Image.OpenTiffRegionReader(System.IO.Stream! stream, int pageIndex = 0, EasyImageSharp.Formats.Tiff.TiffRegionOptions? options = null, bool leaveOpen = true, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> EasyImageSharp.Formats.Tiff.TiffRegionReader!
 static EasyImageSharp.Image<TPixel>.WrapMemory(System.Memory<byte> memory, int width, int height) -> EasyImageSharp.Image<TPixel>!
+static EasyImageSharp.Image<TPixel>.WrapMemory(System.Memory<TPixel> memory, int width, int height) -> EasyImageSharp.Image<TPixel>!
 static EasyImageSharp.ImageExtensions.CopyPixelDataTo<TPixel>(this EasyImageSharp.Image<TPixel>! image, System.Span<byte> destination, int stride) -> void
 static EasyImageSharp.ImageExtensions.CopyPixelDataTo<TPixel>(this EasyImageSharp.ImageFrame<TPixel>! frame, System.Span<byte> destination, int stride) -> void
 static EasyImageSharp.ImageExtensions.GetPixelBytes<TPixel>(this EasyImageSharp.Image<TPixel>! image) -> byte[]!
+static EasyImageSharp.ImageExtensions.Save(this EasyImageSharp.Image! image, string! path) -> void
 static EasyImageSharp.ImageExtensions.Save(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.Formats.IImageEncoder! encoder) -> void
 static EasyImageSharp.ImageExtensions.Save(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.Formats.ImageFormat! format) -> void
-static EasyImageSharp.ImageExtensions.Save(this EasyImageSharp.Image! image, string! path) -> void
-static EasyImageSharp.ImageExtensions.SaveAsBmp(this EasyImageSharp.Image! image, System.IO.Stream! stream) -> void
-static EasyImageSharp.ImageExtensions.SaveAsBmp(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.Formats.Bmp.BmpEncoder! encoder) -> void
 static EasyImageSharp.ImageExtensions.SaveAsBmp(this EasyImageSharp.Image! image, string! path) -> void
 static EasyImageSharp.ImageExtensions.SaveAsBmp(this EasyImageSharp.Image! image, string! path, EasyImageSharp.Formats.Bmp.BmpEncoder! encoder) -> void
+static EasyImageSharp.ImageExtensions.SaveAsBmp(this EasyImageSharp.Image! image, System.IO.Stream! stream) -> void
+static EasyImageSharp.ImageExtensions.SaveAsBmp(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.Formats.Bmp.BmpEncoder! encoder) -> void
 static EasyImageSharp.ImageExtensions.SaveAsBmpAsync(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.Formats.Bmp.BmpEncoder! encoder, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
-static EasyImageSharp.ImageExtensions.SaveAsGif(this EasyImageSharp.Image! image, System.IO.Stream! stream) -> void
-static EasyImageSharp.ImageExtensions.SaveAsGif(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.Formats.Gif.GifEncoder! encoder) -> void
 static EasyImageSharp.ImageExtensions.SaveAsGif(this EasyImageSharp.Image! image, string! path) -> void
 static EasyImageSharp.ImageExtensions.SaveAsGif(this EasyImageSharp.Image! image, string! path, EasyImageSharp.Formats.Gif.GifEncoder! encoder) -> void
+static EasyImageSharp.ImageExtensions.SaveAsGif(this EasyImageSharp.Image! image, System.IO.Stream! stream) -> void
+static EasyImageSharp.ImageExtensions.SaveAsGif(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.Formats.Gif.GifEncoder! encoder) -> void
+static EasyImageSharp.ImageExtensions.SaveAsGifAsync(this EasyImageSharp.Image! image, string! path, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
 static EasyImageSharp.ImageExtensions.SaveAsGifAsync(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.Formats.Gif.GifEncoder! encoder, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
 static EasyImageSharp.ImageExtensions.SaveAsGifAsync(this EasyImageSharp.Image! image, System.IO.Stream! stream, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
-static EasyImageSharp.ImageExtensions.SaveAsGifAsync(this EasyImageSharp.Image! image, string! path, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
-static EasyImageSharp.ImageExtensions.SaveAsIco(this EasyImageSharp.Image! image, System.IO.Stream! stream) -> void
-static EasyImageSharp.ImageExtensions.SaveAsIco(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.Formats.Ico.IcoEncoder! encoder) -> void
 static EasyImageSharp.ImageExtensions.SaveAsIco(this EasyImageSharp.Image! image, string! path) -> void
 static EasyImageSharp.ImageExtensions.SaveAsIco(this EasyImageSharp.Image! image, string! path, EasyImageSharp.Formats.Ico.IcoEncoder! encoder) -> void
+static EasyImageSharp.ImageExtensions.SaveAsIco(this EasyImageSharp.Image! image, System.IO.Stream! stream) -> void
+static EasyImageSharp.ImageExtensions.SaveAsIco(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.Formats.Ico.IcoEncoder! encoder) -> void
 static EasyImageSharp.ImageExtensions.SaveAsIcoAsync(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.Formats.Ico.IcoEncoder! encoder, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
 static EasyImageSharp.ImageExtensions.SaveAsIcoAsync(this EasyImageSharp.Image! image, System.IO.Stream! stream, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
-static EasyImageSharp.ImageExtensions.SaveAsJpeg(this EasyImageSharp.Image! image, System.IO.Stream! stream) -> void
-static EasyImageSharp.ImageExtensions.SaveAsJpeg(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.Formats.Jpeg.JpegEncoder! encoder) -> void
-static EasyImageSharp.ImageExtensions.SaveAsJpeg(this EasyImageSharp.Image! image, System.IO.Stream! stream, int quality) -> void
 static EasyImageSharp.ImageExtensions.SaveAsJpeg(this EasyImageSharp.Image! image, string! path) -> void
 static EasyImageSharp.ImageExtensions.SaveAsJpeg(this EasyImageSharp.Image! image, string! path, EasyImageSharp.Formats.Jpeg.JpegEncoder! encoder) -> void
 static EasyImageSharp.ImageExtensions.SaveAsJpeg(this EasyImageSharp.Image! image, string! path, int quality) -> void
+static EasyImageSharp.ImageExtensions.SaveAsJpeg(this EasyImageSharp.Image! image, System.IO.Stream! stream) -> void
+static EasyImageSharp.ImageExtensions.SaveAsJpeg(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.Formats.Jpeg.JpegEncoder! encoder) -> void
+static EasyImageSharp.ImageExtensions.SaveAsJpeg(this EasyImageSharp.Image! image, System.IO.Stream! stream, int quality) -> void
 static EasyImageSharp.ImageExtensions.SaveAsJpegAsync(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.Formats.Jpeg.JpegEncoder! encoder, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
 static EasyImageSharp.ImageExtensions.SaveAsJpegAsync(this EasyImageSharp.Image! image, System.IO.Stream! stream, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
-static EasyImageSharp.ImageExtensions.SaveAsPbm(this EasyImageSharp.Image! image, System.IO.Stream! stream) -> void
-static EasyImageSharp.ImageExtensions.SaveAsPbm(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.Formats.Pbm.PbmEncoder! encoder) -> void
 static EasyImageSharp.ImageExtensions.SaveAsPbm(this EasyImageSharp.Image! image, string! path) -> void
 static EasyImageSharp.ImageExtensions.SaveAsPbm(this EasyImageSharp.Image! image, string! path, EasyImageSharp.Formats.Pbm.PbmEncoder! encoder) -> void
+static EasyImageSharp.ImageExtensions.SaveAsPbm(this EasyImageSharp.Image! image, System.IO.Stream! stream) -> void
+static EasyImageSharp.ImageExtensions.SaveAsPbm(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.Formats.Pbm.PbmEncoder! encoder) -> void
 static EasyImageSharp.ImageExtensions.SaveAsPbmAsync(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.Formats.Pbm.PbmEncoder! encoder, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
 static EasyImageSharp.ImageExtensions.SaveAsPbmAsync(this EasyImageSharp.Image! image, System.IO.Stream! stream, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
-static EasyImageSharp.ImageExtensions.SaveAsPng(this EasyImageSharp.Image! image, System.IO.Stream! stream) -> void
-static EasyImageSharp.ImageExtensions.SaveAsPng(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.Formats.Png.PngEncoder! encoder) -> void
 static EasyImageSharp.ImageExtensions.SaveAsPng(this EasyImageSharp.Image! image, string! path) -> void
 static EasyImageSharp.ImageExtensions.SaveAsPng(this EasyImageSharp.Image! image, string! path, EasyImageSharp.Formats.Png.PngEncoder! encoder) -> void
+static EasyImageSharp.ImageExtensions.SaveAsPng(this EasyImageSharp.Image! image, System.IO.Stream! stream) -> void
+static EasyImageSharp.ImageExtensions.SaveAsPng(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.Formats.Png.PngEncoder! encoder) -> void
 static EasyImageSharp.ImageExtensions.SaveAsPngAsync(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.Formats.Png.PngEncoder! encoder, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
 static EasyImageSharp.ImageExtensions.SaveAsPngAsync(this EasyImageSharp.Image! image, System.IO.Stream! stream, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
-static EasyImageSharp.ImageExtensions.SaveAsQoi(this EasyImageSharp.Image! image, System.IO.Stream! stream) -> void
-static EasyImageSharp.ImageExtensions.SaveAsQoi(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.Formats.Qoi.QoiEncoder! encoder) -> void
 static EasyImageSharp.ImageExtensions.SaveAsQoi(this EasyImageSharp.Image! image, string! path) -> void
 static EasyImageSharp.ImageExtensions.SaveAsQoi(this EasyImageSharp.Image! image, string! path, EasyImageSharp.Formats.Qoi.QoiEncoder! encoder) -> void
+static EasyImageSharp.ImageExtensions.SaveAsQoi(this EasyImageSharp.Image! image, System.IO.Stream! stream) -> void
+static EasyImageSharp.ImageExtensions.SaveAsQoi(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.Formats.Qoi.QoiEncoder! encoder) -> void
 static EasyImageSharp.ImageExtensions.SaveAsQoiAsync(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.Formats.Qoi.QoiEncoder! encoder, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
 static EasyImageSharp.ImageExtensions.SaveAsQoiAsync(this EasyImageSharp.Image! image, System.IO.Stream! stream, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
-static EasyImageSharp.ImageExtensions.SaveAsTga(this EasyImageSharp.Image! image, System.IO.Stream! stream) -> void
-static EasyImageSharp.ImageExtensions.SaveAsTga(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.Formats.Tga.TgaEncoder! encoder) -> void
 static EasyImageSharp.ImageExtensions.SaveAsTga(this EasyImageSharp.Image! image, string! path) -> void
 static EasyImageSharp.ImageExtensions.SaveAsTga(this EasyImageSharp.Image! image, string! path, EasyImageSharp.Formats.Tga.TgaEncoder! encoder) -> void
+static EasyImageSharp.ImageExtensions.SaveAsTga(this EasyImageSharp.Image! image, System.IO.Stream! stream) -> void
+static EasyImageSharp.ImageExtensions.SaveAsTga(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.Formats.Tga.TgaEncoder! encoder) -> void
 static EasyImageSharp.ImageExtensions.SaveAsTgaAsync(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.Formats.Tga.TgaEncoder! encoder, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
 static EasyImageSharp.ImageExtensions.SaveAsTgaAsync(this EasyImageSharp.Image! image, System.IO.Stream! stream, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
-static EasyImageSharp.ImageExtensions.SaveAsTiff(this EasyImageSharp.Image! image, System.IO.Stream! stream) -> void
 static EasyImageSharp.ImageExtensions.SaveAsTiff(this EasyImageSharp.Image! image, string! path) -> void
-static EasyImageSharp.ImageExtensions.SaveAsWebp(this EasyImageSharp.Image! image, System.IO.Stream! stream) -> void
-static EasyImageSharp.ImageExtensions.SaveAsWebp(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.Formats.Webp.WebpEncoder! encoder) -> void
+static EasyImageSharp.ImageExtensions.SaveAsTiff(this EasyImageSharp.Image! image, System.IO.Stream! stream) -> void
 static EasyImageSharp.ImageExtensions.SaveAsWebp(this EasyImageSharp.Image! image, string! path) -> void
 static EasyImageSharp.ImageExtensions.SaveAsWebp(this EasyImageSharp.Image! image, string! path, EasyImageSharp.Formats.Webp.WebpEncoder! encoder) -> void
-static EasyImageSharp.ImageExtensions.SaveAsWebpAsync(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.Formats.Webp.WebpEncoder! encoder, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
-static EasyImageSharp.ImageExtensions.SaveAsWebpAsync(this EasyImageSharp.Image! image, System.IO.Stream! stream, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+static EasyImageSharp.ImageExtensions.SaveAsWebp(this EasyImageSharp.Image! image, System.IO.Stream! stream) -> void
+static EasyImageSharp.ImageExtensions.SaveAsWebp(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.Formats.Webp.WebpEncoder! encoder) -> void
 static EasyImageSharp.ImageExtensions.SaveAsWebpAsync(this EasyImageSharp.Image! image, string! path, EasyImageSharp.Formats.Webp.WebpEncoder! encoder, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
 static EasyImageSharp.ImageExtensions.SaveAsWebpAsync(this EasyImageSharp.Image! image, string! path, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+static EasyImageSharp.ImageExtensions.SaveAsWebpAsync(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.Formats.Webp.WebpEncoder! encoder, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+static EasyImageSharp.ImageExtensions.SaveAsWebpAsync(this EasyImageSharp.Image! image, System.IO.Stream! stream, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+static EasyImageSharp.ImageExtensions.SaveAsync(this EasyImageSharp.Image! image, string! path, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
 static EasyImageSharp.ImageExtensions.SaveAsync(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.Formats.IImageEncoder! encoder, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
 static EasyImageSharp.ImageExtensions.SaveAsync(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.Formats.ImageFormat! format, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
-static EasyImageSharp.ImageExtensions.SaveAsync(this EasyImageSharp.Image! image, string! path, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
 static EasyImageSharp.ImageExtensions.ToBase64String(this EasyImageSharp.Image! image, EasyImageSharp.Formats.ImageFormat! format) -> string!
+static EasyImageSharp.ImageInfo.Create(int width, int height, int bitsPerPixel, int frameCount, EasyImageSharp.Formats.ImageFormat! format, EasyImageSharp.Metadata.ImageMetadata? metadata = null) -> EasyImageSharp.ImageInfo!
 static EasyImageSharp.Metadata.Exif.ExifTag.ApertureValue.get -> EasyImageSharp.Metadata.Exif.ExifTag<EasyImageSharp.Metadata.Exif.Rational>!
 static EasyImageSharp.Metadata.Exif.ExifTag.Artist.get -> EasyImageSharp.Metadata.Exif.ExifTag<string!>!
 static EasyImageSharp.Metadata.Exif.ExifTag.BitsPerSample.get -> EasyImageSharp.Metadata.Exif.ExifTag<ushort[]!>!
 static EasyImageSharp.Metadata.Exif.ExifTag.BodySerialNumber.get -> EasyImageSharp.Metadata.Exif.ExifTag<string!>!
 static EasyImageSharp.Metadata.Exif.ExifTag.BrightnessValue.get -> EasyImageSharp.Metadata.Exif.ExifTag<EasyImageSharp.Metadata.Exif.SignedRational>!
-static EasyImageSharp.Metadata.Exif.ExifTag.CFAPattern.get -> EasyImageSharp.Metadata.Exif.ExifTag<byte[]!>!
 static EasyImageSharp.Metadata.Exif.ExifTag.CameraOwnerName.get -> EasyImageSharp.Metadata.Exif.ExifTag<string!>!
+static EasyImageSharp.Metadata.Exif.ExifTag.CFAPattern.get -> EasyImageSharp.Metadata.Exif.ExifTag<byte[]!>!
 static EasyImageSharp.Metadata.Exif.ExifTag.ColorSpace.get -> EasyImageSharp.Metadata.Exif.ExifTag<ushort>!
 static EasyImageSharp.Metadata.Exif.ExifTag.ComponentsConfiguration.get -> EasyImageSharp.Metadata.Exif.ExifTag<byte[]!>!
 static EasyImageSharp.Metadata.Exif.ExifTag.CompressedBitsPerPixel.get -> EasyImageSharp.Metadata.Exif.ExifTag<EasyImageSharp.Metadata.Exif.Rational>!
@@ -1987,20 +2198,21 @@ static EasyImageSharp.Metadata.Exif.ExifTag.ExposureIndex.get -> EasyImageSharp.
 static EasyImageSharp.Metadata.Exif.ExifTag.ExposureMode.get -> EasyImageSharp.Metadata.Exif.ExifTag<ushort>!
 static EasyImageSharp.Metadata.Exif.ExifTag.ExposureProgram.get -> EasyImageSharp.Metadata.Exif.ExifTag<ushort>!
 static EasyImageSharp.Metadata.Exif.ExifTag.ExposureTime.get -> EasyImageSharp.Metadata.Exif.ExifTag<EasyImageSharp.Metadata.Exif.Rational>!
-static EasyImageSharp.Metadata.Exif.ExifTag.FNumber.get -> EasyImageSharp.Metadata.Exif.ExifTag<EasyImageSharp.Metadata.Exif.Rational>!
 static EasyImageSharp.Metadata.Exif.ExifTag.FileSource.get -> EasyImageSharp.Metadata.Exif.ExifTag<byte>!
 static EasyImageSharp.Metadata.Exif.ExifTag.Flash.get -> EasyImageSharp.Metadata.Exif.ExifTag<ushort>!
 static EasyImageSharp.Metadata.Exif.ExifTag.FlashEnergy.get -> EasyImageSharp.Metadata.Exif.ExifTag<EasyImageSharp.Metadata.Exif.Rational>!
 static EasyImageSharp.Metadata.Exif.ExifTag.FlashpixVersion.get -> EasyImageSharp.Metadata.Exif.ExifTag<byte[]!>!
+static EasyImageSharp.Metadata.Exif.ExifTag.FNumber.get -> EasyImageSharp.Metadata.Exif.ExifTag<EasyImageSharp.Metadata.Exif.Rational>!
 static EasyImageSharp.Metadata.Exif.ExifTag.FocalLength.get -> EasyImageSharp.Metadata.Exif.ExifTag<EasyImageSharp.Metadata.Exif.Rational>!
 static EasyImageSharp.Metadata.Exif.ExifTag.FocalLengthIn35mmFilm.get -> EasyImageSharp.Metadata.Exif.ExifTag<ushort>!
 static EasyImageSharp.Metadata.Exif.ExifTag.FocalPlaneResolutionUnit.get -> EasyImageSharp.Metadata.Exif.ExifTag<ushort>!
 static EasyImageSharp.Metadata.Exif.ExifTag.FocalPlaneXResolution.get -> EasyImageSharp.Metadata.Exif.ExifTag<EasyImageSharp.Metadata.Exif.Rational>!
 static EasyImageSharp.Metadata.Exif.ExifTag.FocalPlaneYResolution.get -> EasyImageSharp.Metadata.Exif.ExifTag<EasyImageSharp.Metadata.Exif.Rational>!
+static EasyImageSharp.Metadata.Exif.ExifTag.GainControl.get -> EasyImageSharp.Metadata.Exif.ExifTag<ushort>!
+static EasyImageSharp.Metadata.Exif.ExifTag.Gamma.get -> EasyImageSharp.Metadata.Exif.ExifTag<EasyImageSharp.Metadata.Exif.Rational>!
 static EasyImageSharp.Metadata.Exif.ExifTag.GPSAltitude.get -> EasyImageSharp.Metadata.Exif.ExifTag<EasyImageSharp.Metadata.Exif.Rational>!
 static EasyImageSharp.Metadata.Exif.ExifTag.GPSAltitudeRef.get -> EasyImageSharp.Metadata.Exif.ExifTag<byte>!
 static EasyImageSharp.Metadata.Exif.ExifTag.GPSAreaInformation.get -> EasyImageSharp.Metadata.Exif.ExifTag<byte[]!>!
-static EasyImageSharp.Metadata.Exif.ExifTag.GPSDOP.get -> EasyImageSharp.Metadata.Exif.ExifTag<EasyImageSharp.Metadata.Exif.Rational>!
 static EasyImageSharp.Metadata.Exif.ExifTag.GPSDateStamp.get -> EasyImageSharp.Metadata.Exif.ExifTag<string!>!
 static EasyImageSharp.Metadata.Exif.ExifTag.GPSDestBearing.get -> EasyImageSharp.Metadata.Exif.ExifTag<EasyImageSharp.Metadata.Exif.Rational>!
 static EasyImageSharp.Metadata.Exif.ExifTag.GPSDestBearingRef.get -> EasyImageSharp.Metadata.Exif.ExifTag<string!>!
@@ -2011,6 +2223,7 @@ static EasyImageSharp.Metadata.Exif.ExifTag.GPSDestLatitudeRef.get -> EasyImageS
 static EasyImageSharp.Metadata.Exif.ExifTag.GPSDestLongitude.get -> EasyImageSharp.Metadata.Exif.ExifTag<EasyImageSharp.Metadata.Exif.Rational[]!>!
 static EasyImageSharp.Metadata.Exif.ExifTag.GPSDestLongitudeRef.get -> EasyImageSharp.Metadata.Exif.ExifTag<string!>!
 static EasyImageSharp.Metadata.Exif.ExifTag.GPSDifferential.get -> EasyImageSharp.Metadata.Exif.ExifTag<ushort>!
+static EasyImageSharp.Metadata.Exif.ExifTag.GPSDOP.get -> EasyImageSharp.Metadata.Exif.ExifTag<EasyImageSharp.Metadata.Exif.Rational>!
 static EasyImageSharp.Metadata.Exif.ExifTag.GPSHPositioningError.get -> EasyImageSharp.Metadata.Exif.ExifTag<EasyImageSharp.Metadata.Exif.Rational>!
 static EasyImageSharp.Metadata.Exif.ExifTag.GPSImgDirection.get -> EasyImageSharp.Metadata.Exif.ExifTag<EasyImageSharp.Metadata.Exif.Rational>!
 static EasyImageSharp.Metadata.Exif.ExifTag.GPSImgDirectionRef.get -> EasyImageSharp.Metadata.Exif.ExifTag<string!>!
@@ -2029,16 +2242,15 @@ static EasyImageSharp.Metadata.Exif.ExifTag.GPSTimestamp.get -> EasyImageSharp.M
 static EasyImageSharp.Metadata.Exif.ExifTag.GPSTrack.get -> EasyImageSharp.Metadata.Exif.ExifTag<EasyImageSharp.Metadata.Exif.Rational>!
 static EasyImageSharp.Metadata.Exif.ExifTag.GPSTrackRef.get -> EasyImageSharp.Metadata.Exif.ExifTag<string!>!
 static EasyImageSharp.Metadata.Exif.ExifTag.GPSVersionID.get -> EasyImageSharp.Metadata.Exif.ExifTag<byte[]!>!
-static EasyImageSharp.Metadata.Exif.ExifTag.GainControl.get -> EasyImageSharp.Metadata.Exif.ExifTag<ushort>!
-static EasyImageSharp.Metadata.Exif.ExifTag.Gamma.get -> EasyImageSharp.Metadata.Exif.ExifTag<EasyImageSharp.Metadata.Exif.Rational>!
 static EasyImageSharp.Metadata.Exif.ExifTag.HostComputer.get -> EasyImageSharp.Metadata.Exif.ExifTag<string!>!
-static EasyImageSharp.Metadata.Exif.ExifTag.ISOSpeedRatings.get -> EasyImageSharp.Metadata.Exif.ExifTag<ushort[]!>!
 static EasyImageSharp.Metadata.Exif.ExifTag.ImageDescription.get -> EasyImageSharp.Metadata.Exif.ExifTag<string!>!
 static EasyImageSharp.Metadata.Exif.ExifTag.ImageLength.get -> EasyImageSharp.Metadata.Exif.ExifTag<uint>!
 static EasyImageSharp.Metadata.Exif.ExifTag.ImageUniqueID.get -> EasyImageSharp.Metadata.Exif.ExifTag<string!>!
 static EasyImageSharp.Metadata.Exif.ExifTag.ImageWidth.get -> EasyImageSharp.Metadata.Exif.ExifTag<uint>!
+static EasyImageSharp.Metadata.Exif.ExifTag.implicit operator ushort(EasyImageSharp.Metadata.Exif.ExifTag! tag) -> ushort
 static EasyImageSharp.Metadata.Exif.ExifTag.InteroperabilityIndex.get -> EasyImageSharp.Metadata.Exif.ExifTag<string!>!
 static EasyImageSharp.Metadata.Exif.ExifTag.InteroperabilityVersion.get -> EasyImageSharp.Metadata.Exif.ExifTag<byte[]!>!
+static EasyImageSharp.Metadata.Exif.ExifTag.ISOSpeedRatings.get -> EasyImageSharp.Metadata.Exif.ExifTag<ushort[]!>!
 static EasyImageSharp.Metadata.Exif.ExifTag.JpegInterchangeFormat.get -> EasyImageSharp.Metadata.Exif.ExifTag<uint>!
 static EasyImageSharp.Metadata.Exif.ExifTag.JpegInterchangeFormatLength.get -> EasyImageSharp.Metadata.Exif.ExifTag<uint>!
 static EasyImageSharp.Metadata.Exif.ExifTag.LensMake.get -> EasyImageSharp.Metadata.Exif.ExifTag<string!>!
@@ -2055,6 +2267,8 @@ static EasyImageSharp.Metadata.Exif.ExifTag.OECF.get -> EasyImageSharp.Metadata.
 static EasyImageSharp.Metadata.Exif.ExifTag.OffsetTime.get -> EasyImageSharp.Metadata.Exif.ExifTag<string!>!
 static EasyImageSharp.Metadata.Exif.ExifTag.OffsetTimeDigitized.get -> EasyImageSharp.Metadata.Exif.ExifTag<string!>!
 static EasyImageSharp.Metadata.Exif.ExifTag.OffsetTimeOriginal.get -> EasyImageSharp.Metadata.Exif.ExifTag<string!>!
+static EasyImageSharp.Metadata.Exif.ExifTag.operator !=(EasyImageSharp.Metadata.Exif.ExifTag? left, EasyImageSharp.Metadata.Exif.ExifTag? right) -> bool
+static EasyImageSharp.Metadata.Exif.ExifTag.operator ==(EasyImageSharp.Metadata.Exif.ExifTag? left, EasyImageSharp.Metadata.Exif.ExifTag? right) -> bool
 static EasyImageSharp.Metadata.Exif.ExifTag.Orientation.get -> EasyImageSharp.Metadata.Exif.ExifTag<ushort>!
 static EasyImageSharp.Metadata.Exif.ExifTag.PhotometricInterpretation.get -> EasyImageSharp.Metadata.Exif.ExifTag<ushort>!
 static EasyImageSharp.Metadata.Exif.ExifTag.PixelXDimension.get -> EasyImageSharp.Metadata.Exif.ExifTag<uint>!
@@ -2105,13 +2319,11 @@ static EasyImageSharp.Metadata.Exif.ExifTag.YCbCrCoefficients.get -> EasyImageSh
 static EasyImageSharp.Metadata.Exif.ExifTag.YCbCrPositioning.get -> EasyImageSharp.Metadata.Exif.ExifTag<ushort>!
 static EasyImageSharp.Metadata.Exif.ExifTag.YCbCrSubSampling.get -> EasyImageSharp.Metadata.Exif.ExifTag<ushort[]!>!
 static EasyImageSharp.Metadata.Exif.ExifTag.YResolution.get -> EasyImageSharp.Metadata.Exif.ExifTag<EasyImageSharp.Metadata.Exif.Rational>!
-static EasyImageSharp.Metadata.Exif.ExifTag.implicit operator ushort(EasyImageSharp.Metadata.Exif.ExifTag! tag) -> ushort
-static EasyImageSharp.Metadata.Exif.ExifTag.operator !=(EasyImageSharp.Metadata.Exif.ExifTag? left, EasyImageSharp.Metadata.Exif.ExifTag? right) -> bool
-static EasyImageSharp.Metadata.Exif.ExifTag.operator ==(EasyImageSharp.Metadata.Exif.ExifTag? left, EasyImageSharp.Metadata.Exif.ExifTag? right) -> bool
 static EasyImageSharp.Metadata.Exif.Rational.operator !=(EasyImageSharp.Metadata.Exif.Rational left, EasyImageSharp.Metadata.Exif.Rational right) -> bool
 static EasyImageSharp.Metadata.Exif.Rational.operator ==(EasyImageSharp.Metadata.Exif.Rational left, EasyImageSharp.Metadata.Exif.Rational right) -> bool
 static EasyImageSharp.Metadata.Exif.SignedRational.operator !=(EasyImageSharp.Metadata.Exif.SignedRational left, EasyImageSharp.Metadata.Exif.SignedRational right) -> bool
 static EasyImageSharp.Metadata.Exif.SignedRational.operator ==(EasyImageSharp.Metadata.Exif.SignedRational left, EasyImageSharp.Metadata.Exif.SignedRational right) -> bool
+static EasyImageSharp.Metadata.Icc.IccMatrixProfile.Create(EasyImageSharp.Metadata.Icc.IccProfile! profile) -> EasyImageSharp.Metadata.Icc.IccMatrixProfile!
 static EasyImageSharp.Metadata.PngTextData.operator !=(EasyImageSharp.Metadata.PngTextData left, EasyImageSharp.Metadata.PngTextData right) -> bool
 static EasyImageSharp.Metadata.PngTextData.operator ==(EasyImageSharp.Metadata.PngTextData left, EasyImageSharp.Metadata.PngTextData right) -> bool
 static EasyImageSharp.PixelFormats.A8.FromRgba32(EasyImageSharp.PixelFormats.Rgba32 source) -> EasyImageSharp.PixelFormats.A8
@@ -2161,10 +2373,10 @@ static EasyImageSharp.PixelFormats.Rgb48.operator ==(EasyImageSharp.PixelFormats
 static EasyImageSharp.PixelFormats.Rgba32.Black.get -> EasyImageSharp.PixelFormats.Rgba32
 static EasyImageSharp.PixelFormats.Rgba32.FromRgba32(EasyImageSharp.PixelFormats.Rgba32 source) -> EasyImageSharp.PixelFormats.Rgba32
 static EasyImageSharp.PixelFormats.Rgba32.FromScaledVector4(System.Numerics.Vector4 source) -> EasyImageSharp.PixelFormats.Rgba32
-static EasyImageSharp.PixelFormats.Rgba32.Transparent.get -> EasyImageSharp.PixelFormats.Rgba32
-static EasyImageSharp.PixelFormats.Rgba32.White.get -> EasyImageSharp.PixelFormats.Rgba32
 static EasyImageSharp.PixelFormats.Rgba32.operator !=(EasyImageSharp.PixelFormats.Rgba32 left, EasyImageSharp.PixelFormats.Rgba32 right) -> bool
 static EasyImageSharp.PixelFormats.Rgba32.operator ==(EasyImageSharp.PixelFormats.Rgba32 left, EasyImageSharp.PixelFormats.Rgba32 right) -> bool
+static EasyImageSharp.PixelFormats.Rgba32.Transparent.get -> EasyImageSharp.PixelFormats.Rgba32
+static EasyImageSharp.PixelFormats.Rgba32.White.get -> EasyImageSharp.PixelFormats.Rgba32
 static EasyImageSharp.PixelFormats.Rgba64.FromRgba32(EasyImageSharp.PixelFormats.Rgba32 source) -> EasyImageSharp.PixelFormats.Rgba64
 static EasyImageSharp.PixelFormats.Rgba64.FromScaledVector4(System.Numerics.Vector4 source) -> EasyImageSharp.PixelFormats.Rgba64
 static EasyImageSharp.PixelFormats.Rgba64.operator !=(EasyImageSharp.PixelFormats.Rgba64 left, EasyImageSharp.PixelFormats.Rgba64 right) -> bool
@@ -2174,12 +2386,12 @@ static EasyImageSharp.PixelFormats.RgbaVector.FromScaledVector4(System.Numerics.
 static EasyImageSharp.PixelFormats.RgbaVector.operator !=(EasyImageSharp.PixelFormats.RgbaVector left, EasyImageSharp.PixelFormats.RgbaVector right) -> bool
 static EasyImageSharp.PixelFormats.RgbaVector.operator ==(EasyImageSharp.PixelFormats.RgbaVector left, EasyImageSharp.PixelFormats.RgbaVector right) -> bool
 static EasyImageSharp.Point.Ceiling(EasyImageSharp.PointF point) -> EasyImageSharp.Point
-static EasyImageSharp.Point.Round(EasyImageSharp.PointF point) -> EasyImageSharp.Point
-static EasyImageSharp.Point.Truncate(EasyImageSharp.PointF point) -> EasyImageSharp.Point
 static EasyImageSharp.Point.operator !=(EasyImageSharp.Point left, EasyImageSharp.Point right) -> bool
 static EasyImageSharp.Point.operator +(EasyImageSharp.Point point, EasyImageSharp.Size size) -> EasyImageSharp.Point
 static EasyImageSharp.Point.operator -(EasyImageSharp.Point point, EasyImageSharp.Size size) -> EasyImageSharp.Point
 static EasyImageSharp.Point.operator ==(EasyImageSharp.Point left, EasyImageSharp.Point right) -> bool
+static EasyImageSharp.Point.Round(EasyImageSharp.PointF point) -> EasyImageSharp.Point
+static EasyImageSharp.Point.Truncate(EasyImageSharp.PointF point) -> EasyImageSharp.Point
 static EasyImageSharp.PointF.implicit operator EasyImageSharp.PointF(EasyImageSharp.Point point) -> EasyImageSharp.PointF
 static EasyImageSharp.PointF.operator !=(EasyImageSharp.PointF left, EasyImageSharp.PointF right) -> bool
 static EasyImageSharp.PointF.operator +(EasyImageSharp.PointF point, EasyImageSharp.SizeF size) -> EasyImageSharp.PointF
@@ -2215,6 +2427,8 @@ static EasyImageSharp.Processing.Dithering.KnownDitherings.SierraLite.get -> Eas
 static EasyImageSharp.Processing.Dithering.KnownDitherings.StevensonArce.get -> EasyImageSharp.Processing.Dithering.IDither!
 static EasyImageSharp.Processing.Dithering.KnownDitherings.Stucki.get -> EasyImageSharp.Processing.Dithering.IDither!
 static EasyImageSharp.Processing.Dithering.OrderedDither.CreateBayer(int size) -> EasyImageSharp.Processing.Dithering.OrderedDither!
+static EasyImageSharp.Processing.DocumentProcessingExtensions.AnalyzeDocument<TPixel>(this EasyImageSharp.Image<TPixel>! image, int maximumSampleDimension = 512, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Collections.Generic.IReadOnlyList<EasyImageSharp.Processing.DocumentAnalysis!>!
+static EasyImageSharp.Processing.DocumentProcessingExtensions.PreprocessDocument<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.Processing.DocumentPreprocessingOptions? options = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> EasyImageSharp.Processing.DocumentPreprocessingResult<TPixel>!
 static EasyImageSharp.Processing.EdgeDetector2DKernel.operator !=(EasyImageSharp.Processing.EdgeDetector2DKernel left, EasyImageSharp.Processing.EdgeDetector2DKernel right) -> bool
 static EasyImageSharp.Processing.EdgeDetector2DKernel.operator ==(EasyImageSharp.Processing.EdgeDetector2DKernel left, EasyImageSharp.Processing.EdgeDetector2DKernel right) -> bool
 static EasyImageSharp.Processing.EdgeDetectorCompassKernel.operator !=(EasyImageSharp.Processing.EdgeDetectorCompassKernel left, EasyImageSharp.Processing.EdgeDetectorCompassKernel right) -> bool
@@ -2281,6 +2495,7 @@ static EasyImageSharp.Processing.ProcessingExtensions.AdaptiveThreshold(this Eas
 static EasyImageSharp.Processing.ProcessingExtensions.AdaptiveThreshold(this EasyImageSharp.Processing.IImageProcessingContext! context, EasyImageSharp.Color upperColor, EasyImageSharp.Color lowerColor) -> EasyImageSharp.Processing.IImageProcessingContext!
 static EasyImageSharp.Processing.ProcessingExtensions.AdaptiveThreshold(this EasyImageSharp.Processing.IImageProcessingContext! context, EasyImageSharp.Color upperColor, EasyImageSharp.Color lowerColor, EasyImageSharp.Rectangle rectangle) -> EasyImageSharp.Processing.IImageProcessingContext!
 static EasyImageSharp.Processing.ProcessingExtensions.AutoRotateDocument(this EasyImageSharp.Processing.IImageProcessingContext! context) -> EasyImageSharp.Processing.IImageProcessingContext!
+static EasyImageSharp.Processing.ProcessingExtensions.AutoRotateDocumentPages(this EasyImageSharp.Processing.IImageProcessingContext! context) -> EasyImageSharp.Processing.IImageProcessingContext!
 static EasyImageSharp.Processing.ProcessingExtensions.BackgroundNormalize(this EasyImageSharp.Processing.IImageProcessingContext! context) -> EasyImageSharp.Processing.IImageProcessingContext!
 static EasyImageSharp.Processing.ProcessingExtensions.Binarize(this EasyImageSharp.Processing.IImageProcessingContext! context) -> EasyImageSharp.Processing.IImageProcessingContext!
 static EasyImageSharp.Processing.ProcessingExtensions.BinaryDither(this EasyImageSharp.Processing.IImageProcessingContext! context, EasyImageSharp.Processing.Dithering.IDither! dither) -> EasyImageSharp.Processing.IImageProcessingContext!
@@ -2293,6 +2508,7 @@ static EasyImageSharp.Processing.ProcessingExtensions.BlackWhite(this EasyImageS
 static EasyImageSharp.Processing.ProcessingExtensions.BokehBlur(this EasyImageSharp.Processing.IImageProcessingContext! context) -> EasyImageSharp.Processing.IImageProcessingContext!
 static EasyImageSharp.Processing.ProcessingExtensions.BokehBlur(this EasyImageSharp.Processing.IImageProcessingContext! context, int radius) -> EasyImageSharp.Processing.IImageProcessingContext!
 static EasyImageSharp.Processing.ProcessingExtensions.BoxBlur(this EasyImageSharp.Processing.IImageProcessingContext! context) -> EasyImageSharp.Processing.IImageProcessingContext!
+static EasyImageSharp.Processing.ProcessingExtensions.Clone<TPixel>(this EasyImageSharp.Image<TPixel>! source, EasyImageSharp.ImageExecutionOptions! options, System.Action<EasyImageSharp.Processing.IImageProcessingContext!>! operation) -> EasyImageSharp.Image<TPixel>!
 static EasyImageSharp.Processing.ProcessingExtensions.Clone<TPixel>(this EasyImageSharp.Image<TPixel>! source, System.Action<EasyImageSharp.Processing.IImageProcessingContext!>! operation) -> EasyImageSharp.Image<TPixel>!
 static EasyImageSharp.Processing.ProcessingExtensions.Close(this EasyImageSharp.Processing.IImageProcessingContext! context, int radius) -> EasyImageSharp.Processing.IImageProcessingContext!
 static EasyImageSharp.Processing.ProcessingExtensions.ColorBlindness(this EasyImageSharp.Processing.IImageProcessingContext! context, EasyImageSharp.Processing.ColorBlindnessMode mode) -> EasyImageSharp.Processing.IImageProcessingContext!
@@ -2306,18 +2522,18 @@ static EasyImageSharp.Processing.ProcessingExtensions.Crop(this EasyImageSharp.P
 static EasyImageSharp.Processing.ProcessingExtensions.Deskew(this EasyImageSharp.Processing.IImageProcessingContext! context) -> EasyImageSharp.Processing.IImageProcessingContext!
 static EasyImageSharp.Processing.ProcessingExtensions.Deskew(this EasyImageSharp.Processing.IImageProcessingContext! context, EasyImageSharp.Processing.DeskewMethod method) -> EasyImageSharp.Processing.IImageProcessingContext!
 static EasyImageSharp.Processing.ProcessingExtensions.DetectEdges(this EasyImageSharp.Processing.IImageProcessingContext! context) -> EasyImageSharp.Processing.IImageProcessingContext!
+static EasyImageSharp.Processing.ProcessingExtensions.DetectEdges(this EasyImageSharp.Processing.IImageProcessingContext! context, bool grayscale) -> EasyImageSharp.Processing.IImageProcessingContext!
 static EasyImageSharp.Processing.ProcessingExtensions.DetectEdges(this EasyImageSharp.Processing.IImageProcessingContext! context, EasyImageSharp.Processing.EdgeDetector2DKernel kernel) -> EasyImageSharp.Processing.IImageProcessingContext!
 static EasyImageSharp.Processing.ProcessingExtensions.DetectEdges(this EasyImageSharp.Processing.IImageProcessingContext! context, EasyImageSharp.Processing.EdgeDetectorCompassKernel kernel) -> EasyImageSharp.Processing.IImageProcessingContext!
 static EasyImageSharp.Processing.ProcessingExtensions.DetectEdges(this EasyImageSharp.Processing.IImageProcessingContext! context, EasyImageSharp.Processing.EdgeDetectorKernel kernel) -> EasyImageSharp.Processing.IImageProcessingContext!
-static EasyImageSharp.Processing.ProcessingExtensions.DetectEdges(this EasyImageSharp.Processing.IImageProcessingContext! context, bool grayscale) -> EasyImageSharp.Processing.IImageProcessingContext!
 static EasyImageSharp.Processing.ProcessingExtensions.DetectOrientation<TPixel>(this EasyImageSharp.Image<TPixel>! image) -> EasyImageSharp.Processing.OrientationEstimate
 static EasyImageSharp.Processing.ProcessingExtensions.DetectPage<TPixel>(this EasyImageSharp.Image<TPixel>! image) -> EasyImageSharp.PointF[]?
 static EasyImageSharp.Processing.ProcessingExtensions.DetectSkew(this EasyImageSharp.Processing.IImageProcessingContext! context) -> float
 static EasyImageSharp.Processing.ProcessingExtensions.DetectSkew<TPixel>(this EasyImageSharp.Image<TPixel>! image, float maxAngleDegrees = 15) -> float
 static EasyImageSharp.Processing.ProcessingExtensions.Dilate(this EasyImageSharp.Processing.IImageProcessingContext! context, int radius) -> EasyImageSharp.Processing.IImageProcessingContext!
 static EasyImageSharp.Processing.ProcessingExtensions.Dither(this EasyImageSharp.Processing.IImageProcessingContext! context, EasyImageSharp.Processing.Dithering.IDither! dither) -> EasyImageSharp.Processing.IImageProcessingContext!
-static EasyImageSharp.Processing.ProcessingExtensions.Dither(this EasyImageSharp.Processing.IImageProcessingContext! context, EasyImageSharp.Processing.Dithering.IDither! dither, System.ReadOnlyMemory<EasyImageSharp.Color> palette) -> EasyImageSharp.Processing.IImageProcessingContext!
 static EasyImageSharp.Processing.ProcessingExtensions.Dither(this EasyImageSharp.Processing.IImageProcessingContext! context, EasyImageSharp.Processing.Dithering.IDither! dither, float ditherScale) -> EasyImageSharp.Processing.IImageProcessingContext!
+static EasyImageSharp.Processing.ProcessingExtensions.Dither(this EasyImageSharp.Processing.IImageProcessingContext! context, EasyImageSharp.Processing.Dithering.IDither! dither, System.ReadOnlyMemory<EasyImageSharp.Color> palette) -> EasyImageSharp.Processing.IImageProcessingContext!
 static EasyImageSharp.Processing.ProcessingExtensions.DrawBoundingBoxes(this EasyImageSharp.Processing.IImageProcessingContext! context, System.Collections.Generic.IEnumerable<(EasyImageSharp.Rectangle Box, string? Label)>! boxes, EasyImageSharp.Color color, float thickness) -> EasyImageSharp.Processing.IImageProcessingContext!
 static EasyImageSharp.Processing.ProcessingExtensions.DrawBoundingBoxes(this EasyImageSharp.Processing.IImageProcessingContext! context, System.Collections.Generic.IEnumerable<(EasyImageSharp.Rectangle Box, string? Label)>! boxes, EasyImageSharp.Color color, float thickness, EasyImageSharp.Drawing.DrawingOptions! options) -> EasyImageSharp.Processing.IImageProcessingContext!
 static EasyImageSharp.Processing.ProcessingExtensions.DrawBoundingBoxes(this EasyImageSharp.Processing.IImageProcessingContext! context, System.Collections.Generic.IEnumerable<(EasyImageSharp.Rectangle Box, string? Label)>! boxes, EasyImageSharp.Color color, float thickness, EasyImageSharp.Drawing.TextOptions! labelOptions) -> EasyImageSharp.Processing.IImageProcessingContext!
@@ -2382,6 +2598,7 @@ static EasyImageSharp.Processing.ProcessingExtensions.Lightness(this EasyImageSh
 static EasyImageSharp.Processing.ProcessingExtensions.Lightness(this EasyImageSharp.Processing.IImageProcessingContext! context, float amount, EasyImageSharp.Rectangle rectangle) -> EasyImageSharp.Processing.IImageProcessingContext!
 static EasyImageSharp.Processing.ProcessingExtensions.Lomograph(this EasyImageSharp.Processing.IImageProcessingContext! context) -> EasyImageSharp.Processing.IImageProcessingContext!
 static EasyImageSharp.Processing.ProcessingExtensions.Lomograph(this EasyImageSharp.Processing.IImageProcessingContext! context, EasyImageSharp.Rectangle rectangle) -> EasyImageSharp.Processing.IImageProcessingContext!
+static EasyImageSharp.Processing.ProcessingExtensions.Mutate<TPixel>(this EasyImageSharp.Image<TPixel>! source, EasyImageSharp.ImageExecutionOptions! options, System.Action<EasyImageSharp.Processing.IImageProcessingContext!>! operation) -> void
 static EasyImageSharp.Processing.ProcessingExtensions.Mutate<TPixel>(this EasyImageSharp.Image<TPixel>! source, System.Action<EasyImageSharp.Processing.IImageProcessingContext!>! operation) -> void
 static EasyImageSharp.Processing.ProcessingExtensions.NiblackThreshold(this EasyImageSharp.Processing.IImageProcessingContext! context, int windowSize = 25, float k = -0.2) -> EasyImageSharp.Processing.IImageProcessingContext!
 static EasyImageSharp.Processing.ProcessingExtensions.NickThreshold(this EasyImageSharp.Processing.IImageProcessingContext! context, int windowSize = 25, float k = -0.1) -> EasyImageSharp.Processing.IImageProcessingContext!
@@ -2441,26 +2658,26 @@ static EasyImageSharp.Processing.StructuringElement.Square(int radius) -> EasyIm
 static EasyImageSharp.Rectangle.Ceiling(EasyImageSharp.RectangleF rectangle) -> EasyImageSharp.Rectangle
 static EasyImageSharp.Rectangle.FromLTRB(int left, int top, int right, int bottom) -> EasyImageSharp.Rectangle
 static EasyImageSharp.Rectangle.Intersect(EasyImageSharp.Rectangle a, EasyImageSharp.Rectangle b) -> EasyImageSharp.Rectangle
+static EasyImageSharp.Rectangle.operator !=(EasyImageSharp.Rectangle left, EasyImageSharp.Rectangle right) -> bool
+static EasyImageSharp.Rectangle.operator ==(EasyImageSharp.Rectangle left, EasyImageSharp.Rectangle right) -> bool
 static EasyImageSharp.Rectangle.Round(EasyImageSharp.RectangleF rectangle) -> EasyImageSharp.Rectangle
 static EasyImageSharp.Rectangle.Truncate(EasyImageSharp.RectangleF rectangle) -> EasyImageSharp.Rectangle
 static EasyImageSharp.Rectangle.Union(EasyImageSharp.Rectangle a, EasyImageSharp.Rectangle b) -> EasyImageSharp.Rectangle
-static EasyImageSharp.Rectangle.operator !=(EasyImageSharp.Rectangle left, EasyImageSharp.Rectangle right) -> bool
-static EasyImageSharp.Rectangle.operator ==(EasyImageSharp.Rectangle left, EasyImageSharp.Rectangle right) -> bool
 static EasyImageSharp.RectangleF.FromLTRB(float left, float top, float right, float bottom) -> EasyImageSharp.RectangleF
-static EasyImageSharp.RectangleF.Intersect(EasyImageSharp.RectangleF a, EasyImageSharp.RectangleF b) -> EasyImageSharp.RectangleF
-static EasyImageSharp.RectangleF.Union(EasyImageSharp.RectangleF a, EasyImageSharp.RectangleF b) -> EasyImageSharp.RectangleF
 static EasyImageSharp.RectangleF.implicit operator EasyImageSharp.RectangleF(EasyImageSharp.Rectangle rectangle) -> EasyImageSharp.RectangleF
+static EasyImageSharp.RectangleF.Intersect(EasyImageSharp.RectangleF a, EasyImageSharp.RectangleF b) -> EasyImageSharp.RectangleF
 static EasyImageSharp.RectangleF.operator !=(EasyImageSharp.RectangleF left, EasyImageSharp.RectangleF right) -> bool
 static EasyImageSharp.RectangleF.operator ==(EasyImageSharp.RectangleF left, EasyImageSharp.RectangleF right) -> bool
+static EasyImageSharp.RectangleF.Union(EasyImageSharp.RectangleF a, EasyImageSharp.RectangleF b) -> EasyImageSharp.RectangleF
 static EasyImageSharp.Size.Ceiling(EasyImageSharp.SizeF size) -> EasyImageSharp.Size
-static EasyImageSharp.Size.Round(EasyImageSharp.SizeF size) -> EasyImageSharp.Size
-static EasyImageSharp.Size.Truncate(EasyImageSharp.SizeF size) -> EasyImageSharp.Size
 static EasyImageSharp.Size.operator !=(EasyImageSharp.Size left, EasyImageSharp.Size right) -> bool
 static EasyImageSharp.Size.operator *(EasyImageSharp.Size size, int factor) -> EasyImageSharp.Size
 static EasyImageSharp.Size.operator *(int factor, EasyImageSharp.Size size) -> EasyImageSharp.Size
 static EasyImageSharp.Size.operator +(EasyImageSharp.Size left, EasyImageSharp.Size right) -> EasyImageSharp.Size
 static EasyImageSharp.Size.operator -(EasyImageSharp.Size left, EasyImageSharp.Size right) -> EasyImageSharp.Size
 static EasyImageSharp.Size.operator ==(EasyImageSharp.Size left, EasyImageSharp.Size right) -> bool
+static EasyImageSharp.Size.Round(EasyImageSharp.SizeF size) -> EasyImageSharp.Size
+static EasyImageSharp.Size.Truncate(EasyImageSharp.SizeF size) -> EasyImageSharp.Size
 static EasyImageSharp.SizeF.implicit operator EasyImageSharp.SizeF(EasyImageSharp.Size size) -> EasyImageSharp.SizeF
 static EasyImageSharp.SizeF.operator !=(EasyImageSharp.SizeF left, EasyImageSharp.SizeF right) -> bool
 static EasyImageSharp.SizeF.operator *(EasyImageSharp.SizeF size, float factor) -> EasyImageSharp.SizeF
@@ -2468,9 +2685,12 @@ static EasyImageSharp.SizeF.operator *(float factor, EasyImageSharp.SizeF size) 
 static EasyImageSharp.SizeF.operator +(EasyImageSharp.SizeF left, EasyImageSharp.SizeF right) -> EasyImageSharp.SizeF
 static EasyImageSharp.SizeF.operator -(EasyImageSharp.SizeF left, EasyImageSharp.SizeF right) -> EasyImageSharp.SizeF
 static EasyImageSharp.SizeF.operator ==(EasyImageSharp.SizeF left, EasyImageSharp.SizeF right) -> bool
+static EasyImageSharp.Tensors.ImageTensorExtensions.GetTensorResizeMapping<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.Processing.ResizeOptions! resizeOptions) -> EasyImageSharp.Tensors.TensorResizeMapping
+static EasyImageSharp.Tensors.ImageTensorExtensions.ResizeToTensor<TPixel>(this EasyImageSharp.Image<TPixel>! image, System.Span<float> destination, EasyImageSharp.Processing.ResizeOptions! resizeOptions, EasyImageSharp.Tensors.TensorWriteOptions? tensorOptions = null, System.ReadOnlySpan<float> channelMean = default(System.ReadOnlySpan<float>), System.ReadOnlySpan<float> channelStd = default(System.ReadOnlySpan<float>)) -> EasyImageSharp.Tensors.TensorResizeMapping
 static EasyImageSharp.Tensors.ImageTensorExtensions.ToChwTensor<TPixel>(this EasyImageSharp.Image<TPixel>! image, System.ReadOnlySpan<float> channelMean = default(System.ReadOnlySpan<float>), System.ReadOnlySpan<float> channelStd = default(System.ReadOnlySpan<float>)) -> float[]!
 static EasyImageSharp.Tensors.ImageTensorExtensions.ToGrayscaleTensor<TPixel>(this EasyImageSharp.Image<TPixel>! image, float mean = 0, float std = 1) -> float[]!
 static EasyImageSharp.Tensors.ImageTensorExtensions.ToHwcTensor<TPixel>(this EasyImageSharp.Image<TPixel>! image, System.ReadOnlySpan<float> channelMean = default(System.ReadOnlySpan<float>), System.ReadOnlySpan<float> channelStd = default(System.ReadOnlySpan<float>)) -> float[]!
+static EasyImageSharp.Tensors.ImageTensorExtensions.WriteTensor<TPixel>(this EasyImageSharp.Image<TPixel>! image, System.Span<float> destination, EasyImageSharp.Tensors.TensorWriteOptions? options = null, System.ReadOnlySpan<float> channelMean = default(System.ReadOnlySpan<float>), System.ReadOnlySpan<float> channelStd = default(System.ReadOnlySpan<float>)) -> void
 static EasyImageSharp.Tensors.TensorImage.FromChwTensor<TPixel>(System.ReadOnlySpan<float> tensor, int width, int height, System.ReadOnlySpan<float> channelMean = default(System.ReadOnlySpan<float>), System.ReadOnlySpan<float> channelStd = default(System.ReadOnlySpan<float>)) -> EasyImageSharp.Image<TPixel>!
 static EasyImageSharp.Tensors.TensorImage.FromGrayscaleTensor<TPixel>(System.ReadOnlySpan<float> tensor, int width, int height, float mean = 0, float std = 1) -> EasyImageSharp.Image<TPixel>!
 static readonly EasyImageSharp.Point.Empty -> EasyImageSharp.Point
@@ -2479,6 +2699,9 @@ static readonly EasyImageSharp.Rectangle.Empty -> EasyImageSharp.Rectangle
 static readonly EasyImageSharp.RectangleF.Empty -> EasyImageSharp.RectangleF
 static readonly EasyImageSharp.Size.Empty -> EasyImageSharp.Size
 static readonly EasyImageSharp.SizeF.Empty -> EasyImageSharp.SizeF
+virtual EasyImageSharp.Formats.ImageFormatMatcher.Invoke(System.ReadOnlySpan<byte> data) -> bool
 virtual EasyImageSharp.PixelAccessorAction<TPixel1, TPixel2, TPixel3>.Invoke(EasyImageSharp.PixelAccessor<TPixel1> pixelAccessor1, EasyImageSharp.PixelAccessor<TPixel2> pixelAccessor2, EasyImageSharp.PixelAccessor<TPixel3> pixelAccessor3) -> void
 virtual EasyImageSharp.PixelAccessorAction<TPixel1, TPixel2>.Invoke(EasyImageSharp.PixelAccessor<TPixel1> pixelAccessor1, EasyImageSharp.PixelAccessor<TPixel2> pixelAccessor2) -> void
 virtual EasyImageSharp.PixelAccessorAction<TPixel>.Invoke(EasyImageSharp.PixelAccessor<TPixel> pixelAccessor) -> void
+~override EasyImageSharp.Formats.Tiff.TiffRegion.Equals(object obj) -> bool
+~override EasyImageSharp.Formats.Tiff.TiffRegion.ToString() -> string

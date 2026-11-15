@@ -199,8 +199,17 @@ internal static class FilterOps
             TPixel upperPixel = TPixel.FromRgba32(Rgba32.White);
             TPixel lowerPixel = TPixel.FromRgba32(Rgba32.Black);
 
+            // Interior columns (whose window is not clipped horizontally) go through the vector kernels, which are
+            // bit-identical to the scalar formula below; the border columns and any remainder stay scalar.
+            int lastInterior = width - 1 - half;
+            bool vector = IntegralImageSimd.IsEnabled && lastInterior >= half;
+
             ParallelRowIterator.IterateRows(width, height, (start, end) =>
             {
+                double[]? means = vector ? new double[width] : null;
+                double[]? variances = vector ? new double[width] : null;
+                int[]? areas = vector ? new int[width] : null;
+                double[]? thresholds = vector ? new double[width] : null;
                 for (int y = start; y < end; y++)
                 {
                     int y1 = Math.Max(0, y - half);
@@ -210,8 +219,26 @@ internal static class FilterOps
                     int bottom = (y2 + 1) * stride;
                     Span<TPixel> destination = frame.GetRowSpan(y);
                     ReadOnlySpan<byte> values = luminance.AsSpan(y * width, width);
+                    int vectorStart = 0;
+                    int vectorEnd = 0;
+                    if (vector)
+                    {
+                        int statsEnd = IntegralImageSimd.InteriorRowStats(
+                            integral, integralSq, stride, height, y, half, half, lastInterior, means, variances, areas);
+                        int count = IntegralImageSimd.SauvolaThresholds(
+                            means.AsSpan(half, statsEnd - half), variances.AsSpan(half, statsEnd - half), k, R, thresholds.AsSpan(half, statsEnd - half));
+                        vectorStart = half;
+                        vectorEnd = half + count;
+                    }
+
                     for (int x = 0; x < width; x++)
                     {
+                        if (x >= vectorStart && x < vectorEnd)
+                        {
+                            destination[x] = values[x] > thresholds![x] ? upperPixel : lowerPixel;
+                            continue;
+                        }
+
                         int x1 = Math.Max(0, x - half);
                         int x2 = Math.Min(width - 1, x + half);
                         long area = (long)(x2 - x1 + 1) * rows;

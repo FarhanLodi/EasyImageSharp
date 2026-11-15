@@ -26,4 +26,14 @@
     <ProjectReference Include="..\..\src\EasyImageSharp\EasyImageSharp.csproj" />
   </ItemGroup>
 
+  <!--
+    The two inputs FeatureChecks cannot synthesise, compiled into the binary so the published executable still
+    runs with no files beside it: a Display P3 ICC profile and a DejaVu Sans subset (Bitstream Vera / Arev
+    licence, see tests/EasyImageSharp.Tests/Fonts/LICENSE-DejaVu.txt).
+  -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\tests\EasyImageSharp.Tests\Fixtures\colormanagement\display_p3_v4.icc" LogicalName="AotSmoke.display_p3_v4.icc" />
+    <EmbeddedResource Include="..\..\tests\EasyImageSharp.Tests\Fonts\DejaVuSans-Subset.ttf" LogicalName="AotSmoke.DejaVuSans-Subset.ttf" />
+  </ItemGroup>
+
 </Project>

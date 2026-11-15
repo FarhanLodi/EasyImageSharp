@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
     <PackageId>EasyImageSharp.SkiaSharp</PackageId>
-    <Version>1.2.0</Version>
+    <Version>1.3.0</Version>
     <Authors>Farhan Lodi</Authors>
     <Description>Optional native SkiaSharp interop, path drawing and HarfBuzz text shaping for EasyImageSharp.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -19,6 +19,14 @@
     <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <!--
+    Package validation runs on every `dotnet pack`: it compares the net8.0 and net10.0 assets with each other and
+    the package with the published 1.2.0 baseline, so a breaking change fails the pack instead of reaching NuGet.
+  -->
+  <PropertyGroup Label="Package validation">
+    <EnablePackageValidation>true</EnablePackageValidation>
+    <PackageValidationBaselineVersion>1.2.0</PackageValidationBaselineVersion>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../EasyImageSharp/EasyImageSharp.csproj" />

@@ -17,6 +17,8 @@ public readonly record struct ModelDownloadProgress(string FileName, long BytesD
 /// </summary>
 public sealed class ImageAiOptions
 {
+    private int maxBatchSize = ImageModelRunner.DefaultMaxBatchSize;
+
     /// <summary>Environment variable that overrides the default cache directory.</summary>
     public const string CacheEnvironmentVariable = "EASYIMAGESHARP_CACHE";
 
@@ -30,11 +32,48 @@ public sealed class ImageAiOptions
     public int DeviceId { get; set; }
 
     /// <summary>
-    /// Prefer the int8-quantised <c>{name}.int8.onnx</c> variant of a model when the registry publishes one
-    /// (or when one is already in the cache / supplied through <see cref="ModelPathOverrides"/>). Models
-    /// without a quantised variant silently use the fp32 file. Default <c>false</c>.
+    /// Prefer the int8-quantised <c>{name}.int8.onnx</c> variant of a model. Default <c>false</c>: the int8 file is
+    /// never used, even when it is in the cache.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// With <c>Quantize = true</c>, <see cref="ModelHub.ResolveAsync"/> looks for a model in this order: a
+    /// <see cref="ModelPathOverrides"/> entry keyed by the model name, by the int8 file name, then by the fp32 file
+    /// name; the int8 file in the cache; the int8 file downloaded and verified against
+    /// <see cref="ModelDescriptor.Int8Sha256"/> (or, with <see cref="AllowUnverifiedModels"/>, unverified from a mirror);
+    /// and finally the fp32 file (cache, then download). The fp32 file is used, with a <see cref="Log"/> message, when
+    /// the descriptor has no int8 variant, when the variant has no pinned checksum and unverified downloads are not
+    /// allowed, when <see cref="Offline"/> is set and only the fp32 file is cached, or when the server answers the int8
+    /// request with HTTP 404 / 410. Any other failure of the int8 download (checksum mismatch, policy, network) is
+    /// raised: it is never hidden by a silent switch to fp32. <see cref="ResolvedModel.IsQuantized"/> reports which
+    /// file was chosen.
+    /// </para>
+    /// <para>
+    /// The int8 files are static QDQ quantisations (per-channel int8 weights, uint8 activations) that were kept only
+    /// when they met a documented accuracy tolerance against the fp32 model (see <c>tools/ModelExport</c>). They are
+    /// smaller downloads (28% to 86% of the fp32 size for the current variants); they are not necessarily faster, especially on
+    /// CPUs without int8 dot-product instructions, so measure before switching for speed.
+    /// </para>
+    /// </remarks>
     public bool Quantize { get; set; }
+
+    /// <summary>
+    /// Upper bound on the inputs that the batch APIs (<see cref="ImageAiSession.RunImageToImageBatchAsync{TPixel}(IImageModel, IReadOnlyList{Image{TPixel}}, CancellationToken)"/>,
+    /// <see cref="ImageAiSession.DetectOrientationBatchAsync{TPixel}"/>) stack into one inference call. Default
+    /// <see cref="ImageModelRunner.DefaultMaxBatchSize"/> (8); 1 runs every input on its own. Models whose batch
+    /// dimension is fixed always run one input at a time. Larger batches trade memory for throughput, mostly on GPUs.
+    /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException">The value is less than 1 or greater than 1024.</exception>
+    public int MaxBatchSize
+    {
+        get => this.maxBatchSize;
+        set
+        {
+            ArgumentOutOfRangeException.ThrowIfLessThan(value, 1);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(value, 1024);
+            this.maxBatchSize = value;
+        }
+    }
 
     /// <summary>
     /// Strict offline mode: a model that is not in the cache (and not overridden) raises
@@ -117,6 +156,7 @@ public sealed class ImageAiOptions
             ExecutionProvider = this.ExecutionProvider,
             DeviceId = this.DeviceId,
             Quantize = this.Quantize,
+            MaxBatchSize = this.MaxBatchSize,
             Offline = this.Offline,
             CachePath = this.CachePath,
             BaseUrlOverride = this.BaseUrlOverride,

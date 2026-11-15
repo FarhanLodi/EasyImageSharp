@@ -188,5 +188,5 @@ public static partial class DocumentProcessingExtensions
 
     private static void Replace<TPixel>(ImageFrame<TPixel> destination, ImageFrame<TPixel> result)
         where TPixel : unmanaged, IPixel<TPixel>
-        => destination.ReplaceBuffer(result.PixelArray, result.Width, result.Height);
+        => destination.TakeBuffer(result);
 }

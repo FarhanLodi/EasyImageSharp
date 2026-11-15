@@ -29,13 +29,17 @@ public static partial class ProcessingExtensions
     public static IImageProcessingContext DrawRectangle(this IImageProcessingContext context, Color color, float thickness, RectangleF rectangle)
         => context.DrawRectangle(color, thickness, rectangle, DrawingOptions.Default);
 
-    /// <inheritdoc cref="IImageProcessingContext.DrawRectangle(Color, float, RectangleF, DrawingOptions)"/>
+    /// <inheritdoc cref="IImageProcessingContext.DrawRectangle(Pen, RectangleF, DrawingOptions)"/>
     public static IImageProcessingContext DrawRectangle(this IImageProcessingContext context, Pen pen, RectangleF rectangle)
-        => context.DrawRectangle(pen.Color, pen.Thickness, rectangle, DrawingOptions.Default);
+        => context.DrawRectangle(pen, rectangle, DrawingOptions.Default);
 
-    /// <inheritdoc cref="IImageProcessingContext.DrawRectangle(Color, float, RectangleF, DrawingOptions)"/>
+    /// <inheritdoc cref="IImageProcessingContext.DrawRectangle(Pen, RectangleF, DrawingOptions)"/>
+    /// <remarks>
+    /// Kept for callers compiled against earlier versions; source code now binds to the interface member of the same
+    /// signature.
+    /// </remarks>
     public static IImageProcessingContext DrawRectangle(this IImageProcessingContext context, Pen pen, RectangleF rectangle, DrawingOptions options)
-        => context.DrawRectangle(pen.Color, pen.Thickness, rectangle, options);
+        => context.DrawRectangle(pen, rectangle, options);
 
     // ----- Lines and polygons -----
 
@@ -47,9 +51,9 @@ public static partial class ProcessingExtensions
     public static IImageProcessingContext DrawLine(this IImageProcessingContext context, Color color, float thickness, PointF a, PointF b, DrawingOptions options)
         => context.DrawLines(color, thickness, [a, b], options);
 
-    /// <summary>Strokes the segment from <paramref name="a"/> to <paramref name="b"/> with <paramref name="pen"/>.</summary>
+    /// <summary>Strokes the segment from <paramref name="a"/> to <paramref name="b"/> with <paramref name="pen"/>, including its caps and dashes.</summary>
     public static IImageProcessingContext DrawLine(this IImageProcessingContext context, Pen pen, PointF a, PointF b)
-        => context.DrawLines(pen.Color, pen.Thickness, [a, b], DrawingOptions.Default);
+        => context.DrawLines(pen, [a, b], DrawingOptions.Default);
 
     /// <inheritdoc cref="IImageProcessingContext.DrawLines(Color, float, ReadOnlySpan{PointF}, DrawingOptions)"/>
     public static IImageProcessingContext DrawLines(this IImageProcessingContext context, Color color, float thickness, params PointF[] points)
@@ -65,11 +69,11 @@ public static partial class ProcessingExtensions
         return context.DrawLines(color, thickness, points, options);
     }
 
-    /// <inheritdoc cref="IImageProcessingContext.DrawLines(Color, float, ReadOnlySpan{PointF}, DrawingOptions)"/>
+    /// <inheritdoc cref="IImageProcessingContext.DrawLines(Pen, ReadOnlySpan{PointF}, DrawingOptions)"/>
     public static IImageProcessingContext DrawLines(this IImageProcessingContext context, Pen pen, params PointF[] points)
     {
         ArgumentNullException.ThrowIfNull(points);
-        return context.DrawLines(pen.Color, pen.Thickness, points, DrawingOptions.Default);
+        return context.DrawLines(pen, points.AsSpan(), DrawingOptions.Default);
     }
 
     /// <inheritdoc cref="IImageProcessingContext.DrawPolygon(Color, float, ReadOnlySpan{PointF}, DrawingOptions)"/>
@@ -86,11 +90,11 @@ public static partial class ProcessingExtensions
         return context.DrawPolygon(color, thickness, points, options);
     }
 
-    /// <inheritdoc cref="IImageProcessingContext.DrawPolygon(Color, float, ReadOnlySpan{PointF}, DrawingOptions)"/>
+    /// <inheritdoc cref="IImageProcessingContext.DrawPolygon(Pen, ReadOnlySpan{PointF}, DrawingOptions)"/>
     public static IImageProcessingContext DrawPolygon(this IImageProcessingContext context, Pen pen, params PointF[] points)
     {
         ArgumentNullException.ThrowIfNull(points);
-        return context.DrawPolygon(pen.Color, pen.Thickness, points, DrawingOptions.Default);
+        return context.DrawPolygon(pen, points.AsSpan(), DrawingOptions.Default);
     }
 
     /// <inheritdoc cref="IImageProcessingContext.FillPolygon(Color, ReadOnlySpan{PointF}, DrawingOptions)"/>
@@ -113,9 +117,9 @@ public static partial class ProcessingExtensions
     public static IImageProcessingContext DrawEllipse(this IImageProcessingContext context, Color color, float thickness, RectangleF bounds)
         => context.DrawEllipse(color, thickness, bounds, DrawingOptions.Default);
 
-    /// <inheritdoc cref="IImageProcessingContext.DrawEllipse(Color, float, RectangleF, DrawingOptions)"/>
+    /// <inheritdoc cref="IImageProcessingContext.DrawEllipse(Pen, RectangleF, DrawingOptions)"/>
     public static IImageProcessingContext DrawEllipse(this IImageProcessingContext context, Pen pen, RectangleF bounds)
-        => context.DrawEllipse(pen.Color, pen.Thickness, bounds, DrawingOptions.Default);
+        => context.DrawEllipse(pen, bounds, DrawingOptions.Default);
 
     /// <inheritdoc cref="IImageProcessingContext.FillEllipse(Color, RectangleF, DrawingOptions)"/>
     public static IImageProcessingContext FillEllipse(this IImageProcessingContext context, Color color, RectangleF bounds)
@@ -137,7 +141,7 @@ public static partial class ProcessingExtensions
 
     /// <summary>Strokes the circle of the given <paramref name="radius"/> around <paramref name="center"/> with <paramref name="pen"/>, inside the radius.</summary>
     public static IImageProcessingContext DrawCircle(this IImageProcessingContext context, Pen pen, PointF center, float radius)
-        => context.DrawEllipse(pen.Color, pen.Thickness, CircleBounds(center, radius), DrawingOptions.Default);
+        => context.DrawEllipse(pen, CircleBounds(center, radius), DrawingOptions.Default);
 
     /// <summary>Fills the disc of the given <paramref name="radius"/> around <paramref name="center"/>.</summary>
     public static IImageProcessingContext FillCircle(this IImageProcessingContext context, Color color, PointF center, float radius)

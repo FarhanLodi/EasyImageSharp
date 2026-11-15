@@ -1,0 +1,70 @@
+# libFuzzer/AFL dictionary for JPEG (ITU-T T.81 markers; JFIF, Exif, Adobe APP14, ICC APP2, XMP, MPF).
+
+SOI="\xff\xd8"
+EOI="\xff\xd9"
+SOS="\xff\xda"
+DQT="\xff\xdb"
+DNL="\xff\xdc"
+DRI="\xff\xdd"
+DHP="\xff\xde"
+EXP="\xff\xdf"
+DHT="\xff\xc4"
+DAC="\xff\xcc"
+COM="\xff\xfe"
+TEM="\xff\x01"
+stuffed_ff="\xff\x00"
+fill="\xff\xff"
+
+# Start-of-frame markers: baseline, extended, progressive, lossless, and the differential/arithmetic variants
+SOF0="\xff\xc0"
+SOF1="\xff\xc1"
+SOF2="\xff\xc2"
+SOF3="\xff\xc3"
+SOF5="\xff\xc5"
+SOF6="\xff\xc6"
+SOF7="\xff\xc7"
+JPG="\xff\xc8"
+SOF9="\xff\xc9"
+SOF10="\xff\xca"
+SOF11="\xff\xcb"
+SOF13="\xff\xcd"
+SOF14="\xff\xce"
+SOF15="\xff\xcf"
+
+# Restart markers
+RST0="\xff\xd0"
+RST1="\xff\xd1"
+RST2="\xff\xd2"
+RST3="\xff\xd3"
+RST4="\xff\xd4"
+RST5="\xff\xd5"
+RST6="\xff\xd6"
+RST7="\xff\xd7"
+
+# Application segments
+APP0="\xff\xe0"
+APP1="\xff\xe1"
+APP2="\xff\xe2"
+APP3="\xff\xe3"
+APP12="\xff\xec"
+APP13="\xff\xed"
+APP14="\xff\xee"
+APP15="\xff\xef"
+
+# Segment identifiers
+jfif="JFIF\x00"
+jfxx="JFXX\x00"
+exif="Exif\x00\x00"
+adobe="Adobe"
+icc="ICC_PROFILE\x00"
+xmp="http://ns.adobe.com/xap/1.0/\x00"
+xmp_ext="http://ns.adobe.com/xmp/extension/\x00"
+mpf="MPF\x00"
+photoshop="Photoshop 3.0\x00"
+
+# A plausible baseline SOF0: 8-bit, 16x16, three components, 4:2:0
+sof0_420="\xff\xc0\x00\x11\x08\x00\x10\x00\x10\x03\x01\x22\x00\x02\x11\x01\x03\x11\x01"
+
+# Segment lengths at the edges
+len_min="\x00\x02"
+len_max="\xff\xff"

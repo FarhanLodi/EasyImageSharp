@@ -1,4 +1,8 @@
 #nullable enable
+const EasyImageSharp.AI.ImageAiOptions.BaseUrlEnvironmentVariable = "EASYIMAGESHARP_MODEL_BASE_URL" -> string!
+const EasyImageSharp.AI.ImageAiOptions.CacheEnvironmentVariable = "EASYIMAGESHARP_CACHE" -> string!
+const EasyImageSharp.AI.ModelRegistry.DefaultBaseUrl = "https://huggingface.co/EasyImageSharp/EasyImageSharp-models/resolve/main" -> string!
+const EasyImageSharp.AI.ModelRegistry.PaddleOcrNetBaseUrl = "https://huggingface.co/PaddleOcrNet/PaddleOcrNet-models/resolve/main" -> string!
 EasyImageSharp.AI.AiImageExtensions
 EasyImageSharp.AI.AiProcessingExtensions
 EasyImageSharp.AI.BackgroundRemovalOptions
@@ -11,6 +15,42 @@ EasyImageSharp.AI.BackgroundRemovalOptions.CropToForeground.get -> bool
 EasyImageSharp.AI.BackgroundRemovalOptions.CropToForeground.set -> void
 EasyImageSharp.AI.BackgroundRemovalOptions.ForegroundThreshold.get -> float
 EasyImageSharp.AI.BackgroundRemovalOptions.ForegroundThreshold.set -> void
+EasyImageSharp.AI.DocumentAiPreprocessingOptions
+EasyImageSharp.AI.DocumentAiPreprocessingOptions.AutoOrient.get -> bool
+EasyImageSharp.AI.DocumentAiPreprocessingOptions.AutoOrient.set -> void
+EasyImageSharp.AI.DocumentAiPreprocessingOptions.Dewarp.get -> bool
+EasyImageSharp.AI.DocumentAiPreprocessingOptions.Dewarp.set -> void
+EasyImageSharp.AI.DocumentAiPreprocessingOptions.DewarpContract.get -> EasyImageSharp.AI.DocumentDewarpContract!
+EasyImageSharp.AI.DocumentAiPreprocessingOptions.DewarpContract.set -> void
+EasyImageSharp.AI.DocumentAiPreprocessingOptions.DocumentAiPreprocessingOptions() -> void
+EasyImageSharp.AI.DocumentAiPreprocessingOptions.MinimumOrientationConfidence.get -> float
+EasyImageSharp.AI.DocumentAiPreprocessingOptions.MinimumOrientationConfidence.set -> void
+EasyImageSharp.AI.DocumentAiPreprocessingOptions.Preprocessing.get -> EasyImageSharp.Processing.DocumentPreprocessingOptions!
+EasyImageSharp.AI.DocumentAiPreprocessingOptions.Preprocessing.set -> void
+EasyImageSharp.AI.DocumentAiProcessingExtensions
+EasyImageSharp.AI.DocumentDewarpContract
+EasyImageSharp.AI.DocumentDewarpContract.<Clone>$() -> EasyImageSharp.AI.DocumentDewarpContract!
+EasyImageSharp.AI.DocumentDewarpContract.Channels.get -> EasyImageSharp.Tensors.TensorChannels
+EasyImageSharp.AI.DocumentDewarpContract.Channels.init -> void
+EasyImageSharp.AI.DocumentDewarpContract.DocumentDewarpContract() -> void
+EasyImageSharp.AI.DocumentDewarpContract.Equals(EasyImageSharp.AI.DocumentDewarpContract? other) -> bool
+EasyImageSharp.AI.DocumentDewarpContract.FixedInputSize.get -> EasyImageSharp.Size
+EasyImageSharp.AI.DocumentDewarpContract.FixedInputSize.init -> void
+EasyImageSharp.AI.DocumentDewarpContract.GridAlignCorners.get -> bool
+EasyImageSharp.AI.DocumentDewarpContract.GridAlignCorners.init -> void
+EasyImageSharp.AI.DocumentDewarpContract.InputName.get -> string?
+EasyImageSharp.AI.DocumentDewarpContract.InputName.init -> void
+EasyImageSharp.AI.DocumentDewarpContract.MaximumInputPixels.get -> long
+EasyImageSharp.AI.DocumentDewarpContract.MaximumInputPixels.init -> void
+EasyImageSharp.AI.DocumentDewarpContract.OutputKind.get -> EasyImageSharp.AI.DocumentDewarpOutputKind
+EasyImageSharp.AI.DocumentDewarpContract.OutputKind.init -> void
+EasyImageSharp.AI.DocumentDewarpContract.OutputName.get -> string?
+EasyImageSharp.AI.DocumentDewarpContract.OutputName.init -> void
+EasyImageSharp.AI.DocumentDewarpContract.SizeMultiple.get -> int
+EasyImageSharp.AI.DocumentDewarpContract.SizeMultiple.init -> void
+EasyImageSharp.AI.DocumentDewarpOutputKind
+EasyImageSharp.AI.DocumentDewarpOutputKind.NormalizedSamplingGrid = 1 -> EasyImageSharp.AI.DocumentDewarpOutputKind
+EasyImageSharp.AI.DocumentDewarpOutputKind.RectifiedImage = 0 -> EasyImageSharp.AI.DocumentDewarpOutputKind
 EasyImageSharp.AI.ExecutionProvider
 EasyImageSharp.AI.ExecutionProvider.Auto = 0 -> EasyImageSharp.AI.ExecutionProvider
 EasyImageSharp.AI.ExecutionProvider.CoreML = 4 -> EasyImageSharp.AI.ExecutionProvider
@@ -104,11 +144,14 @@ EasyImageSharp.AI.ImageModelContract.TileOverlap.get -> int
 EasyImageSharp.AI.ImageModelContract.TileOverlap.init -> void
 EasyImageSharp.AI.ImageModelContract.TileSize.get -> int
 EasyImageSharp.AI.ImageModelContract.TileSize.init -> void
+EasyImageSharp.AI.ImageModelContract.UseBgrChannelOrder.get -> bool
+EasyImageSharp.AI.ImageModelContract.UseBgrChannelOrder.init -> void
 EasyImageSharp.AI.ImageModelContract.Validate() -> void
 EasyImageSharp.AI.ImageModelOutputKind
 EasyImageSharp.AI.ImageModelOutputKind.Image = 0 -> EasyImageSharp.AI.ImageModelOutputKind
 EasyImageSharp.AI.ImageModelOutputKind.Residual = 1 -> EasyImageSharp.AI.ImageModelOutputKind
 EasyImageSharp.AI.ImageModelRunner
+EasyImageSharp.AI.ImageModels
 EasyImageSharp.AI.ImageModelTask
 EasyImageSharp.AI.ImageModelTask.Binarization = 6 -> EasyImageSharp.AI.ImageModelTask
 EasyImageSharp.AI.ImageModelTask.Classification = 0 -> EasyImageSharp.AI.ImageModelTask
@@ -118,7 +161,6 @@ EasyImageSharp.AI.ImageModelTask.DocumentOrientation = 1 -> EasyImageSharp.AI.Im
 EasyImageSharp.AI.ImageModelTask.ImageToImage = 7 -> EasyImageSharp.AI.ImageModelTask
 EasyImageSharp.AI.ImageModelTask.Saliency = 5 -> EasyImageSharp.AI.ImageModelTask
 EasyImageSharp.AI.ImageModelTask.SuperResolution = 3 -> EasyImageSharp.AI.ImageModelTask
-EasyImageSharp.AI.ImageModels
 EasyImageSharp.AI.LocalImageModel
 EasyImageSharp.AI.LocalImageModel.Contract.get -> EasyImageSharp.AI.ImageModelContract!
 EasyImageSharp.AI.LocalImageModel.LocalImageModel(string! modelPath, EasyImageSharp.AI.ImageModelContract! contract, string? name = null) -> void
@@ -231,10 +273,9 @@ EasyImageSharp.AI.TensorNormalization.Mean.init -> void
 EasyImageSharp.AI.TensorNormalization.Std.get -> float[]!
 EasyImageSharp.AI.TensorNormalization.Std.init -> void
 EasyImageSharp.AI.TensorNormalization.TensorNormalization() -> void
-const EasyImageSharp.AI.ImageAiOptions.BaseUrlEnvironmentVariable = "EASYIMAGESHARP_MODEL_BASE_URL" -> string!
-const EasyImageSharp.AI.ImageAiOptions.CacheEnvironmentVariable = "EASYIMAGESHARP_CACHE" -> string!
-const EasyImageSharp.AI.ModelRegistry.DefaultBaseUrl = "https://huggingface.co/EasyImageSharp/EasyImageSharp-models/resolve/main" -> string!
-const EasyImageSharp.AI.ModelRegistry.PaddleOcrNetBaseUrl = "https://huggingface.co/PaddleOcrNet/PaddleOcrNet-models/resolve/main" -> string!
+override EasyImageSharp.AI.DocumentDewarpContract.Equals(object? obj) -> bool
+override EasyImageSharp.AI.DocumentDewarpContract.GetHashCode() -> int
+override EasyImageSharp.AI.DocumentDewarpContract.ToString() -> string!
 override EasyImageSharp.AI.ImageModelContract.Equals(object? obj) -> bool
 override EasyImageSharp.AI.ImageModelContract.GetHashCode() -> int
 override EasyImageSharp.AI.ImageModelContract.ToString() -> string!
@@ -273,6 +314,10 @@ static EasyImageSharp.AI.AiProcessingExtensions.RemoveBackground(this EasyImageS
 static EasyImageSharp.AI.AiProcessingExtensions.RemoveBackground(this EasyImageSharp.Processing.IImageProcessingContext! context, EasyImageSharp.AI.ImageAiSession! ai, EasyImageSharp.AI.BackgroundRemovalOptions! options) -> EasyImageSharp.Processing.IImageProcessingContext!
 static EasyImageSharp.AI.AiProcessingExtensions.Upscale(this EasyImageSharp.Processing.IImageProcessingContext! context, EasyImageSharp.AI.ImageAiSession! ai, int factor = 4) -> EasyImageSharp.Processing.IImageProcessingContext!
 static EasyImageSharp.AI.BackgroundRemovalOptions.Default.get -> EasyImageSharp.AI.BackgroundRemovalOptions!
+static EasyImageSharp.AI.DocumentAiProcessingExtensions.DewarpDocumentWithContractAsync<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageAiSession! ai, EasyImageSharp.AI.DocumentDewarpContract! contract, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+static EasyImageSharp.AI.DocumentAiProcessingExtensions.PreprocessDocumentAIAsync<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageAiSession! ai, EasyImageSharp.AI.DocumentAiPreprocessingOptions? options = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<EasyImageSharp.Processing.DocumentPreprocessingResult<TPixel>!>!
+static EasyImageSharp.AI.DocumentDewarpContract.operator !=(EasyImageSharp.AI.DocumentDewarpContract? left, EasyImageSharp.AI.DocumentDewarpContract? right) -> bool
+static EasyImageSharp.AI.DocumentDewarpContract.operator ==(EasyImageSharp.AI.DocumentDewarpContract? left, EasyImageSharp.AI.DocumentDewarpContract? right) -> bool
 static EasyImageSharp.AI.ImageModelContract.operator !=(EasyImageSharp.AI.ImageModelContract? left, EasyImageSharp.AI.ImageModelContract? right) -> bool
 static EasyImageSharp.AI.ImageModelContract.operator ==(EasyImageSharp.AI.ImageModelContract? left, EasyImageSharp.AI.ImageModelContract? right) -> bool
 static EasyImageSharp.AI.ImageModelRunner.Run<TPixel>(Microsoft.ML.OnnxRuntime.InferenceSession! session, EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageModelContract! contract, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> EasyImageSharp.Image<TPixel>!
@@ -303,10 +348,10 @@ static EasyImageSharp.AI.ResolvedModel.operator !=(EasyImageSharp.AI.ResolvedMod
 static EasyImageSharp.AI.ResolvedModel.operator ==(EasyImageSharp.AI.ResolvedModel? left, EasyImageSharp.AI.ResolvedModel? right) -> bool
 static EasyImageSharp.AI.TensorNormalization.Byte.get -> EasyImageSharp.AI.TensorNormalization!
 static EasyImageSharp.AI.TensorNormalization.ImageNet.get -> EasyImageSharp.AI.TensorNormalization!
-static EasyImageSharp.AI.TensorNormalization.Symmetric.get -> EasyImageSharp.AI.TensorNormalization!
-static EasyImageSharp.AI.TensorNormalization.Unit.get -> EasyImageSharp.AI.TensorNormalization!
 static EasyImageSharp.AI.TensorNormalization.operator !=(EasyImageSharp.AI.TensorNormalization? left, EasyImageSharp.AI.TensorNormalization? right) -> bool
 static EasyImageSharp.AI.TensorNormalization.operator ==(EasyImageSharp.AI.TensorNormalization? left, EasyImageSharp.AI.TensorNormalization? right) -> bool
+static EasyImageSharp.AI.TensorNormalization.Symmetric.get -> EasyImageSharp.AI.TensorNormalization!
+static EasyImageSharp.AI.TensorNormalization.Unit.get -> EasyImageSharp.AI.TensorNormalization!
 static readonly EasyImageSharp.AI.OrientationResult.ClassAngles -> int[]!
 ~override EasyImageSharp.AI.ModelDownloadProgress.Equals(object obj) -> bool
 ~override EasyImageSharp.AI.ModelDownloadProgress.ToString() -> string

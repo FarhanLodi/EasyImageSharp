@@ -39,14 +39,23 @@ different PNG compression bytes are allowed without accepting changed pixels or 
 | --- | --- |
 | `apng/` | Animated PNG: frame rectangles, dispose/blend combinations, delays, loop counts, and malformed `acTL`/`fcTL`/`fdAT` streams |
 | `bmp/` | BMP: every header version, bit depth, bitfield layout and RLE variant |
+| `colormanagement/` | ICC matrix/TRC profiles written byte by byte (Display P3, Adobe RGB, ProPhoto, sRGB table and parametric curves, plus LUT and grey negatives) and LittleCMS (Pillow `ImageCms`) reference conversions to sRGB, from `gen_colormanagement.py` |
+| `denoise/` | Edge-preserving filter references (brute-force bilateral, bilateral grid, guided filter) computed with NumPy, from `gen_denoise.py` |
 | `document/` | Document imaging: synthetic text pages for skew, orientation, line and hole-punch removal, despeckling, illumination correction, layout segmentation |
 | `drawing/` | Reference renderings for the annotation drawing tests, drawn with Pillow's `ImageDraw` |
 | `effects/` | Colour, convolution, compositing and histogram reference images, derived from fixed formulas |
+| `exr/` | OpenEXR, written by the reference library or copied from openexr-images; built by `exr/build_exr_fixtures.py`, not `generate.py` (see `exr/README.md`) |
 | `geometry/` | Resize kernels, affine and perspective warps |
 | `gif/` | GIF: static, interlaced, local palettes, transparency, animation and disposal |
+| `hdr/` | Radiance HDR assembled byte by byte by `gen_hdr.py`: every scanline encoding and orientation, XYZE, header variables, malformed files; `.f32` ground truth (`python gen_hdr.py --verify-opencv` cross-checks against OpenCV) |
+| `iptc/` | IPTC-IIM in JPEG APP13 Photoshop image resources and TIFF tags 33723/34377: UTF-8 and Latin-1 text, unknown records, extended datasets, split APP13, digests, and corrupt blocks, from `gen_iptc.py` |
 | `jpeg/` | Baseline, progressive, subsampled, restart-interval, CMYK and YCCK JPEG, plus libjpeg's own decode of each |
+| `jpeg12/` | 12-bit DCT JPEG from libjpeg-turbo, with libjpeg-turbo's decode as `.u16.gz`; built by `jpeg12/generate.py` (needs `imagecodecs`), not `generate.py` |
+| `jpeglossless/` | Lossless (SOF3) JPEG from libjpeg-turbo and a T.81 Annex H encoder, with exact ground truth; built by `jpeglossless/generate.py` (needs `imagecodecs`), not `generate.py` |
+| `lut/` | 3D colour lookup tables (`.cube`) with Pillow `Color3DLUT` and NumPy trilinear/tetrahedral references, from `gen_lut.py` |
 | `metadata/` | EXIF, orientation, DPI, ICC, XMP, PNG text chunks and GIF frame facts, across several container formats |
 | `png/` | PNG: every colour type and bit depth, Adam7, `tRNS`, ancillary chunks, filter cycles, odd geometries |
+| `quality/` | Reference PSNR, SSIM and MS-SSIM values computed with NumPy straight from the papers (cross-checked against scikit-image), from `gen_quality.py` |
 | `smallformats/tga/` | TGA: raw and RLE, 8/15/16/24/32-bit, palettes, origin flags, extension areas |
 | `smallformats/pbm/` | Netpbm: `P1`–`P7` (PBM, PGM, PPM, PAM), ASCII and binary, comments, out-of-range values |
 | `smallformats/qoi/` | QOI: each opcode path, RGB and RGBA, plus malformed headers |
@@ -73,6 +82,11 @@ The `.rgba` contract is exact: **raw RGBA8, top-left origin, no header, no paddi
 bytes, and a multi-frame fixture concatenates every frame in order**, so the file is `width * height * 4 *
 frames` bytes long. Frames are stored fully composited, as a viewer would show them, not as the on-the-wire
 frame rectangles.
+
+High-dynamic-range folders (`hdr/`, `exr/`) use a `.f32` sibling instead: **raw little-endian float32 RGBA,
+row-major, top-left origin, no header**, so the file is `width * height * 16` bytes long. For EXR the array
+covers the data window, and only the small generated fixtures carry a `.f32`; every EXR entry records
+`sha256_f32` instead (see `exr/README.md`).
 
 `manifest.json` is a JSON array of entries in most folders (`name`, `file`, `width`, `height`, `frames`,
 `notes`, plus per-format header facts, and `expect` naming the exception type a decoder must throw for a

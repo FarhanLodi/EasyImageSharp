@@ -1,0 +1,67 @@
+# libFuzzer/AFL dictionary for PNG and APNG (PNG specification third edition; APNG 1.0).
+# Chunk types are written bare and, for the ones whose length is fixed, with that length in front.
+
+signature="\x89PNG\x0d\x0a\x1a\x0a"
+ihdr_13="\x00\x00\x00\x0dIHDR"
+iend_chunk="\x00\x00\x00\x00IEND\xaeB`\x82"
+
+# Critical chunks
+IHDR="IHDR"
+PLTE="PLTE"
+IDAT="IDAT"
+IEND="IEND"
+
+# Ancillary chunks
+tRNS="tRNS"
+cHRM="cHRM"
+gAMA="gAMA"
+iCCP="iCCP"
+sBIT="sBIT"
+sRGB="sRGB"
+cICP="cICP"
+mDCV="mDCV"
+cLLI="cLLI"
+tEXt="tEXt"
+zTXt="zTXt"
+iTXt="iTXt"
+bKGD="bKGD"
+hIST="hIST"
+pHYs="pHYs"
+sPLT="sPLT"
+eXIf="eXIf"
+tIME="tIME"
+oFFs="oFFs"
+pCAL="pCAL"
+sCAL="sCAL"
+sTER="sTER"
+dSIG="dSIG"
+gIFg="gIFg"
+gIFx="gIFx"
+iDOT="iDOT"
+CgBI="CgBI"
+
+# APNG
+acTL="acTL"
+fcTL="fcTL"
+fdAT="fdAT"
+actl_8="\x00\x00\x00\x08acTL"
+fctl_26="\x00\x00\x00\x1afcTL"
+
+# zlib stream headers (CMF/FLG) for each compression level, and a final stored-block header
+zlib_fastest="\x78\x01"
+zlib_fast="\x78\x5e"
+zlib_default="\x78\x9c"
+zlib_best="\x78\xda"
+deflate_stored_final="\x01\x00\x00\xff\xff"
+
+# Well-known keywords for tEXt/zTXt/iTXt
+kw_xmp="XML:com.adobe.xmp"
+kw_raw_exif="Raw profile type exif"
+kw_comment="Comment"
+
+# Lengths, widths and heights at the edges
+len_max="\x7f\xff\xff\xff"
+len_neg="\xff\xff\xff\xff"
+dim_zero="\x00\x00\x00\x00"
+dim_one="\x00\x00\x00\x01"
+dim_big="\x00\x01\x00\x00"

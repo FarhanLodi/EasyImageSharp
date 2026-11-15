@@ -14,7 +14,7 @@ internal interface ICoverageSink
 }
 
 /// <summary>
-/// Scanline coverage rasteriser for unions of polygons under the non-zero winding rule.
+/// Scanline coverage rasteriser for polygons under the non-zero or even-odd fill rule.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -25,7 +25,14 @@ internal interface ICoverageSink
 /// </para>
 /// <para>
 /// Polygons added with <see cref="AddPolygon"/> are normalised to a common orientation so overlapping pieces
-/// simply union; pass <c>hole: true</c> to subtract a polygon (rings, outlines).
+/// simply union; pass <c>hole: true</c> to subtract a polygon (rings, outlines). Contours added with
+/// <see cref="AddContour"/> keep the direction they were drawn in, which is what path filling needs: under the
+/// non-zero rule a figure drawn the other way round cuts a hole.
+/// </para>
+/// <para>
+/// Coordinates beyond +/-2^22 pixels cannot be represented on the fixed-point grid; polygons reaching that
+/// far are clipped to the representable square in double precision first, which leaves the winding number of
+/// every representable point unchanged.
 /// </para>
 /// </remarks>
 internal sealed class PolygonRasterizer
@@ -61,6 +68,14 @@ internal sealed class PolygonRasterizer
             return;
         }
 
+        if (NeedsGuardClip(points))
+        {
+            // The orientation is decided on the original polygon; clipping does not change it.
+            int sign = SignedArea(points) >= 0 ? 1 : -1;
+            this.AddSnapped(ClipToGuard(points), hole ? -sign : sign);
+            return;
+        }
+
         double area = 0;
         for (int i = 0, j = n - 1; i < n; j = i++)
         {
@@ -85,19 +100,48 @@ internal sealed class PolygonRasterizer
         }
     }
 
-    /// <summary>Rasterises the accumulated polygons clipped to a <paramref name="width"/> x <paramref name="height"/> frame.</summary>
-    public void Rasterize<TSink>(int width, int height, bool antialias, ref TSink sink)
-        where TSink : struct, ICoverageSink
+    /// <summary>
+    /// Adds a closed contour exactly as drawn: its direction is kept, so under <see cref="FillRule.NonZero"/>
+    /// contours drawn in opposite directions cancel where they overlap. Fewer than three points add nothing.
+    /// </summary>
+    public void AddContour(ReadOnlySpan<PointD> points)
     {
-        if (this.edgeCount == 0)
+        if (points.Length < 3)
         {
             return;
         }
 
-        int rowStart = Math.Max(0, this.minY >> FixedBits);
-        int rowEnd = Math.Min(height, (this.maxY + Mask) >> FixedBits);
-        int colStart = Math.Max(0, this.minX >> FixedBits);
-        int colEnd = Math.Min(width, (this.maxX + Mask) >> FixedBits);
+        this.AddSnapped(NeedsGuardClip(points) ? ClipToGuard(points) : points, 1);
+    }
+
+    /// <summary>Rasterises the accumulated polygons clipped to a <paramref name="width"/> x <paramref name="height"/> frame.</summary>
+    public void Rasterize<TSink>(int width, int height, bool antialias, ref TSink sink)
+        where TSink : struct, ICoverageSink
+        => this.Rasterize(new Rectangle(0, 0, width, height), antialias, FillRule.NonZero, ref sink);
+
+    /// <summary>Rasterises the accumulated polygons under <paramref name="fillRule"/>, clipped to a <paramref name="width"/> x <paramref name="height"/> frame.</summary>
+    public void Rasterize<TSink>(int width, int height, bool antialias, FillRule fillRule, ref TSink sink)
+        where TSink : struct, ICoverageSink
+        => this.Rasterize(new Rectangle(0, 0, width, height), antialias, fillRule, ref sink);
+
+    /// <summary>
+    /// Rasterises the accumulated polygons under <paramref name="fillRule"/>, producing coverage only for the
+    /// pixels inside <paramref name="clip"/>, which the caller keeps inside the frame. The coverage of those
+    /// pixels is identical to rasterising the whole frame.
+    /// </summary>
+    public void Rasterize<TSink>(Rectangle clip, bool antialias, FillRule fillRule, ref TSink sink)
+        where TSink : struct, ICoverageSink
+    {
+        if (this.edgeCount == 0 || clip.Width <= 0 || clip.Height <= 0)
+        {
+            return;
+        }
+
+        bool evenOdd = fillRule == FillRule.EvenOdd;
+        int rowStart = Math.Max(clip.Y, this.minY >> FixedBits);
+        int rowEnd = Math.Min(clip.Y + clip.Height, (this.maxY + Mask) >> FixedBits);
+        int colStart = Math.Max(clip.X, this.minX >> FixedBits);
+        int colEnd = Math.Min(clip.X + clip.Width, (this.maxX + Mask) >> FixedBits);
         if (rowStart >= rowEnd || colStart >= colEnd)
         {
             return;
@@ -131,6 +175,11 @@ internal sealed class PolygonRasterizer
 
         for (int y = rowStart; y < rowEnd; y++)
         {
+            if (((y - rowStart) & 63) == 0)
+            {
+                OperationExecution.Checkpoint();
+            }
+
             Array.Clear(cover);
             Array.Clear(delta);
             bool touched = false;
@@ -185,11 +234,13 @@ internal sealed class PolygonRasterizer
                     long x = key >> 1;
                     int previous = winding;
                     winding += (key & 1) != 0 ? 1 : -1;
-                    if (previous == 0)
+                    bool wasInside = evenOdd ? (previous & 1) != 0 : previous != 0;
+                    bool isInside = evenOdd ? (winding & 1) != 0 : winding != 0;
+                    if (!wasInside)
                     {
                         spanStart = x;
                     }
-                    else if (winding == 0)
+                    else if (!isInside)
                     {
                         long xa = Math.Max(spanStart, clipMin) - clipMin;
                         long xb = Math.Min(x, clipMax) - clipMin;
@@ -272,6 +323,117 @@ internal sealed class PolygonRasterizer
             {
                 sink.Blend(y, colStart + first, rowCoverage.AsSpan(first, last - first + 1));
             }
+        }
+    }
+
+    /// <summary>Snaps and adds the edges of a closed polygon; <paramref name="orientation"/> is +1 to keep its direction, -1 to reverse it.</summary>
+    private void AddSnapped(ReadOnlySpan<PointD> points, int orientation)
+    {
+        int n = points.Length;
+        if (n < 3)
+        {
+            return;
+        }
+
+        int prevX = Snap(points[n - 1].X);
+        int prevY = Snap(points[n - 1].Y);
+        for (int i = 0; i < n; i++)
+        {
+            int x = Snap(points[i].X);
+            int y = Snap(points[i].Y);
+            this.AddEdge(prevX, prevY, x, y, orientation);
+            prevX = x;
+            prevY = y;
+        }
+    }
+
+    private static double SignedArea(ReadOnlySpan<PointD> points)
+    {
+        double area = 0;
+        for (int i = 0, j = points.Length - 1; i < points.Length; j = i++)
+        {
+            area += (points[j].X * points[i].Y) - (points[i].X * points[j].Y);
+        }
+
+        return area;
+    }
+
+    /// <summary>Whether a finite coordinate lies beyond the fixed-point range (NaN is left to <see cref="Snap"/>, as before).</summary>
+    private static bool NeedsGuardClip(ReadOnlySpan<PointD> points)
+    {
+        foreach (PointD p in points)
+        {
+            if (Math.Abs(p.X) > MaxCoordinate || Math.Abs(p.Y) > MaxCoordinate)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Sutherland-Hodgman clipping of a closed polygon against the square of representable coordinates. The
+    /// result runs along the square's border where the polygon left it, so every point inside the square keeps
+    /// its winding number.
+    /// </summary>
+    private static PointD[] ClipToGuard(ReadOnlySpan<PointD> points)
+    {
+        var current = new List<PointD>(points.Length + 8);
+        foreach (PointD p in points)
+        {
+            // NaN snaps to 0 as on the unclipped path; infinities are pulled in so intersections stay finite.
+            current.Add(new PointD(
+                double.IsNaN(p.X) ? 0 : Math.Clamp(p.X, -1e300, 1e300),
+                double.IsNaN(p.Y) ? 0 : Math.Clamp(p.Y, -1e300, 1e300)));
+        }
+
+        var next = new List<PointD>(points.Length + 8);
+        for (int side = 0; side < 4 && current.Count > 0; side++)
+        {
+            next.Clear();
+            for (int i = 0; i < current.Count; i++)
+            {
+                PointD a = current[i == 0 ? current.Count - 1 : i - 1];
+                PointD b = current[i];
+                bool aIn = Inside(a, side);
+                bool bIn = Inside(b, side);
+                if (aIn != bIn)
+                {
+                    next.Add(Intersect(a, b, side));
+                }
+
+                if (bIn)
+                {
+                    next.Add(b);
+                }
+            }
+
+            (current, next) = (next, current);
+        }
+
+        return current.ToArray();
+
+        static bool Inside(PointD p, int side) => side switch
+        {
+            0 => p.X >= -MaxCoordinate,
+            1 => p.X <= MaxCoordinate,
+            2 => p.Y >= -MaxCoordinate,
+            _ => p.Y <= MaxCoordinate,
+        };
+
+        static PointD Intersect(PointD a, PointD b, int side)
+        {
+            if (side < 2)
+            {
+                double x = side == 0 ? -MaxCoordinate : MaxCoordinate;
+                double t = (x - a.X) / (b.X - a.X);
+                return new PointD(x, a.Y + ((b.Y - a.Y) * t));
+            }
+
+            double y = side == 2 ? -MaxCoordinate : MaxCoordinate;
+            double u = (y - a.Y) / (b.Y - a.Y);
+            return new PointD(a.X + ((b.X - a.X) * u), y);
         }
     }
 

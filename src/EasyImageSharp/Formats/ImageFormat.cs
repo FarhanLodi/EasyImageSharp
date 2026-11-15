@@ -83,6 +83,8 @@ public sealed partial class ImageFormat
         Ico,
         Gif,
         Webp,
+        Hdr,
+        Exr,
         Tga,
     };
 

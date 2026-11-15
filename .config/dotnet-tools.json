@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "docfx": {
+      "version": "2.81.0",
+      "commands": [
+        "docfx"
+      ],
+      "rollForward": false
+    },
+    "cyclonedx": {
+      "version": "6.3.1",
+      "commands": [
+        "dotnet-CycloneDX"
+      ],
+      "rollForward": false
+    }
+  }
+}

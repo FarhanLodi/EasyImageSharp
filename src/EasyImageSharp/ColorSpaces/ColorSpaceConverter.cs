@@ -36,9 +36,7 @@ public static class ColorSpaceConverter
     public static Vector3 XyzToSrgb(Vector3 xyz)
     {
         Finite(xyz);
-        return LinearToSrgb(new((3.24096994f * xyz.X) - (1.53738318f * xyz.Y) - (0.49861076f * xyz.Z),
-            (-0.96924364f * xyz.X) + (1.8759675f * xyz.Y) + (0.04155506f * xyz.Z),
-            (0.05563008f * xyz.X) - (0.20397696f * xyz.Y) + (1.05697151f * xyz.Z)));
+        return LinearToSrgb(XyzToLinearSrgbCore(xyz));
     }
 
     /// <summary>Converts D65 XYZ to D65 CIELAB (L*, a*, b*).</summary>
@@ -120,10 +118,29 @@ public static class ColorSpaceConverter
     public static Vector3 XyzD50ToD65(Vector3 xyz)
     {
         Finite(xyz);
-        return new((0.9554734f * xyz.X) - (0.02309854f * xyz.Y) + (0.06325931f * xyz.Z),
+        return XyzD50ToD65Core(xyz);
+    }
+
+    /// <summary>
+    /// The D50 XYZ to encoded sRGB chain of <see cref="XyzD50ToD65"/> followed by <see cref="XyzToSrgb"/>, without
+    /// the finiteness checks, for per-pixel loops whose inputs are finite by construction. Bit-identical to the
+    /// checked chain for finite input.
+    /// </summary>
+    internal static Vector3 XyzD50ToSrgbCore(Vector3 xyz)
+    {
+        Vector3 linear = XyzToLinearSrgbCore(XyzD50ToD65Core(xyz));
+        return new(Encode(linear.X), Encode(linear.Y), Encode(linear.Z));
+    }
+
+    private static Vector3 XyzD50ToD65Core(Vector3 xyz)
+        => new((0.9554734f * xyz.X) - (0.02309854f * xyz.Y) + (0.06325931f * xyz.Z),
             (-0.02836971f * xyz.X) + (1.0099955f * xyz.Y) + (0.0210414f * xyz.Z),
             (0.012314f * xyz.X) - (0.0205077f * xyz.Y) + (1.3303659f * xyz.Z));
-    }
+
+    private static Vector3 XyzToLinearSrgbCore(Vector3 xyz)
+        => new((3.24096994f * xyz.X) - (1.53738318f * xyz.Y) - (0.49861076f * xyz.Z),
+            (-0.96924364f * xyz.X) + (1.8759675f * xyz.Y) + (0.04155506f * xyz.Z),
+            (0.05563008f * xyz.X) - (0.20397696f * xyz.Y) + (1.05697151f * xyz.Z));
 
     private static float Decode(float v) => MathF.CopySign(MathF.Abs(v) <= 0.04045f ? MathF.Abs(v) / 12.92f : MathF.Pow((MathF.Abs(v) + 0.055f) / 1.055f, 2.4f), v);
     private static float Encode(float v) => MathF.CopySign(MathF.Abs(v) <= 0.0031308f ? MathF.Abs(v) * 12.92f : (1.055f * MathF.Pow(MathF.Abs(v), 1 / 2.4f)) - 0.055f, v);

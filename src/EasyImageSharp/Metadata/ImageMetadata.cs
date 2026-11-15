@@ -2,12 +2,13 @@ using System.Diagnostics.CodeAnalysis;
 using EasyImageSharp.Formats;
 using EasyImageSharp.Metadata.Exif;
 using EasyImageSharp.Metadata.Icc;
+using EasyImageSharp.Metadata.Iptc;
 using EasyImageSharp.Metadata.Xmp;
 
 namespace EasyImageSharp.Metadata;
 
 /// <summary>
-/// Image-level metadata: physical resolution, EXIF/ICC/XMP profiles, the format the image was decoded from,
+/// Image-level metadata: physical resolution, EXIF/ICC/XMP/IPTC profiles, the format the image was decoded from,
 /// and format-specific containers (<see cref="GetJpegMetadata"/>, <see cref="GetPngMetadata"/>, ...). Decoders
 /// populate it; encoders write what they can represent; <c>Clone</c>/<c>CloneAs</c> deep-copy it.
 /// </summary>
@@ -36,6 +37,8 @@ public sealed class ImageMetadata : IDeepCloneable<ImageMetadata>
         this.ExifProfile = other.ExifProfile?.DeepClone();
         this.IccProfile = other.IccProfile?.DeepClone();
         this.XmpProfile = other.XmpProfile?.DeepClone();
+        this.IptcProfile = other.IptcProfile?.DeepClone();
+        this.PhotoshopResources = other.PhotoshopResources?.DeepClone();
         this.DecodedImageFormat = other.DecodedImageFormat;
         foreach (KeyValuePair<Type, IFormatMetadata> pair in other.formatMetadata)
         {
@@ -84,6 +87,19 @@ public sealed class ImageMetadata : IDeepCloneable<ImageMetadata>
 
     /// <summary>The embedded XMP packet, or <see langword="null"/>.</summary>
     public XmpProfile? XmpProfile { get; set; }
+
+    /// <summary>
+    /// The IPTC-IIM metadata (captions, keywords, credits, copyright), or <see langword="null"/>. Read from and
+    /// written to JPEG APP13 (Photoshop image resource 0x0404) and TIFF tag 33723; other formats do not carry it.
+    /// </summary>
+    public IptcProfile? IptcProfile { get; set; }
+
+    /// <summary>
+    /// The Photoshop image resources other than IPTC (JPEG APP13, TIFF tag 34377), kept so they survive a re-encode,
+    /// or <see langword="null"/>. Set to <see langword="null"/> to drop them; see <see cref="Iptc.PhotoshopResources"/>
+    /// for how encoders combine them with <see cref="IptcProfile"/>.
+    /// </summary>
+    public PhotoshopResources? PhotoshopResources { get; set; }
 
     /// <summary>The format the image was decoded from, or <see langword="null"/> for images created in memory.</summary>
     public ImageFormat? DecodedImageFormat { get; internal set; }

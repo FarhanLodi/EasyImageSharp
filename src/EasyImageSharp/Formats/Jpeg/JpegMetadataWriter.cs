@@ -2,12 +2,14 @@ using System.Buffers.Binary;
 using System.Text;
 using EasyImageSharp.Metadata;
 using EasyImageSharp.Metadata.Exif;
+using EasyImageSharp.Metadata.Iptc;
 
 namespace EasyImageSharp.Formats.Jpeg;
 
 /// <summary>
 /// Writes the metadata segments of a JPEG file: APP0 JFIF (with the density taken from the image resolution),
-/// APP1 EXIF, APP1 XMP, APP2 ICC (chunked at 65 519 bytes) and COM comments.
+/// APP1 EXIF, APP1 XMP, APP2 ICC (chunked at 65 519 bytes), APP13 Photoshop image resources carrying the IPTC
+/// profile (chunked at 65 519 bytes) and COM comments.
 /// </summary>
 internal static class JpegMetadataWriter
 {
@@ -20,8 +22,9 @@ internal static class JpegMetadataWriter
     private static readonly byte[] ExifIdentifier = { (byte)'E', (byte)'x', (byte)'i', (byte)'f', 0, 0 };
     private static readonly byte[] XmpIdentifier = Encoding.ASCII.GetBytes("http://ns.adobe.com/xap/1.0/\0");
     private static readonly byte[] IccIdentifier = Encoding.ASCII.GetBytes("ICC_PROFILE\0");
+    private static readonly byte[] PhotoshopIdentifier = Encoding.ASCII.GetBytes("Photoshop 3.0\0");
 
-    /// <summary>Writes APP0 (JFIF), APP1 (EXIF, XMP), APP2 (ICC) and COM segments right after the SOI marker.</summary>
+    /// <summary>Writes APP0 (JFIF), APP1 (EXIF, XMP), APP2 (ICC), APP13 (Photoshop/IPTC) and COM segments right after the SOI marker.</summary>
     /// <param name="stream">The stream positioned just after the SOI marker.</param>
     /// <param name="metadata">The metadata to write.</param>
     /// <param name="writeJfif">
@@ -88,6 +91,8 @@ internal static class JpegMetadataWriter
             }
         }
 
+        WritePhotoshopResources(stream, metadata);
+
         if (metadata.TryGetFormatMetadata(out JpegMetadata? jpeg))
         {
             foreach (string comment in jpeg.Comments)
@@ -125,6 +130,53 @@ internal static class JpegMetadataWriter
         BinaryPrimitives.WriteUInt16BigEndian(payload.AsSpan(8), xd);
         BinaryPrimitives.WriteUInt16BigEndian(payload.AsSpan(10), yd);
         return payload;
+    }
+
+    /// <summary>
+    /// Writes the Photoshop image resource block, with the IPTC profile as resource 0x0404, as one or more APP13
+    /// segments each led by the "Photoshop 3.0\0" identifier. Resources are packed whole into segments, so readers
+    /// that parse every segment on its own still see complete resources; only a resource too large for any single
+    /// segment is split, and readers that join consecutive segments (as this library's reader does) reassemble it.
+    /// </summary>
+    private static void WritePhotoshopResources(Stream stream, ImageMetadata metadata)
+    {
+        byte[]? iim = metadata.IptcProfile?.ToByteArray();
+        PhotoshopResources? block = PhotoshopResources.Compose(
+            metadata.PhotoshopResources, metadata.IptcProfile, iim, metadata.XmpProfile is not null, embedIptc: true);
+        if (block is null)
+        {
+            return;
+        }
+
+        int maxChunk = MaxSegmentPayload - PhotoshopIdentifier.Length;
+        using var segment = new MemoryStream();
+        foreach (PhotoshopResource resource in block.Resources)
+        {
+            var bytes = new byte[resource.SerializedLength];
+            resource.WriteTo(bytes);
+            if (segment.Length > 0 && segment.Length + bytes.Length > maxChunk)
+            {
+                WriteSegment(stream, 0xED, Concat(PhotoshopIdentifier, segment.ToArray()));
+                segment.SetLength(0);
+            }
+
+            int offset = 0;
+            while (bytes.Length - offset > maxChunk - segment.Length)
+            {
+                int take = maxChunk - (int)segment.Length;
+                segment.Write(bytes, offset, take);
+                offset += take;
+                WriteSegment(stream, 0xED, Concat(PhotoshopIdentifier, segment.ToArray()));
+                segment.SetLength(0);
+            }
+
+            segment.Write(bytes, offset, bytes.Length - offset);
+        }
+
+        if (segment.Length > 0)
+        {
+            WriteSegment(stream, 0xED, Concat(PhotoshopIdentifier, segment.ToArray()));
+        }
     }
 
     private static byte[] Concat(byte[] prefix, ReadOnlySpan<byte> data)

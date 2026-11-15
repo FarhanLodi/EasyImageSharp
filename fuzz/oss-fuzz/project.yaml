@@ -1,0 +1,18 @@
+# OSS-Fuzz project definition for EasyImageSharp. PREPARED, NOT SUBMITTED: see fuzz/README.md ("OSS-Fuzz") for what
+# has to happen before this can go to https://github.com/google/oss-fuzz/tree/master/projects/easyimagesharp.
+#
+# OSS-Fuzz has no .NET language. The fuzz targets are libfuzzer-dotnet drivers, compiled from C++ by build.sh with
+# OSS-Fuzz's own clang and $LIB_FUZZING_ENGINE, each driving the SharpFuzz-instrumented managed harness through a
+# wrapper script; "c++" is therefore the closest language value. libFuzzer is the only engine the driver supports
+# (it reports coverage through libFuzzer's extra counters), and AddressSanitizer is enabled only because OSS-Fuzz
+# requires a sanitizer: the code under test is managed and gets its memory safety from the runtime.
+homepage: "https://github.com/FarhanLodi/EasyImageSharp"
+main_repo: "https://github.com/FarhanLodi/EasyImageSharp"
+language: c++
+# TODO(owner): a maintainer address that can receive OSS-Fuzz bug reports (it must be tied to a Google account).
+primary_contact: "REPLACE-WITH-MAINTAINER-EMAIL"
+auto_ccs: []
+fuzzing_engines:
+  - libfuzzer
+sanitizers:
+  - address

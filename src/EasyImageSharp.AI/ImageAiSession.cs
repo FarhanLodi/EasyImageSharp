@@ -9,7 +9,8 @@ namespace EasyImageSharp.AI;
 /// lazily created ONNX Runtime <see cref="InferenceSession"/>s, one per model file, shared by every operation
 /// and every image. Create one per application (or per distinct configuration), pass it to the
 /// <c>Image</c> / <c>IImageProcessingContext</c> extension methods, and dispose it on shutdown.
-/// Thread-safe: sessions can be used from many threads at once.
+/// Thread-safe: sessions can be used from many threads at once, and every call (single or batched) owns its own
+/// staging buffers, so concurrent calls never share mutable state.
 /// </summary>
 public sealed class ImageAiSession : IDisposable
 {
@@ -57,6 +58,12 @@ public sealed class ImageAiSession : IDisposable
     /// Downloads (if needed) and loads every registry model that can be resolved with the current options, so the
     /// first call of each operation pays no cold-start cost. Placeholders without a checksum or override are skipped.
     /// </summary>
+    /// <remarks>
+    /// This fetches every published model, including the large ones (CLIP embeddings, LaMa inpainting and U2-Net
+    /// background removal): about 830 MB of fp32 files on a cold cache. A service that uses only some
+    /// operations should warm those with <see cref="WarmUpAsync(IEnumerable{ModelDescriptor}, CancellationToken)"/>,
+    /// for example <c>WarmUpAsync([ModelRegistry.DocumentOrientation, ModelRegistry.FaceDetection])</c>.
+    /// </remarks>
     public Task WarmUpAsync(CancellationToken cancellationToken = default)
         => this.WarmUpAsync(ModelRegistry.All.Where(this.Hub.CanResolve), cancellationToken);
 
@@ -170,6 +177,67 @@ public sealed class ImageAiSession : IDisposable
         return ImageModelRunner.Run(session, image, model.Contract, cancellationToken);
     }
 
+    // ----- Batched inference -----
+
+    /// <summary>
+    /// Runs every image (root frame) through an <see cref="IImageModel"/> (a registry network such as
+    /// <see cref="ImageModels.DenoiseGray"/>, or your own file through <see cref="LocalImageModel"/>) and returns one
+    /// result per image, in order; the caller owns them. Each result equals what
+    /// <see cref="RunImageToImageAsync{TPixel}(IImageModel, Image{TPixel}, CancellationToken)"/> returns for that image,
+    /// up to the runtime's float rounding.
+    /// Network inputs of identical shape (equally sized tiles, images resized or padded to the same size by the
+    /// contract) are stacked into batches of at most <see cref="ImageAiOptions.MaxBatchSize"/> when the model's batch
+    /// dimension is dynamic, and run one at a time otherwise; see <see cref="ImageModelRunner.RunBatch{TPixel}"/>.
+    /// </summary>
+    public async Task<Image<TPixel>[]> RunImageToImageBatchAsync<TPixel>(
+        IImageModel model, IReadOnlyList<Image<TPixel>> images, CancellationToken cancellationToken = default)
+        where TPixel : unmanaged, IPixel<TPixel>
+    {
+        ArgumentNullException.ThrowIfNull(model);
+        ArgumentNullException.ThrowIfNull(images);
+        InferenceSession session = await this.GetSessionAsync(model, cancellationToken).ConfigureAwait(false);
+        return await Task.Run(
+            () => ImageModelRunner.RunBatch(session, images, model.Contract, this.Options.MaxBatchSize, cancellationToken), cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>Synchronous <see cref="RunImageToImageBatchAsync{TPixel}(IImageModel, IReadOnlyList{Image{TPixel}}, CancellationToken)"/>.</summary>
+    public Image<TPixel>[] RunImageToImageBatch<TPixel>(
+        IImageModel model, IReadOnlyList<Image<TPixel>> images, CancellationToken cancellationToken = default)
+        where TPixel : unmanaged, IPixel<TPixel>
+    {
+        ArgumentNullException.ThrowIfNull(model);
+        ArgumentNullException.ThrowIfNull(images);
+        InferenceSession session = this.GetSessionAsync(model, cancellationToken).GetAwaiter().GetResult();
+        return ImageModelRunner.RunBatch(session, images, model.Contract, this.Options.MaxBatchSize, cancellationToken);
+    }
+
+    /// <summary>
+    /// Detects the page orientation of every image (root frame) with the document-orientation classifier and returns
+    /// one result per image, in order. Each result equals what <c>image.DetectOrientationAsync(ai)</c> returns (scores to
+    /// float rounding: the runtime's summation order can differ between calls); pages are
+    /// classified up to <see cref="ImageAiOptions.MaxBatchSize"/> at a time in one inference call (the published
+    /// PP-LCNet export has a dynamic batch axis).
+    /// </summary>
+    /// <exception cref="ArgumentException">An image of the list is <c>null</c>.</exception>
+    public async Task<OrientationResult[]> DetectOrientationBatchAsync<TPixel>(
+        IReadOnlyList<Image<TPixel>> images, CancellationToken cancellationToken = default)
+        where TPixel : unmanaged, IPixel<TPixel>
+    {
+        CheckBatch(images);
+        InferenceSession session = await this.GetSessionAsync(ModelRegistry.DocumentOrientation, cancellationToken).ConfigureAwait(false);
+        return await Task.Run(
+            () => OrientationBatch.Detect(session, images, this.Options.MaxBatchSize, cancellationToken), cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>Synchronous <see cref="DetectOrientationBatchAsync{TPixel}"/>.</summary>
+    public OrientationResult[] DetectOrientationBatch<TPixel>(IReadOnlyList<Image<TPixel>> images, CancellationToken cancellationToken = default)
+        where TPixel : unmanaged, IPixel<TPixel>
+    {
+        CheckBatch(images);
+        InferenceSession session = this.GetSession(ModelRegistry.DocumentOrientation, cancellationToken);
+        return OrientationBatch.Detect(session, images, this.Options.MaxBatchSize, cancellationToken);
+    }
+
     /// <summary>Disposes every loaded inference session and the hub.</summary>
     public void Dispose()
     {
@@ -206,6 +274,19 @@ public sealed class ImageAiSession : IDisposable
         }
 
         return session;
+    }
+
+    private static void CheckBatch<TPixel>(IReadOnlyList<Image<TPixel>> images)
+        where TPixel : unmanaged, IPixel<TPixel>
+    {
+        ArgumentNullException.ThrowIfNull(images);
+        for (int i = 0; i < images.Count; i++)
+        {
+            if (images[i] is null)
+            {
+                throw new ArgumentException($"Image {i} of the batch is null.", nameof(images));
+            }
+        }
     }
 
     private void ThrowIfDisposed() => ObjectDisposedException.ThrowIf(this.disposed, this);

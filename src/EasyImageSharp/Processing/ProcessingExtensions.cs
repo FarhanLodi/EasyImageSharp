@@ -1,3 +1,4 @@
+using EasyImageSharp.Diagnostics;
 using EasyImageSharp.PixelFormats;
 
 namespace EasyImageSharp.Processing;
@@ -12,9 +13,19 @@ public static partial class ProcessingExtensions
         ArgumentNullException.ThrowIfNull(source);
         ArgumentNullException.ThrowIfNull(operation);
         source.EnsureNotDisposed();
-        OperationExecution.Checkpoint();
-        operation(new ImageProcessingContext<TPixel>(source));
-        OperationExecution.Checkpoint();
+        OperationTelemetry telemetry = OperationTelemetry.Start<TPixel>(TelemetryOperation.Mutate);
+        try
+        {
+            OperationExecution.Checkpoint();
+            operation(new ImageProcessingContext<TPixel>(source));
+            OperationExecution.Checkpoint();
+            telemetry.CompleteProcess(source);
+        }
+        catch (Exception ex) when (telemetry.Fail(ex))
+        {
+            // Unreachable: Fail records the failure and returns false, so the exception propagates unwound.
+            throw;
+        }
     }
 
     /// <summary>Applies the given operations to a deep copy of the image and returns the copy.</summary>
@@ -24,22 +35,33 @@ public static partial class ProcessingExtensions
         ArgumentNullException.ThrowIfNull(source);
         ArgumentNullException.ThrowIfNull(operation);
 
-        // Copy-on-write: the clone starts out sharing the source's pixel buffers and the context duplicates
-        // them only if an operation writes in place. A size-changing operation (resize, crop, rotate) builds
-        // its own buffer anyway, so the source is never copied for it.
-        Image<TPixel> clone = FrameFactory.ShallowClone(source);
-        var context = new ImageProcessingContext<TPixel>(clone, sharedBuffers: true);
+        OperationTelemetry telemetry = OperationTelemetry.Start<TPixel>(TelemetryOperation.Clone);
         try
         {
-            OperationExecution.Checkpoint();
-            operation(context);
-            context.EnsureOwnBuffers();
-            OperationExecution.Checkpoint();
+            // Copy-on-write: the clone starts out sharing the source's pixel buffers and the context duplicates
+            // them only if an operation writes in place. A size-changing operation (resize, crop, rotate) builds
+            // its own buffer anyway, so the source is never copied for it.
+            Image<TPixel> clone = FrameFactory.ShallowClone(source);
+            var context = new ImageProcessingContext<TPixel>(clone, sharedBuffers: true);
+            try
+            {
+                OperationExecution.Checkpoint();
+                operation(context);
+                context.EnsureOwnBuffers();
+                OperationExecution.Checkpoint();
+            }
+            catch
+            {
+                clone.Dispose();
+                throw;
+            }
+
+            telemetry.CompleteProcess(clone);
             return clone;
         }
-        catch
+        catch (Exception ex) when (telemetry.Fail(ex))
         {
-            clone.Dispose();
+            // Unreachable: Fail always returns false.
             throw;
         }
     }

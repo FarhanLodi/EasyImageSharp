@@ -1,0 +1,47 @@
+{
+  "source": "src.png",
+  "cases": [
+    {
+      "lut": "grade17.cube",
+      "interpolation": "trilinear",
+      "expected": "grade17_trilinear_pillow.png",
+      "tolerance": 2
+    },
+    {
+      "lut": "grade17.cube",
+      "interpolation": "trilinear",
+      "expected": "grade17_trilinear.png",
+      "tolerance": 1
+    },
+    {
+      "lut": "grade17.cube",
+      "interpolation": "tetrahedral",
+      "expected": "grade17_tetrahedral.png",
+      "tolerance": 1
+    },
+    {
+      "lut": "domain9.cube",
+      "interpolation": "tetrahedral",
+      "expected": "domain9_tetrahedral.png",
+      "tolerance": 1
+    },
+    {
+      "lut": "shaper32.cube",
+      "interpolation": "tetrahedral",
+      "expected": "shaper32.png",
+      "tolerance": 1
+    },
+    {
+      "lut": "shaper3d.cube",
+      "interpolation": "tetrahedral",
+      "expected": "shaper3d_tetrahedral.png",
+      "tolerance": 1
+    },
+    {
+      "lut": "hald4.png",
+      "interpolation": "tetrahedral",
+      "expected": "hald4_tetrahedral.png",
+      "tolerance": 1
+    }
+  ]
+}

@@ -1,0 +1,309 @@
+{
+  "generator": "tests/EasyImageSharp.Tests/Fixtures/jpeg12/generate.py",
+  "imagecodecs": "2026.3.6",
+  "libjpegTurbo": "libjpeg_turbo 3.1.3/8.0",
+  "truthFormat": "gzip of little-endian uint16 samples, row-major, channels interleaved, 12-bit values",
+  "fixtures": [
+    {
+      "name": "monkey12",
+      "file": "monkey12.jpg",
+      "truth": "monkey12.u16.gz",
+      "width": 149,
+      "height": 227,
+      "channels": 3,
+      "frame": "SOF1",
+      "precision": 12,
+      "sampling": [
+        "2x2",
+        "1x1",
+        "1x1"
+      ],
+      "componentIds": [
+        1,
+        2,
+        3
+      ],
+      "encoder": "libjpeg-turbo cjpeg (upstream test image)",
+      "truthSha256": "c6545675aeab2a95a0caf416849da73f3aefb825970ef7e0819c4117afab58c1",
+      "notes": "libjpeg-turbo testimages/monkey12.jpg at commit 0103036f949f30c4f794e2032a03eb183b007092",
+      "truthRows": [
+        0,
+        7,
+        8,
+        15,
+        16,
+        23,
+        24,
+        31,
+        32,
+        39,
+        40,
+        47,
+        48,
+        55,
+        56,
+        63,
+        64,
+        71,
+        72,
+        79,
+        80,
+        87,
+        88,
+        95,
+        96,
+        103,
+        104,
+        111,
+        112,
+        119,
+        120,
+        127,
+        128,
+        135,
+        136,
+        143,
+        144,
+        151,
+        152,
+        159,
+        160,
+        167,
+        168,
+        175,
+        176,
+        183,
+        184,
+        191,
+        192,
+        199,
+        200,
+        207,
+        208,
+        215,
+        216,
+        223,
+        224,
+        226
+      ]
+    },
+    {
+      "name": "gray12_q90",
+      "file": "gray12_q90.jpg",
+      "truth": "gray12_q90.u16.gz",
+      "width": 45,
+      "height": 37,
+      "channels": 1,
+      "frame": "SOF1",
+      "precision": 12,
+      "sampling": [
+        "1x1"
+      ],
+      "componentIds": [
+        1
+      ],
+      "encoder": "libjpeg-turbo",
+      "truthSha256": "8d6ceeb267aa7183b41d3da078e8fb81a8b7e217b0dbfca92c6b49c2e7661339",
+      "notes": "synthetic grayscale"
+    },
+    {
+      "name": "ycc12_444_q92",
+      "file": "ycc12_444_q92.jpg",
+      "truth": "ycc12_444_q92.u16.gz",
+      "width": 45,
+      "height": 37,
+      "channels": 3,
+      "frame": "SOF1",
+      "precision": 12,
+      "sampling": [
+        "1x1",
+        "1x1",
+        "1x1"
+      ],
+      "componentIds": [
+        1,
+        2,
+        3
+      ],
+      "encoder": "libjpeg-turbo",
+      "truthSha256": "35e4b55fe776fdad86131c3d546e8b0cdd8013b867de126632dbdbbe240712c7",
+      "notes": "synthetic YCbCr 444, odd size"
+    },
+    {
+      "name": "ycc12_422_q88",
+      "file": "ycc12_422_q88.jpg",
+      "truth": "ycc12_422_q88.u16.gz",
+      "width": 45,
+      "height": 37,
+      "channels": 3,
+      "frame": "SOF1",
+      "precision": 12,
+      "sampling": [
+        "2x1",
+        "1x1",
+        "1x1"
+      ],
+      "componentIds": [
+        1,
+        2,
+        3
+      ],
+      "encoder": "libjpeg-turbo",
+      "truthSha256": "74723bf51c66dbc32d304c0ebbc33b4e11bcd4cc541ceba86cf76b6f3507d7b0",
+      "notes": "synthetic YCbCr 422, odd size"
+    },
+    {
+      "name": "ycc12_420_q85",
+      "file": "ycc12_420_q85.jpg",
+      "truth": "ycc12_420_q85.u16.gz",
+      "width": 45,
+      "height": 37,
+      "channels": 3,
+      "frame": "SOF1",
+      "precision": 12,
+      "sampling": [
+        "2x2",
+        "1x1",
+        "1x1"
+      ],
+      "componentIds": [
+        1,
+        2,
+        3
+      ],
+      "encoder": "libjpeg-turbo",
+      "truthSha256": "5a21ca9b1bde7edaa69849455b2485635760d95930e2a3088582e9c0c3dabebe",
+      "notes": "synthetic YCbCr 420, odd size"
+    },
+    {
+      "name": "ycc12_420_optimized",
+      "file": "ycc12_420_optimized.jpg",
+      "truth": "ycc12_420_optimized.u16.gz",
+      "width": 45,
+      "height": 37,
+      "channels": 3,
+      "frame": "SOF1",
+      "precision": 12,
+      "sampling": [
+        "2x2",
+        "1x1",
+        "1x1"
+      ],
+      "componentIds": [
+        1,
+        2,
+        3
+      ],
+      "encoder": "libjpeg-turbo",
+      "truthSha256": "11440b074f54d2e7c9c4b90fba3cbc99c5e12f19d076342aea0ac0662fb1c914",
+      "notes": "synthetic YCbCr 420, optimised Huffman tables"
+    },
+    {
+      "name": "rgb12_q95",
+      "file": "rgb12_q95.jpg",
+      "truth": "rgb12_q95.u16.gz",
+      "width": 45,
+      "height": 37,
+      "channels": 3,
+      "frame": "SOF1",
+      "precision": 12,
+      "sampling": [
+        "1x1",
+        "1x1",
+        "1x1"
+      ],
+      "componentIds": [
+        82,
+        71,
+        66
+      ],
+      "encoder": "libjpeg-turbo",
+      "truthSha256": "8fc2a6788886588c9d5c954358ca09c04794eedc6f45483506bf442e5c1d0a58",
+      "notes": "synthetic RGB components (ids R G B), no colour transform"
+    },
+    {
+      "name": "ycc12_420_q85_progressive",
+      "file": "ycc12_420_q85_progressive.jpg",
+      "truth": "ycc12_420_q85_progressive.u16.gz",
+      "width": 45,
+      "height": 37,
+      "channels": 3,
+      "frame": "SOF2",
+      "precision": 12,
+      "sampling": [
+        "2x2",
+        "1x1",
+        "1x1"
+      ],
+      "componentIds": [
+        1,
+        2,
+        3
+      ],
+      "encoder": "coefficient transcoder in generate.py (T.81 Annex G / F.1.2.3)",
+      "truthSha256": "5a21ca9b1bde7edaa69849455b2485635760d95930e2a3088582e9c0c3dabebe",
+      "notes": "SOF2: interleaved DC scan, AC bands 1-5 and 6-63 per component; coefficients of ycc12_420_q85.jpg"
+    },
+    {
+      "name": "ycc12_420_q85_restart",
+      "file": "ycc12_420_q85_restart.jpg",
+      "truth": "ycc12_420_q85_restart.u16.gz",
+      "width": 45,
+      "height": 37,
+      "channels": 3,
+      "frame": "SOF1",
+      "precision": 12,
+      "sampling": [
+        "2x2",
+        "1x1",
+        "1x1"
+      ],
+      "componentIds": [
+        1,
+        2,
+        3
+      ],
+      "encoder": "coefficient transcoder in generate.py (T.81 Annex G / F.1.2.3)",
+      "truthSha256": "5a21ca9b1bde7edaa69849455b2485635760d95930e2a3088582e9c0c3dabebe",
+      "notes": "SOF1 with a restart marker every 3 MCUs; coefficients of ycc12_420_q85.jpg"
+    },
+    {
+      "name": "gray12_q90_progressive",
+      "file": "gray12_q90_progressive.jpg",
+      "truth": "gray12_q90_progressive.u16.gz",
+      "width": 45,
+      "height": 37,
+      "channels": 1,
+      "frame": "SOF2",
+      "precision": 12,
+      "sampling": [
+        "1x1"
+      ],
+      "componentIds": [
+        1
+      ],
+      "encoder": "coefficient transcoder in generate.py (T.81 Annex G / F.1.2.3)",
+      "truthSha256": "8d6ceeb267aa7183b41d3da078e8fb81a8b7e217b0dbfca92c6b49c2e7661339",
+      "notes": "SOF2: interleaved DC scan, AC bands 1-5 and 6-63 per component; coefficients of gray12_q90.jpg"
+    },
+    {
+      "name": "gray12_q90_restart",
+      "file": "gray12_q90_restart.jpg",
+      "truth": "gray12_q90_restart.u16.gz",
+      "width": 45,
+      "height": 37,
+      "channels": 1,
+      "frame": "SOF1",
+      "precision": 12,
+      "sampling": [
+        "1x1"
+      ],
+      "componentIds": [
+        1
+      ],
+      "encoder": "coefficient transcoder in generate.py (T.81 Annex G / F.1.2.3)",
+      "truthSha256": "8d6ceeb267aa7183b41d3da078e8fb81a8b7e217b0dbfca92c6b49c2e7661339",
+      "notes": "SOF1 with a restart marker every 3 MCUs; coefficients of gray12_q90.jpg"
+    }
+  ]
+}

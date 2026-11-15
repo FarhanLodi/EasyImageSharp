@@ -1,0 +1,12 @@
+# Top navigation bar. The Markdown pages come from the repository itself: docs/site/build.ps1 stages
+# README.md, docs/*.md, the package and tool READMEs and the policy files into _repo/ with their
+# relative paths intact; docfx.json publishes that folder at the site root, so README.md becomes
+# /README.html and docs/ADVANCED_IMAGING.md becomes /docs/ADVANCED_IMAGING.html.
+- name: Overview
+  href: _repo/README.md
+- name: Guides
+  href: articles/
+- name: API reference
+  href: api/
+- name: Changelog
+  href: _repo/CHANGELOG.md

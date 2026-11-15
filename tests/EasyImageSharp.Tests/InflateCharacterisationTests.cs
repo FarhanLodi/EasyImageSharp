@@ -30,9 +30,9 @@ namespace EasyImageSharp.Tests;
 /// <item>Zero-length IDAT chunks are concatenated away and have no effect, in any position; a PNG whose
 /// IDAT chunks are all empty is rejected as having no IDAT at all.</item>
 /// </list>
-/// Chunk CRCs are deliberately not verified on decode, which is what lets every crafted input here reach
-/// the inflater at all; <see cref="ChunkCrcsAreNotVerified"/> pins that too, because a decoder that
-/// started checking them would reject most of this file's inputs before the deflate behaviour mattered.
+/// Every crafted input here carries correct chunk CRCs, so it reaches the inflater: the decoder verifies CRCs
+/// (<see cref="CriticalChunkCrcs_AreVerified_AndDamagedAncillaryChunksAreDiscarded"/>), which would otherwise
+/// reject the input before the deflate behaviour mattered.
 /// </remarks>
 public class InflateCharacterisationTests
 {
@@ -362,18 +362,42 @@ public class InflateCharacterisationTests
     // =====================================================================================================
 
     /// <summary>
-    /// The decoder does not verify chunk CRCs, so corruption is only ever caught by the deflate stream or by
-    /// the chunk contents disagreeing with the header. Recorded because it is the reason the cases above
-    /// reach the inflater at all, and because a CRC check added later would reject them first.
+    /// A bad CRC on a critical chunk (IHDR, IDAT, IEND, including an empty IDAT) rejects the file, on the buffered
+    /// decoder and on the streamed transcode alike, from seekable and forward-only input. A damaged ancillary
+    /// chunk is discarded and the image decodes as if it were absent, as libpng does by default.
     /// </summary>
     [Fact]
-    public void ChunkCrcsAreNotVerified()
+    public void CriticalChunkCrcs_AreVerified_AndDamagedAncillaryChunksAreDiscarded()
     {
         byte[] zlib = Stored(Scanlines(), final: true, withAdler: true);
+        byte[][] rejected =
+        {
+            Png(Ihdr(), BreakCrc(Chunk("IDAT", zlib))),
+            Png(BreakCrc(Ihdr()), Chunk("IDAT", zlib)),
+            Png(Ihdr(), BreakCrc(Chunk("IDAT", Array.Empty<byte>())), Chunk("IDAT", zlib)),
+            Png(Ihdr(), Chunk("IDAT", zlib), BreakCrc(Chunk("IEND", Array.Empty<byte>()))),
+        };
 
-        AssertDecodesLike(ControlPng(), Png(Ihdr(), BreakCrc(Chunk("IDAT", zlib))));
-        AssertDecodesLike(ControlPng(), Png(BreakCrc(Ihdr()), Chunk("IDAT", zlib)));
-        AssertDecodesLike(ControlPng(), Png(Ihdr(), BreakCrc(Chunk("IDAT", Array.Empty<byte>())), Chunk("IDAT", zlib)));
+        foreach (byte[] png in rejected)
+        {
+            Exception load = Assert.Throws<InvalidImageContentException>(() => Image.Load<Rgba32>(png).Dispose());
+            Assert.Contains("incorrect CRC", load.Message);
+            foreach (Stream source in new Stream[] { new MemoryStream(png), new ForwardOnlyStream(png, maxChunk: 7) })
+            {
+                Assert.Throws<InvalidImageContentException>(() => Image.Transcode(source, new MemoryStream()));
+            }
+        }
+
+        byte[] damagedText = Png(Ihdr(), BreakCrc(Chunk("tEXt", "Comment damaged"u8.ToArray())), Chunk("IDAT", zlib));
+        AssertDecodesLike(ControlPng(), damagedText);
+        using (Image<Rgba32> image = Image.Load<Rgba32>(damagedText))
+        {
+            Assert.Empty(image.Metadata.GetPngMetadata().TextData);
+        }
+
+        var streamed = new MemoryStream();
+        Image.Transcode(new ForwardOnlyStream(damagedText, maxChunk: 7), streamed);
+        Assert.Equal(Decode(ControlPng()), Decode(streamed.ToArray()));
     }
 
     /// <summary>The control itself: a well-formed image, with and without IEND, decodes.</summary>

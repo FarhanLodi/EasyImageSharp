@@ -1,0 +1,3103 @@
+{
+ "fonts": {
+  "DejaVuSans-Bold-Subset.ttf": {
+   "ascender": 1901,
+   "descender": -483,
+   "familyName": "DejaVu Sans",
+   "fullName": "DejaVu Sans Bold",
+   "glyphs": [
+    {
+     "advance": 713,
+     "bounds": null,
+     "codepoint": 32,
+     "glyph": 1
+    },
+    {
+     "advance": 934,
+     "bounds": [
+      287,
+      0,
+      647,
+      1493
+     ],
+     "codepoint": 33,
+     "glyph": 2
+    },
+    {
+     "advance": 2052,
+     "bounds": [
+      66,
+      -29,
+      1987,
+      1520
+     ],
+     "codepoint": 37,
+     "glyph": 6
+    },
+    {
+     "advance": 1786,
+     "bounds": [
+      123,
+      -29,
+      1700,
+      1520
+     ],
+     "codepoint": 38,
+     "glyph": 7
+    },
+    {
+     "advance": 778,
+     "bounds": [
+      109,
+      -291,
+      569,
+      387
+     ],
+     "codepoint": 44,
+     "glyph": 13
+    },
+    {
+     "advance": 778,
+     "bounds": [
+      209,
+      0,
+      569,
+      387
+     ],
+     "codepoint": 46,
+     "glyph": 15
+    },
+    {
+     "advance": 1425,
+     "bounds": [
+      125,
+      -29,
+      1298,
+      1520
+     ],
+     "codepoint": 56,
+     "glyph": 25
+    },
+    {
+     "advance": 2048,
+     "bounds": [
+      135,
+      -356,
+      1903,
+      1440
+     ],
+     "codepoint": 64,
+     "glyph": 33
+    },
+    {
+     "advance": 1585,
+     "bounds": [
+      10,
+      0,
+      1575,
+      1493
+     ],
+     "codepoint": 65,
+     "glyph": 34
+    },
+    {
+     "advance": 1561,
+     "bounds": [
+      188,
+      0,
+      1417,
+      1493
+     ],
+     "codepoint": 66,
+     "glyph": 35
+    },
+    {
+     "advance": 1399,
+     "bounds": [
+      188,
+      0,
+      1227,
+      1493
+     ],
+     "codepoint": 70,
+     "glyph": 39
+    },
+    {
+     "advance": 1714,
+     "bounds": [
+      188,
+      0,
+      1526,
+      1493
+     ],
+     "codepoint": 72,
+     "glyph": 41
+    },
+    {
+     "advance": 1305,
+     "bounds": [
+      188,
+      0,
+      1249,
+      1493
+     ],
+     "codepoint": 76,
+     "glyph": 45
+    },
+    {
+     "advance": 1501,
+     "bounds": [
+      188,
+      0,
+      1417,
+      1493
+     ],
+     "codepoint": 80,
+     "glyph": 49
+    },
+    {
+     "advance": 1741,
+     "bounds": [
+      102,
+      -299,
+      1638,
+      1520
+     ],
+     "codepoint": 81,
+     "glyph": 50
+    },
+    {
+     "advance": 1397,
+     "bounds": [
+      10,
+      0,
+      1386,
+      1493
+     ],
+     "codepoint": 84,
+     "glyph": 53
+    },
+    {
+     "advance": 1585,
+     "bounds": [
+      10,
+      0,
+      1575,
+      1493
+     ],
+     "codepoint": 86,
+     "glyph": 55
+    },
+    {
+     "advance": 2259,
+     "bounds": [
+      61,
+      0,
+      2195,
+      1493
+     ],
+     "codepoint": 87,
+     "glyph": 56
+    },
+    {
+     "advance": 1483,
+     "bounds": [
+      -20,
+      0,
+      1503,
+      1493
+     ],
+     "codepoint": 89,
+     "glyph": 58
+    },
+    {
+     "advance": 1382,
+     "bounds": [
+      88,
+      -29,
+      1221,
+      1147
+     ],
+     "codepoint": 97,
+     "glyph": 66
+    },
+    {
+     "advance": 1466,
+     "bounds": [
+      92,
+      -29,
+      1294,
+      1556
+     ],
+     "codepoint": 100,
+     "glyph": 69
+    },
+    {
+     "advance": 1389,
+     "bounds": [
+      88,
+      -29,
+      1290,
+      1147
+     ],
+     "codepoint": 101,
+     "glyph": 70
+    },
+    {
+     "advance": 1466,
+     "bounds": [
+      92,
+      -442,
+      1294,
+      1145
+     ],
+     "codepoint": 103,
+     "glyph": 72
+    },
+    {
+     "advance": 702,
+     "bounds": [
+      172,
+      0,
+      530,
+      1556
+     ],
+     "codepoint": 108,
+     "glyph": 77
+    },
+    {
+     "advance": 1458,
+     "bounds": [
+      172,
+      0,
+      1298,
+      1147
+     ],
+     "codepoint": 110,
+     "glyph": 79
+    },
+    {
+     "advance": 1407,
+     "bounds": [
+      88,
+      -29,
+      1319,
+      1147
+     ],
+     "codepoint": 111,
+     "glyph": 80
+    },
+    {
+     "advance": 1010,
+     "bounds": [
+      172,
+      0,
+      1004,
+      1147
+     ],
+     "codepoint": 114,
+     "glyph": 83
+    },
+    {
+     "advance": 1335,
+     "bounds": [
+      31,
+      0,
+      1305,
+      1120
+     ],
+     "codepoint": 118,
+     "glyph": 87
+    },
+    {
+     "advance": 1335,
+     "bounds": [
+      25,
+      -442,
+      1298,
+      1120
+     ],
+     "codepoint": 121,
+     "glyph": 90
+    },
+    {
+     "advance": 1389,
+     "bounds": [
+      88,
+      -29,
+      1290,
+      1638
+     ],
+     "codepoint": 233,
+     "glyph": 169
+    },
+    {
+     "advance": 2507,
+     "bounds": [
+      30,
+      0,
+      2477,
+      1493
+     ],
+     "codepoint": 1046,
+     "glyph": 213
+    },
+    {
+     "advance": 1425,
+     "bounds": [
+      -39,
+      -29,
+      1288,
+      1520
+     ],
+     "codepoint": 8364,
+     "glyph": 226
+    },
+    {
+     "advance": 1585,
+     "bounds": [
+      10,
+      0,
+      1575,
+      1493
+     ],
+     "codepoint": 119808,
+     "glyph": 34
+    }
+   ],
+   "kerning": [
+    {
+     "left": 34,
+     "pair": "AV",
+     "right": 55,
+     "value": -139
+    },
+    {
+     "left": 34,
+     "pair": "AT",
+     "right": 53,
+     "value": -159
+    },
+    {
+     "left": 53,
+     "pair": "To",
+     "right": 80,
+     "value": -272
+    },
+    {
+     "left": 53,
+     "pair": "Ty",
+     "right": 90,
+     "value": -243
+    },
+    {
+     "left": 45,
+     "pair": "LT",
+     "right": 53,
+     "value": -339
+    },
+    {
+     "left": 58,
+     "pair": "Yo",
+     "right": 80,
+     "value": -188
+    },
+    {
+     "left": 55,
+     "pair": "VA",
+     "right": 34,
+     "value": -139
+    },
+    {
+     "left": 56,
+     "pair": "Wa",
+     "right": 66,
+     "value": -73
+    },
+    {
+     "left": 49,
+     "pair": "P.",
+     "right": 15,
+     "value": -376
+    },
+    {
+     "left": 39,
+     "pair": "F,",
+     "right": 13,
+     "value": -329
+    },
+    {
+     "left": 66,
+     "pair": "av",
+     "right": 87,
+     "value": 0
+    },
+    {
+     "left": 83,
+     "pair": "rn",
+     "right": 79,
+     "value": 0
+    },
+    {
+     "left": 34,
+     "pair": "AA",
+     "right": 34,
+     "value": 0
+    }
+   ],
+   "legacyKerning": [
+    {
+     "left": 34,
+     "pair": "AV",
+     "right": 55,
+     "value": -139
+    },
+    {
+     "left": 34,
+     "pair": "AT",
+     "right": 53,
+     "value": -159
+    },
+    {
+     "left": 53,
+     "pair": "To",
+     "right": 80,
+     "value": -272
+    },
+    {
+     "left": 53,
+     "pair": "Ty",
+     "right": 90,
+     "value": -243
+    },
+    {
+     "left": 45,
+     "pair": "LT",
+     "right": 53,
+     "value": -339
+    },
+    {
+     "left": 58,
+     "pair": "Yo",
+     "right": 80,
+     "value": -188
+    },
+    {
+     "left": 55,
+     "pair": "VA",
+     "right": 34,
+     "value": -139
+    },
+    {
+     "left": 56,
+     "pair": "Wa",
+     "right": 66,
+     "value": -73
+    },
+    {
+     "left": 49,
+     "pair": "P.",
+     "right": 15,
+     "value": -376
+    },
+    {
+     "left": 39,
+     "pair": "F,",
+     "right": 13,
+     "value": -329
+    },
+    {
+     "left": 66,
+     "pair": "av",
+     "right": 87,
+     "value": 0
+    },
+    {
+     "left": 83,
+     "pair": "rn",
+     "right": 79,
+     "value": 0
+    },
+    {
+     "left": 34,
+     "pair": "AA",
+     "right": 34,
+     "value": 0
+    }
+   ],
+   "lineGap": 0,
+   "numGlyphs": 236,
+   "renders": [
+    {
+     "codepoint": 65,
+     "coverage": "AAAAocC/FwAAAAAAKv///3IAAAAAAIn/1P/RAAAAAALk/z/s/zAAAABG/+IBmv+PAAAApf+tOHL/6QQADfb///////9NAGL/32hoaLL/rADB/4EAAAA1//kS",
+     "glyph": 34,
+     "height": 9,
+     "left": 0,
+     "size": 12,
+     "top": 9,
+     "width": 10
+    },
+    {
+     "codepoint": 97,
+     "coverage": "AGyesaNuCQAA4sey3f+xAAAQESw+/P8MCbH+/////yZh/8scEfv/KGX/2EqY//8oDMf//pT0/ygAAR4VAAAAAA==",
+     "glyph": 66,
+     "height": 8,
+     "left": 0,
+     "size": 12,
+     "top": 7,
+     "width": 8
+    },
+    {
+     "codepoint": 66,
+     "coverage": "q8DAvq92CgDk/9zK9/+lAOT/XABk/+gA5P+WXrz/rgDk//////lNAOT/eC1o//gY5P9cAAX8/0Hk/7OJv//1FuT////vw0MA",
+     "glyph": 35,
+     "height": 9,
+     "left": 1,
+     "size": 12,
+     "top": 9,
+     "width": 8
+    },
+    {
+     "codepoint": 103,
+     "coverage": "AA6DqmdNkFMByv/u5ez/lET/7hMFzP+Uav+/AACQ/5RU/9wAALD/lA7r/7el/f+UADnQ97Oj/4kALgUAD9f/WQCo8tTz/7kDADB6kn9KAAA=",
+     "glyph": 72,
+     "height": 10,
+     "left": 0,
+     "size": 12,
+     "top": 7,
+     "width": 8
+    },
+    {
+     "codepoint": 81,
+     "coverage": "AAA6q9vfuVcAAABb/f/d0v7/iwAM7/+WAABj//8uSf//GAAAAeP/eWP/9wAAAADE/5JV//8JAAAA1v9+G/z/XQAAMP7/PgCQ//iXjez/swAAAnrp////nAoAAAAAARtl/sQIAAAAAAAAAG3AcAA=",
+     "glyph": 50,
+     "height": 11,
+     "left": 0,
+     "size": 12,
+     "top": 9,
+     "width": 10
+    },
+    {
+     "codepoint": 38,
+     "coverage": "AAAiq93XrQkAAAAAyf+5ldcQAAAAAOf/QQAAAAAAAAK4/98ZABJAIgCh/+H/0A9j/2Um/+MIsf/Aw/8oOP/dAgnD//+vAAnm/6xir///nAAAMs7///KO3v+DAAAAEx8CAAAAAA==",
+     "glyph": 7,
+     "height": 10,
+     "left": 0,
+     "size": 12,
+     "top": 9,
+     "width": 10
+    },
+    {
+     "codepoint": 64,
+     "coverage": "AAAAACthZD4DAAAAAAAhv/PBsuLfRAAAABznkA8AAAFh8jsAAKieAE61j4NWb8cAC/kgJ/yHhP6ADf4MK+4AaewAAOWAAfkXI/UBX/UJB/CASuAAAupAEOfKyO/Z5UMAAHzQDRlrRFlcFAAAAASz4FQRDk3OLAAAAAACbNf//+BvBgAAAAAAAAAKDgAAAAAA",
+     "glyph": 33,
+     "height": 12,
+     "left": 0,
+     "size": 12,
+     "top": 9,
+     "width": 12
+    },
+    {
+     "codepoint": 37,
+     "coverage": "BJDbwTMAACvhIwAAZ/kyrNoAAMCOAAAAkt0Abv8GW+UNAAAAYfo9s9QO51gAAAAAA4TPtSyQvgpvi0QAAAAAAC32KbLYgf9KAAAAAMKIA/t1AN2WAAAAX+MLAOyOCO+DAAAP6FMAAF716NYYAAAOKgAAAAALIAIA",
+     "glyph": 6,
+     "height": 10,
+     "left": 0,
+     "size": 12,
+     "top": 9,
+     "width": 12
+    },
+    {
+     "codepoint": 56,
+     "coverage": "ACSj1t69UAAA2f+/mf39Mgn//xsAw/9gAK7/lmn06hwALOD///xpAA/u/E0m0v9VOf/lAACR/5EU+f92UuP/ZQBZ5///+pgDAAACGiIHAAA=",
+     "glyph": 25,
+     "height": 10,
+     "left": 0,
+     "size": 12,
+     "top": 9,
+     "width": 8
+    },
+    {
+     "codepoint": 101,
+     "coverage": "AAJgnqdxBgAAsP/Vxv/FA0H/1wQAuv9Wb////////4Va/9NMTExMKhbt/XVAYLQ9ADrR////0CgAAAAQJA0AAA==",
+     "glyph": 70,
+     "height": 8,
+     "left": 0,
+     "size": 12,
+     "top": 7,
+     "width": 8
+    },
+    {
+     "codepoint": 65,
+     "coverage": "AAAAAAAAQICAgIB/CQAAAAAAAAAAAAAAAMf//////1oAAAAAAAAAAAAAACX///////+4AAAAAAAAAAAAAACE/////////RoAAAAAAAAAAAAB4f////L///92AAAAAAAAAAAAQf////Nv////1AAAAAAAAAAAAKD///+kE/r///8zAAAAAAAAAAvz////SwC2////kgAAAAAAAABd////7QUAXv///+sFAAAAAAAAvP///5oAAA73////TwAAAAAAHP3///9BAAAArv///60AAAAAAHn////7cnBwcKv////5EgAAAADX/////////////////2sAAAA2///////////////////JAAAAlf////PQ0NDQ0NDW/////ygABu3///+GAAAAAAAABOv///+HAFL/////LQAAAAAAAACY////4wKx////1AAAAAAAAAAAQP////9E",
+     "glyph": 34,
+     "height": 18,
+     "left": 0,
+     "size": 24,
+     "top": 18,
+     "width": 19
+    },
+    {
+     "codepoint": 97,
+     "coverage": "AAAIMU1da2NMGwAAAAAAsfz/////////wzQAAADQ////////////9zUAANDfmm9dZovp////xAAAMQAAAAAAACj/////FQAAABZCW2VoaPb///89ADrC/v///////////005+f//////////////ULf////eUiIYGPH///9Q6////1kAAAAZ/////1Du////cQAAAqH/////ULr////3mIHI//////9QPfz///////+t7f///1AATuX////4jwfs////UAAABTlSQg8AAAAAAAAA",
+     "glyph": 66,
+     "height": 15,
+     "left": 1,
+     "size": 24,
+     "top": 14,
+     "width": 14
+    },
+    {
+     "codepoint": 66,
+     "coverage": "ZoCAgICAf3puTxwAAAAAzP/////////////DMgAAzP//////////////9CkAzP///+GUlJ7d/////6AAzP///7gAAAAI2////9QAzP///7gAAAAAq////9cAzP///7gAAAAW5v///6QAzP///+u4uMHy////7ykAzP/////////////nKwAAzP//////////////4y4AzP///9BYWF6F7P///+cJzP///7gAAAAANv////9gzP///7gAAAAAAPP///+LzP///7gAAAAAGP////+PzP///70UFBo/xP////9kzP///////////////+oRzP//////////////6zsAzP/////////35LpyEAAA",
+     "glyph": 35,
+     "height": 18,
+     "left": 2,
+     "size": 24,
+     "top": 18,
+     "width": 15
+    },
+    {
+     "codepoint": 103,
+     "coverage": "AAAAB0dkUxYAASAgICAFAABV6v////uNEf////8sAFn+////////sv////8sFfH////9wK7s//////8seP////9NAAAY2P////8svP///7gAAAAAWv////8s3v///4MAAAAAJP////8s5v///3QAAAAAFf////8s1P///44AAAAAMv////8so////94DAAAAi/////8sTf////+qLR1x+v////8sAsP/////////+f////8sABva///////4Wf////8qAAAOhtz56aksHv////8ZAAAAAAAAAAAAYP///+8DAD1vDwAAAAAv5////58AAFD/98Kgn8X+////8B8AAFD////////////lOQAAACWh4P/////7zngQAAAAAAAAAAsfKyAIAAAAAAAA",
+     "glyph": 72,
+     "height": 20,
+     "left": 1,
+     "size": 24,
+     "top": 14,
+     "width": 15
+    },
+    {
+     "codepoint": 81,
+     "coverage": "AAAAAAAyeq3CybaVVQsAAAAAAAAAACu+///////////rcAEAAAAAAEnz//////////////+rBAAAACnz/////8+HfKn5/////40AAAC7/////3sBAAAALOj////+KQAu/////7EAAAAAAABK/////5kAdf////9CAAAAAAAAANr////eAKn////7CAAAAAAAAACd/////xG+////5gAAAAAAAAAAf/////8lxv///98AAAAAAAAAAHj/////L7X////uAAAAAAAAAACJ/////yCW/////xgAAAAAAAAAtf////YDWP////9nAAAAAAAAEff///+6AA3v////4hIAAAAAAJr/////WgAAe//////TRQQAJJ//////zwMAAAO6///////9+P//////7CgAAAAACaP/////////////2SwAAAAAAAAAQLHz////////qAgAAAAAAAAAAAAABCxBXvT///MzAAAAAAAAAAAAAAAAAABI+///6SMAAAAAAAAAAAAAAAAAAF/////bFgAAAAAAAAAAAAAAAAAAWICAgE8AAA==",
+     "glyph": 50,
+     "height": 22,
+     "left": 1,
+     "size": 24,
+     "top": 18,
+     "width": 19
+    },
+    {
+     "codepoint": 38,
+     "coverage": "AAAAAAA1j73LvKZ6RQUAAAAAAAAAAAKT//////////8kAAAAAAAAAABv////////////JAAAAAAAAAAA0v///6YaCy5z1CQAAAAAAAAAAOb///9JAAAAAAEDAAAAAAAAAAC5////rgAAAAAAAAAAAAAAAAAAPv////93AAAAAAAAAAAAAAAAELH//////l8AAAAAQ3x8fAoAEtL////////7SwAAAKD///gCAK////+9wf////Y6AADU///RACv////kDQ/S////7isv////iQBu////kwAAGuD////kxv///zIAiP///5UAAAAn6////////7MAAHb////cCAAAADb0/////+wdAAAz/////6sRAAATu//////CBQAAALL/////8sLI9f///////6QBAAAQyf///////////+X/////jgAAAAV45P//////13AHfv////93AAAAAAEoSlNDGgAAAAAAAAAAAA==",
+     "glyph": 7,
+     "height": 19,
+     "left": 1,
+     "size": 24,
+     "top": 18,
+     "width": 19
+    },
+    {
+     "codepoint": 64,
+     "coverage": "AAAAAAAAADJ/ts/WvaFZDQAAAAAAAAAAAAAAPsT///////////eGCQAAAAAAAAABgv7//sODXlZvnOz//90lAAAAAAAAm///tSkAAAAAAAAEbvH/4iEAAAAAb///hgEAAAAAAAAAAAAm5v/PBAAAGPT/kgAAABVpiGwTJlRUACz3/2kAAJD/2gkAAEfw////55b//wAAhv/SAAHm/24AACDz//25uPz8//8AACj//xcv//8UAACR//9hAABZ////AAAA9f87UP/pAAAA0//mAQAAANz//wAAAOv/RmX/zwAAAOv/xAAAAAC5//8AAAj+/zNY/9wAAADh/9QAAAAAyf//AABP//YHP//3CAAAs//9JAAAHvr//wAP0f+iAAv4/0kAAFL//9hVUtT///9l1f/qHgAAt/+4AAAAp///////zf/////cMAAAAEH//1AAAANx0vHWZ3T657dlCQAAAAAAsf/zNQAAAAAAAAABAAABAAAAAAAAABDY//ZkAgAAAAAAAABH0RQAAAAAAAAAHs///9R0MhYQK2nF//+fAAAAAAAAAAAKlPr///////////+4HwAAAAAAAAAAAAAhh9L/////4Z01AAAAAAAAAAAAAAAAAAAABh0kDwAAAAAAAAAAAA==",
+     "glyph": 33,
+     "height": 22,
+     "left": 1,
+     "size": 24,
+     "top": 17,
+     "width": 22
+    },
+    {
+     "codepoint": 37,
+     "coverage": "AAANdrjKtGsHAAAAAAAAEcfQcgAAAAAAABrb///////LDQAAAAAAl//tEwAAAAAAAK///5M4qP//lAAAAAAz/f9nAAAAAAAADvz/5gMAD/f/7wIAAAHI/8sCAAAAAAAAMP//ugAAANf//xcAAGX//TUAAAAAAAAALf//vQAAANr//xQAEuz/mAAAAAAAAAAACvn/6wUAEvn/6QAAmv/rEgAAAAAAAAAAAKH//6ZPt///hgA1/f9kAAAAAAAAAAAAABHM//////+6BwLL/8gBAAATKhoAAAAAAAAFXqGznVQCAGn//TIANsb////bVQAAAAAAAAAAAAAAFO3/lQAw9v/92Pn//1sAAAAAAAAAAAAAnf/qEQC3//9jADX+/+UCAAAAAAAAAAA4/v9hAAT5//YEAADL//8tAAAAAAAAAALN/8UBABP//+EAAACy//9CAAAAAAAAAGz//C8AAAb8//IBAADF//8yAAAAAAAAFu//kgAAAADE//9LACP7/+4FAAAAAAAAoP/oDwAAAABF/v/1t+v//3IAAAAAAAA7/v9eAAAAAAAAV+n////1ewAAAAAAAAA3WFMAAAAAAAAAAAY7U0MNAAAA",
+     "glyph": 6,
+     "height": 19,
+     "left": 0,
+     "size": 24,
+     "top": 18,
+     "width": 24
+    },
+    {
+     "codepoint": 56,
+     "coverage": "AAAAK32txMzAoWcTAAAAAAac/v/////////yXwAAAIz//////////////j8ABfL////KLg5N8////6oAHP////8+AAAAj////88ACP7///8uAAAAfv///7kAALf///+MAAAL0v///2YAACHb////0bLm////pAMAAAANiv///////+9TAAAAAAmd+//////////rYwAAALf////NUTdr7v///2QAPv////QWAAAAW////+kCc////8kAAAAAGf////8hfv///9QAAAAAJP////8tWv////49AAAAjP////sOEO7////5pIq+/////64AAFL7////////////4B0AAAAztPv//////+6SFAAAAAAAAAs2TVRJKgMAAAAA",
+     "glyph": 25,
+     "height": 19,
+     "left": 1,
+     "size": 24,
+     "top": 18,
+     "width": 15
+    },
+    {
+     "codepoint": 101,
+     "coverage": "AAAAAAxDYGlWIQAAAAAAAAAYnfn//////8Q2AAAAACvn///////////5UAAACN3////geWWv////9CAAa////+MSAAAAof///5cAu////4EAAAAARf///+QA5f////////////////8N8/////////////////8e4////72YmJiYmJiYmJgTtv///40AAAAAAAAAAAAAY/////QxAAAAAAAljHQABdP////7rIJ+mtL//4AAAB/Z/////////////4AAAAAMgeb///////7TiSQAAAAAAAAlRlRNNQ8AAAAA",
+     "glyph": 70,
+     "height": 15,
+     "left": 1,
+     "size": 24,
+     "top": 14,
+     "width": 15
+    },
+    {
+     "codepoint": 65,
+     "coverage": "AAAAAAAAAAAAAAAACfH/////////////IwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFr//////////////4EAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAC5///////////////fAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAb/f///////////////z8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAd/////////////////+eAAAAAAAAAAAAAAAAAAAAAAAAAAAAANX/////////////////8goAAAAAAAAAAAAAAAAAAAAAAAAAADX///////////////////9cAAAAAAAAAAAAAAAAAAAAAAAAAACU////////////////////ugAAAAAAAAAAAAAAAAAAAAAAAAAF7P/////////H//////////0cAAAAAAAAAAAAAAAAAAAAAAAAUf//////////K+//////////eAAAAAAAAAAAAAAAAAAAAAAAALD/////////zACf/////////9cAAAAAAAAAAAAAAAAAAAAAABT6/////////3MAR///////////NgAAAAAAAAAAAAAAAAAAAABu//////////4cAATq/////////5UAAAAAAAAAAAAAAAAAAAAAzf/////////DAAAAl//////////tBgAAAAAAAAAAAAAAAAAAK///////////agAAAD///////////1IAAAAAAAAAAAAAAAAAAIr//////////BUAAAAC5P////////+xAAAAAAAAAAAAAAAAAAPm/////////7kAAAAAAI//////////+xUAAAAAAAAAAAAAAABI//////////9hAAAAAAA3//////////9vAAAAAAAAAAAAAAAAp//////////4DwAAAAAAAN7/////////zgAAAAAAAAAAAAAAD/b/////////sAAAAAAAAACH//////////8tAAAAAAAAAAAAAGX//////////1cAAAAAAAAAL///////////jAAAAAAAAAAAAADE//////////QKAAAAAAAAAADW/////////+cDAAAAAAAAAAAj///////////54ODg4ODg4ODg9P//////////SQAAAAAAAAAAgf///////////////////////////////////6gAAAAAAAAAAd7////////////////////////////////////3EAAAAAAAAD///////////////////////////////////////2YAAAAAAACe///////////////////////////////////////FAAAAAAAK8v///////////////////////////////////////yQAAAAAXP//////////zKCgoKCgoKCgoKCgoKC8//////////+CAAAAALr//////////zkAAAAAAAAAAAAAAAAAE/v/////////4AEAABv9/////////98AAAAAAAAAAAAAAAAAAAC2//////////9AAAB4//////////+HAAAAAAAAAAAAAAAAAAAAXv//////////nwAA1v//////////LgAAAAAAAAAAAAAAAAAAAA33//////////MLNv//////////1QAAAAAAAAAAAAAAAAAAAAAArf//////////XZX//////////3wAAAAAAAAAAAAAAAAAAAAAAFT//////////7w=",
+     "glyph": 34,
+     "height": 35,
+     "left": 0,
+     "size": 48,
+     "top": 35,
+     "width": 37
+    },
+    {
+     "codepoint": 97,
+     "coverage": "AAAAAAcxWICdtcvW3t/SxLOHVx4AAAAAAAAAAABkyvn///////////////////69VwAAAAAAAACk/////////////////////////7kcAAAAAACk///////////////////////////fFgAAAACk////////////////////////////xAEAAACk///////szcC0uMjs/////////////04AAACk/+OWSxgAAAAAAAAALZ7//////////8QAAAByVAIAAAAAAAAAAAAAAAB8//////////0PAAAAAAAAAAAAAAAAAAAAAAAK9/////////9JAAAAAAAAAAAAAAAAAAAAAAAA2/////////9zAAAAAAAADUpymLG8x8/Q0NDQ+P////////+FAAAAAE+6+f////////////////////////+WAAAcyP////////////////////////////+fACLk//////////////////////////////+gAL7///////////////////////////////+gRP///////////8FuRDMwMDAw3/////////+gl///////////ZwAAAAAAAAAA4P////////+gyv/////////BAAAAAAAAAAAG+P////////+g4v////////+PAAAAAAAAAABI//////////+g5/////////+hAAAAAAAAAAPH//////////+g0f/////////vFwAAAAAAApj///////////+gnv//////////2lILAARDwv////////////+gTP//////////////7/z///////////////+gAcv////////////////////Q4P////////+gACrv/////////////////+Mg2P////////+gAAA55v//////////////0yEA2P////////+gAAAAF5r5/////////+1/CAAA2P////////+gAAAAAAAUV4yirKB/SAgAAAAAAAAAAAAAAAAA",
+     "glyph": 66,
+     "height": 28,
+     "left": 2,
+     "size": 48,
+     "top": 27,
+     "width": 27
+    },
+    {
+     "codepoint": 66,
+     "coverage": "mP/////////////////57+TUso1eFgAAAAAAAAAAmP///////////////////////////sdQAAAAAAAAmP//////////////////////////////wRMAAAAAmP///////////////////////////////9gPAAAAmP////////////////////////////////+ZAAAAmP/////////////////////////////////+GgAAmP//////////hCQkJCQmO3jp////////////agAAmP//////////cAAAAAAAAAAa5v//////////ngAAmP//////////cAAAAAAAAAAAdP//////////tQAAmP//////////cAAAAAAAAAAARP//////////wgAAmP//////////cAAAAAAAAAAATP//////////rwAAmP//////////cAAAAAAAAAAAkf//////////fQAAmP//////////cAAAAAAAAABQ+f/////////+JwAAmP//////////sXR0dHR2icb///////////+eAAAAmP///////////////////////////////8gLAAAAmP/////////////////////////////6kgoAAAAAmP////////////////////////////+zMgAAAAAAmP///////////////////////////////6IMAAAAmP/////////////////////////////////ODQAAmP//////////07CwsLCwu9r+////////////qwAAmP//////////cAAAAAAAAAAfn////////////0AAmP//////////cAAAAAAAAAAAAJr//////////6kAmP//////////cAAAAAAAAAAAABj+/////////+8AmP//////////cAAAAAAAAAAAAADg//////////8dmP//////////cAAAAAAAAAAAAADW//////////8wmP//////////cAAAAAAAAAAAAAPx//////////8rmP//////////cAAAAAAAAAAAAEr///////////8UmP//////////cAAAAAAAAAAAIeD//////////+8BmP//////////hCQkJCQkLk6S8////////////6MAmP///////////////////////////////////0UAmP//////////////////////////////////qwAAmP/////////////////////////////////MEwAAmP///////////////////////////////6wOAAAAmP////////////////////////////q4PwAAAAAAmP///////////////////fPn2baLWxEAAAAAAAAA",
+     "glyph": 35,
+     "height": 35,
+     "left": 4,
+     "size": 48,
+     "top": 35,
+     "width": 30
+    },
+    {
+     "codepoint": 103,
+     "coverage": "AAAAAAAAAB90qcPTxJ9fDgAAAAdAQEBAQEBAQBUAAAAAABut///////////zgAcAHP//////////VAAAAABK8v//////////////yhgc//////////9UAAAATPn/////////////////2DD//////////1QAACT0////////////////////1P//////////VAACxf////////////////////////////////9UAFL////////////viUo7VaL9/////////////1QAwf//////////1BkAAAAAADzy////////////VB////////////YgAAAAAAAAAFf///////////9UXP//////////kQAAAAAAAAAAANH//////////1SV//////////86AAAAAAAAAAAAe///////////VLT//////////AkAAAAAAAAAAABH//////////9Uxf/////////qAAAAAAAAAAAAACz//////////1TT/////////98AAAAAAAAAAAAAIP//////////VMj/////////5wAAAAAAAAAAAAAq//////////9Utv/////////5BAAAAAAAAAAAAEL//////////1Sb//////////8sAAAAAAAAAAAAc///////////VGP//////////3kAAAAAAAAAAADG//////////9UJ///////////5AsAAAAAAAAARf///////////1QAzf//////////rgUAAAAAACfn////////////VABg////////////1mUrHjiG9f////////////9UAAfW/////////////////////////////////1QAADX7////////////////////6v//////////VAAAAGr//////////////////+1E//////////9UAAAAAGr9///////////////kLx///////////08AAAAAADfR////////////qRYAMP//////////OgAAAAAAAANGndPt++3IiCsAAABQ//////////8lAAAAAAAAAAAAAAAAAAAAAAAAAI7/////////+goAAAAAAAAAAAAAAAAAAAAAAAAK7P////////+9AAAAAFYlAAAAAAAAAAAAAAAAAJz//////////3MAAAAAoPyjPwEAAAAAAAAAABSl///////////vEwAAAACg////4aFpSjc4R26p+P///////////3MAAAAAAKD///////////////////////////+9BgAAAAAAoP//////////////////////////xwwAAAAAAACg/////////////////////////pQLAAAAAAAAAJX//////////////////////bo8AAAAAAAAAAAAACx0ruL////////////qt3wfAAAAAAAAAAAAAAAAAAAAAAwrRFBZUUIzHAAAAAAAAAAAAAAAAA==",
+     "glyph": 72,
+     "height": 38,
+     "left": 2,
+     "size": 48,
+     "top": 27,
+     "width": 29
+    },
+    {
+     "codepoint": 81,
+     "coverage": "AAAAAAAAAAAAAAAAACFScoyXnZWIbUwZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAm+j//////////////96RMwAAAAAAAAAAAAAAAAAAAAAAAEvS///////////////////////DOgAAAAAAAAAAAAAAAAAAEq7///////////////////////////+ZCgAAAAAAAAAAAAAAJ+D//////////////////////////////88YAAAAAAAAAAAAJuv/////////////////////////////////2xUAAAAAAAAAEd7////////////////87v7////////////////HBAAAAAAAAKr/////////////z2kdAgAFKXvj/////////////4MAAAAAAEb////////////+dwMAAAAAAAAADZ/////////////5IQAAAADL////////////aQAAAAAAAAAAAAABnP///////////54AAAA5////////////qAAAAAAAAAAAAAAAAAXX///////////3EgAAlP//////////+RwAAAAAAAAAAAAAAAAASf///////////2IAAOH//////////64AAAAAAAAAAAAAAAAAAAHg//////////+tABv///////////9WAAAAAAAAAAAAAAAAAAAAiP//////////5QBN////////////HwAAAAAAAAAAAAAAAAAAAFH///////////8Wbf//////////7wAAAAAAAAAAAAAAAAAAAAAh////////////NYf//////////9MAAAAAAAAAAAAAAAAAAAAABf///////////0+T///////////GAAAAAAAAAAAAAAAAAAAAAAD3//////////9amv//////////uwAAAAAAAAAAAAAAAAAAAAAA6///////////YZP//////////8QAAAAAAAAAAAAAAAAAAAAAAPb//////////1WI///////////RAAAAAAAAAAAAAAAAAAAAAAT///////////9Hb///////////6gAAAAAAAAAAAAAAAAAAAAAf////////////M1D///////////8XAAAAAAAAAAAAAAAAAAAATv///////////Qog////////////SwAAAAAAAAAAAAAAAAAAAIT//////////9oAAOb//////////54AAAAAAAAAAAAAAAAAAADc//////////+bAACb///////////wDgAAAAAAAAAAAAAAAABC////////////SAAAQf///////////40AAAAAAAAAAAAAAAAD0f//////////6gUAAADU///////////7SQAAAAAAAAAAAAAAkf///////////3cAAAAAUf////////////ZWAAAAAAAAAAAJkv///////////+oMAAAAAAC3/////////////7lVDQAAABxt2/////////////9RAAAAAAAAGOf////////////////w4vb///////////////+bAAAAAAAAAAAw8f////////////////////////////////+xBAAAAAAAAAAAADDm//////////////////////////////+qBwAAAAAAAAAAAAAAGLf///////////////////////////luAAAAAAAAAAAAAAAAAAAAUtT//////////////////////qciAAAAAAAAAAAAAAAAAAAAAAAAQZzm/////////////////+MXAAAAAAAAAAAAAAAAAAAAAAAAAAAAACFSc42aotD/////////zQwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAO0P////////+5BQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABng/////////6IAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJ+z/////////hwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA49f////////9sAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEz8/////////VMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAY//////////3PQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADBAQEBAQEBAIAAAA=",
+     "glyph": 50,
+     "height": 44,
+     "left": 2,
+     "size": 48,
+     "top": 36,
+     "width": 37
+    },
+    {
+     "codepoint": 38,
+     "coverage": "AAAAAAAAAAAAAAAACz5wiJebkIBjRBgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANaT3/////////////+qxcxQAAAAAAAAAAAAAAAAAAAAAAAAACJb9////////////////////RAAAAAAAAAAAAAAAAAAAAAAAAAu9//////////////////////9EAAAAAAAAAAAAAAAAAAAAAAAAmv///////////////////////0QAAAAAAAAAAAAAAAAAAAAAADD+////////////////////////RAAAAAAAAAAAAAAAAAAAAAAAi///////////wk0hEiNCeLv8//9EAAAAAAAAAAAAAAAAAAAAAADD/////////80GAAAAAAAAABRy4kQAAAAAAAAAAAAAAAAAAAAAANv/////////gwAAAAAAAAAAAAAEDQAAAAAAAAAAAAAAAAAAAAAA1P////////+eAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACq//////////QYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFr//////////7IBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABNv//////////4MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPv///////////2YAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABu9/////////////FEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/7P//////////////+D8AAAAAAAAAABX8/Pz8/Pz8LAAAAAAAVvn/////////////////8C8AAAAAAAAAMP////////4JAAAAAEv7////////////////////5iEAAAAAAABP////////4wAAAAAh8P/////////s5f//////////2hUAAAAAAIj///////+9AAAAALX/////////4SYr7v//////////zAwAAAAAxv///////4YAAAA1//////////o1AAA89v//////////uwYAACf/////////OQAAAJL/////////mQAAAABO/P//////////qAEAlP///////+oCAAAA1P////////88AAAAAABj////////////kjD7////////nQAAAAT8/////////xMAAAAAAAB7////////////7P////////8yAAAAFP//////////CAAAAAAAAACT////////////////////uAAAAAAR//////////8pAAAAAAAAAAKo//////////////////wuAAAAAAD4/////////3gAAAAAAAAAAAa8////////////////hAAAAAAAANn/////////6xIAAAAAAAAAAA3O/////////////8EFAAAAAAAAjv//////////wAoAAAAAAAAAABrz////////////NAAAAAAAAAA4////////////0DMAAAAAAAA2xv/////////////ZFQAAAAAAAACx/////////////8KAZm6Nzf/////////////////LDAAAAAAAACHy//////////////////////////////////////+6BgAAAAAAAD/2//////////////////////////////////////+nAQAAAAAAAEPq////////////////////////9aD+//////////+RAAAAAAAAABav/////////////////////aMcAHD///////////96AAAAAAAAAAAwn/T/////////////2XwcAAAAAIv///////////9jAAAAAAAAAAAABDNsipyropF9ThcAAAAAAAAAAAAAAAAAAAAAAAA=",
+     "glyph": 7,
+     "height": 37,
+     "left": 2,
+     "size": 48,
+     "top": 36,
+     "width": 38
+    },
+    {
+     "codepoint": 64,
+     "coverage": "AAAAAAAAAAAAAAAAAAAAAS5liqi1vLGkh2AyAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUOe7f//////////////7ahKAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAJe1f//////////////////////4WcEAAAAAAAAAAAAAAAAAAAAAAAAOc7////////////////////////////YPAAAAAAAAAAAAAAAAAAAAAOA/P//////////6sa1pKu63v3//////////IMCAAAAAAAAAAAAAAAACrP////////8tVwhAAAAAAAAAA1OnfT///////+oBgAAAAAAAAAAAAALxf//////+Y4XAAAAAAAAAAAAAAAAAA598f//////swMAAAAAAAAAAAW4//////+5IQAAAAAAAAAAAAAAAAAAAAAAGbf//////5UAAAAAAAAAAI7//////30BAAAAAAAAAAAAAAAAAAAAAAAAAACF//////9YAAAAAAAASP/////+ZwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAef/////qEwAAAAAI3f////92AAAAAAAAAAAAABIYAQAAAAAAAAAAAAAAAJr/////mAAAAAB2/////6wAAAAAAAAAAVm19///+cBVAACbrKysqQAAAArc////9xQAAAfn////7xcAAAAAAAAgx///////////owfo/////AAAAABI/////3oAAFz/////cQAAAAAAACbj/////////////4jo/////AAAAAAA1P///9IAALn////uCwAAAAAAB9P///////////////r4/////AAAAAAAcf////4TDPv///+PAAAAAAAAgv//////8oJGRn/u/////////AAAAAAAMP////9PSP////8+AAAAAAAK7f/////pJgAAAAAf4f///////AAAAAAAAvX///9wfP////YDAAAAAABV//////9WAAAAAAAARP///////AAAAAAAAOD///+Eo////8oAAAAAAACT/////+YCAAAAAAAAANH//////AAAAAAAAM7///+Wvv///6YAAAAAAADB/////6gAAAAAAAAAAI///////AAAAAAAANT///+Jy////5YAAAAAAADU/////4gAAAAAAAAAAG3//////AAAAAAAAOf///910P///48AAAAAAADf/////38AAAAAAAAAAGT//////AAAAAAAFf////9dxv///5oAAAAAAADR/////4wAAAAAAAAAAHL//////AAAAAAAWf////8it////7IAAAAAAAC8/////7QAAAAAAAAAAJr//////AAAAAAAvf///90Alv///9cAAAAAAACJ//////IJAAAAAAAAAuP//////AAAAABM/////4cAb/////4RAAAAAABJ//////90AAAAAAAAYv///////AAAACbs////8RMANv////9VAAAAAAAD4P/////4TAAAAABA9P///////AABVe3/////dgAABPL///+uAAAAAAAAaf///////7d6d7D9/////////YzX//////+nAQAAAKP////7IAAAAAAAAbv///////////////Hz/////////////7QHAAAAAEb/////nQAAAAAAABLK/////////////2vo///////////6dAEAAAAAAAHS/////joAAAAAAAANmv3////////9dgDo////////85MjAAAAAAAAAABW/////94PAAAAAAAAACuExeDlyY4nAADo/e7dwolPDgAAAAAAAAAAAAAAvv////+8BgAAAAAAAAAAAAAAAAAAAAAHAQAAAAAAAAAAAAAAAAAAAAAAJPL/////swkAAAAAAAAAAAAAAAAAAAAAAAAAAAAFAAAAAAAAAAAAAAAAAFf//////8kfAAAAAAAAAAAAAAAAAAAAAAAACpqnAAAAAAAAAAAAAAAAAAB5///////wagMAAAAAAAAAAAAAAAAAAABB1f//UAAAAAAAAAAAAAAAAAAAgP///////9hmDgAAAAAAAAAAAAADTsf/////5xEAAAAAAAAAAAAAAAAAAGf6////////97R3SCcYEx47ZqHr/////////4IAAAAAAAAAAAAAAAAAAAA13P/////////////////////////////8igUAAAAAAAAAAAAAAAAAAAAACYH2/////////////////////////78vAAAAAAAAAAAAAAAAAAAAAAAAAAAXhOr///////////////////uwPwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARHlNH8/////////+ivZhcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGKENPVUw4FwAAAAAAAAAAAAAAAAAAAAAA",
+     "glyph": 33,
+     "height": 43,
+     "left": 3,
+     "size": 48,
+     "top": 34,
+     "width": 42
+    },
+    {
+     "codepoint": 37,
+     "coverage": "AAAAAAAAHV+El5SAUxIAAAAAAAAAAAAAAAAAAAAAAH+goKCgQAAAAAAAAAAAAAAAAAA4u//////////8oiIAAAAAAAAAAAAAAAAAAEn/////4AkAAAAAAAAAAAAAAABy/P/////////////xSgAAAAAAAAAAAAAAAAfb/////08AAAAAAAAAAAAAAABp//////////////////o5AAAAAAAAAAAAAAB+/////7UAAAAAAAAAAAAAAAAm+f//////rFxlyP//////4wgAAAAAAAAAAAAg9v////cjAAAAAAAAAAAAAAAAn///////hQAAAAS9//////9qAAAAAAAAAAAAsv////+AAAAAAAAAAAAAAAAABPT/////6wgAAAAALv//////xAAAAAAAAAAAS//////eCAAAAAAAAAAAAAAAADj//////6MAAAAAAADd//////oJAAAAAAAACN3/////TAAAAAAAAAAAAAAAAABa//////94AAAAAAAAsv//////JQAAAAAAAIH/////sQAAAAAAAAAAAAAAAAAAbP//////aAAAAAAAAKH//////zgAAAAAACL3////9iAAAAAAAAAAAAAAAAAAAGj//////2oAAAAAAACk//////8zAAAAAAC0/////30AAAAAAAAAAAAAAAAAAABV//////9/AAAAAAAAuP//////IAAAAABP/////9sHAAAAAAAAAAAAAAAAAAAAK///////sAAAAAAAAef/////8gQAAAAJ3/////9IAAAAAAAAAAAAAAAAAAAAAADo//////QTAAAAAEH//////7UAAAAAg/////+uAAAAAAAAAAAAAAAAAAAAAAAAhP//////qQQAABDS//////9PAAAAJPj////1HgAAAAAAAAAAAAAAAAAAAAAAABTq///////UiJDl///////JAQAAALb/////eQAAAAAAAAAAAAAAAAAAAAAAAAAAQvv////////////////rHwAAAFH/////2QYAAAAAAAAAAAAAAAAAAAAAAAAAAABD7f/////////////XJQAAAArh/////0UAAAAAAAAPPVFZRiUAAAAAAAAAAAAAABSI6P///////9twCAAAAACG/////6oAAAAAAlfH/P//////5IoWAAAAAAAAAAAAAAEsUWRhTSAAAAAAAAAm+f////QcAAAAF8P/////////////8U0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAuf////92AAAAE93////////////////+VQAAAAAAAAAAAAAAAAAAAAAAAAAAVP/////WBQAAALb///////Wqmdv///////MjAAAAAAAAAAAAAAAAAAAAAAAAC+L/////QQAAAED//////+ckAAAEpv//////oAAAAAAAAAAAAAAAAAAAAAAAAIj/////pwAAAACn//////9cAAAAAA7v//////oNAAAAAAAAAAAAAAAAAAAAACf5////8hoAAAAA6f/////3CQAAAAAAov//////SQAAAAAAAAAAAAAAAAAAAAC7/////3IAAAAAFf//////zwAAAAAAAHH//////3QAAAAAAAAAAAAAAAAAAABW/////9MEAAAAACj//////7oAAAAAAABc//////+HAAAAAAAAAAAAAAAAAAAM5P////8+AAAAAAAs//////+4AAAAAAAAWf//////iwAAAAAAAAAAAAAAAAAAi/////+jAAAAAAAAGv//////yAAAAAAAAGn//////3gAAAAAAAAAAAAAAAAAKfr////xGAAAAAAAAAT0/////+8CAAAAAACS//////9XAAAAAAAAAAAAAAAAAL7/////bgAAAAAAAAAAuf//////QAAAAAAC3f//////GAAAAAAAAAAAAAAAAFn/////0AMAAAAAAAAAAF///////8oHAAAAbf//////vgAAAAAAAAAAAAAAAA3l/////jsAAAAAAAAAAAAE3f//////0GlZnf7//////0EAAAAAAAAAAAAAAACN/////58AAAAAAAAAAAAAADX4/////////////////40AAAAAAAAAAAAAAAAr+////+8WAAAAAAAAAAAAAAAASfD//////////////5cEAAAAAAAAAAAAAAAAwP////9rAAAAAAAAAAAAAAAAAAAjpv3/////////1lQAAAAAAAAAAAAAAAAALrCwsLCdAgAAAAAAAAAAAAAAAAAAAAAZXI6iqZd1NAIAAAAAAA==",
+     "glyph": 6,
+     "height": 37,
+     "left": 1,
+     "size": 48,
+     "top": 36,
+     "width": 46
+    },
+    {
+     "codepoint": 56,
+     "coverage": "AAAAAAAAAAAAHEZvg5Cblol7WC0GAAAAAAAAAAAAAAAAAAAjhtn///////////////KnTQAAAAAAAAAAAAAMkvr/////////////////////xzMAAAAAAAAAF83/////////////////////////9k8AAAAAAALF////////////////////////////+i4AAAAAaf//////////////////////////////ygAAAADN///////////xeSwRHFPL////////////LAAAGP//////////9C4AAAAAAAW+//////////92AAA1//////////+QAAAAAAAAADP//////////5MAAEf//////////08AAAAAAAAAAPL/////////pgAAOf//////////QAAAAAAAAAAA5f////////+YAAAP/f////////9bAAAAAAAAAAb5/////////2wAAADB/////////6wAAAAAAAAAUf/////////9IgAAAEn//////////2MAAAAAACPj/////////6YAAAAAAJX//////////7xvVV+X8//////////cFAAAAAAAAov+////////////////////////yh0AAAAAAAAAADu+////////////////////420FAAAAAAAAAAAAABeQ/v///////////////8s3AAAAAAAAAAAAABWY+f/////////////////////FPQAAAAAAAAA85//////////////////////////9ggAAAAAANPP//////////rd1XWeV7P//////////hAAAAAbY/////////+o6AAAAAAANsf/////////+PAAAXv//////////RQAAAAAAAAAJ2/////////+5AAC1/////////80AAAAAAAAAAABw//////////4SAOz/////////kQAAAAAAAAAAADb//////////0cF//////////98AAAAAAAAAAAAIf//////////YAj//////////4YAAAAAAAAAAAAr//////////9jAPL/////////sgAAAAAAAAAAAFb//////////0wA1//////////3FwAAAAAAAAAAsv//////////MQCT//////////+3BwAAAAAAAGD//////////+sCAEH////////////SXBsFDjue/v//////////nQAAALv///////////////////////////////chAAAAJ/D/////////////////////////////dAAAAAAANO7//////////////////////////4EAAAAAAAAAH6///////////////////////+BQAAAAAAAAAAAAADuZ7P///////////////bxiCQAAAAAAAAAAAAAAAAADKliBk6CsppmLaz0PAAAAAAAAAAA=",
+     "glyph": 25,
+     "height": 37,
+     "left": 2,
+     "size": 48,
+     "top": 36,
+     "width": 29
+    },
+    {
+     "codepoint": 101,
+     "coverage": "AAAAAAAAAAADMnCmvM/e0b2kaCQAAAAAAAAAAAAAAAAAAAAReuj//////////////8tLAAAAAAAAAAAAAAAAY/P////////////////////AFwAAAAAAAAAACKH////////////////////////jMgAAAAAAAACm///////////////////////////rHwAAAAAAfv////////////jItcj5///////////OCQAAACL7//////////d0CwAAABGU//////////91AAAAov/////////5PwAAAAAAAACG/////////+oKABL8/////////4YAAAAAAAAAAAbj/////////2EAVf/////////9GgAAAAAAAAAAAJP/////////pQCZ/////////9MAAAAAAAAAAAAAb//////////nAMD//////////vz8/Pz8/Pz8/Pz9//////////8N1P///////////////////////////////////yHn////////////////////////////////////NeT///////////////////////////////////880P///////////////////////////////////zy7/////////8AwMDAwMDAwMDAwMDAwMDAwMDAwC43/////////3gAAAAAAAAAAAAAAAAAAAAAAAAAASP//////////NQAAAAAAAAAAAAAAAAAAAAAAAAAJ9f////////+/AgAAAAAAAAAAAAAAAAACV9EAAACJ//////////+hCAAAAAAAAAAAAAAeddr//wAAABLx///////////dcSgCAAAGHE6ExP7/////AAAAAFj+//////////////vt8/////////////8AAAAAAHn//////////////////////////////wAAAAAAAGv3////////////////////////////AAAAAAAAAC7H////////////////////////5ZMAAAAAAAAAAAA6qfD///////////////jChTwBAAAAAAAAAAAAAAAAAi5ng5Wmqp+SelUwBwAAAAAAAAA=",
+     "glyph": 70,
+     "height": 28,
+     "left": 2,
+     "size": 48,
+     "top": 27,
+     "width": 29
+    }
+   ],
+   "subfamilyName": "Bold",
+   "unitsPerEm": 2048,
+   "weight": 700
+  },
+  "DejaVuSans-Subset-CID.otf": {
+   "ascender": 1901,
+   "descender": -483,
+   "familyName": "DejaVu Sans CID Test",
+   "fullName": "DejaVu Sans CID Test",
+   "glyphs": [
+    {
+     "advance": 651,
+     "bounds": null,
+     "codepoint": 32,
+     "glyph": 1
+    },
+    {
+     "advance": 821,
+     "bounds": [
+      309,
+      0,
+      512,
+      1493
+     ],
+     "codepoint": 33,
+     "glyph": 2
+    },
+    {
+     "advance": 1946,
+     "bounds": [
+      113.00001525878906,
+      -29.000015258789062,
+      1833.0,
+      1519.999984741211
+     ],
+     "codepoint": 37,
+     "glyph": 6
+    },
+    {
+     "advance": 1597,
+     "bounds": [
+      129.0,
+      -29.000015258789062,
+      1534.0,
+      1519.999984741211
+     ],
+     "codepoint": 38,
+     "glyph": 7
+    },
+    {
+     "advance": 651,
+     "bounds": [
+      158,
+      -238,
+      451,
+      254
+     ],
+     "codepoint": 44,
+     "glyph": 13
+    },
+    {
+     "advance": 651,
+     "bounds": [
+      219,
+      0,
+      430,
+      254
+     ],
+     "codepoint": 46,
+     "glyph": 15
+    },
+    {
+     "advance": 1303,
+     "bounds": [
+      139.0,
+      -29.0,
+      1163.0,
+      1519.9999542236328
+     ],
+     "codepoint": 56,
+     "glyph": 25
+    },
+    {
+     "advance": 2048,
+     "bounds": [
+      135.00001525878906,
+      -356.0,
+      1905.000015258789,
+      1442.0
+     ],
+     "codepoint": 64,
+     "glyph": 33
+    },
+    {
+     "advance": 1401,
+     "bounds": [
+      16,
+      0,
+      1384,
+      1493
+     ],
+     "codepoint": 65,
+     "glyph": 34
+    },
+    {
+     "advance": 1405,
+     "bounds": [
+      200.99998474121094,
+      -3.0517578125e-05,
+      1259.999984741211,
+      1492.9999694824219
+     ],
+     "codepoint": 66,
+     "glyph": 35
+    },
+    {
+     "advance": 1178,
+     "bounds": [
+      201,
+      0,
+      1059,
+      1493
+     ],
+     "codepoint": 70,
+     "glyph": 39
+    },
+    {
+     "advance": 1540,
+     "bounds": [
+      201,
+      0,
+      1339,
+      1493
+     ],
+     "codepoint": 72,
+     "glyph": 41
+    },
+    {
+     "advance": 1141,
+     "bounds": [
+      201,
+      0,
+      1130,
+      1493
+     ],
+     "codepoint": 76,
+     "glyph": 45
+    },
+    {
+     "advance": 1235,
+     "bounds": [
+      201.0,
+      1.52587890625e-05,
+      1165.0,
+      1493.0
+     ],
+     "codepoint": 80,
+     "glyph": 49
+    },
+    {
+     "advance": 1612,
+     "bounds": [
+      114.99998474121094,
+      -264.0,
+      1496.9999694824219,
+      1519.999984741211
+     ],
+     "codepoint": 81,
+     "glyph": 50
+    },
+    {
+     "advance": 1251,
+     "bounds": [
+      -6,
+      0,
+      1257,
+      1493
+     ],
+     "codepoint": 84,
+     "glyph": 53
+    },
+    {
+     "advance": 1401,
+     "bounds": [
+      16,
+      0,
+      1384,
+      1493
+     ],
+     "codepoint": 86,
+     "glyph": 55
+    },
+    {
+     "advance": 2025,
+     "bounds": [
+      68,
+      0,
+      1958,
+      1493
+     ],
+     "codepoint": 87,
+     "glyph": 56
+    },
+    {
+     "advance": 1251,
+     "bounds": [
+      -4,
+      0,
+      1255,
+      1493
+     ],
+     "codepoint": 89,
+     "glyph": 58
+    },
+    {
+     "advance": 1255,
+     "bounds": [
+      122.99996948242188,
+      -28.999984741210938,
+      1069.0,
+      1147.000015258789
+     ],
+     "codepoint": 97,
+     "glyph": 66
+    },
+    {
+     "advance": 1300,
+     "bounds": [
+      113.0,
+      -29.0,
+      1114,
+      1556
+     ],
+     "codepoint": 100,
+     "glyph": 69
+    },
+    {
+     "advance": 1260,
+     "bounds": [
+      113.0,
+      -29.0,
+      1151.000015258789,
+      1147.0
+     ],
+     "codepoint": 101,
+     "glyph": 70
+    },
+    {
+     "advance": 1300,
+     "bounds": [
+      113.0,
+      -426.0,
+      1114.0,
+      1147.000015258789
+     ],
+     "codepoint": 103,
+     "glyph": 72
+    },
+    {
+     "advance": 569,
+     "bounds": [
+      193,
+      0,
+      377,
+      1556
+     ],
+     "codepoint": 108,
+     "glyph": 77
+    },
+    {
+     "advance": 1298,
+     "bounds": [
+      186.00001525878906,
+      0,
+      1124.000015258789,
+      1147.0
+     ],
+     "codepoint": 110,
+     "glyph": 79
+    },
+    {
+     "advance": 1253,
+     "bounds": [
+      113.0,
+      -28.999984741210938,
+      1141.0,
+      1147.0
+     ],
+     "codepoint": 111,
+     "glyph": 80
+    },
+    {
+     "advance": 842,
+     "bounds": [
+      186.00001525878906,
+      -1.52587890625e-05,
+      842,
+      1146.999984741211
+     ],
+     "codepoint": 114,
+     "glyph": 83
+    },
+    {
+     "advance": 1212,
+     "bounds": [
+      61,
+      0,
+      1151,
+      1120
+     ],
+     "codepoint": 118,
+     "glyph": 87
+    },
+    {
+     "advance": 1212,
+     "bounds": [
+      61.0,
+      -426.0,
+      1151.0,
+      1120.0
+     ],
+     "codepoint": 121,
+     "glyph": 90
+    },
+    {
+     "advance": 1260,
+     "bounds": [
+      113.0,
+      -29.0,
+      1151.000015258789,
+      1638.0
+     ],
+     "codepoint": 233,
+     "glyph": 169
+    },
+    {
+     "advance": 2206,
+     "bounds": [
+      40,
+      0,
+      2166,
+      1493
+     ],
+     "codepoint": 1046,
+     "glyph": 213
+    },
+    {
+     "advance": 1303,
+     "bounds": [
+      0.0,
+      -28.999984741210938,
+      1167,
+      1520.0000305175781
+     ],
+     "codepoint": 8364,
+     "glyph": 226
+    },
+    {
+     "advance": 1401,
+     "bounds": [
+      16,
+      0,
+      1384,
+      1493
+     ],
+     "codepoint": 119808,
+     "glyph": 34
+    }
+   ],
+   "kerning": [],
+   "legacyKerning": [],
+   "lineGap": 0,
+   "numGlyphs": 234,
+   "renders": [
+    {
+     "codepoint": 65,
+     "coverage": "AAAAh68BAAAAAAAS9ORBAAAAAABttX6iAAAAAADOViD0DgAAAC/vCADAZQAAAJK5PDyPxgAABuzGwMDA9ygAVt4AAAAAqIkAt4UAAAAATeYD",
+     "glyph": 34,
+     "height": 9,
+     "left": 0,
+     "size": 12,
+     "top": 9,
+     "width": 9
+    },
+    {
+     "codepoint": 97,
+     "coverage": "AE6cr4gWAAB1TUOg0gIAAAUdKfApAIPjvrTxQir1FgAA5UQ18g0AVf9EAa3vy6HURAAAGg4AAAA=",
+     "glyph": 66,
+     "height": 8,
+     "left": 0,
+     "size": 12,
+     "top": 7,
+     "width": 7
+    },
+    {
+     "codepoint": 66,
+     "coverage": "n8DAtocVANR/OFHAwwDUXAAAR/IA1HMkPbOeANTj1NzfLQDUXAAAQvgP1FwAAALyUdRcAANh/SnU+vj101kA",
+     "glyph": 35,
+     "height": 9,
+     "left": 1,
+     "size": 12,
+     "top": 9,
+     "width": 7
+    },
+    {
+     "codepoint": 103,
+     "coverage": "AAyEqGROTAC8oz1854gs8AgAAL+ITs8AAACUiDrkAAAAq4gG32MANPOIADHN5ayefQAAAAAAyVYAbYVusdAFACBoeVgHAA==",
+     "glyph": 72,
+     "height": 10,
+     "left": 0,
+     "size": 12,
+     "top": 7,
+     "width": 7
+    },
+    {
+     "codepoint": 81,
+     "coverage": "AAA0q9nCeAQAAEvwZxw3xrgABN5uAAAAD+5TKf8RAAAAAJ+YSfQAAAAAAIG6NP4IAAAAAJasDPNNAAAAA9lwAHjcJgADjt8QAAF17tvxyyQAAAAAAR954RwAAAAAAAAAZ2IA",
+     "glyph": 50,
+     "height": 11,
+     "left": 0,
+     "size": 12,
+     "top": 9,
+     "width": 9
+    },
+    {
+     "codepoint": 38,
+     "coverage": "AABVztyqCQAAABr6UhNWCwAAAC3yBwAAAAAAAADZogEAAAAAAHe+z5UAAGVWDPgZE9KPAMBHMPMBABXVp88CB+VzAABP/5sAADXX4dvRVd1/AAAAGRQAAAAA",
+     "glyph": 7,
+     "height": 10,
+     "left": 0,
+     "size": 12,
+     "top": 9,
+     "width": 9
+    },
+    {
+     "codepoint": 64,
+     "coverage": "AAAAACBSaUIDAAAAAAAYrL1+d6zNKQAAABDeTAAAAAArzDkAAJ1cAE22oVlWJ8MAAcoAKORIReKAAMsMI6oAapUAAIuAAMkYE78AYKoAAKGAFt4AANMLEN6Tjd64vkMAAGiYABlrVCxdFgAAAACooBMAAA2BJQAAAAAAXMnSzs5sBQAAAAAAAAAECAAAAAAA",
+     "glyph": 33,
+     "height": 12,
+     "left": 0,
+     "size": 12,
+     "top": 9,
+     "width": 12
+    },
+    {
+     "codepoint": 37,
+     "coverage": "AHXOrREAAEaSAAAp1wqKgwAGzRsAAE+mAEyqAHt0AAAAJtkQkX8fywUAAAAAa8iiDq9ALIhiAQAAAABJpQ7fULJuAAAAB84ZQLcASLAAAAB/cQAxzgBfnwAAIcoEAACuvdwwAAATFQAAAAAdCQA=",
+     "glyph": 6,
+     "height": 10,
+     "left": 0,
+     "size": 12,
+     "top": 9,
+     "width": 11
+    },
+    {
+     "codepoint": 56,
+     "coverage": "AB6m29B5AQDCryRA7WIA500AAKqGAIO4M0/jMQARxPD8dQAA0n4FF81yH/8YAAB5vgj0bgAKxJwAU+zh9cYZAAAEIBUAAA==",
+     "glyph": 25,
+     "height": 10,
+     "left": 0,
+     "size": 12,
+     "top": 9,
+     "width": 7
+    },
+    {
+     "codepoint": 101,
+     "coverage": "AAFkpZo1AACat0BY6DAh+h0AAI2ZS/nU1dbitTrkAAAAAAAI3WUAAAghAC/Q2cvlYAAAABQgBQA=",
+     "glyph": 70,
+     "height": 8,
+     "left": 0,
+     "size": 12,
+     "top": 7,
+     "width": 7
+    },
+    {
+     "codepoint": 65,
+     "coverage": "AAAAAAAAHICAUgAAAAAAAAAAAAAAAACC///oBAAAAAAAAAAAAAAAAuH//f9OAAAAAAAAAAAAAABG/+2T/7AAAAAAAAAAAAAAAKj/li7/+xcAAAAAAAAAAAAR+P84AND/cwAAAAAAAAAAAGv/2QAAcf/UAAAAAAAAAAAAzf98AAAX+/82AAAAAAAAAC7//h8AAAC0/5gAAAAAAAAAkf/AAAAAAFb/8AkAAAAAAAbs/2IAAAAAB+//WwAAAAAAVf//gXR0dHR00/+9AAAAAAC2//////////////4gAAAAG/z/m4SEhISEhITg/4AAAAB6/+kEAAAAAAAAAHr/4AEAANr/kgAAAAAAAAAAIP7/QwA+//83AAAAAAAAAAAAxP+lAJ//3AAAAAAAAAAAAABp//YP",
+     "glyph": 34,
+     "height": 18,
+     "left": 0,
+     "size": 24,
+     "top": 18,
+     "width": 17
+    },
+    {
+     "codepoint": 97,
+     "coverage": "AAAAIklkWDIJAAAAAF3Z///////pWwAAAJj3rohsgcH//2MAADURAAAAAABp/+cMAAAAAAAAAAAA0v9CAAAAABQwRkhIwf9kAAVr3f////////+DAJr/+biFdGhox/+IOf/zMQAAAAAAt/+Ib/+zAAAAAAAA3v+IgP+tAAAAAABM//+IVf/zJQAAAC7g//+IB9T/85uDrvbjtv+IACS+/////8AioP+IAAAAI0lIIAAAAAAA",
+     "glyph": 66,
+     "height": 15,
+     "left": 1,
+     "size": 24,
+     "top": 14,
+     "width": 12
+    },
+    {
+     "codepoint": 66,
+     "coverage": "UoCAgICAel4+AwAAAKT//////////95aAACk/9h0dHR8muz//UoApP+4AAAAAAAO1//HAKT/uAAAAAAAAHP/9gKk/7gAAAAAAABr//QApP+4AAAAAAACwP+5AKT/zEhISE9syP/qLwCk//////////+1GQAApP/mpKSkp8Lx/9srAKT/uAAAAAAAEKj/6xCk/7gAAAAAAAAM9P96pP+4AAAAAAAAAMv/rKT/uAAAAAAAAADY/6+k/7gAAAAAAAAp/P9+pP+4AAAAABBQ2v/0KKT//PT09Pf////2VACk///////+5caLFwAA",
+     "glyph": 35,
+     "height": 18,
+     "left": 2,
+     "size": 24,
+     "top": 18,
+     "width": 13
+    },
+    {
+     "codepoint": 103,
+     "coverage": "AAAABDBhWSEAAyAgAgAANOL////+oCD//xAAPPf/04Nupv63//8QAMb/tQkAAABR/v//ED///CIAAAAAAK7//xBw/8IAAAAAAABQ//8Qkv+jAAAAAAAAMP//EKL/lAAAAAAAACH//xCD/7AAAAAAAAA9//8QYf/eAgAAAAAAbv//EBn2/1MAAAAABN7//xAAi//xTgIAGLr2//8QAA63///z4f/5Y///CQAAAnbB8uqvMzL/6gAAAAAAAAAAAABZ/8gAAAAAAAAAAAABzP+NAAASjSYAAAAcrv/xFQAAGP//79Hn///xVwAAAAd2uuH27caXHAAAAA==",
+     "glyph": 72,
+     "height": 19,
+     "left": 1,
+     "size": 24,
+     "top": 14,
+     "width": 13
+    },
+    {
+     "codepoint": 81,
+     "coverage": "AAAAAANLlbnJt49CAAAAAAAAAAA40v/////////GKQAAAAAASvb/8YVPKVSN+P/uNgAAAB/w/9opAAAAAAA45v/iEQAApf/7JAAAAAAAAAA8//+HABb6/58AAAAAAAAAAAC9/+4FVf//NQAAAAAAAAAAAFP//ziH//8RAAAAAAAAAAAALv//aZv/8AAAAAAAAAAAAAAN//99ov/hAAAAAAAAAAAAAAL7/4OS//sDAAAAAAAAAAAAHf//aXP//yAAAAAAAAAAAAA9//9NOP//XQAAAAAAAAAAAHr/+xkD3v/YAgAAAAAAAAAM6/+xAABo//9zAAAAAAAAAI7//kIAAAG3//+SBgAAAAuo//+CAAAAAAu2///2xqHL+f/+kgIAAAAAAAJf1f//////9TsAAAAAAAAAAAAAH0NUef7/hQAAAAAAAAAAAAAAAAAAc///bwAAAAAAAAAAAAAAAAAAhf/+WgAAAAAAAAAAAAAAAAAAFxgUAAA=",
+     "glyph": 50,
+     "height": 22,
+     "left": 1,
+     "size": 24,
+     "top": 18,
+     "width": 17
+    },
+    {
+     "codepoint": 38,
+     "coverage": "AAAAABmGsseugS8AAAAAAAAAAABK8////////ysAAAAAAAAAFez/vDYSNXTdLAAAAAAAAABU/+sLAAAAAAIFAAAAAAAAAHL/zQAAAAAAAAAAAAAAAAAARP/8GwAAAAAAAAAAAAAAAAACzf/CBwAAAAAAAAAAAAAAAAKk//+uBAAAAAAAAAAAAAABq//d+P+oAwAAAAAFZGQKAHv/4RhM+f+jAgAAAC7/7gEP9P9PAABQ+/+eAQAAXv+xAFb/+QkAAABW/P+ZAQCp/24Acv/VAAAAAABb/f+UJ/3kCgBP//cEAAAAAABh/v/l/1wAAB3//24AAAAAAABm///gAQAAAJn/+GcBAAAAIbX///+HAAAACcr//9yqoMz5/9qL//+CAAAABHHv/////+Z9DAB2//9+AAAAAAEgR0wsAQAAAAAAAAA=",
+     "glyph": 7,
+     "height": 19,
+     "left": 1,
+     "size": 24,
+     "top": 18,
+     "width": 17
+    },
+    {
+     "codepoint": 64,
+     "coverage": "AAAAAAAAADWAutPgx6phDwAAAAAAAAAAAAAAPsX////n0Of9//iHCQAAAAAAAAABgf79rj4MAAAAEWLN/9wkAAAAAAAAm//OJgAAAAAAAAAAAm774iAAAAAAb/+1CwAAAAAAAAAAAAAAUvrGAAAAGPXfDgAAABNXgl8mADlUAACM/1AAAJH/RQAAAD/m/////niw/wAAEe7OAAHm2wAAABPv/pI6N4r9+f8AAACn/Qkv/4MAAACK/4sAAAAAff//AAAAfv8xUP9eAAAAwv8cAAAAAAz+/wAAAGX/R2X/QwAAAOX5AQAAAAAA5v8AAACD/x9Y/08AAADT/wsAAAAAAff/AAAAvvIBPv9vAAAArP9PAAAAAD7//wAAPP+RAAr3twAAAEL/3SkAACHU//8ASe/cCgAAtPogAAAAm//6zcn308r/3/+/JgAAAD//pgAAAABkwOvKjw2o0aVZAAAAAAAAs/9vAAAAAAAAAAAAAAAAAAAAAAAAABHY/XoAAAAAAAAAAAAARAUAAAAAAAAAHtD/wkEBAAAAAAA1wP+SAAAAAAAAAAAKlfr/56mOjrnk//+3HwAAAAAAAAAAAAAhh9L/////4Jw1AAAAAAAAAAAAAAAAAAAABh0kDwAAAAAAAAAAAA==",
+     "glyph": 33,
+     "height": 22,
+     "left": 1,
+     "size": 24,
+     "top": 17,
+     "width": 22
+    },
+    {
+     "codepoint": 37,
+     "coverage": "AABRpcKXKwAAAAAAAABA0HUAAAAAAIL/5r319kcAAAAAAAXV7xYAAAAAJ/vTDQAw+dkEAAAAAHX/awAAAAAAef9kAAAArf8zAAAAG/POAgAAAAAAnP87AAAAhP9XAAAAqf44AAAAAAAAmf8+AAAAh/9TAABD/5wAAAAAAAAAd/9rAAAAtP8vAAXX7RQAAAAAAAAAIPncFgBA/M8BAHj/aAAAAAAAAAAAAHH99df97TkAHfTLAgAABiMEAAAAAAA+j6uBHQAArf01AA6l+v/3kQYAAAAAAAAAAABG/5kAALr/oFy0/5oAAAAAAAAAAAbZ7BMAPv+2AAAD1/whAAAAAAAAAHv/ZQAAdv9hAAAAhf9VAAAAAAAAH/XIAQAAk/9KAAAAa/9yAAAAAAAAsP0zAAAAe/9cAAAAfv9aAAAAAABJ/5YAAAAATP+jAAAAx/8rAAAAAAfb6hEAAAAAAdD9eTaQ/64AAAAAAH7/YgAAAAAAACLM////txMAAAAAAE5UAQAAAAAAAAACKkwlAQAA",
+     "glyph": 6,
+     "height": 19,
+     "left": 1,
+     "size": 24,
+     "top": 18,
+     "width": 21
+    },
+    {
+     "codepoint": 56,
+     "coverage": "AAAAHoSqx7KQOQAAAAAAePn///////+vBQAAUP//sTsZL4v8/5EAALf/xgIAAAAAiP/1AwDl/3cAAAAAADT//ykA1v98AAAAAAA6//8YAIf/0QYAAAAAl//IAAANxP/IVjVKpf/mKwAAAAdx+f////+fFwAAAAGD9v/cutL7/q8QAACJ/+5HAAAAJ8z/ygEY+f9jAAAAAAAj+/9SSf//HAAAAAAAANb/iE3//xYAAAAAAADP/4wi//9QAAAAAAAU+P9hAdX/4CUAAAAPs//2IAAx+f/5spGo6f//agAAACy0///////STAAAAAAAAA8yTzsZAAAAAA==",
+     "glyph": 25,
+     "height": 19,
+     "left": 1,
+     "size": 24,
+     "top": 18,
+     "width": 13
+    },
+    {
+     "codepoint": 101,
+     "coverage": "AAAAAAo2YU0fAAAAAAAAB4r9/////7wbAAAADtL/8JdxhtX/7RwAAI3/zhgAAAAHrP+lACL6/ikAAAAAABf3/x1d/9MAAAAAAAAAzP9Hg//ouLi5ubq6u+v/bKL/+vT09PT09PT09HaF/7AAAAAAAAAAAAAAXP/kAAAAAAAAAAAAACD4/1oAAAAAAAAAAAAAfv/tSgAAAAAAIIAAAAa4///HmYakyf78AAAAAF/l///////MegAAAAAAABQ+TTMTAAAA",
+     "glyph": 70,
+     "height": 15,
+     "left": 1,
+     "size": 24,
+     "top": 14,
+     "width": 13
+    },
+    {
+     "codepoint": 65,
+     "coverage": "AAAAAAAAAAAAAAAAAHX//////0wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANb//////60AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOf////////oVAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmv////////9wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK8f////X////SAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABe/////WX/////MwAAAAAAAAAAAAAAAAAAAAAAAAAAAADA////uwPn////lQAAAAAAAAAAAAAAAAAAAAAAAAAAACL+////XACM////7gcAAAAAAAAAAAAAAAAAAAAAAAAAAIP////zCgAt/////1gAAAAAAAAAAAAAAAAAAAAAAAAAAuL///+fAAAAzv///7kAAAAAAAAAAAAAAAAAAAAAAAAARv////9BAAAAb/////0dAAAAAAAAAAAAAAAAAAAAAAAAqP///+EBAAAAFfr///98AAAAAAAAAAAAAAAAAAAAAAAR+P///4QAAAAAALH////cAQAAAAAAAAAAAAAAAAAAAABs/////yYAAAAAAFL/////PwAAAAAAAAAAAAAAAAAAAADN////xwAAAAAAAAbt////oQAAAAAAAAAAAAAAAAAAAC7/////aQAAAAAAAACU////9Q0AAAAAAAAAAAAAAAAAAJH////4EQAAAAAAAAA1/////2QAAAAAAAAAAAAAAAAABuz///+sAAAAAAAAAAAA1v///8UAAAAAAAAAAAAAAAAAVP////9NAAAAAAAAAAAAeP////8nAAAAAAAAAAAAAAAAtv///+oEAAAAAAAAAAAAG/3///+IAAAAAAAAAAAAAAAa/P///5AAAAAAAAAAAAAAALr////mAwAAAAAAAAAAAAB5/////zIAAAAAAAAAAAAAAFv/////SwAAAAAAAAAAAADZ/////+zs7Ozs7Ozs7Ozs7O//////rQAAAAAAAAAAAD3/////////////////////////////+hQAAAAAAAAAAJ7//////////////////////////////3AAAAAAAAAADPP//////////////////////////////9EAAAAAAAAAYv////9lBAQEBAQEBAQEBAQEBAQEgf////8zAAAAAAAAxP////gQAAAAAAAAAAAAAAAAAAAAJf////+UAAAAAAAl/////60AAAAAAAAAAAAAAAAAAAAAAMr////uBwAAAACH/////1MAAAAAAAAAAAAAAAAAAAAAAHD/////VwAAAAPl////8AgAAAAAAAAAAAAAAAAAAAAAABj8////uQAAAEr/////nQAAAAAAAAAAAAAAAAAAAAAAAAC6/////R0AAKz/////QgAAAAAAAAAAAAAAAAAAAAAAAABf/////3wAFPn////lAgAAAAAAAAAAAAAAAAAAAAAAAAAN9v///9wBb/////+NAAAAAAAAAAAAAAAAAAAAAAAAAAAAqf////8/",
+     "glyph": 34,
+     "height": 35,
+     "left": 0,
+     "size": 48,
+     "top": 35,
+     "width": 33
+    },
+    {
+     "codepoint": 97,
+     "coverage": "AAAAAAAAJ2qKpcHb1sSqcDEAAAAAAAAAAAAEQ4/b///////////////GSAAAAAAAAAAw/////////////////////4sDAAAAAAAw///////74dHN7v////////+RAAAAAAAw///ceTQHAAAAAA9Cvv//////TAAAAAAqp0IBAAAAAAAAAAAAAEf3////zgAAAAAAAAAAAAAAAAAAAAAAAABm/////zsAAAAAAAAAAAAAAAAAAAAAAAAAwf///4MAAAAAAAAAAAAAAAAAAAAAAAAAiP///7sAAAAAAAAAAAAAAAAAAAAAAAAAWP///+YAAAAAAAAAAAYuW3aDkJSUlJSUr/////cAAAAAAABHp/X///////////////////8HAAAAHbf///////////////////////8PAAAg3//////////w3NTMzMzM2f////8QAAHH/////955OgwAAAAAAAAAQP////8QAFn/////lwQAAAAAAAAAAAAATv////8QALD////OAgAAAAAAAAAAAAAAYP////8QAPD///+FAAAAAAAAAAAAAAAAj/////8QCP////9RAAAAAAAAAAAAAAAAzf////8QFv////9HAAAAAAAAAAAAAAAz//////8QBf////90AAAAAAAAAAAAAAC4//////8QAN/////NBQAAAAAAAAAAAHX///////8QAJj/////kAIAAAAAAAADff////////8QACr9/////89QHwICHWXS////nf////8QAACI//////////r8//////+PQP////8QAAABmf///////////////YQDQP////8QAAAAAFjZ//////////2/PgAAQP////8QAAAAAAACO3qaqpyDZRoAAAAAAAAAAAAA",
+     "glyph": 66,
+     "height": 28,
+     "left": 2,
+     "size": 48,
+     "top": 27,
+     "width": 24
+    },
+    {
+     "codepoint": 66,
+     "coverage": "SP////////////////bo0qRwHQAAAAAAAABI///////////////////////+tyoAAAAAAEj/////////////////////////+mkAAAAASP/////w5OTk5OTk6P3//////////2IAAABI/////3QAAAAAAAAABB9Hs/7/////8RoAAEj/////dAAAAAAAAAAAAAAAOff/////gQAASP////90AAAAAAAAAAAAAAAAZf/////QAABI/////3QAAAAAAAAAAAAAAAAE+P////cAAEj/////dAAAAAAAAAAAAAAAAADN/////wwASP////90AAAAAAAAAAAAAAAAAL3////2AQBI/////3QAAAAAAAAAAAAAAAAA6////9UAAEj/////dAAAAAAAAAAAAAAAAC7/////qQAASP////90AAAAAAAAAAAAAAAL1f////83AABI/////3QAAAAAAAAAAAADV8//////sAAAAEj/////wpCQkJCQkJOrxur//////6gJAAAASP//////////////////////+LNbAAAAAABI///////////////////////KXwsAAAAAAEj/////////////////////////834BAAAASP////+bSEhISEhISFZ1lMf//////6gIAABI/////3QAAAAAAAAAAAAAAEPH/////7IAAEj/////dAAAAAAAAAAAAAAAAAjV/////0IASP////90AAAAAAAAAAAAAAAAADD7////zAFI/////3QAAAAAAAAAAAAAAAAAANH/////IEj/////dAAAAAAAAAAAAAAAAAAAp/////9GSP////90AAAAAAAAAAAAAAAAAACA/////2xI/////3QAAAAAAAAAAAAAAAAAAJf/////f0j/////dAAAAAAAAAAAAAAAAAAAwf////9pSP////90AAAAAAAAAAAAAAAAAAvv/////0hI/////3QAAAAAAAAAAAAAAAAAmf/////1CUj/////dAAAAAAAAAAAAAAAA2v//////6AASP////90AAAAAAAAAAAPLWDZ///////yGgBI//////Dk5OTk5OTk8f//////////+UwAAEj//////////////////////////+hIAAAASP////////////////////////CSEQAAAABI/////////////////O/gwY9WCQAAAAAAAA==",
+     "glyph": 35,
+     "height": 35,
+     "left": 4,
+     "size": 48,
+     "top": 35,
+     "width": 26
+    },
+    {
+     "codepoint": 103,
+     "coverage": "AAAAAAAAAB91sszcxKhuFAAAAA1AQEBABwAAAAAAE6D///////////qcCwA0/////xwAAAAALun//////////////9UjNP////8cAAAAK+v///////TQvtP4////1D7/////HAAABdL/////3lYIAAAADWTq///L/////xwAAH3/////vwsAAAAAAAAAFdP///////8cAAnu////3w0AAAAAAAAAAAAZ8P//////HABf/////1MAAAAAAAAAAAAAAHH//////xwAsv///+UCAAAAAAAAAAAAAAAO9/////8cAOj///+UAAAAAAAAAAAAAAAAALD/////HB3/////YQAAAAAAAAAAAAAAAAB9/////xw3/////zkAAAAAAAAAAAAAAAAAVP////8cR/////8qAAAAAAAAAAAAAAAAAET/////HFP/////HwAAAAAAAAAAAAAAAAA4/////xxJ/////ygAAAAAAAAAAAAAAAAAQv////8cOf////82AAAAAAAAAAAAAAAAAFD/////HCL/////WwAAAAAAAAAAAAAAAAB3/////xwB7v///4wAAAAAAAAAAAAAAAAAqP////8cALn////cAAAAAAAAAAAAAAAACPH/////HABs/////0MAAAAAAAAAAAAAAGH//////xwAD/X////TBQAAAAAAAAAAAA/m//////8cAACP/////6gCAAAAAAAAAAnA////////HAAADOD/////xzYAAAAAAUTW///a/////xwAAAA79f//////3rKhteX////hRv////8bAAAAAEP2///////////////nMzX/////DwAAAAAAJ8D///////////+5FwBE/////gIAAAAAAAAAPZTQ6vnix40tAAAAVv////EAAAAAAAAAAAAAAAAAAAAAAAAAAIf////LAAAAAAAAAAAAAAAAAAAAAAAAAADH////lgAAAAAAAAAAAAAAAAAAAAAAAAAv/////10AAAAAAAAAAAAAAAAAAAAAAAADw/////IMAAAAABpCAAAAAAAAAAAAAAAHo/////+VAAAAAAAw/8lrGgAAAAAAAAZV0v/////pFgAAAAAAMP/////w0K+Zp8L3///////8TAAAAAAAADD////////////////////xSQAAAAAAAAAey/3///////////////ufIgAAAAAAAAAAAAASVJa3y9/y8+LPomMcAAAAAAAAAA==",
+     "glyph": 72,
+     "height": 37,
+     "left": 2,
+     "size": 48,
+     "top": 27,
+     "width": 25
+    },
+    {
+     "codepoint": 81,
+     "coverage": "AAAAAAAAAAAAAAAAD01of5WSe2REBwAAAAAAAAAAAAAAAAAAAAAAAAAAAAxwv/v///////////SxXQMAAAAAAAAAAAAAAAAAAAAAA2Tn///////////////////USAAAAAAAAAAAAAAAAAAAFcf///////////////////////+iBQAAAAAAAAAAAAAAIdr///////7Ie1xDR2CG1////////7oMAAAAAAAAAAAAGuf//////6wfAAAAAAAAAAA0yf//////xwUAAAAAAAAAAr7/////+FIAAAAAAAAAAAAAAAJ9//////+KAAAAAAAAAHr/////+UsAAAAAAAAAAAAAAAAAAHn//////kMAAAAAABb4/////3EAAAAAAAAAAAAAAAAAAAAApv/////UAAAAAACB/////80DAAAAAAAAAAAAAAAAAAAAABfu/////0cAAAAI6v////9EAAAAAAAAAAAAAAAAAAAAAAAAev////+5AAAATf/////eAQAAAAAAAAAAAAAAAAAAAAAAABr8/////xUAAIr/////gAAAAAAAAAAAAAAAAAAAAAAAAAAAuP////9RAADG/////0MAAAAAAAAAAAAAAAAAAAAAAAAAAHz/////jQAE+f////4QAAAAAAAAAAAAAAAAAAAAAAAAAABI/////8YAF//////hAAAAAAAAAAAAAAAAAAAAAAAAAAAAGv/////gACn/////zgAAAAAAAAAAAAAAAAAAAAAAAAAAAAj/////8gA6/////78AAAAAAAAAAAAAAAAAAAAAAAAAAAAA+P////8FR/////+zAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOz/////Ezv/////vgAAAAAAAAAAAAAAAAAAAAAAAAAAAAD3/////woq/////80AAAAAAAAAAAAAAAAAAAAAAAAAAAAG//////wAGP/////fAAAAAAAAAAAAAAAAAAAAAAAAAAAAGP/////rAAX7/////Q0AAAAAAAAAAAAAAAAAAAAAAAAAAET/////wwAAyv////8/AAAAAAAAAAAAAAAAAAAAAAAAAAB4/////5cAAI7/////ewAAAAAAAAAAAAAAAAAAAAAAAAAAsv////9gAABR/////9gAAAAAAAAAAAAAAAAAAAAAAAAAFfr////8FAAAC+7/////PQAAAAAAAAAAAAAAAAAAAAAAAHP/////wAAAAACI/////8QBAAAAAAAAAAAAAAAAAAAAABLp/////1EAAAAAG/r/////aQAAAAAAAAAAAAAAAAAAAACd/////9YBAAAAAACF//////ZBAAAAAAAAAAAAAAAAAABs//////9FAAAAAAAABMj/////9EQAAAAAAAAAAAAAAABu/v////+ZAAAAAAAAAAAh7v/////+nRUAAAAAAAAAACe8///////CCQAAAAAAAAAAACvj///////7uW1ONjlSd8j////////KDgAAAAAAAAAAAAAAHdT///////////////////////+cCAAAAAAAAAAAAAAAAAAHdvD//////////////////9ZPAAAAAAAAAAAAAAAAAAAAAAAUgdD//////////////9UFAAAAAAAAAAAAAAAAAAAAAAAAAAAAHF56kKaqn/b/////lQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABK+/////+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFv+/////2kAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAbP/////9VQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA//////lDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJL/////8zQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABLzAwMDAhAAAAAA==",
+     "glyph": 50,
+     "height": 43,
+     "left": 2,
+     "size": 48,
+     "top": 36,
+     "width": 34
+    },
+    {
+     "codepoint": 38,
+     "coverage": "AAAAAAAAAAAACD92jZqEaEwmAAAAAAAAAAAAAAAAAAAAAAAAAAAAABGK7///////////2IYzAAAAAAAAAAAAAAAAAAAAAAAAOOL/////////////////UgAAAAAAAAAAAAAAAAAAAAAw8f//////////////////VAAAAAAAAAAAAAAAAAAAAAPV//////mQTScgOW+x+f//VAAAAAAAAAAAAAAAAAAAAFz/////2CEAAAAAAAAAE3PmVAAAAAAAAAAAAAAAAAAAAK7////2KwAAAAAAAAAAAAAHFQAAAAAAAAAAAAAAAAAAAN////+2AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPT///+GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOr///+RAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMD////aAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHL/////ZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/w////9S0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABv/////+UgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAE4v/////aFwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAqw////////1BUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFsn//////////9ESAAAAAAAAAAAAAAAAAAAAAAAAAAAHzf////114v/////NEAAAAAAAAAAAAAASyMjIyDEAAACZ/////mAAI+X/////yQ4AAAAAAAAAAAAy/////xgAAFP/////hQAAACfn/////8UMAAAAAAAAAABP////7AAAAM/////SBgAAAAAq6v/////BCgAAAAAAAACD////twAAPv////9TAAAAAAAALu3/////vQkAAAAAAADD////ZwAAmf///+wGAAAAAAAAADLv/////7gHAAAAABL5///9FwAAv////7cAAAAAAAAAAAA28f////+0BgAAAHL///+5AAAA4f///5gAAAAAAAAAAAAAOvP/////rwQAA9r///9AAAAA7////5kAAAAAAAAAAAAAAD/1/////6sDaP///8QAAAAA2f///7YAAAAAAAAAAAAAAABD9/////+q6v///z8AAAAAvf////UJAAAAAAAAAAAAAAAASPj/////////mgAAAAAAef////9rAAAAAAAAAAAAAAAAAE36///////kDwAAAAAAKf/////sHwAAAAAAAAAAAAAAAABS/v////+tAQAAAAAAAKz/////2RwAAAAAAAAAAAAAAA2n////////kwAAAAAAACH1/////+tVAQAAAAAAAAADXt7//////////44AAAAAAABK+///////1oNILyY5Vpfh///////F/f////+IAAAAAAAAV/X/////////////////////+G4AYf7/////ggAAAAAAACrR//////////////////+6LgAAAGn//////3wAAAAAAAACVcj////////////zrjkAAAAAAABw//////92AAAAAAAAAAAWVIOXqaKNdkAFAAAAAAAAAAAAAAAAAAAA",
+     "glyph": 7,
+     "height": 37,
+     "left": 3,
+     "size": 48,
+     "top": 36,
+     "width": 33
+    },
+    {
+     "codepoint": 64,
+     "coverage": "AAAAAAAAAAAAAAAAAAAAACRlgJivxcCzmnFDCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAECO2f//////////////9rZVBQAAAAAAAAAAAAAAAAAAAAAAAAAAAABGyf//////////////////////52EAAAAAAAAAAAAAAAAAAAAAAAAANsH/////////27uqmanE3/n///////++JQAAAAAAAAAAAAAAAAAAAABq+v/////wm0gSAAAAAAAAAARFm+z/////93oBAAAAAAAAAAAAAAAABpz/////42IJAAAAAAAAAAAAAAAAAARU4f////+TAAAAAAAAAAAAAAAIwv////x+CQAAAAAAAAAAAAAAAAAAAAAAC4r6////jQAAAAAAAAAAAACk////8UcAAAAAAAAAAAAAAAAAAAAAAAAAAAA07f///4YAAAAAAAAAAHj////fKwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMOz///9YAAAAAAAARP3//94VAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADDt///qEwAAAAAC0v///DoAAAAAAAAAAAAAABIaAwAAAAAAAAAAAAAAAABQ////mQAAAABd////gAAAAAAAAAAAAVi09v///d6OLgAAPaysqQAAAAAAp///+BYAAAbe///IBAAAAAAAAAAgx////////////IwIXP///AAAAAAAI/3//34AAFf///8+AAAAAAAAACXj//////////////+5Y////AAAAAAAAK///9YAAKb//8oAAAAAAAAAB9L/////z5BfWovF////6////AAAAAAAAFj///8YBO7//20AAAAAAAAAgP////t8AgAAAAAAZ/b//////AAAAAAAABr///9XQf///x0AAAAAAAAJ7P///14AAAAAAAAAAEL//////AAAAAAAAADm//96ef//4AAAAAAAAABV////ywEAAAAAAAAAAACv/////AAAAAAAAADR//+Pkv//sgAAAAAAAACT////TwAAAAAAAAAAAAAv/////AAAAAAAAAC+//+iqv//kQAAAAAAAADB////IAAAAAAAAAAAAAAD+v///AAAAAAAAADT//+Vwv//ggAAAAAAAADU///5AgAAAAAAAAAAAAAA2f///AAAAAAAAAD0//+Azf//fgAAAAAAAADf///kAAAAAAAAAAAAAAAAwf///AAAAAAAABb///9muP//lQAAAAAAAADR///8BQAAAAAAAAAAAAAA4P///AAAAAAAAET///8noP//rQAAAAAAAAC9////JQAAAAAAAAAAAAAG/f///AAAAAAAALf//+IAif//xQAAAAAAAACK////WgAAAAAAAAAAAAA5/////AAAAAAAM////4QAbf//9AgAAAAAAABL////2gUAAAAAAAAAAAC9/////AAAAAADu///8BEAKv///0kAAAAAAAAE4v///3cAAAAAAAAAAFb//////AAAAASc////bgAAAN///5YAAAAAAAAAbP////+cCgAAAAADgv3//////AAANcb///+dAAAAAJT//+kKAAAAAAAAAb7/////6bWHf63h////1v///YrL/////6YFAAAAAEP///96AAAAAAAAABTM//////////////+aXf/////////4bQAAAAAAAADF///wEgAAAAAAAAAOnP7/////////72cBXP//////9ZAbAAAAAAAAAAA+////ngAAAAAAAAAAACyFxuDn0a9jEgAAXPTdxI5MDQAAAAAAAAAAAAAAt////3IAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAJu////1NAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEP7///3XAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABn/////4sCAAAAAAAAAAAAAAAAAAAAAAAAADa4FwAAAAAAAAAAAAAAAAAAev7////GQAAAAAAAAAAAAAAAAAAAAAAPi/z/xAYAAAAAAAAAAAAAAAAAAFDz/////71DBAAAAAAAAAAAAAAAIZDy/////3gAAAAAAAAAAAAAAAAAAAAr2///////8KxlPykSBRguTo7Q/v/////4eAMAAAAAAAAAAAAAAAAAAAAACXPr/////////////////////////74pAAAAAAAAAAAAAAAAAAAAAAAAAAANfer///////////////////qlMwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAI4gsz9/////////+OiYBgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEGS9GUj8qFAAAAAAAAAAAAAAAAAAAAAAA",
+     "glyph": 33,
+     "height": 43,
+     "left": 3,
+     "size": 48,
+     "top": 34,
+     "width": 42
+    },
+    {
+     "codepoint": 37,
+     "coverage": "AAAAAAALUoKYjW0kAAAAAAAAAAAAAAAAAAAAAAAyoKCgRQAAAAAAAAAAAAADdfL///////+1IwAAAAAAAAAAAAAAAAAAAsv//+UNAAAAAAAAAAAABav////////////tNgAAAAAAAAAAAAAAAABo////VwAAAAAAAAAAAACL////9KVritb////qFQAAAAAAAAAAAAAAFO3//70AAAAAAAAAAAAALf3///A5AAAACLT///+hAAAAAAAAAAAAAACd///6KAAAAAAAAAAAAACa////XgAAAAAABuj///kXAAAAAAAAAAAAOP7//4gAAAAAAAAAAAAAAOr//+oHAAAAAAAAg////2MAAAAAAAAAAAPO///jCwAAAAAAAAAAAAAj////oQAAAAAAAAAx////nAAAAAAAAAAAbP///1QAAAAAAAAAAAAAAEH///+FAAAAAAAAABT///+7AAAAAAAAABbv//+5AAAAAAAAAAAAAAAAUf///2oAAAAAAAAAAPf//8wAAAAAAAAAof//+SYAAAAAAAAAAAAAAABP////bwAAAAAAAAAC+///yQAAAAAAADv+//+FAAAAAAAAAAAAAAAAAD7///+KAAAAAAAAABn///+3AAAAAAAD0f//4AoAAAAAAAAAAAAAAAAAG////6kAAAAAAAAAOv///5IAAAAAAHD///9QAAAAAAAAAAAAAAAAAAAA4v//9A8AAAAAAACV////WAAAAAAY8f//tgAAAAAAAAAAAAAAAAAAAACL////dgAAAAAAFPL///INAAAAAKT///gjAAAAAAAAAAAAAAAAAAAAACH3///8WwAAABfS////igAAAAA/////gQAAAAAAAAAAAAAAAAAAAAAAAHD////+1J268////9cJAAAABNT//94IAAAAAAAAAAAAAAAAAAAAAAAAAIb////////////YHQAAAABz////TQAAAAAAAAw9VVE2BAAAAAAAAAAAAEjO///////wiA0AAAAAGvL//7IAAAAAACWs+P/////ujg8AAAAAAAAAAAAhUWVaPAUAAAAAAACo///2IQAAAABQ+P//////////4iYAAAAAAAAAAAAAAAAAAAAAAAAAQv///34AAAAAPvv////tsr/3////5RMAAAAAAAAAAAAAAAAAAAAAAAXW///bBwAAAAfe////kgIAABDI////owAAAAAAAAAAAAAAAAAAAAAAd////0kAAAAAXf///6YAAAAAAA3i///8HgAAAAAAAAAAAAAAAAAAABz0//+vAAAAAAC4////NAAAAAAAAHr///94AAAAAAAAAAAAAAAAAAAAq///9R8AAAAAAfD//9gAAAAAAAAAG////7IAAAAAAAAAAAAAAAAAAEX///96AAAAAAAZ////twAAAAAAAAAA9v//2gAAAAAAAAAAAAAAAAAG2f//2QYAAAAAACr///+dAAAAAAAAAADb///sAAAAAAAAAAAAAAAAAHr///9GAAAAAAAALv///5UAAAAAAAAAANL///EAAAAAAAAAAAAAAAAe9f//qwAAAAAAAAAf////rwAAAAAAAAAA7v//4AAAAAAAAAAAAAAAAK////QcAAAAAAAAAAf6///JAAAAAAAAAAr////DAAAAAAAAAAAAAABJ////dgAAAAAAAAAAAMz///oZAAAAAAAAV////4sAAAAAAAAAAAAAB9v//9YFAAAAAAAAAAAAfv///34AAAAAAADC////PQAAAAAAAAAAAAB+////QgAAAAAAAAAAAAAZ+P//9kkAAAAAgv///84AAAAAAAAAAAAAIfb//6cAAAAAAAAAAAAAAAB1////+qBkcLf////7NQAAAAAAAAAAAACz///yGgAAAAAAAAAAAAAAAAKf/////////////GEAAAAAAAAAAAAATP///3MAAAAAAAAAAAAAAAAAAAFx8P///////9lFAAAAAAAAAAAAAACOsLChBAAAAAAAAAAAAAAAAAAAAAAOV4+moodEBAAAAAA=",
+     "glyph": 6,
+     "height": 37,
+     "left": 2,
+     "size": 48,
+     "top": 36,
+     "width": 41
+    },
+    {
+     "codepoint": 56,
+     "coverage": "AAAAAAAAAAUzaISTmox6TxoAAAAAAAAAAAAAAAAAJZPv////////////yGEDAAAAAAAAAAABefj/////////////////zCwAAAAAAAABm//////////////////////vMQAAAAAAdP//////9pFfPCtNccz//////+cPAAAAGPP/////shwAAAAAAAABW/L/////jgAAAG//////2QoAAAAAAAAAAABg/////+0EAAC3/////0UAAAAAAAAAAAAAALz/////OgAA1v////4LAAAAAAAAAAAAAACA/////1kAAOP////dAAAAAAAAAAAAAAAAUv////9nAADD////5gAAAAAAAAAAAAAAAFz/////RQAAnP////8TAAAAAAAAAAAAAACK/////x4AAFb/////XwAAAAAAAAAAAAAF0f///9YBAAABy////+4cAAAAAAAAAAAAif////9MAAAAADn1////2kwAAAAAAAAUlf7///+vAAAAAAAANej/////yJZyYoSo8P////+aBAAAAAAAAAAdke3//////////////8ZaAAAAAAAAAAAAAABE4////////////54VAAAAAAAAAAAAAGnZ////////////////+aslAAAAAAAABqD//////86kfmyQt+z/////7UAAAAAAAr3/////1kUAAAAAAAAOjfr////6TAAAAGP/////uQQAAAAAAAAAAAA9/P///+AHAAvm////8R0AAAAAAAAAAAAAAIj/////dgBU/////38AAAAAAAAAAAAAAAAH7////9gAe/////9MAAAAAAAAAAAAAAAAAML////7BaL/////IAAAAAAAAAAAAAAAAACV/////ym0/////xMAAAAAAAAAAAAAAAAAiP////87of////8+AAAAAAAAAAAAAAAAALT/////J4f/////aQAAAAAAAAAAAAAAAADh/////g5I/////9EGAAAAAAAAAAAAAABR/////8wACfP/////hAAAAAAAAAAAAAAV6f////+AAACC//////yLDQAAAAAAAAA90v/////wEwAADt3//////+Z+VTAfQmer////////awAAAAAk6f//////////////////////jQAAAAAAAB2+///////////////////0ZwAAAAAAAAAAAVS//////////////+yKHgAAAAAAAAAAAAAAABZNf5Wkq52MaTIEAAAAAAAAAA==",
+     "glyph": 25,
+     "height": 37,
+     "left": 3,
+     "size": 48,
+     "top": 36,
+     "width": 25
+    },
+    {
+     "codepoint": 101,
+     "coverage": "AAAAAAAAAAAMTpW4zd7Nt4g+BAAAAAAAAAAAAAAAABOO+P///////////91XAQAAAAAAAAAAAFDw/////////////////68JAAAAAAAAAGz9///////22cnZ+f//////xQkAAAAAAFH//////ao+BQAAAAxb3P////+XAAAAAB/u////7UYAAAAAAAAAAAu2/////0QAAACl/////00AAAAAAAAAAAAADuf///+8AAAd+////5sAAAAAAAAAAAAAAABe/////ykAgf////oOAAAAAAAAAAAAAAAAAdv///9uAML////HAAAAAAAAAAAAAAAAAACr////qgf3////iwAAAAAAAAAAAAAAAAAAgP///9Ip/////6Z0dHR0dXV1dnZ2dnd3d6r////kPP//////////////////////////////9k3///////////////////////////////xQ/////+vo6Ojo6Ojo6Ojo6Ojo6Ojo6OjkPf////87AAAAAAAAAAAAAAAAAAAAAAAAACr/////WwAAAAAAAAAAAAAAAAAAAAAAAAAJ+f///5EAAAAAAAAAAAAAAAAAAAAAAAAAAMD////dAAAAAAAAAAAAAAAAAAAAAAAAAAB6/////0wAAAAAAAAAAAAAAAAAAAAAAAAAFvX////TCQAAAAAAAAAAAAAAAAAAAAAAAACN/////6kEAAAAAAAAAAAAAAAAAAAxAAAAD9n/////wiIAAAAAAAAAAAAAB0289wAAAAAo8f/////8qV0lDgEKGTtup/H///gAAAAAADPi///////////////////////4AAAAAAAAFrT/////////////////////yQAAAAAAAAAANq/2/////////////cRyIAAAAAAAAAAAAAAAB0F3jaGsoJFxSRYAAAAAAA==",
+     "glyph": 70,
+     "height": 28,
+     "left": 2,
+     "size": 48,
+     "top": 27,
+     "width": 25
+    }
+   ],
+   "subfamilyName": "Book",
+   "unitsPerEm": 2048,
+   "weight": 400
+  },
+  "DejaVuSans-Subset.otf": {
+   "ascender": 1901,
+   "descender": -483,
+   "familyName": "DejaVu Sans CFF Test",
+   "fullName": "DejaVu Sans CFF Test",
+   "glyphs": [
+    {
+     "advance": 651,
+     "bounds": null,
+     "codepoint": 32,
+     "glyph": 1
+    },
+    {
+     "advance": 821,
+     "bounds": [
+      309,
+      0,
+      512,
+      1493
+     ],
+     "codepoint": 33,
+     "glyph": 2
+    },
+    {
+     "advance": 1946,
+     "bounds": [
+      113.00001525878906,
+      -29.000015258789062,
+      1833.0,
+      1519.999984741211
+     ],
+     "codepoint": 37,
+     "glyph": 6
+    },
+    {
+     "advance": 1597,
+     "bounds": [
+      129.0,
+      -29.000015258789062,
+      1534.0,
+      1519.999984741211
+     ],
+     "codepoint": 38,
+     "glyph": 7
+    },
+    {
+     "advance": 651,
+     "bounds": [
+      158,
+      -238,
+      451,
+      254
+     ],
+     "codepoint": 44,
+     "glyph": 13
+    },
+    {
+     "advance": 651,
+     "bounds": [
+      219,
+      0,
+      430,
+      254
+     ],
+     "codepoint": 46,
+     "glyph": 15
+    },
+    {
+     "advance": 1303,
+     "bounds": [
+      139.0,
+      -29.0,
+      1163.0,
+      1519.9999542236328
+     ],
+     "codepoint": 56,
+     "glyph": 25
+    },
+    {
+     "advance": 2048,
+     "bounds": [
+      135.00001525878906,
+      -356.0,
+      1905.000015258789,
+      1442.0
+     ],
+     "codepoint": 64,
+     "glyph": 33
+    },
+    {
+     "advance": 1401,
+     "bounds": [
+      16,
+      0,
+      1384,
+      1493
+     ],
+     "codepoint": 65,
+     "glyph": 34
+    },
+    {
+     "advance": 1405,
+     "bounds": [
+      200.99998474121094,
+      -3.0517578125e-05,
+      1259.999984741211,
+      1492.9999694824219
+     ],
+     "codepoint": 66,
+     "glyph": 35
+    },
+    {
+     "advance": 1178,
+     "bounds": [
+      201,
+      0,
+      1059,
+      1493
+     ],
+     "codepoint": 70,
+     "glyph": 39
+    },
+    {
+     "advance": 1540,
+     "bounds": [
+      201,
+      0,
+      1339,
+      1493
+     ],
+     "codepoint": 72,
+     "glyph": 41
+    },
+    {
+     "advance": 1141,
+     "bounds": [
+      201,
+      0,
+      1130,
+      1493
+     ],
+     "codepoint": 76,
+     "glyph": 45
+    },
+    {
+     "advance": 1235,
+     "bounds": [
+      201.0,
+      1.52587890625e-05,
+      1165.0,
+      1493.0
+     ],
+     "codepoint": 80,
+     "glyph": 49
+    },
+    {
+     "advance": 1612,
+     "bounds": [
+      114.99998474121094,
+      -264.0,
+      1496.9999694824219,
+      1519.999984741211
+     ],
+     "codepoint": 81,
+     "glyph": 50
+    },
+    {
+     "advance": 1251,
+     "bounds": [
+      -6,
+      0,
+      1257,
+      1493
+     ],
+     "codepoint": 84,
+     "glyph": 53
+    },
+    {
+     "advance": 1401,
+     "bounds": [
+      16,
+      0,
+      1384,
+      1493
+     ],
+     "codepoint": 86,
+     "glyph": 55
+    },
+    {
+     "advance": 2025,
+     "bounds": [
+      68,
+      0,
+      1958,
+      1493
+     ],
+     "codepoint": 87,
+     "glyph": 56
+    },
+    {
+     "advance": 1251,
+     "bounds": [
+      -4,
+      0,
+      1255,
+      1493
+     ],
+     "codepoint": 89,
+     "glyph": 58
+    },
+    {
+     "advance": 1255,
+     "bounds": [
+      122.99996948242188,
+      -28.999984741210938,
+      1069.0,
+      1147.000015258789
+     ],
+     "codepoint": 97,
+     "glyph": 66
+    },
+    {
+     "advance": 1300,
+     "bounds": [
+      113.0,
+      -29.0,
+      1114,
+      1556
+     ],
+     "codepoint": 100,
+     "glyph": 69
+    },
+    {
+     "advance": 1260,
+     "bounds": [
+      113.0,
+      -29.0,
+      1151.000015258789,
+      1147.0
+     ],
+     "codepoint": 101,
+     "glyph": 70
+    },
+    {
+     "advance": 1300,
+     "bounds": [
+      113.0,
+      -426.0,
+      1114.0,
+      1147.000015258789
+     ],
+     "codepoint": 103,
+     "glyph": 72
+    },
+    {
+     "advance": 569,
+     "bounds": [
+      193,
+      0,
+      377,
+      1556
+     ],
+     "codepoint": 108,
+     "glyph": 77
+    },
+    {
+     "advance": 1298,
+     "bounds": [
+      186.00001525878906,
+      0,
+      1124.000015258789,
+      1147.0
+     ],
+     "codepoint": 110,
+     "glyph": 79
+    },
+    {
+     "advance": 1253,
+     "bounds": [
+      113.0,
+      -28.999984741210938,
+      1141.0,
+      1147.0
+     ],
+     "codepoint": 111,
+     "glyph": 80
+    },
+    {
+     "advance": 842,
+     "bounds": [
+      186.00001525878906,
+      -1.52587890625e-05,
+      842,
+      1146.999984741211
+     ],
+     "codepoint": 114,
+     "glyph": 83
+    },
+    {
+     "advance": 1212,
+     "bounds": [
+      61,
+      0,
+      1151,
+      1120
+     ],
+     "codepoint": 118,
+     "glyph": 87
+    },
+    {
+     "advance": 1212,
+     "bounds": [
+      61.0,
+      -426.0,
+      1151.0,
+      1120.0
+     ],
+     "codepoint": 121,
+     "glyph": 90
+    },
+    {
+     "advance": 1260,
+     "bounds": [
+      113.0,
+      -29.0,
+      1151.000015258789,
+      1638.0
+     ],
+     "codepoint": 233,
+     "glyph": 169
+    },
+    {
+     "advance": 2206,
+     "bounds": [
+      40,
+      0,
+      2166,
+      1493
+     ],
+     "codepoint": 1046,
+     "glyph": 213
+    },
+    {
+     "advance": 1303,
+     "bounds": [
+      0.0,
+      -28.999984741210938,
+      1167,
+      1520.0000305175781
+     ],
+     "codepoint": 8364,
+     "glyph": 226
+    },
+    {
+     "advance": 1401,
+     "bounds": [
+      16,
+      0,
+      1384,
+      1493
+     ],
+     "codepoint": 119808,
+     "glyph": 34
+    }
+   ],
+   "kerning": [
+    {
+     "left": 34,
+     "pair": "AV",
+     "right": 55,
+     "value": -131
+    },
+    {
+     "left": 34,
+     "pair": "AT",
+     "right": 53,
+     "value": -159
+    },
+    {
+     "left": 53,
+     "pair": "To",
+     "right": 80,
+     "value": -348
+    },
+    {
+     "left": 53,
+     "pair": "Ty",
+     "right": 90,
+     "value": -319
+    },
+    {
+     "left": 45,
+     "pair": "LT",
+     "right": 53,
+     "value": -282
+    },
+    {
+     "left": 58,
+     "pair": "Yo",
+     "right": 80,
+     "value": -272
+    },
+    {
+     "left": 55,
+     "pair": "VA",
+     "right": 34,
+     "value": -131
+    },
+    {
+     "left": 56,
+     "pair": "Wa",
+     "right": 66,
+     "value": -131
+    },
+    {
+     "left": 49,
+     "pair": "P.",
+     "right": 15,
+     "value": -319
+    },
+    {
+     "left": 39,
+     "pair": "F,",
+     "right": 13,
+     "value": 0
+    },
+    {
+     "left": 66,
+     "pair": "av",
+     "right": 87,
+     "value": 0
+    },
+    {
+     "left": 83,
+     "pair": "rn",
+     "right": 79,
+     "value": -36
+    },
+    {
+     "left": 34,
+     "pair": "AA",
+     "right": 34,
+     "value": 57
+    }
+   ],
+   "legacyKerning": [],
+   "lineGap": 0,
+   "numGlyphs": 234,
+   "renders": [
+    {
+     "codepoint": 65,
+     "coverage": "AAAAh68BAAAAAAAS9ORBAAAAAABttX6iAAAAAADOViD0DgAAAC/vCADAZQAAAJK5PDyPxgAABuzGwMDA9ygAVt4AAAAAqIkAt4UAAAAATeYD",
+     "glyph": 34,
+     "height": 9,
+     "left": 0,
+     "size": 12,
+     "top": 9,
+     "width": 9
+    },
+    {
+     "codepoint": 97,
+     "coverage": "AE6cr4gWAAB1TUOg0gIAAAUdKfApAIPjvrTxQir1FgAA5UQ18g0AVf9EAa3vy6HURAAAGg4AAAA=",
+     "glyph": 66,
+     "height": 8,
+     "left": 0,
+     "size": 12,
+     "top": 7,
+     "width": 7
+    },
+    {
+     "codepoint": 66,
+     "coverage": "n8DAtocVANR/OFHAwwDUXAAAR/IA1HMkPbOeANTj1NzfLQDUXAAAQvgP1FwAAALyUdRcAANh/SnU+vj101kA",
+     "glyph": 35,
+     "height": 9,
+     "left": 1,
+     "size": 12,
+     "top": 9,
+     "width": 7
+    },
+    {
+     "codepoint": 103,
+     "coverage": "AAyEqGROTAC8oz1854gs8AgAAL+ITs8AAACUiDrkAAAAq4gG32MANPOIADHN5ayefQAAAAAAyVYAbYVusdAFACBoeVgHAA==",
+     "glyph": 72,
+     "height": 10,
+     "left": 0,
+     "size": 12,
+     "top": 7,
+     "width": 7
+    },
+    {
+     "codepoint": 81,
+     "coverage": "AAA0q9nCeAQAAEvwZxw3xrgABN5uAAAAD+5TKf8RAAAAAJ+YSfQAAAAAAIG6NP4IAAAAAJasDPNNAAAAA9lwAHjcJgADjt8QAAF17tvxyyQAAAAAAR954RwAAAAAAAAAZ2IA",
+     "glyph": 50,
+     "height": 11,
+     "left": 0,
+     "size": 12,
+     "top": 9,
+     "width": 9
+    },
+    {
+     "codepoint": 38,
+     "coverage": "AABVztyqCQAAABr6UhNWCwAAAC3yBwAAAAAAAADZogEAAAAAAHe+z5UAAGVWDPgZE9KPAMBHMPMBABXVp88CB+VzAABP/5sAADXX4dvRVd1/AAAAGRQAAAAA",
+     "glyph": 7,
+     "height": 10,
+     "left": 0,
+     "size": 12,
+     "top": 9,
+     "width": 9
+    },
+    {
+     "codepoint": 64,
+     "coverage": "AAAAACBSaUIDAAAAAAAYrL1+d6zNKQAAABDeTAAAAAArzDkAAJ1cAE22oVlWJ8MAAcoAKORIReKAAMsMI6oAapUAAIuAAMkYE78AYKoAAKGAFt4AANMLEN6Tjd64vkMAAGiYABlrVCxdFgAAAACooBMAAA2BJQAAAAAAXMnSzs5sBQAAAAAAAAAECAAAAAAA",
+     "glyph": 33,
+     "height": 12,
+     "left": 0,
+     "size": 12,
+     "top": 9,
+     "width": 12
+    },
+    {
+     "codepoint": 37,
+     "coverage": "AHXOrREAAEaSAAAp1wqKgwAGzRsAAE+mAEyqAHt0AAAAJtkQkX8fywUAAAAAa8iiDq9ALIhiAQAAAABJpQ7fULJuAAAAB84ZQLcASLAAAAB/cQAxzgBfnwAAIcoEAACuvdwwAAATFQAAAAAdCQA=",
+     "glyph": 6,
+     "height": 10,
+     "left": 0,
+     "size": 12,
+     "top": 9,
+     "width": 11
+    },
+    {
+     "codepoint": 56,
+     "coverage": "AB6m29B5AQDCryRA7WIA500AAKqGAIO4M0/jMQARxPD8dQAA0n4FF81yH/8YAAB5vgj0bgAKxJwAU+zh9cYZAAAEIBUAAA==",
+     "glyph": 25,
+     "height": 10,
+     "left": 0,
+     "size": 12,
+     "top": 9,
+     "width": 7
+    },
+    {
+     "codepoint": 101,
+     "coverage": "AAFkpZo1AACat0BY6DAh+h0AAI2ZS/nU1dbitTrkAAAAAAAI3WUAAAghAC/Q2cvlYAAAABQgBQA=",
+     "glyph": 70,
+     "height": 8,
+     "left": 0,
+     "size": 12,
+     "top": 7,
+     "width": 7
+    },
+    {
+     "codepoint": 65,
+     "coverage": "AAAAAAAAHICAUgAAAAAAAAAAAAAAAACC///oBAAAAAAAAAAAAAAAAuH//f9OAAAAAAAAAAAAAABG/+2T/7AAAAAAAAAAAAAAAKj/li7/+xcAAAAAAAAAAAAR+P84AND/cwAAAAAAAAAAAGv/2QAAcf/UAAAAAAAAAAAAzf98AAAX+/82AAAAAAAAAC7//h8AAAC0/5gAAAAAAAAAkf/AAAAAAFb/8AkAAAAAAAbs/2IAAAAAB+//WwAAAAAAVf//gXR0dHR00/+9AAAAAAC2//////////////4gAAAAG/z/m4SEhISEhITg/4AAAAB6/+kEAAAAAAAAAHr/4AEAANr/kgAAAAAAAAAAIP7/QwA+//83AAAAAAAAAAAAxP+lAJ//3AAAAAAAAAAAAABp//YP",
+     "glyph": 34,
+     "height": 18,
+     "left": 0,
+     "size": 24,
+     "top": 18,
+     "width": 17
+    },
+    {
+     "codepoint": 97,
+     "coverage": "AAAAIklkWDIJAAAAAF3Z///////pWwAAAJj3rohsgcH//2MAADURAAAAAABp/+cMAAAAAAAAAAAA0v9CAAAAABQwRkhIwf9kAAVr3f////////+DAJr/+biFdGhox/+IOf/zMQAAAAAAt/+Ib/+zAAAAAAAA3v+IgP+tAAAAAABM//+IVf/zJQAAAC7g//+IB9T/85uDrvbjtv+IACS+/////8AioP+IAAAAI0lIIAAAAAAA",
+     "glyph": 66,
+     "height": 15,
+     "left": 1,
+     "size": 24,
+     "top": 14,
+     "width": 12
+    },
+    {
+     "codepoint": 66,
+     "coverage": "UoCAgICAel4+AwAAAKT//////////95aAACk/9h0dHR8muz//UoApP+4AAAAAAAO1//HAKT/uAAAAAAAAHP/9gKk/7gAAAAAAABr//QApP+4AAAAAAACwP+5AKT/zEhISE9syP/qLwCk//////////+1GQAApP/mpKSkp8Lx/9srAKT/uAAAAAAAEKj/6xCk/7gAAAAAAAAM9P96pP+4AAAAAAAAAMv/rKT/uAAAAAAAAADY/6+k/7gAAAAAAAAp/P9+pP+4AAAAABBQ2v/0KKT//PT09Pf////2VACk///////+5caLFwAA",
+     "glyph": 35,
+     "height": 18,
+     "left": 2,
+     "size": 24,
+     "top": 18,
+     "width": 13
+    },
+    {
+     "codepoint": 103,
+     "coverage": "AAAABDBhWSEAAyAgAgAANOL////+oCD//xAAPPf/04Nupv63//8QAMb/tQkAAABR/v//ED///CIAAAAAAK7//xBw/8IAAAAAAABQ//8Qkv+jAAAAAAAAMP//EKL/lAAAAAAAACH//xCD/7AAAAAAAAA9//8QYf/eAgAAAAAAbv//EBn2/1MAAAAABN7//xAAi//xTgIAGLr2//8QAA63///z4f/5Y///CQAAAnbB8uqvMzL/6gAAAAAAAAAAAABZ/8gAAAAAAAAAAAABzP+NAAASjSYAAAAcrv/xFQAAGP//79Hn///xVwAAAAd2uuH27caXHAAAAA==",
+     "glyph": 72,
+     "height": 19,
+     "left": 1,
+     "size": 24,
+     "top": 14,
+     "width": 13
+    },
+    {
+     "codepoint": 81,
+     "coverage": "AAAAAANLlbnJt49CAAAAAAAAAAA40v/////////GKQAAAAAASvb/8YVPKVSN+P/uNgAAAB/w/9opAAAAAAA45v/iEQAApf/7JAAAAAAAAAA8//+HABb6/58AAAAAAAAAAAC9/+4FVf//NQAAAAAAAAAAAFP//ziH//8RAAAAAAAAAAAALv//aZv/8AAAAAAAAAAAAAAN//99ov/hAAAAAAAAAAAAAAL7/4OS//sDAAAAAAAAAAAAHf//aXP//yAAAAAAAAAAAAA9//9NOP//XQAAAAAAAAAAAHr/+xkD3v/YAgAAAAAAAAAM6/+xAABo//9zAAAAAAAAAI7//kIAAAG3//+SBgAAAAuo//+CAAAAAAu2///2xqHL+f/+kgIAAAAAAAJf1f//////9TsAAAAAAAAAAAAAH0NUef7/hQAAAAAAAAAAAAAAAAAAc///bwAAAAAAAAAAAAAAAAAAhf/+WgAAAAAAAAAAAAAAAAAAFxgUAAA=",
+     "glyph": 50,
+     "height": 22,
+     "left": 1,
+     "size": 24,
+     "top": 18,
+     "width": 17
+    },
+    {
+     "codepoint": 38,
+     "coverage": "AAAAABmGsseugS8AAAAAAAAAAABK8////////ysAAAAAAAAAFez/vDYSNXTdLAAAAAAAAABU/+sLAAAAAAIFAAAAAAAAAHL/zQAAAAAAAAAAAAAAAAAARP/8GwAAAAAAAAAAAAAAAAACzf/CBwAAAAAAAAAAAAAAAAKk//+uBAAAAAAAAAAAAAABq//d+P+oAwAAAAAFZGQKAHv/4RhM+f+jAgAAAC7/7gEP9P9PAABQ+/+eAQAAXv+xAFb/+QkAAABW/P+ZAQCp/24Acv/VAAAAAABb/f+UJ/3kCgBP//cEAAAAAABh/v/l/1wAAB3//24AAAAAAABm///gAQAAAJn/+GcBAAAAIbX///+HAAAACcr//9yqoMz5/9qL//+CAAAABHHv/////+Z9DAB2//9+AAAAAAEgR0wsAQAAAAAAAAA=",
+     "glyph": 7,
+     "height": 19,
+     "left": 1,
+     "size": 24,
+     "top": 18,
+     "width": 17
+    },
+    {
+     "codepoint": 64,
+     "coverage": "AAAAAAAAADWAutPgx6phDwAAAAAAAAAAAAAAPsX////n0Of9//iHCQAAAAAAAAABgf79rj4MAAAAEWLN/9wkAAAAAAAAm//OJgAAAAAAAAAAAm774iAAAAAAb/+1CwAAAAAAAAAAAAAAUvrGAAAAGPXfDgAAABNXgl8mADlUAACM/1AAAJH/RQAAAD/m/////niw/wAAEe7OAAHm2wAAABPv/pI6N4r9+f8AAACn/Qkv/4MAAACK/4sAAAAAff//AAAAfv8xUP9eAAAAwv8cAAAAAAz+/wAAAGX/R2X/QwAAAOX5AQAAAAAA5v8AAACD/x9Y/08AAADT/wsAAAAAAff/AAAAvvIBPv9vAAAArP9PAAAAAD7//wAAPP+RAAr3twAAAEL/3SkAACHU//8ASe/cCgAAtPogAAAAm//6zcn308r/3/+/JgAAAD//pgAAAABkwOvKjw2o0aVZAAAAAAAAs/9vAAAAAAAAAAAAAAAAAAAAAAAAABHY/XoAAAAAAAAAAAAARAUAAAAAAAAAHtD/wkEBAAAAAAA1wP+SAAAAAAAAAAAKlfr/56mOjrnk//+3HwAAAAAAAAAAAAAhh9L/////4Jw1AAAAAAAAAAAAAAAAAAAABh0kDwAAAAAAAAAAAA==",
+     "glyph": 33,
+     "height": 22,
+     "left": 1,
+     "size": 24,
+     "top": 17,
+     "width": 22
+    },
+    {
+     "codepoint": 37,
+     "coverage": "AABRpcKXKwAAAAAAAABA0HUAAAAAAIL/5r319kcAAAAAAAXV7xYAAAAAJ/vTDQAw+dkEAAAAAHX/awAAAAAAef9kAAAArf8zAAAAG/POAgAAAAAAnP87AAAAhP9XAAAAqf44AAAAAAAAmf8+AAAAh/9TAABD/5wAAAAAAAAAd/9rAAAAtP8vAAXX7RQAAAAAAAAAIPncFgBA/M8BAHj/aAAAAAAAAAAAAHH99df97TkAHfTLAgAABiMEAAAAAAA+j6uBHQAArf01AA6l+v/3kQYAAAAAAAAAAABG/5kAALr/oFy0/5oAAAAAAAAAAAbZ7BMAPv+2AAAD1/whAAAAAAAAAHv/ZQAAdv9hAAAAhf9VAAAAAAAAH/XIAQAAk/9KAAAAa/9yAAAAAAAAsP0zAAAAe/9cAAAAfv9aAAAAAABJ/5YAAAAATP+jAAAAx/8rAAAAAAfb6hEAAAAAAdD9eTaQ/64AAAAAAH7/YgAAAAAAACLM////txMAAAAAAE5UAQAAAAAAAAACKkwlAQAA",
+     "glyph": 6,
+     "height": 19,
+     "left": 1,
+     "size": 24,
+     "top": 18,
+     "width": 21
+    },
+    {
+     "codepoint": 56,
+     "coverage": "AAAAHoSqx7KQOQAAAAAAePn///////+vBQAAUP//sTsZL4v8/5EAALf/xgIAAAAAiP/1AwDl/3cAAAAAADT//ykA1v98AAAAAAA6//8YAIf/0QYAAAAAl//IAAANxP/IVjVKpf/mKwAAAAdx+f////+fFwAAAAGD9v/cutL7/q8QAACJ/+5HAAAAJ8z/ygEY+f9jAAAAAAAj+/9SSf//HAAAAAAAANb/iE3//xYAAAAAAADP/4wi//9QAAAAAAAU+P9hAdX/4CUAAAAPs//2IAAx+f/5spGo6f//agAAACy0///////STAAAAAAAAA8yTzsZAAAAAA==",
+     "glyph": 25,
+     "height": 19,
+     "left": 1,
+     "size": 24,
+     "top": 18,
+     "width": 13
+    },
+    {
+     "codepoint": 101,
+     "coverage": "AAAAAAo2YU0fAAAAAAAAB4r9/////7wbAAAADtL/8JdxhtX/7RwAAI3/zhgAAAAHrP+lACL6/ikAAAAAABf3/x1d/9MAAAAAAAAAzP9Hg//ouLi5ubq6u+v/bKL/+vT09PT09PT09HaF/7AAAAAAAAAAAAAAXP/kAAAAAAAAAAAAACD4/1oAAAAAAAAAAAAAfv/tSgAAAAAAIIAAAAa4///HmYakyf78AAAAAF/l///////MegAAAAAAABQ+TTMTAAAA",
+     "glyph": 70,
+     "height": 15,
+     "left": 1,
+     "size": 24,
+     "top": 14,
+     "width": 13
+    },
+    {
+     "codepoint": 65,
+     "coverage": "AAAAAAAAAAAAAAAAAHX//////0wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANb//////60AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOf////////oVAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmv////////9wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK8f////X////SAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABe/////WX/////MwAAAAAAAAAAAAAAAAAAAAAAAAAAAADA////uwPn////lQAAAAAAAAAAAAAAAAAAAAAAAAAAACL+////XACM////7gcAAAAAAAAAAAAAAAAAAAAAAAAAAIP////zCgAt/////1gAAAAAAAAAAAAAAAAAAAAAAAAAAuL///+fAAAAzv///7kAAAAAAAAAAAAAAAAAAAAAAAAARv////9BAAAAb/////0dAAAAAAAAAAAAAAAAAAAAAAAAqP///+EBAAAAFfr///98AAAAAAAAAAAAAAAAAAAAAAAR+P///4QAAAAAALH////cAQAAAAAAAAAAAAAAAAAAAABs/////yYAAAAAAFL/////PwAAAAAAAAAAAAAAAAAAAADN////xwAAAAAAAAbt////oQAAAAAAAAAAAAAAAAAAAC7/////aQAAAAAAAACU////9Q0AAAAAAAAAAAAAAAAAAJH////4EQAAAAAAAAA1/////2QAAAAAAAAAAAAAAAAABuz///+sAAAAAAAAAAAA1v///8UAAAAAAAAAAAAAAAAAVP////9NAAAAAAAAAAAAeP////8nAAAAAAAAAAAAAAAAtv///+oEAAAAAAAAAAAAG/3///+IAAAAAAAAAAAAAAAa/P///5AAAAAAAAAAAAAAALr////mAwAAAAAAAAAAAAB5/////zIAAAAAAAAAAAAAAFv/////SwAAAAAAAAAAAADZ/////+zs7Ozs7Ozs7Ozs7O//////rQAAAAAAAAAAAD3/////////////////////////////+hQAAAAAAAAAAJ7//////////////////////////////3AAAAAAAAAADPP//////////////////////////////9EAAAAAAAAAYv////9lBAQEBAQEBAQEBAQEBAQEgf////8zAAAAAAAAxP////gQAAAAAAAAAAAAAAAAAAAAJf////+UAAAAAAAl/////60AAAAAAAAAAAAAAAAAAAAAAMr////uBwAAAACH/////1MAAAAAAAAAAAAAAAAAAAAAAHD/////VwAAAAPl////8AgAAAAAAAAAAAAAAAAAAAAAABj8////uQAAAEr/////nQAAAAAAAAAAAAAAAAAAAAAAAAC6/////R0AAKz/////QgAAAAAAAAAAAAAAAAAAAAAAAABf/////3wAFPn////lAgAAAAAAAAAAAAAAAAAAAAAAAAAN9v///9wBb/////+NAAAAAAAAAAAAAAAAAAAAAAAAAAAAqf////8/",
+     "glyph": 34,
+     "height": 35,
+     "left": 0,
+     "size": 48,
+     "top": 35,
+     "width": 33
+    },
+    {
+     "codepoint": 97,
+     "coverage": "AAAAAAAAJ2qKpcHb1sSqcDEAAAAAAAAAAAAEQ4/b///////////////GSAAAAAAAAAAw/////////////////////4sDAAAAAAAw///////74dHN7v////////+RAAAAAAAw///ceTQHAAAAAA9Cvv//////TAAAAAAqp0IBAAAAAAAAAAAAAEf3////zgAAAAAAAAAAAAAAAAAAAAAAAABm/////zsAAAAAAAAAAAAAAAAAAAAAAAAAwf///4MAAAAAAAAAAAAAAAAAAAAAAAAAiP///7sAAAAAAAAAAAAAAAAAAAAAAAAAWP///+YAAAAAAAAAAAYuW3aDkJSUlJSUr/////cAAAAAAABHp/X///////////////////8HAAAAHbf///////////////////////8PAAAg3//////////w3NTMzMzM2f////8QAAHH/////955OgwAAAAAAAAAQP////8QAFn/////lwQAAAAAAAAAAAAATv////8QALD////OAgAAAAAAAAAAAAAAYP////8QAPD///+FAAAAAAAAAAAAAAAAj/////8QCP////9RAAAAAAAAAAAAAAAAzf////8QFv////9HAAAAAAAAAAAAAAAz//////8QBf////90AAAAAAAAAAAAAAC4//////8QAN/////NBQAAAAAAAAAAAHX///////8QAJj/////kAIAAAAAAAADff////////8QACr9/////89QHwICHWXS////nf////8QAACI//////////r8//////+PQP////8QAAABmf///////////////YQDQP////8QAAAAAFjZ//////////2/PgAAQP////8QAAAAAAACO3qaqpyDZRoAAAAAAAAAAAAA",
+     "glyph": 66,
+     "height": 28,
+     "left": 2,
+     "size": 48,
+     "top": 27,
+     "width": 24
+    },
+    {
+     "codepoint": 66,
+     "coverage": "SP////////////////bo0qRwHQAAAAAAAABI///////////////////////+tyoAAAAAAEj/////////////////////////+mkAAAAASP/////w5OTk5OTk6P3//////////2IAAABI/////3QAAAAAAAAABB9Hs/7/////8RoAAEj/////dAAAAAAAAAAAAAAAOff/////gQAASP////90AAAAAAAAAAAAAAAAZf/////QAABI/////3QAAAAAAAAAAAAAAAAE+P////cAAEj/////dAAAAAAAAAAAAAAAAADN/////wwASP////90AAAAAAAAAAAAAAAAAL3////2AQBI/////3QAAAAAAAAAAAAAAAAA6////9UAAEj/////dAAAAAAAAAAAAAAAAC7/////qQAASP////90AAAAAAAAAAAAAAAL1f////83AABI/////3QAAAAAAAAAAAADV8//////sAAAAEj/////wpCQkJCQkJOrxur//////6gJAAAASP//////////////////////+LNbAAAAAABI///////////////////////KXwsAAAAAAEj/////////////////////////834BAAAASP////+bSEhISEhISFZ1lMf//////6gIAABI/////3QAAAAAAAAAAAAAAEPH/////7IAAEj/////dAAAAAAAAAAAAAAAAAjV/////0IASP////90AAAAAAAAAAAAAAAAADD7////zAFI/////3QAAAAAAAAAAAAAAAAAANH/////IEj/////dAAAAAAAAAAAAAAAAAAAp/////9GSP////90AAAAAAAAAAAAAAAAAACA/////2xI/////3QAAAAAAAAAAAAAAAAAAJf/////f0j/////dAAAAAAAAAAAAAAAAAAAwf////9pSP////90AAAAAAAAAAAAAAAAAAvv/////0hI/////3QAAAAAAAAAAAAAAAAAmf/////1CUj/////dAAAAAAAAAAAAAAAA2v//////6AASP////90AAAAAAAAAAAPLWDZ///////yGgBI//////Dk5OTk5OTk8f//////////+UwAAEj//////////////////////////+hIAAAASP////////////////////////CSEQAAAABI/////////////////O/gwY9WCQAAAAAAAA==",
+     "glyph": 35,
+     "height": 35,
+     "left": 4,
+     "size": 48,
+     "top": 35,
+     "width": 26
+    },
+    {
+     "codepoint": 103,
+     "coverage": "AAAAAAAAAB91sszcxKhuFAAAAA1AQEBABwAAAAAAE6D///////////qcCwA0/////xwAAAAALun//////////////9UjNP////8cAAAAK+v///////TQvtP4////1D7/////HAAABdL/////3lYIAAAADWTq///L/////xwAAH3/////vwsAAAAAAAAAFdP///////8cAAnu////3w0AAAAAAAAAAAAZ8P//////HABf/////1MAAAAAAAAAAAAAAHH//////xwAsv///+UCAAAAAAAAAAAAAAAO9/////8cAOj///+UAAAAAAAAAAAAAAAAALD/////HB3/////YQAAAAAAAAAAAAAAAAB9/////xw3/////zkAAAAAAAAAAAAAAAAAVP////8cR/////8qAAAAAAAAAAAAAAAAAET/////HFP/////HwAAAAAAAAAAAAAAAAA4/////xxJ/////ygAAAAAAAAAAAAAAAAAQv////8cOf////82AAAAAAAAAAAAAAAAAFD/////HCL/////WwAAAAAAAAAAAAAAAAB3/////xwB7v///4wAAAAAAAAAAAAAAAAAqP////8cALn////cAAAAAAAAAAAAAAAACPH/////HABs/////0MAAAAAAAAAAAAAAGH//////xwAD/X////TBQAAAAAAAAAAAA/m//////8cAACP/////6gCAAAAAAAAAAnA////////HAAADOD/////xzYAAAAAAUTW///a/////xwAAAA79f//////3rKhteX////hRv////8bAAAAAEP2///////////////nMzX/////DwAAAAAAJ8D///////////+5FwBE/////gIAAAAAAAAAPZTQ6vnix40tAAAAVv////EAAAAAAAAAAAAAAAAAAAAAAAAAAIf////LAAAAAAAAAAAAAAAAAAAAAAAAAADH////lgAAAAAAAAAAAAAAAAAAAAAAAAAv/////10AAAAAAAAAAAAAAAAAAAAAAAADw/////IMAAAAABpCAAAAAAAAAAAAAAAHo/////+VAAAAAAAw/8lrGgAAAAAAAAZV0v/////pFgAAAAAAMP/////w0K+Zp8L3///////8TAAAAAAAADD////////////////////xSQAAAAAAAAAey/3///////////////ufIgAAAAAAAAAAAAASVJa3y9/y8+LPomMcAAAAAAAAAA==",
+     "glyph": 72,
+     "height": 37,
+     "left": 2,
+     "size": 48,
+     "top": 27,
+     "width": 25
+    },
+    {
+     "codepoint": 81,
+     "coverage": "AAAAAAAAAAAAAAAAD01of5WSe2REBwAAAAAAAAAAAAAAAAAAAAAAAAAAAAxwv/v///////////SxXQMAAAAAAAAAAAAAAAAAAAAAA2Tn///////////////////USAAAAAAAAAAAAAAAAAAAFcf///////////////////////+iBQAAAAAAAAAAAAAAIdr///////7Ie1xDR2CG1////////7oMAAAAAAAAAAAAGuf//////6wfAAAAAAAAAAA0yf//////xwUAAAAAAAAAAr7/////+FIAAAAAAAAAAAAAAAJ9//////+KAAAAAAAAAHr/////+UsAAAAAAAAAAAAAAAAAAHn//////kMAAAAAABb4/////3EAAAAAAAAAAAAAAAAAAAAApv/////UAAAAAACB/////80DAAAAAAAAAAAAAAAAAAAAABfu/////0cAAAAI6v////9EAAAAAAAAAAAAAAAAAAAAAAAAev////+5AAAATf/////eAQAAAAAAAAAAAAAAAAAAAAAAABr8/////xUAAIr/////gAAAAAAAAAAAAAAAAAAAAAAAAAAAuP////9RAADG/////0MAAAAAAAAAAAAAAAAAAAAAAAAAAHz/////jQAE+f////4QAAAAAAAAAAAAAAAAAAAAAAAAAABI/////8YAF//////hAAAAAAAAAAAAAAAAAAAAAAAAAAAAGv/////gACn/////zgAAAAAAAAAAAAAAAAAAAAAAAAAAAAj/////8gA6/////78AAAAAAAAAAAAAAAAAAAAAAAAAAAAA+P////8FR/////+zAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOz/////Ezv/////vgAAAAAAAAAAAAAAAAAAAAAAAAAAAAD3/////woq/////80AAAAAAAAAAAAAAAAAAAAAAAAAAAAG//////wAGP/////fAAAAAAAAAAAAAAAAAAAAAAAAAAAAGP/////rAAX7/////Q0AAAAAAAAAAAAAAAAAAAAAAAAAAET/////wwAAyv////8/AAAAAAAAAAAAAAAAAAAAAAAAAAB4/////5cAAI7/////ewAAAAAAAAAAAAAAAAAAAAAAAAAAsv////9gAABR/////9gAAAAAAAAAAAAAAAAAAAAAAAAAFfr////8FAAAC+7/////PQAAAAAAAAAAAAAAAAAAAAAAAHP/////wAAAAACI/////8QBAAAAAAAAAAAAAAAAAAAAABLp/////1EAAAAAG/r/////aQAAAAAAAAAAAAAAAAAAAACd/////9YBAAAAAACF//////ZBAAAAAAAAAAAAAAAAAABs//////9FAAAAAAAABMj/////9EQAAAAAAAAAAAAAAABu/v////+ZAAAAAAAAAAAh7v/////+nRUAAAAAAAAAACe8///////CCQAAAAAAAAAAACvj///////7uW1ONjlSd8j////////KDgAAAAAAAAAAAAAAHdT///////////////////////+cCAAAAAAAAAAAAAAAAAAHdvD//////////////////9ZPAAAAAAAAAAAAAAAAAAAAAAAUgdD//////////////9UFAAAAAAAAAAAAAAAAAAAAAAAAAAAAHF56kKaqn/b/////lQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABK+/////+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFv+/////2kAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAbP/////9VQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA//////lDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJL/////8zQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABLzAwMDAhAAAAAA==",
+     "glyph": 50,
+     "height": 43,
+     "left": 2,
+     "size": 48,
+     "top": 36,
+     "width": 34
+    },
+    {
+     "codepoint": 38,
+     "coverage": "AAAAAAAAAAAACD92jZqEaEwmAAAAAAAAAAAAAAAAAAAAAAAAAAAAABGK7///////////2IYzAAAAAAAAAAAAAAAAAAAAAAAAOOL/////////////////UgAAAAAAAAAAAAAAAAAAAAAw8f//////////////////VAAAAAAAAAAAAAAAAAAAAAPV//////mQTScgOW+x+f//VAAAAAAAAAAAAAAAAAAAAFz/////2CEAAAAAAAAAE3PmVAAAAAAAAAAAAAAAAAAAAK7////2KwAAAAAAAAAAAAAHFQAAAAAAAAAAAAAAAAAAAN////+2AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPT///+GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOr///+RAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMD////aAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHL/////ZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/w////9S0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABv/////+UgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAE4v/////aFwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAqw////////1BUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFsn//////////9ESAAAAAAAAAAAAAAAAAAAAAAAAAAAHzf////114v/////NEAAAAAAAAAAAAAASyMjIyDEAAACZ/////mAAI+X/////yQ4AAAAAAAAAAAAy/////xgAAFP/////hQAAACfn/////8UMAAAAAAAAAABP////7AAAAM/////SBgAAAAAq6v/////BCgAAAAAAAACD////twAAPv////9TAAAAAAAALu3/////vQkAAAAAAADD////ZwAAmf///+wGAAAAAAAAADLv/////7gHAAAAABL5///9FwAAv////7cAAAAAAAAAAAA28f////+0BgAAAHL///+5AAAA4f///5gAAAAAAAAAAAAAOvP/////rwQAA9r///9AAAAA7////5kAAAAAAAAAAAAAAD/1/////6sDaP///8QAAAAA2f///7YAAAAAAAAAAAAAAABD9/////+q6v///z8AAAAAvf////UJAAAAAAAAAAAAAAAASPj/////////mgAAAAAAef////9rAAAAAAAAAAAAAAAAAE36///////kDwAAAAAAKf/////sHwAAAAAAAAAAAAAAAABS/v////+tAQAAAAAAAKz/////2RwAAAAAAAAAAAAAAA2n////////kwAAAAAAACH1/////+tVAQAAAAAAAAADXt7//////////44AAAAAAABK+///////1oNILyY5Vpfh///////F/f////+IAAAAAAAAV/X/////////////////////+G4AYf7/////ggAAAAAAACrR//////////////////+6LgAAAGn//////3wAAAAAAAACVcj////////////zrjkAAAAAAABw//////92AAAAAAAAAAAWVIOXqaKNdkAFAAAAAAAAAAAAAAAAAAAA",
+     "glyph": 7,
+     "height": 37,
+     "left": 3,
+     "size": 48,
+     "top": 36,
+     "width": 33
+    },
+    {
+     "codepoint": 64,
+     "coverage": "AAAAAAAAAAAAAAAAAAAAACRlgJivxcCzmnFDCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAECO2f//////////////9rZVBQAAAAAAAAAAAAAAAAAAAAAAAAAAAABGyf//////////////////////52EAAAAAAAAAAAAAAAAAAAAAAAAANsH/////////27uqmanE3/n///////++JQAAAAAAAAAAAAAAAAAAAABq+v/////wm0gSAAAAAAAAAARFm+z/////93oBAAAAAAAAAAAAAAAABpz/////42IJAAAAAAAAAAAAAAAAAARU4f////+TAAAAAAAAAAAAAAAIwv////x+CQAAAAAAAAAAAAAAAAAAAAAAC4r6////jQAAAAAAAAAAAACk////8UcAAAAAAAAAAAAAAAAAAAAAAAAAAAA07f///4YAAAAAAAAAAHj////fKwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMOz///9YAAAAAAAARP3//94VAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADDt///qEwAAAAAC0v///DoAAAAAAAAAAAAAABIaAwAAAAAAAAAAAAAAAABQ////mQAAAABd////gAAAAAAAAAAAAVi09v///d6OLgAAPaysqQAAAAAAp///+BYAAAbe///IBAAAAAAAAAAgx////////////IwIXP///AAAAAAAI/3//34AAFf///8+AAAAAAAAACXj//////////////+5Y////AAAAAAAAK///9YAAKb//8oAAAAAAAAAB9L/////z5BfWovF////6////AAAAAAAAFj///8YBO7//20AAAAAAAAAgP////t8AgAAAAAAZ/b//////AAAAAAAABr///9XQf///x0AAAAAAAAJ7P///14AAAAAAAAAAEL//////AAAAAAAAADm//96ef//4AAAAAAAAABV////ywEAAAAAAAAAAACv/////AAAAAAAAADR//+Pkv//sgAAAAAAAACT////TwAAAAAAAAAAAAAv/////AAAAAAAAAC+//+iqv//kQAAAAAAAADB////IAAAAAAAAAAAAAAD+v///AAAAAAAAADT//+Vwv//ggAAAAAAAADU///5AgAAAAAAAAAAAAAA2f///AAAAAAAAAD0//+Azf//fgAAAAAAAADf///kAAAAAAAAAAAAAAAAwf///AAAAAAAABb///9muP//lQAAAAAAAADR///8BQAAAAAAAAAAAAAA4P///AAAAAAAAET///8noP//rQAAAAAAAAC9////JQAAAAAAAAAAAAAG/f///AAAAAAAALf//+IAif//xQAAAAAAAACK////WgAAAAAAAAAAAAA5/////AAAAAAAM////4QAbf//9AgAAAAAAABL////2gUAAAAAAAAAAAC9/////AAAAAADu///8BEAKv///0kAAAAAAAAE4v///3cAAAAAAAAAAFb//////AAAAASc////bgAAAN///5YAAAAAAAAAbP////+cCgAAAAADgv3//////AAANcb///+dAAAAAJT//+kKAAAAAAAAAb7/////6bWHf63h////1v///YrL/////6YFAAAAAEP///96AAAAAAAAABTM//////////////+aXf/////////4bQAAAAAAAADF///wEgAAAAAAAAAOnP7/////////72cBXP//////9ZAbAAAAAAAAAAA+////ngAAAAAAAAAAACyFxuDn0a9jEgAAXPTdxI5MDQAAAAAAAAAAAAAAt////3IAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAJu////1NAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEP7///3XAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABn/////4sCAAAAAAAAAAAAAAAAAAAAAAAAADa4FwAAAAAAAAAAAAAAAAAAev7////GQAAAAAAAAAAAAAAAAAAAAAAPi/z/xAYAAAAAAAAAAAAAAAAAAFDz/////71DBAAAAAAAAAAAAAAAIZDy/////3gAAAAAAAAAAAAAAAAAAAAr2///////8KxlPykSBRguTo7Q/v/////4eAMAAAAAAAAAAAAAAAAAAAAACXPr/////////////////////////74pAAAAAAAAAAAAAAAAAAAAAAAAAAANfer///////////////////qlMwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAI4gsz9/////////+OiYBgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEGS9GUj8qFAAAAAAAAAAAAAAAAAAAAAAA",
+     "glyph": 33,
+     "height": 43,
+     "left": 3,
+     "size": 48,
+     "top": 34,
+     "width": 42
+    },
+    {
+     "codepoint": 37,
+     "coverage": "AAAAAAALUoKYjW0kAAAAAAAAAAAAAAAAAAAAAAAyoKCgRQAAAAAAAAAAAAADdfL///////+1IwAAAAAAAAAAAAAAAAAAAsv//+UNAAAAAAAAAAAABav////////////tNgAAAAAAAAAAAAAAAABo////VwAAAAAAAAAAAACL////9KVritb////qFQAAAAAAAAAAAAAAFO3//70AAAAAAAAAAAAALf3///A5AAAACLT///+hAAAAAAAAAAAAAACd///6KAAAAAAAAAAAAACa////XgAAAAAABuj///kXAAAAAAAAAAAAOP7//4gAAAAAAAAAAAAAAOr//+oHAAAAAAAAg////2MAAAAAAAAAAAPO///jCwAAAAAAAAAAAAAj////oQAAAAAAAAAx////nAAAAAAAAAAAbP///1QAAAAAAAAAAAAAAEH///+FAAAAAAAAABT///+7AAAAAAAAABbv//+5AAAAAAAAAAAAAAAAUf///2oAAAAAAAAAAPf//8wAAAAAAAAAof//+SYAAAAAAAAAAAAAAABP////bwAAAAAAAAAC+///yQAAAAAAADv+//+FAAAAAAAAAAAAAAAAAD7///+KAAAAAAAAABn///+3AAAAAAAD0f//4AoAAAAAAAAAAAAAAAAAG////6kAAAAAAAAAOv///5IAAAAAAHD///9QAAAAAAAAAAAAAAAAAAAA4v//9A8AAAAAAACV////WAAAAAAY8f//tgAAAAAAAAAAAAAAAAAAAACL////dgAAAAAAFPL///INAAAAAKT///gjAAAAAAAAAAAAAAAAAAAAACH3///8WwAAABfS////igAAAAA/////gQAAAAAAAAAAAAAAAAAAAAAAAHD////+1J268////9cJAAAABNT//94IAAAAAAAAAAAAAAAAAAAAAAAAAIb////////////YHQAAAABz////TQAAAAAAAAw9VVE2BAAAAAAAAAAAAEjO///////wiA0AAAAAGvL//7IAAAAAACWs+P/////ujg8AAAAAAAAAAAAhUWVaPAUAAAAAAACo///2IQAAAABQ+P//////////4iYAAAAAAAAAAAAAAAAAAAAAAAAAQv///34AAAAAPvv////tsr/3////5RMAAAAAAAAAAAAAAAAAAAAAAAXW///bBwAAAAfe////kgIAABDI////owAAAAAAAAAAAAAAAAAAAAAAd////0kAAAAAXf///6YAAAAAAA3i///8HgAAAAAAAAAAAAAAAAAAABz0//+vAAAAAAC4////NAAAAAAAAHr///94AAAAAAAAAAAAAAAAAAAAq///9R8AAAAAAfD//9gAAAAAAAAAG////7IAAAAAAAAAAAAAAAAAAEX///96AAAAAAAZ////twAAAAAAAAAA9v//2gAAAAAAAAAAAAAAAAAG2f//2QYAAAAAACr///+dAAAAAAAAAADb///sAAAAAAAAAAAAAAAAAHr///9GAAAAAAAALv///5UAAAAAAAAAANL///EAAAAAAAAAAAAAAAAe9f//qwAAAAAAAAAf////rwAAAAAAAAAA7v//4AAAAAAAAAAAAAAAAK////QcAAAAAAAAAAf6///JAAAAAAAAAAr////DAAAAAAAAAAAAAABJ////dgAAAAAAAAAAAMz///oZAAAAAAAAV////4sAAAAAAAAAAAAAB9v//9YFAAAAAAAAAAAAfv///34AAAAAAADC////PQAAAAAAAAAAAAB+////QgAAAAAAAAAAAAAZ+P//9kkAAAAAgv///84AAAAAAAAAAAAAIfb//6cAAAAAAAAAAAAAAAB1////+qBkcLf////7NQAAAAAAAAAAAACz///yGgAAAAAAAAAAAAAAAAKf/////////////GEAAAAAAAAAAAAATP///3MAAAAAAAAAAAAAAAAAAAFx8P///////9lFAAAAAAAAAAAAAACOsLChBAAAAAAAAAAAAAAAAAAAAAAOV4+moodEBAAAAAA=",
+     "glyph": 6,
+     "height": 37,
+     "left": 2,
+     "size": 48,
+     "top": 36,
+     "width": 41
+    },
+    {
+     "codepoint": 56,
+     "coverage": "AAAAAAAAAAUzaISTmox6TxoAAAAAAAAAAAAAAAAAJZPv////////////yGEDAAAAAAAAAAABefj/////////////////zCwAAAAAAAABm//////////////////////vMQAAAAAAdP//////9pFfPCtNccz//////+cPAAAAGPP/////shwAAAAAAAABW/L/////jgAAAG//////2QoAAAAAAAAAAABg/////+0EAAC3/////0UAAAAAAAAAAAAAALz/////OgAA1v////4LAAAAAAAAAAAAAACA/////1kAAOP////dAAAAAAAAAAAAAAAAUv////9nAADD////5gAAAAAAAAAAAAAAAFz/////RQAAnP////8TAAAAAAAAAAAAAACK/////x4AAFb/////XwAAAAAAAAAAAAAF0f///9YBAAABy////+4cAAAAAAAAAAAAif////9MAAAAADn1////2kwAAAAAAAAUlf7///+vAAAAAAAANej/////yJZyYoSo8P////+aBAAAAAAAAAAdke3//////////////8ZaAAAAAAAAAAAAAABE4////////////54VAAAAAAAAAAAAAGnZ////////////////+aslAAAAAAAABqD//////86kfmyQt+z/////7UAAAAAAAr3/////1kUAAAAAAAAOjfr////6TAAAAGP/////uQQAAAAAAAAAAAA9/P///+AHAAvm////8R0AAAAAAAAAAAAAAIj/////dgBU/////38AAAAAAAAAAAAAAAAH7////9gAe/////9MAAAAAAAAAAAAAAAAAML////7BaL/////IAAAAAAAAAAAAAAAAACV/////ym0/////xMAAAAAAAAAAAAAAAAAiP////87of////8+AAAAAAAAAAAAAAAAALT/////J4f/////aQAAAAAAAAAAAAAAAADh/////g5I/////9EGAAAAAAAAAAAAAABR/////8wACfP/////hAAAAAAAAAAAAAAV6f////+AAACC//////yLDQAAAAAAAAA90v/////wEwAADt3//////+Z+VTAfQmer////////awAAAAAk6f//////////////////////jQAAAAAAAB2+///////////////////0ZwAAAAAAAAAAAVS//////////////+yKHgAAAAAAAAAAAAAAABZNf5Wkq52MaTIEAAAAAAAAAA==",
+     "glyph": 25,
+     "height": 37,
+     "left": 3,
+     "size": 48,
+     "top": 36,
+     "width": 25
+    },
+    {
+     "codepoint": 101,
+     "coverage": "AAAAAAAAAAAMTpW4zd7Nt4g+BAAAAAAAAAAAAAAAABOO+P///////////91XAQAAAAAAAAAAAFDw/////////////////68JAAAAAAAAAGz9///////22cnZ+f//////xQkAAAAAAFH//////ao+BQAAAAxb3P////+XAAAAAB/u////7UYAAAAAAAAAAAu2/////0QAAACl/////00AAAAAAAAAAAAADuf///+8AAAd+////5sAAAAAAAAAAAAAAABe/////ykAgf////oOAAAAAAAAAAAAAAAAAdv///9uAML////HAAAAAAAAAAAAAAAAAACr////qgf3////iwAAAAAAAAAAAAAAAAAAgP///9Ip/////6Z0dHR0dXV1dnZ2dnd3d6r////kPP//////////////////////////////9k3///////////////////////////////xQ/////+vo6Ojo6Ojo6Ojo6Ojo6Ojo6OjkPf////87AAAAAAAAAAAAAAAAAAAAAAAAACr/////WwAAAAAAAAAAAAAAAAAAAAAAAAAJ+f///5EAAAAAAAAAAAAAAAAAAAAAAAAAAMD////dAAAAAAAAAAAAAAAAAAAAAAAAAAB6/////0wAAAAAAAAAAAAAAAAAAAAAAAAAFvX////TCQAAAAAAAAAAAAAAAAAAAAAAAACN/////6kEAAAAAAAAAAAAAAAAAAAxAAAAD9n/////wiIAAAAAAAAAAAAAB0289wAAAAAo8f/////8qV0lDgEKGTtup/H///gAAAAAADPi///////////////////////4AAAAAAAAFrT/////////////////////yQAAAAAAAAAANq/2/////////////cRyIAAAAAAAAAAAAAAAB0F3jaGsoJFxSRYAAAAAAA==",
+     "glyph": 70,
+     "height": 28,
+     "left": 2,
+     "size": 48,
+     "top": 27,
+     "width": 25
+    }
+   ],
+   "subfamilyName": "Book",
+   "unitsPerEm": 2048,
+   "weight": 400
+  },
+  "DejaVuSans-Subset.ttf": {
+   "ascender": 1901,
+   "descender": -483,
+   "familyName": "DejaVu Sans",
+   "fullName": "DejaVu Sans",
+   "glyphs": [
+    {
+     "advance": 651,
+     "bounds": null,
+     "codepoint": 32,
+     "glyph": 1
+    },
+    {
+     "advance": 821,
+     "bounds": [
+      309,
+      0,
+      512,
+      1493
+     ],
+     "codepoint": 33,
+     "glyph": 2
+    },
+    {
+     "advance": 1946,
+     "bounds": [
+      113,
+      -29,
+      1833,
+      1520
+     ],
+     "codepoint": 37,
+     "glyph": 6
+    },
+    {
+     "advance": 1597,
+     "bounds": [
+      129,
+      -29,
+      1534,
+      1520
+     ],
+     "codepoint": 38,
+     "glyph": 7
+    },
+    {
+     "advance": 651,
+     "bounds": [
+      158,
+      -238,
+      451,
+      254
+     ],
+     "codepoint": 44,
+     "glyph": 13
+    },
+    {
+     "advance": 651,
+     "bounds": [
+      219,
+      0,
+      430,
+      254
+     ],
+     "codepoint": 46,
+     "glyph": 15
+    },
+    {
+     "advance": 1303,
+     "bounds": [
+      139,
+      -29,
+      1163,
+      1520
+     ],
+     "codepoint": 56,
+     "glyph": 25
+    },
+    {
+     "advance": 2048,
+     "bounds": [
+      135,
+      -356,
+      1905,
+      1442
+     ],
+     "codepoint": 64,
+     "glyph": 33
+    },
+    {
+     "advance": 1401,
+     "bounds": [
+      16,
+      0,
+      1384,
+      1493
+     ],
+     "codepoint": 65,
+     "glyph": 34
+    },
+    {
+     "advance": 1405,
+     "bounds": [
+      201,
+      0,
+      1260,
+      1493
+     ],
+     "codepoint": 66,
+     "glyph": 35
+    },
+    {
+     "advance": 1178,
+     "bounds": [
+      201,
+      0,
+      1059,
+      1493
+     ],
+     "codepoint": 70,
+     "glyph": 39
+    },
+    {
+     "advance": 1540,
+     "bounds": [
+      201,
+      0,
+      1339,
+      1493
+     ],
+     "codepoint": 72,
+     "glyph": 41
+    },
+    {
+     "advance": 1141,
+     "bounds": [
+      201,
+      0,
+      1130,
+      1493
+     ],
+     "codepoint": 76,
+     "glyph": 45
+    },
+    {
+     "advance": 1235,
+     "bounds": [
+      201,
+      0,
+      1165,
+      1493
+     ],
+     "codepoint": 80,
+     "glyph": 49
+    },
+    {
+     "advance": 1612,
+     "bounds": [
+      115,
+      -264,
+      1497,
+      1520
+     ],
+     "codepoint": 81,
+     "glyph": 50
+    },
+    {
+     "advance": 1251,
+     "bounds": [
+      -6,
+      0,
+      1257,
+      1493
+     ],
+     "codepoint": 84,
+     "glyph": 53
+    },
+    {
+     "advance": 1401,
+     "bounds": [
+      16,
+      0,
+      1384,
+      1493
+     ],
+     "codepoint": 86,
+     "glyph": 55
+    },
+    {
+     "advance": 2025,
+     "bounds": [
+      68,
+      0,
+      1958,
+      1493
+     ],
+     "codepoint": 87,
+     "glyph": 56
+    },
+    {
+     "advance": 1251,
+     "bounds": [
+      -4,
+      0,
+      1255,
+      1493
+     ],
+     "codepoint": 89,
+     "glyph": 58
+    },
+    {
+     "advance": 1255,
+     "bounds": [
+      123,
+      -29,
+      1069,
+      1147
+     ],
+     "codepoint": 97,
+     "glyph": 66
+    },
+    {
+     "advance": 1300,
+     "bounds": [
+      113,
+      -29,
+      1114,
+      1556
+     ],
+     "codepoint": 100,
+     "glyph": 69
+    },
+    {
+     "advance": 1260,
+     "bounds": [
+      113,
+      -29,
+      1151,
+      1147
+     ],
+     "codepoint": 101,
+     "glyph": 70
+    },
+    {
+     "advance": 1300,
+     "bounds": [
+      113,
+      -426,
+      1114,
+      1147
+     ],
+     "codepoint": 103,
+     "glyph": 72
+    },
+    {
+     "advance": 569,
+     "bounds": [
+      193,
+      0,
+      377,
+      1556
+     ],
+     "codepoint": 108,
+     "glyph": 77
+    },
+    {
+     "advance": 1298,
+     "bounds": [
+      186,
+      0,
+      1124,
+      1147
+     ],
+     "codepoint": 110,
+     "glyph": 79
+    },
+    {
+     "advance": 1253,
+     "bounds": [
+      113,
+      -29,
+      1141,
+      1147
+     ],
+     "codepoint": 111,
+     "glyph": 80
+    },
+    {
+     "advance": 842,
+     "bounds": [
+      186,
+      0,
+      842,
+      1147
+     ],
+     "codepoint": 114,
+     "glyph": 83
+    },
+    {
+     "advance": 1212,
+     "bounds": [
+      61,
+      0,
+      1151,
+      1120
+     ],
+     "codepoint": 118,
+     "glyph": 87
+    },
+    {
+     "advance": 1212,
+     "bounds": [
+      61,
+      -426,
+      1151,
+      1120
+     ],
+     "codepoint": 121,
+     "glyph": 90
+    },
+    {
+     "advance": 1260,
+     "bounds": [
+      113,
+      -29,
+      1151,
+      1638
+     ],
+     "codepoint": 233,
+     "glyph": 169
+    },
+    {
+     "advance": 2206,
+     "bounds": [
+      40,
+      0,
+      2166,
+      1493
+     ],
+     "codepoint": 1046,
+     "glyph": 213
+    },
+    {
+     "advance": 1303,
+     "bounds": [
+      0,
+      -29,
+      1167,
+      1520
+     ],
+     "codepoint": 8364,
+     "glyph": 226
+    },
+    {
+     "advance": 1401,
+     "bounds": [
+      16,
+      0,
+      1384,
+      1493
+     ],
+     "codepoint": 119808,
+     "glyph": 34
+    }
+   ],
+   "kerning": [
+    {
+     "left": 34,
+     "pair": "AV",
+     "right": 55,
+     "value": -131
+    },
+    {
+     "left": 34,
+     "pair": "AT",
+     "right": 53,
+     "value": -159
+    },
+    {
+     "left": 53,
+     "pair": "To",
+     "right": 80,
+     "value": -348
+    },
+    {
+     "left": 53,
+     "pair": "Ty",
+     "right": 90,
+     "value": -319
+    },
+    {
+     "left": 45,
+     "pair": "LT",
+     "right": 53,
+     "value": -282
+    },
+    {
+     "left": 58,
+     "pair": "Yo",
+     "right": 80,
+     "value": -272
+    },
+    {
+     "left": 55,
+     "pair": "VA",
+     "right": 34,
+     "value": -131
+    },
+    {
+     "left": 56,
+     "pair": "Wa",
+     "right": 66,
+     "value": -131
+    },
+    {
+     "left": 49,
+     "pair": "P.",
+     "right": 15,
+     "value": -319
+    },
+    {
+     "left": 39,
+     "pair": "F,",
+     "right": 13,
+     "value": 0
+    },
+    {
+     "left": 66,
+     "pair": "av",
+     "right": 87,
+     "value": 0
+    },
+    {
+     "left": 83,
+     "pair": "rn",
+     "right": 79,
+     "value": -36
+    },
+    {
+     "left": 34,
+     "pair": "AA",
+     "right": 34,
+     "value": 57
+    }
+   ],
+   "legacyKerning": [
+    {
+     "left": 34,
+     "pair": "AV",
+     "right": 55,
+     "value": -131
+    },
+    {
+     "left": 34,
+     "pair": "AT",
+     "right": 53,
+     "value": -159
+    },
+    {
+     "left": 53,
+     "pair": "To",
+     "right": 80,
+     "value": -348
+    },
+    {
+     "left": 53,
+     "pair": "Ty",
+     "right": 90,
+     "value": -319
+    },
+    {
+     "left": 45,
+     "pair": "LT",
+     "right": 53,
+     "value": -282
+    },
+    {
+     "left": 58,
+     "pair": "Yo",
+     "right": 80,
+     "value": -272
+    },
+    {
+     "left": 55,
+     "pair": "VA",
+     "right": 34,
+     "value": -131
+    },
+    {
+     "left": 56,
+     "pair": "Wa",
+     "right": 66,
+     "value": -131
+    },
+    {
+     "left": 49,
+     "pair": "P.",
+     "right": 15,
+     "value": -319
+    },
+    {
+     "left": 39,
+     "pair": "F,",
+     "right": 13,
+     "value": 0
+    },
+    {
+     "left": 66,
+     "pair": "av",
+     "right": 87,
+     "value": 0
+    },
+    {
+     "left": 83,
+     "pair": "rn",
+     "right": 79,
+     "value": -36
+    },
+    {
+     "left": 34,
+     "pair": "AA",
+     "right": 34,
+     "value": 57
+    }
+   ],
+   "lineGap": 0,
+   "numGlyphs": 234,
+   "renders": [
+    {
+     "codepoint": 65,
+     "coverage": "AAAAh68BAAAAAAAS9ORBAAAAAABttX6iAAAAAADOViD0DgAAAC/vCADAZQAAAJK5PDyPxgAABuzGwMDA9ygAVt4AAAAAqIkAt4UAAAAATeYD",
+     "glyph": 34,
+     "height": 9,
+     "left": 0,
+     "size": 12,
+     "top": 9,
+     "width": 9
+    },
+    {
+     "codepoint": 97,
+     "coverage": "AE6cr4kWAAB1TDmJ0wMAAAUdJOQqAIPjvrTxQirpDAAA5UQ16AgAVf9EAa3jzK7VRAAAGxoAAAA=",
+     "glyph": 66,
+     "height": 8,
+     "left": 0,
+     "size": 12,
+     "top": 7,
+     "width": 7
+    },
+    {
+     "codepoint": 66,
+     "coverage": "n8DAtogVANR/OEOzwgDUXAAAOPkA1HMkL6S0ANTj1NzqSgDUXAAAMfgk1FwAAADnWdRcAANT/CvU+vj11FkA",
+     "glyph": 35,
+     "height": 9,
+     "left": 1,
+     "size": 12,
+     "top": 9,
+     "width": 7
+    },
+    {
+     "codepoint": 103,
+     "coverage": "AAyFrm1QTAC/pj597Igt8QkAAL6ITs8AAACUiDvlAAAAqogG4WYANfSIADLN7LilfQAAAAAAyVYAbYVusc8FACBpeVcHAA==",
+     "glyph": 72,
+     "height": 10,
+     "left": 0,
+     "size": 12,
+     "top": 7,
+     "width": 7
+    },
+    {
+     "codepoint": 81,
+     "coverage": "AABDuODRggkAAFXzZxw2xb4DBeduAAAADu5bNv8RAAAAAJ6lT/QAAAAAAIG+Qv4IAAAAAJWsDvdNAAAAAthwAIfcJgADjuAQAAKF89vyyyUAAAAACCZ54RwAAAAAAAAAZ2IA",
+     "glyph": 50,
+     "height": 11,
+     "left": 0,
+     "size": 12,
+     "top": 9,
+     "width": 9
+    },
+    {
+     "codepoint": 38,
+     "coverage": "AABYztyqCQAAABv2PxJWCwAAAC7xBgAAAAAAAAHcngEAAAAAAIq3z5UAAGZWGvwYE9KPAMRIMvMBABXVqNACCOdxAABP/5sAADnZ4dvRVd1/AAAAGRQAAAAA",
+     "glyph": 7,
+     "height": 10,
+     "left": 0,
+     "size": 12,
+     "top": 9,
+     "width": 9
+    },
+    {
+     "codepoint": 64,
+     "coverage": "AAAAAC1jakIDAAAAAAAhwL1+bZrSRAAAABzVQQAAAAAayjsAAKhOAE62oVlWJ8MAC9IAJ94yL9uAAMsMK6oAaYUAAHqAALwXI7EAX5YAAIyAEM8AAtcIEN59ed24vUAAAHyIABlrWC1cFQAAAASyjw8AAA2BJQAAAAACbNDN0tlvBgAAAAAAAAAKDgAAAAAA",
+     "glyph": 33,
+     "height": 12,
+     "left": 0,
+     "size": 12,
+     "top": 9,
+     "width": 12
+    },
+    {
+     "codepoint": 37,
+     "coverage": "AHbEqxEAAEaSAAAqzAN3hAAGzRsAAE+eAEOqAHt0AAAAJs8FfIAfywUAAAAAa8GiDq9ALIljAQAAAABJpQ7cQaZsAAAAB84ZQK0APa8AAAB/cQAxwQBTnwAAIcoEAACwrNIwAAATFQAAAAAdCQA=",
+     "glyph": 6,
+     "height": 10,
+     "left": 0,
+     "size": 12,
+     "top": 9,
+     "width": 11
+    },
+    {
+     "codepoint": 56,
+     "coverage": "AB6m29B5AQDCoRUv4WIA8T8AAJuQAJiqJT3gPgAi1+XzlwMG4GUACbyGJf8KAABrxQj1VQADsZ0AVevR5cgaAAAEIBUAAA==",
+     "glyph": 25,
+     "height": 10,
+     "left": 0,
+     "size": 12,
+     "top": 9,
+     "width": 7
+    },
+    {
+     "codepoint": 101,
+     "coverage": "AAFjpZo1AACatUBX5jAh9AoAAHWaS/jU1dbitTrkAAAAAAAI3mUAAAghADDR2cvlYAAAABUgBQA=",
+     "glyph": 70,
+     "height": 8,
+     "left": 0,
+     "size": 12,
+     "top": 7,
+     "width": 7
+    },
+    {
+     "codepoint": 65,
+     "coverage": "AAAAAAAAHICAUgAAAAAAAAAAAAAAAACC///oBAAAAAAAAAAAAAAAAuH//f9OAAAAAAAAAAAAAABG/+2T/7AAAAAAAAAAAAAAAKj/li7/+xcAAAAAAAAAAAAR+P84AND/cwAAAAAAAAAAAGv/2QAAcf/UAAAAAAAAAAAAzf98AAAX+/82AAAAAAAAAC7//h8AAAC0/5gAAAAAAAAAkf/AAAAAAFb/8AkAAAAAAAbs/2IAAAAAB+//WwAAAAAAVf//gXR0dHR00/+9AAAAAAC2//////////////4gAAAAG/z/m4SEhISEhITg/4AAAAB6/+kEAAAAAAAAAHr/4AEAANr/kgAAAAAAAAAAIP7/QwA+//83AAAAAAAAAAAAxP+lAJ//3AAAAAAAAAAAAABp//YP",
+     "glyph": 34,
+     "height": 18,
+     "left": 0,
+     "size": 24,
+     "top": 18,
+     "width": 17
+    },
+    {
+     "codepoint": 97,
+     "coverage": "AAAAIklkZEQLAAAAAF3Z///////wcQAAAJjwqXppgL///3QAADEJAAAAAABp//IOAAAAAAAAAAAA0v9OAAAAASA8R0hIwf92AAZ95f////////+FALH/962Abmhox/+IQ//zMAAAAAAAq/+IgP+zAAAAAAAA1/+IiP+tAAAAAAA7//+IXv/zJgAAACDd//+ICuH/9Jx+oPTjtv+IACfN/////8AioP+IAAAALVFIIAAAAAAA",
+     "glyph": 66,
+     "height": 15,
+     "left": 1,
+     "size": 24,
+     "top": 14,
+     "width": 12
+    },
+    {
+     "codepoint": 66,
+     "coverage": "UoCAgICAfW5FBwAAAKT//////////+1jAACk/9h0dHR8muz//1wApP+4AAAAAAAO1//WAKT/uAAAAAAAAHP//gSk/7gAAAAAAABr//UApP+4AAAAAAACwP+7AKT/zEhISE9syP/rMACk//////////+3GwAApP/mpKSkpbju/90tAKT/uAAAAAAACKX/7RGk/7gAAAAAAAAM8/98pP+4AAAAAAAAAMv/raT/uAAAAAAAAADY/7mk/7gAAAAAAAAp/P+RpP+4AAAAAAhG2P/8LqT//PT09PX+///6YwCk////////9NSTKAAA",
+     "glyph": 35,
+     "height": 18,
+     "left": 2,
+     "size": 24,
+     "top": 18,
+     "width": 13
+    },
+    {
+     "codepoint": 103,
+     "coverage": "AAAAB0hoWR8AAyAgAgAASuf////+niH//xAAQfr/zXNkmfq3//8QAtv/rAIAAABA+///EEX/+RUAAAAAAJv//xCC/7wAAAAAAABJ//8QoP+WAAAAAAAAJP//EKf/jwAAAAAAABz//xCX/6IAAAAAAAAw//8Qav/ZAAAAAAAAZv//EB/9/0cAAAAAA9D//xAAn//qQgAAEqf2//8QAA/M///m1/r5Yv//DAAACn/Z+OquMyX//QEAAAAAAAAAAABS/9kAAAAAAAAAAAAAvP+XAAASgyEAAAAWn//6KgAAGP//79DY/f/8YgAAAAd2uuH2996fLwAAAA==",
+     "glyph": 72,
+     "height": 19,
+     "left": 1,
+     "size": 24,
+     "top": 14,
+     "width": 13
+    },
+    {
+     "codepoint": 81,
+     "coverage": "AAAAAANMlrnJt5BEAAAAAAAAAAA51P/////////HKgAAAAAASvf/6nk1IjmD8v/uNgAAAB/w/88UAAAAAAAg3//hEAAApf/zHQAAAAAAAAAw/P+HABX6/4gAAAAAAAAAAACl/+4FVf//MAAAAAAAAAAAAE3//ziG//cDAAAAAAAAAAAAGf//aZv/4wAAAAAAAAAAAAAC/v99ov/cAAAAAAAAAAAAAAD5/4eS/+sAAAAAAAAAAAAACP//eXP//xIAAAAAAAAAAAAw//9WOP//VAAAAAAAAAAAAHH//x0C3v+/AAAAAAAAAAAE2P/EAABo//9mAAAAAAAAAIP//0cAAAG3//x2BAAAAAmK//+ZAAAAAAu3///rrJqw8f//nAMAAAAAAAJh1f//////9UwAAAAAAAAAAAAAH0NUef7/hQAAAAAAAAAAAAAAAAAAc///bwAAAAAAAAAAAAAAAAAAhf/+WgAAAAAAAAAAAAAAAAAAFxgUAAA=",
+     "glyph": 50,
+     "height": 22,
+     "left": 1,
+     "size": 24,
+     "top": 18,
+     "width": 17
+    },
+    {
+     "codepoint": 38,
+     "coverage": "AAAAACaNwMerfi4AAAAAAAAAAABY+P///////ysAAAAAAAAAGfb/vDUPKG/ULAAAAAAAAABl/+sLAAAAAAEFAAAAAAAAAHn/xgAAAAAAAAAAAAAAAAAATP/3GgAAAAAAAAAAAAAAAAAD1//CBwAAAAAAAAAAAAAAAAKl//+uBAAAAAAAAAAAAAABq//d+P+oAwAAAAADZGQMAHv/4RhM+f+jAgAAAB//+wYP8/9LAABQ+/+eAQAAUv/IAFX/6QEAAABW/P+ZAQCh/3MAdP/OAAAAAABb/f+UG/bwEABl/+wCAAAAAABh/v/k/3UAACj//14AAAAAAABm///jAwAAALD/9VcAAAAAGKX///+HAAAAE9P//9adl7v4/9iL//+CAAAAC4vx/////+V6CgB2//9+AAAAAAU2UEssAQAAAAAAAAA=",
+     "glyph": 7,
+     "height": 19,
+     "left": 1,
+     "size": 24,
+     "top": 18,
+     "width": 17
+    },
+    {
+     "codepoint": 64,
+     "coverage": "AAAAAAAAADaBu9Pj1K5tFgAAAAAAAAAAAAAAPsX///XYz+f9//mHCQAAAAAAAAABgf75ljgEAAAAEWLN/9wkAAAAAAAAm//OIgAAAAAAAAAAAm364iEAAAAAb/+1CwAAAAAAAAAAAAAAUvrQBAAAGPTfDgAAABVpiXYuADlUAAB7/2oAAJD/QgAAAEfw/////5Ox/wAACOvUAAHmzQAAACDz/pI6N4n9+v8AAACd/xwv/38AAACR/4sAAAAAe///AAAAbf9CUP9QAAAA0/8dAAAAAAz+/wAAAGT/TWX/QAAAAOv5AQAAAAAA5v8AAACC/zlY/1AAAADh/wwAAAAAAfb/AAAAvvgJP/9wAAAAs/9QAAAAAD3//wAAOv+gAAv4twAAAFL/3SkAACDT//8AP+blGgAAt/ohAAAAp//6zcn35c3/1P/XKQAAAEH/qQAAAANx0vLgmRis57RhBQAAAAAAsf9wAAAAAAAAAAAAAAAAAAAAAAAAABDY/XoAAAAAAAAAAAAAOwUAAAAAAAAAHs//w0EBAAAAAAArov+SAAAAAAAAAAAKlPr/6KmOh57W//+4HwAAAAAAAAAAAAAhh9L/////4Z01AAAAAAAAAAAAAAAAAAAABh0kDwAAAAAAAAAAAA==",
+     "glyph": 33,
+     "height": 22,
+     "left": 1,
+     "size": 24,
+     "top": 17,
+     "width": 22
+    },
+    {
+     "codepoint": 37,
+     "coverage": "AABctcmkNgAAAAAAAABA0HUAAAAAAI//5r31+0sAAAAAAAXV7xYAAAAAMv/TDQAz++UFAAAAAHX/awAAAAAAg/9kAAAAr/8+AAAAG/POAgAAAAAApP87AAAAhP9fAAAAqf44AAAAAAAAov8+AAAAh/9dAABD/5wAAAAAAAAAfv9sAAAAtP85AAXX7RQAAAAAAAAAKf3cFwBA/N4CAHj/aAAAAAAAAAAAAH3/9tf99j8AHfTLAgAAEikOAAAAAABGnrKOJQAArf01ABSy/v/7nwkAAAAAAAAAAABG/5kAAsf/oFux/6YAAAAAAAAAAAbZ7BMAR/+2AAAC1P8mAAAAAAAAAHv/ZQAAhP9iAAAAg/9jAAAAAAAAH/XIAQAAmP9KAAAAa/93AAAAAAAAsP0zAAAAiv9cAAAAff9oAAAAAABJ/5YAAAAAU/+jAAAAxP8yAAAAAAfb6hEAAAAABtv9ezeO/8EAAAAAAH7/YgAAAAAAACnY////yBkAAAAAAE5UAQAAAAAAAAADOVIzAQAA",
+     "glyph": 6,
+     "height": 19,
+     "left": 1,
+     "size": 24,
+     "top": 18,
+     "width": 21
+    },
+    {
+     "codepoint": 56,
+     "coverage": "AAAALYm6y8GaSgAAAAAAhf7///////+6DAAAX///sTwZL4r8/6IAAMj/xQIAAAAAhv/7DwDs/3cAAAAAADT//y8A1v98AAAAAAA6//8YAIb/0gYAAAAAmP/HAAANw//JVzVLpf/mKwAAAAdw+P////+fFgAAAAGD9v/cutL6/q8PAACK/+5HAAAAJsz/yAEY+f9kAAAAAAAj+/9SSf//HAAAAAAAANb/iFf//xYAAAAAAADP/5Y2//9RAAAAAAAU+P91A9//4CUAAAAPtf/8JQBG+//5s5Kp6v//gAAAADnG///////eYQAAAAAAABlFVEonAQAAAA==",
+     "glyph": 25,
+     "height": 19,
+     "left": 1,
+     "size": 24,
+     "top": 18,
+     "width": 13
+    },
+    {
+     "codepoint": 101,
+     "coverage": "AAAAABRQaF8wAAAAAAAAE6L9/////8wtAAAAFNn/6pBqec//8CYAAKz/zhIAAAADq/++ACb+/ioAAAAAABf2/yRw/9QAAAAAAAAAy/9dmf/ouLi5ubq6u+r/dKf/+vT09PT09PT09Haa/6YAAAAAAAAAAAAAcf/cAAAAAAAAAAAAACT9/0wAAAAAAAAAAAAAnv/rPAAAAAAAE3cAAArD///BioCTwfv8AAAABXvp///////PewAAAAAAAS5MTjUWAAAA",
+     "glyph": 70,
+     "height": 15,
+     "left": 1,
+     "size": 24,
+     "top": 14,
+     "width": 13
+    },
+    {
+     "codepoint": 65,
+     "coverage": "AAAAAAAAAAAAAAAAAHX//////0wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANb//////60AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOf////////oVAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmv////////9wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK8f////X////SAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABe/////WX/////MwAAAAAAAAAAAAAAAAAAAAAAAAAAAADA////uwPn////lQAAAAAAAAAAAAAAAAAAAAAAAAAAACL+////XACM////7gcAAAAAAAAAAAAAAAAAAAAAAAAAAIP////zCgAt/////1gAAAAAAAAAAAAAAAAAAAAAAAAAAuL///+fAAAAzv///7kAAAAAAAAAAAAAAAAAAAAAAAAARv////9BAAAAb/////0dAAAAAAAAAAAAAAAAAAAAAAAAqP///+EBAAAAFfr///98AAAAAAAAAAAAAAAAAAAAAAAR+P///4QAAAAAALH////cAQAAAAAAAAAAAAAAAAAAAABs/////yYAAAAAAFL/////PwAAAAAAAAAAAAAAAAAAAADN////xwAAAAAAAAbt////oQAAAAAAAAAAAAAAAAAAAC7/////aQAAAAAAAACU////9Q0AAAAAAAAAAAAAAAAAAJH////4EQAAAAAAAAA1/////2QAAAAAAAAAAAAAAAAABuz///+sAAAAAAAAAAAA1v///8UAAAAAAAAAAAAAAAAAVP////9NAAAAAAAAAAAAeP////8nAAAAAAAAAAAAAAAAtv///+oEAAAAAAAAAAAAG/3///+IAAAAAAAAAAAAAAAa/P///5AAAAAAAAAAAAAAALr////mAwAAAAAAAAAAAAB5/////zIAAAAAAAAAAAAAAFv/////SwAAAAAAAAAAAADZ/////+zs7Ozs7Ozs7Ozs7O//////rQAAAAAAAAAAAD3/////////////////////////////+hQAAAAAAAAAAJ7//////////////////////////////3AAAAAAAAAADPP//////////////////////////////9EAAAAAAAAAYv////9lBAQEBAQEBAQEBAQEBAQEgf////8zAAAAAAAAxP////gQAAAAAAAAAAAAAAAAAAAAJf////+UAAAAAAAl/////60AAAAAAAAAAAAAAAAAAAAAAMr////uBwAAAACH/////1MAAAAAAAAAAAAAAAAAAAAAAHD/////VwAAAAPl////8AgAAAAAAAAAAAAAAAAAAAAAABj8////uQAAAEr/////nQAAAAAAAAAAAAAAAAAAAAAAAAC6/////R0AAKz/////QgAAAAAAAAAAAAAAAAAAAAAAAABf/////3wAFPn////lAgAAAAAAAAAAAAAAAAAAAAAAAAAN9v///9wBb/////+NAAAAAAAAAAAAAAAAAAAAAAAAAAAAqf////8/",
+     "glyph": 34,
+     "height": 35,
+     "left": 0,
+     "size": 48,
+     "top": 35,
+     "width": 33
+    },
+    {
+     "codepoint": 97,
+     "coverage": "AAAAAAACMm6Yv9Lf1sSqcDEAAAAAAAAAAAAES6Pv///////////////GSAAAAAAAAAAw/////////////////////4sDAAAAAAAw///////74NHI1/f///////+SAAAAAAAw//3EcTQHAAAAAAQ4nv3/////TAAAAAAqmiQAAAAAAAAAAAAAAD3v////zwAAAAAAAAAAAAAAAAAAAAAAAABE/////zsAAAAAAAAAAAAAAAAAAAAAAAAAuP///4MAAAAAAAAAAAAAAAAAAAAAAAAAbP///7sAAAAAAAAAAAAAAAAAAAAAAAAAS////+YAAAAAAAAAAAYuW3aDkJSUlJSUr/////cAAAAAAABHp/T///////////////////8HAAAAHbf///////////////////////8PAAAh4P/////////w3NTMzMzM2f////8QAAHI/////956OgsAAAAAAAAAQP////8QAFn/////mAQAAAAAAAAAAAAATf////8QALD////MAwAAAAAAAAAAAAAAX/////8QAPD///9qAAAAAAAAAAAAAAAAjv////8QCP////9BAAAAAAAAAAAAAAAAzP////8QFv////89AAAAAAAAAAAAAAAx//////8QBf////9lAAAAAAAAAAAAAAC1//////8QAN3////GAAAAAAAAAAAAAHH///////8QAJX/////hQAAAAAAAAADev////////8QACb8/////71LDQACHWXR////qP////8QAACC//////////b8//////+fQP////8QAAABlv///////////////5QDQP////8QAAAAAFfZ///////////JRwAAQP////8QAAAAAAACO3qaq6eRaSgAAAAAAAAAAAAA",
+     "glyph": 66,
+     "height": 28,
+     "left": 2,
+     "size": 48,
+     "top": 27,
+     "width": 24
+    },
+    {
+     "codepoint": 66,
+     "coverage": "SP////////////////bo0qRwHQAAAAAAAABI///////////////////////9tikAAAAAAEj/////////////////////////+mYAAAAASP/////w5OTk5OTk5vL+/////////2EAAABI/////3QAAAAAAAAAAA0/lvn/////8RoAAEj/////dAAAAAAAAAAAAAAALun/////ggAASP////90AAAAAAAAAAAAAAAAT//////RAABI/////3QAAAAAAAAAAAAAAAAB5/////cAAEj/////dAAAAAAAAAAAAAAAAAC7/////w0ASP////90AAAAAAAAAAAAAAAAALT/////BgBI/////3QAAAAAAAAAAAAAAAAA0v///+oAAEj/////dAAAAAAAAAAAAAAAACP+////sAAASP////90AAAAAAAAAAAAAAAGvP////9QAABI/////3QAAAAAAAAAAAABP8n/////vAAAAEj/////wpCQkJCQkJGctuf//////8IPAAAASP///////////////////////ctjAgAAAABI///////////////////////UfBoAAAAAAEj/////////////////////////+YsHAAAASP////+bSEhISEhISE5dgrz9/////8gOAABI/////3QAAAAAAAAAAAAAACC3/////7sBAEj/////dAAAAAAAAAAAAAAAAAO0/////2UASP////90AAAAAAAAAAAAAAAAAB75////2QFI/////3QAAAAAAAAAAAAAAAAAAL7/////LUj/////dAAAAAAAAAAAAAAAAAAAjP////9jSP////90AAAAAAAAAAAAAAAAAAB5/////3tI/////3QAAAAAAAAAAAAAAAAAAIT/////gEj/////dAAAAAAAAAAAAAAAAAAApv////9pSP////90AAAAAAAAAAAAAAAAAAbp/////0lI/////3QAAAAAAAAAAAAAAAAAc//////1CUj/////dAAAAAAAAAAAAAAAAFr7/////6EASP////90AAAAAAAAAAAAHVi7///////zGwBI//////Dk5OTk5OTk6vj/////////+k4AAEj//////////////////////////+pLAAAASP////////////////////////GUEgAAAABI/////////////////O/gwY9WCQAAAAAAAA==",
+     "glyph": 35,
+     "height": 35,
+     "left": 4,
+     "size": 48,
+     "top": 35,
+     "width": 26
+    },
+    {
+     "codepoint": 103,
+     "coverage": "AAAAAAAAACB1s8zf07J5IwAAAA1AQEBABwAAAAAAFKH///////////2jFQA0/////xwAAAAAL+r//////////////+AnNP////8cAAAAK+v///////TQvtP4////3kb/////HAAABdP/////3lUIAAAADWLp///S/////xwAAH7/////vwsAAAAAAAAAFNL///////8cAAnv////3w0AAAAAAAAAAAAZ7///////HABg/////1MAAAAAAAAAAAAAAG///////xwAsv///+YCAAAAAAAAAAAAAAAN9v////8cAOj///+VAAAAAAAAAAAAAAAAAK//////HB3/////YgAAAAAAAAAAAAAAAAB8/////xw3/////zkAAAAAAAAAAAAAAAAAU/////8cR/////8qAAAAAAAAAAAAAAAAAEP/////HFP/////HwAAAAAAAAAAAAAAAAA3/////xxJ/////ygAAAAAAAAAAAAAAAAAQv////8cOf////83AAAAAAAAAAAAAAAAAFD/////HCL/////XAAAAAAAAAAAAAAAAAB2/////xwB7v///44AAAAAAAAAAAAAAAAAp/////8cALn////dAAAAAAAAAAAAAAAACPD/////HABs/////0QAAAAAAAAAAAAAAGD//////xwAD/X////TBQAAAAAAAAAAAA/m//////8cAACQ/////6oDAAAAAAAAAAnA////////HAAADOH/////yTgAAAAAAkXX///f/////xwAAAA99v//////37Khteb////rUf////8bAAAAAET2///////////////uODX/////DwAAAAAAJ7/////////////DJQBE/////gIAAAAAAAAAPZPQ6vzx0JdAAAAAV/////EAAAAAAAAAAAAAAAAAAAAAAAAAAIf////KAAAAAAAAAAAAAAAAAAAAAAAAAADH////lgAAAAAAAAAAAAAAAAAAAAAAAAAw/////10AAAAAAAAAAAAAAAAAAAAAAAADxP////EMAAAAABpEAAAAAAAAAAAAAAAHo/////+UAAAAAAAw/8tsGQAAAAAAAAdX1P/////nFAAAAAAAMP/////htKGYqMP3///////7RwAAAAAAADD////////////////////vRAAAAAAAAAAe1P////////////////qdIAAAAAAAAAAAAAAkZJrA3e738+LPoWIbAAAAAAAAAA==",
+     "glyph": 72,
+     "height": 37,
+     "left": 2,
+     "size": 48,
+     "top": 27,
+     "width": 25
+    },
+    {
+     "codepoint": 81,
+     "coverage": "AAAAAAAAAAAAAAAAGVF2j5qZjXBJEAAAAAAAAAAAAAAAAAAAAAAAAAAAABF20v////////////3CZAcAAAAAAAAAAAAAAAAAAAAABXny///////////////////kWgAAAAAAAAAAAAAAAAAAH83///////////////////////+sDAAAAAAAAAAAAAAAK+n///////7IfFxDR2CF1v///////84SAAAAAAAAAAAAH+j//////60gAAAAAAAAAAAzx///////ygkAAAAAAAAABs7/////+FQAAAAAAAAAAAAAAAJ7//////+gAAAAAAAAAIL/////+UsAAAAAAAAAAAAAAAAAAHn//////0wAAAAAABz4/////3EAAAAAAAAAAAAAAAAAAAAApv/////bBAAAAACS/////8sDAAAAAAAAAAAAAAAAAAAAABfu/////10AAAAJ7/////9CAAAAAAAAAAAAAAAAAAAAAAAAev/////EAAAAUP/////dAQAAAAAAAAAAAAAAAAAAAAAAABr8/////xwAAJj/////fwAAAAAAAAAAAAAAAAAAAAAAAAAAt/////9jAADR/////0IAAAAAAAAAAAAAAAAAAAAAAAAAAHv/////mwAF+v////4PAAAAAAAAAAAAAAAAAAAAAAAAAABH/////8oAH//////gAAAAAAAAAAAAAAAAAAAAAAAAAAAAGv/////pADj/////zgAAAAAAAAAAAAAAAAAAAAAAAAAAAAf//////gRE/////78AAAAAAAAAAAAAAAAAAAAAAAAAAAAA+P////8OSv////+zAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOz/////FUT/////vgAAAAAAAAAAAAAAAAAAAAAAAAAAAAD3/////wo5/////80AAAAAAAAAAAAAAAAAAAAAAAAAAAAH//////wAIf/////fAAAAAAAAAAAAAAAAAAAAAAAAAAAAGP/////rAAb7/////Q0AAAAAAAAAAAAAAAAAAAAAAAAAAEX/////wwAA1P////9AAAAAAAAAAAAAAAAAAAAAAAAAAAB4/////5gAAJ3/////ewAAAAAAAAAAAAAAAAAAAAAAAAAAsv////9hAABV/////9kAAAAAAAAAAAAAAAAAAAAAAAAAFvr////9FQAAC/P/////PQAAAAAAAAAAAAAAAAAAAAAAAHT/////wgAAAACZ/////8QBAAAAAAAAAAAAAAAAAAAAABLq/////1QAAAAAIfv/////aQAAAAAAAAAAAAAAAAAAAACe/////9kCAAAAAACM//////ZCAAAAAAAAAAAAAAAAAABs//////9IAAAAAAAACtf/////9UcAAAAAAAAAAAAAAABu/v////+bAAAAAAAAAAAn7///////oBcAAAAAAAAAACe8///////CCQAAAAAAAAAAADXw///////7u25ONjlSeMn////////JDgAAAAAAAAAAAAAAKdj///////////////////////+aCAAAAAAAAAAAAAAAAAAKi/n//////////////////9VNAAAAAAAAAAAAAAAAAAAAAAAbh+L//////////////9QFAAAAAAAAAAAAAAAAAAAAAAAAAAABKmKHoausoPb/////lQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABK+/////+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFv+/////2kAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAbP/////9VQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA//////lDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJL/////8zQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABLzAwMDAhAAAAAA==",
+     "glyph": 50,
+     "height": 43,
+     "left": 2,
+     "size": 48,
+     "top": 36,
+     "width": 34
+    },
+    {
+     "codepoint": 38,
+     "coverage": "AAAAAAAAAAAACD92jZuSgFkqAAAAAAAAAAAAAAAAAAAAAAAAAAAAABGJ7///////////550/AQAAAAAAAAAAAAAAAAAAAAAAOOL/////////////////UgAAAAAAAAAAAAAAAAAAAAAw8f//////////////////VAAAAAAAAAAAAAAAAAAAAAPV/////+6GPB0fOG6x+f//VAAAAAAAAAAAAAAAAAAAAFz/////0BoAAAAAAAAAEnHlVAAAAAAAAAAAAAAAAAAAAK7////1HQAAAAAAAAAAAAAHFAAAAAAAAAAAAAAAAAAAAN////+mAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPT///9/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOr///+TAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAL/////eAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHH/////ZQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA7u////9S4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABs/////+MdAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAF4//////ZFwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABK8////////1BUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAF9L//////////9ESAAAAAAAAAAAAAAAAAAAAAAAAAAAN0f////ty4v/////NEAAAAAAAAAAAAAASyMjIyDEAAACs/////lkAI+X/////yQ4AAAAAAAAAAAAy/////xgAAFn/////ggAAACfn/////8UMAAAAAAAAAABQ////7QAABN3////QAwAAAAAq6v/////BCgAAAAAAAACF////uQAATv////9WAAAAAAAALu3/////vQkAAAAAAADG////aAAAnv///+wGAAAAAAAAADLv/////7gHAAAAABX6///9GAAA0v///7gAAAAAAAAAAAA28f////+0BgAAAHX///+5AAAA7P///5gAAAAAAAAAAAAAOvP/////rwQAA9v///9AAAAA8P///5kAAAAAAAAAAAAAAD/1/////6sDaf///8MAAAAA2f///7cAAAAAAAAAAAAAAABD9/////+q6v///j8AAAAAvf////UJAAAAAAAAAAAAAAAASPj/////////mQAAAAAAeP////9tAAAAAAAAAAAAAAAAAE36///////kDgAAAAAAKP/////tIAAAAAAAAAAAAAAAAABS/v////+tAQAAAAAAAKr/////2R0AAAAAAAAAAAAAAA2n////////kwAAAAAAACD0/////+xXAgAAAAAAAAAEYN///////////44AAAAAAABJ+///////2IRILyY6WJrk///////H/f////+IAAAAAAAAVvX/////////////////////+30BYf7/////ggAAAAAAACrR///////////////////DMQAAAGn//////3wAAAAAAAACU8b+///////////4sUYAAAAAAABw//////92AAAAAAAAAAAVVIOXqamZeUgNAAAAAAAAAAAAAAAAAAAA",
+     "glyph": 7,
+     "height": 37,
+     "left": 3,
+     "size": 48,
+     "top": 36,
+     "width": 33
+    },
+    {
+     "codepoint": 64,
+     "coverage": "AAAAAAAAAAAAAAAAAAAAAzFpjq69yMCzmnFDCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAkmi8P//////////////9rRTBAAAAAAAAAAAAAAAAAAAAAAAAAAAAANk2f//////////////////////5WsEAAAAAAAAAAAAAAAAAAAAAAAAPdL/////////27uqmZ6rzPP////////ZPQAAAAAAAAAAAAAAAAAAAAOC/f/////vmUgSAAAAAAAAAAI0fNv//////YIBAAAAAAAAAAAAAAAACrT/////4mAHAAAAAAAAAAAAAAAAAAFKz/////+nBQAAAAAAAAAAAAALxf////p9CQAAAAAAAAAAAAAAAAAAAAAAAW32////sgMAAAAAAAAAAAW4////3jUAAAAAAAAAAAAAAAAAAAAAAAAAAAAt4////5UAAAAAAAAAAI7////TFwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHd3///9YAAAAAAAASP///9kTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACXr///qEwAAAAAI3f//8SgAAAAAAAAAAAAAABIbBAAAAAAAAAAAAAAAAABO////mQAAAAB2////YwAAAAAAAAAAAVm19////uCPLgAAPaysqQAAAAAAo///+BUAAAfn///FAQAAAAAAAAAgx////////////Y8JXP///AAAAAAAIf3//3wAAFz///9CAAAAAAAAACbj//////////////+7Y////AAAAAAAAK7//9YAALn//80AAAAAAAAAB9P/////x3VRTm68////6////AAAAAAAAFj///8YDPv//24AAAAAAAAAgv////daAAAAAAAARu///////AAAAAAAABj///9YSP///x4AAAAAAAAK7f///1EAAAAAAAAAADj7/////AAAAAAAAADl//97fP//4QAAAAAAAABV////sAAAAAAAAAAAAACR/////AAAAAAAAADQ//+Qo///sgAAAAAAAACT////SQAAAAAAAAAAAAAn/////AAAAAAAAAC9//+ivv//kQAAAAAAAADB///9DQAAAAAAAAAAAAAA5////AAAAAAAAADF//+Vy///ggAAAAAAAADU///qAAAAAAAAAAAAAAAAyP///AAAAAAAAADW//+A0P//ewAAAAAAAADf///fAAAAAAAAAAAAAAAAvP///AAAAAAAAAf6//9mxv//hQAAAAAAAADR///tAAAAAAAAAAAAAAAAy////AAAAAAAAD3///8nt///mwAAAAAAAAC8////EwAAAAAAAAAAAAAB7v///AAAAAAAAJn//+IAlv//vwAAAAAAAACJ////VAAAAAAAAAAAAAAy/////AAAAAAAHvX//4UAb///8QIAAAAAAABJ////wAAAAAAAAAAAAACg/////AAAAAADt///8BEANv///zQAAAAAAAAD4P///2oAAAAAAAAAAEv+/////AAAAASd////bgAABPL//4kAAAAAAAAAaf////57BgAAAAABYvf//////AAAN8j///+dAAAAAKP//+YGAAAAAAAAAbv/////5pt4dJLb////1v///YvN/////6YFAAAAAEb///9nAAAAAAAAABLK//////////////+YXP/////////4bAAAAAAAAAHS///nDwAAAAAAAAANmv3/////////7mIAXP//////9I8bAAAAAAAAAABW////mwAAAAAAAAAAACuExeDn0K5hEAAAXPTdxI5LDAAAAAAAAAAAAAAAvv///10AAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAJPL///lGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFf////2TwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB5/////H0CAAAAAAAAAAAAAAAAAAAAAAAAADa4FwAAAAAAAAAAAAAAAAAAgP/////HNAAAAAAAAAAAAAAAAAAAAAAPi/z/xAYAAAAAAAAAAAAAAAAAAGf6/////rJDAgAAAAAAAAAAAAAAIZDy/////3kAAAAAAAAAAAAAAAAAAAA13P//////5p1iNxcIAgwlS4HI/v/////8igUAAAAAAAAAAAAAAAAAAAAACYH2/////////////////////////78vAAAAAAAAAAAAAAAAAAAAAAAAAAAXhOr///////////////////uwPwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARHlNH8/////////+ivZhcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGKENPVUw4FwAAAAAAAAAAAAAAAAAAAAAA",
+     "glyph": 33,
+     "height": 43,
+     "left": 3,
+     "size": 48,
+     "top": 34,
+     "width": 42
+    },
+    {
+     "codepoint": 37,
+     "coverage": "AAAAAAALUYKYjW4mAAAAAAAAAAAAAAAAAAAAAAAyoKCgRQAAAAAAAAAAAAADdPL///////+4JgAAAAAAAAAAAAAAAAAAAsv//+UNAAAAAAAAAAAABav////////////vOQAAAAAAAAAAAAAAAABo////VwAAAAAAAAAAAACM////8pBhc87////rFwAAAAAAAAAAAAAAFO3//70AAAAAAAAAAAAALf3//+glAAAAA57///+jAAAAAAAAAAAAAACd///6KAAAAAAAAAAAAACa////UAAAAAAABt3///oaAAAAAAAAAAAAOP7//4gAAAAAAAAAAAAAAOr//+AAAAAAAAAAcP///2UAAAAAAAAAAAPO///jCwAAAAAAAAAAAAAj////mwAAAAAAAAAq////nQAAAAAAAAAAbP///1QAAAAAAAAAAAAAAEH///90AAAAAAAAAAT9//+7AAAAAAAAABbv//+5AAAAAAAAAAAAAAAAUf///2QAAAAAAAAAAPH//8wAAAAAAAAAof//+SYAAAAAAAAAAAAAAABO////ZwAAAAAAAAAA9P//yQAAAAAAADv+//+FAAAAAAAAAAAAAAAAAD3///95AAAAAAAAAAj+//+3AAAAAAAD0f//4AoAAAAAAAAAAAAAAAAAGf///6QAAAAAAAAAM////5IAAAAAAHD///9QAAAAAAAAAAAAAAAAAAAA4P//6gQAAAAAAACA////WQAAAAAY8f//tgAAAAAAAAAAAAAAAAAAAACI////aQAAAAAAEev///INAAAAAKT///gjAAAAAAAAAAAAAAAAAAAAAB72///2RgAAABK+////igAAAAA/////gQAAAAAAAAAAAAAAAAAAAAAAAG3////+wZSl7////9cJAAAABNT//94IAAAAAAAAAAAAAAAAAAAAAAAAAIL////////////YHQAAAABz////TQAAAAAAAAw+VlE2BAAAAAAAAAAAAEbN///////vhwwAAAAAGvL//7IAAAAAACWs+P/////vjxAAAAAAAAAAAAAgUGVaPAQAAAAAAACo///2IQAAAABQ+P//////////4icAAAAAAAAAAAAAAAAAAAAAAAAAQv///34AAAAAPfv////dpKrt////5RMAAAAAAAAAAAAAAAAAAAAAAAXW///bBwAAAAbd////egEAAAyw////pQAAAAAAAAAAAAAAAAAAAAAAd////0kAAAAAXP///6AAAAAAAAja///9HwAAAAAAAAAAAAAAAAAAABz0//+vAAAAAAC3////IgAAAAAAAGP///95AAAAAAAAAAAAAAAAAAAAq///9R8AAAAAAe///9QAAAAAAAAAE////7MAAAAAAAAAAAAAAAAAAEX///96AAAAAAAY////pwAAAAAAAAAA5f//2wAAAAAAAAAAAAAAAAAG2f//2QYAAAAAACn///+TAAAAAAAAAADR///sAAAAAAAAAAAAAAAAAHr///9GAAAAAAAALv///5AAAAAAAAAAAM3///EAAAAAAAAAAAAAAAAe9f//qwAAAAAAAAAe////ngAAAAAAAAAA3P//4AAAAAAAAAAAAAAAAK////QcAAAAAAAAAAf6///FAAAAAAAAAAf7///DAAAAAAAAAAAAAABJ////dgAAAAAAAAAAAMv///kPAAAAAAAAR////4wAAAAAAAAAAAAAB9v//9YFAAAAAAAAAAAAff///3UAAAAAAAC2////PgAAAAAAAAAAAAB+////QgAAAAAAAAAAAAAZ+P//9TcAAAAAbP///88AAAAAAAAAAAAAIfb//6cAAAAAAAAAAAAAAAB1////+JNXXq3////7NQAAAAAAAAAAAACz///yGgAAAAAAAAAAAAAAAAKe/////////////GEAAAAAAAAAAAAATP///3MAAAAAAAAAAAAAAAAAAAFw8P///////9pFAAAAAAAAAAAAAACOsLChBAAAAAAAAAAAAAAAAAAAAAAOVo+moodEBAAAAAA=",
+     "glyph": 6,
+     "height": 37,
+     "left": 2,
+     "size": 48,
+     "top": 36,
+     "width": 41
+    },
+    {
+     "codepoint": 56,
+     "coverage": "AAAAAAAAAAUzaIOTmox7TxoAAAAAAAAAAAAAAAAAJJLv////////////yGEDAAAAAAAAAAABePf/////////////////zCsAAAAAAAABm//////////////////////uMQAAAAAAdf//////64tLLSU3Zrz//////+gPAAAAGPT/////rA4AAAAAAAAASe//////kAAAAHD/////wwQAAAAAAAAAAABC/////+4EAAC4/////z0AAAAAAAAAAAAAALP/////OwAA1v////ACAAAAAAAAAAAAAABn/////1kAAOf////UAAAAAAAAAAAAAAAASf////9qAADY////2AAAAAAAAAAAAAAAAE7/////WwAAq/////YHAAAAAAAAAAAAAAB0/////y0AAF3/////VAAAAAAAAAAAAAAAyv///98BAAAG3v///9wSAAAAAAAAAAAAaf////9oAAAAADz4////0jAAAAAAAAAHfPz///+3AQAAAAAASO//////wYJkXG6d6v////+yCgAAAAAAAAAcnfn//////////////9pfAAAAAAAAAAAAAAlh6f///////////7ItAAAAAAAAAAAAAnDp/////////////////7otAAAAAAAADr7//////8aJbmV3pOj/////910AAAAABcT/////wywAAAAAAAAGafT////9UwAAAIH/////rAQAAAAAAAAAAAAy8////+4YAA/y////5QoAAAAAAAAAAAAAAGT/////iQBc/////3YAAAAAAAAAAAAAAAAD5////+QAlv////8wAAAAAAAAAAAAAAAAAKT/////HbD/////EQAAAAAAAAAAAAAAAACG/////za0/////wsAAAAAAAAAAAAAAAAAgP////88of////8iAAAAAAAAAAAAAAAAAJj/////J4f/////XgAAAAAAAAAAAAAAAADU/////g9I/////8UAAAAAAAAAAAAAAAA9/////84ACfP/////awAAAAAAAAAAAAAP1v////+DAACC//////x3AgAAAAAAAAAkzv/////yFQAADt3//////9p4PCEZKlej+v//////cAAAAAAl6v//////////////////////kwAAAAAAAB/A///////////////////2bAEAAAAAAAAAAlS//////////////+yMIAAAAAAAAAAAAAAAABZNf5Wkq52MaTIEAAAAAAAAAA==",
+     "glyph": 25,
+     "height": 37,
+     "left": 3,
+     "size": 48,
+     "top": 36,
+     "width": 25
+    },
+    {
+     "codepoint": 101,
+     "coverage": "AAAAAAAAAAAMTpW4zd7OuIlABAAAAAAAAAAAAAAAABOO+P///////////99aAQAAAAAAAAAAAE/w/////////////////7EJAAAAAAAAAGv9///////12cnZ+f//////xgkAAAAAAFD//////ak+BQAAAAxa2/////+YAAAAAB7u////7EYAAAAAAAAAAAqz/////0UAAACk////9zkAAAAAAAAAAAAACNH///+8AAAc+v///4AAAAAAAAAAAAAAAAA+/////yoAf/////UMAAAAAAAAAAAAAAAAANL///9uAMH///+sAAAAAAAAAAAAAAAAAACQ////qgb3////dgAAAAAAAAAAAAAAAAAAa////9Io/////6N0dHR0dXV1dnZ2dnd3d6f////kO///////////////////////////////9k3///////////////////////////////xQ/////+vo6Ojo6Ojo6Ojo6Ojo6Ojo6OjkPf////87AAAAAAAAAAAAAAAAAAAAAAAAACr/////XAAAAAAAAAAAAAAAAAAAAAAAAAAJ+P///5IAAAAAAAAAAAAAAAAAAAAAAAAAAL/////eAAAAAAAAAAAAAAAAAAAAAAAAAAB6/////04AAAAAAAAAAAAAAAAAAAAAAAAAFvX////VCgAAAAAAAAAAAAAAAAAAAAAAAACO/////6wFAAAAAAAAAAAAAAAAAAAxAAAAENr/////xSQAAAAAAAAAAAAAB0699wAAAAAq8//////8q18mDgELGzxup/H///gAAAAAADbk///////////////////////4AAAAAAAAF7b/////////////////////zwAAAAAAAAAAOLH3/////////////9SNNAAAAAAAAAAAAAAACEJ4jqGsoJJySRgAAAAAAA==",
+     "glyph": 70,
+     "height": 28,
+     "left": 2,
+     "size": 48,
+     "top": 27,
+     "width": 25
+    }
+   ],
+   "subfamilyName": "Book",
+   "unitsPerEm": 2048,
+   "weight": 400
+  }
+ },
+ "tools": {
+  "fontTools": "4.60.1",
+  "freetype": "2.13.2"
+ }
+}

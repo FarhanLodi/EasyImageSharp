@@ -1,0 +1,96 @@
+{
+ "profiles": {
+  "adobe_rgb_v2.icc": {
+   "bytes": 516
+  },
+  "display_p3_v4.icc": {
+   "bytes": 584
+  },
+  "display_p3_with_lut.icc": {
+   "bytes": 664
+  },
+  "gray_gamma22_v4.icc": {
+   "bytes": 416
+  },
+  "prophoto_v4.icc": {
+   "bytes": 580
+  },
+  "srgb_v2_table.icc": {
+   "bytes": 2556
+  },
+  "srgb_v2_with_lut.icc": {
+   "bytes": 2608
+  },
+  "srgb_v4_para.icc": {
+   "bytes": 592
+  }
+ },
+ "references": {
+  "adobe_rgb_to_srgb.png": {
+   "engine": "LittleCMS via Pillow ImageCms, cmsFLAGS_NOOPTIMIZE",
+   "intent": "relative_colorimetric",
+   "profile": "adobe_rgb_v2.icc",
+   "source": "src.png",
+   "target": "LittleCMS built-in sRGB"
+  },
+  "display_p3_to_srgb.png": {
+   "engine": "LittleCMS via Pillow ImageCms, cmsFLAGS_NOOPTIMIZE",
+   "intent": "relative_colorimetric",
+   "profile": "display_p3_v4.icc",
+   "source": "src.png",
+   "target": "LittleCMS built-in sRGB"
+  },
+  "prophoto_to_srgb.png": {
+   "engine": "LittleCMS via Pillow ImageCms, cmsFLAGS_NOOPTIMIZE",
+   "intent": "relative_colorimetric",
+   "profile": "prophoto_v4.icc",
+   "source": "src.png",
+   "target": "LittleCMS built-in sRGB"
+  },
+  "srgb_table_to_srgb.png": {
+   "engine": "LittleCMS via Pillow ImageCms, cmsFLAGS_NOOPTIMIZE",
+   "intent": "relative_colorimetric",
+   "profile": "srgb_v2_table.icc",
+   "source": "src.png",
+   "target": "LittleCMS built-in sRGB"
+  }
+ },
+ "tagged": {
+  "adobe_rgb_tagged.png": {
+   "pixels": "src.png",
+   "profile": "adobe_rgb_v2.icc"
+  },
+  "display_p3_tagged.png": {
+   "pixels": "src.png",
+   "profile": "display_p3_v4.icc"
+  },
+  "display_p3_tagged.tif": {
+   "pixels": "src.png",
+   "profile": "display_p3_v4.icc"
+  },
+  "gray_tagged.png": {
+   "pixels": "src.png",
+   "profile": "gray_gamma22_v4.icc"
+  },
+  "multipage_tagged.tif": {
+   "pixels": "src.png on every page",
+   "profiles": [
+    "display_p3_v4.icc",
+    "adobe_rgb_v2.icc",
+    "srgb_v2_table.icc"
+   ]
+  },
+  "p3_lut_tagged.png": {
+   "pixels": "src.png",
+   "profile": "display_p3_with_lut.icc"
+  },
+  "prophoto_tagged.png": {
+   "pixels": "src.png",
+   "profile": "prophoto_v4.icc"
+  },
+  "srgb_lut_tagged.png": {
+   "pixels": "src.png",
+   "profile": "srgb_v2_with_lut.icc"
+  }
+ }
+}

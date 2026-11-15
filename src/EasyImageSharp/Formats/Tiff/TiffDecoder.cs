@@ -4,6 +4,7 @@ using System.IO.Compression;
 using EasyImageSharp.Metadata;
 using EasyImageSharp.Metadata.Exif;
 using EasyImageSharp.Metadata.Icc;
+using EasyImageSharp.Metadata.Iptc;
 using EasyImageSharp.Metadata.Xmp;
 using EasyImageSharp.PixelFormats;
 
@@ -40,7 +41,8 @@ namespace EasyImageSharp.Formats.Tiff;
 /// already carried as <see langword="long"/> and every segment is bounds-checked against the buffered file
 /// before it is read. Since a file is buffered whole before decoding, BigTIFF support here means compatibility
 /// with the 64-bit container for files below 2 GiB, not streaming of larger ones: a segment beyond the buffered
-/// length is reported as truncated data. The encoder always writes classic TIFF.
+/// length is reported as truncated data. The encoder writes classic TIFF unless <see cref="TiffEncoder.Format"/>
+/// asks for BigTIFF or the file would exceed 4 GiB.
 /// </para>
 /// </remarks>
 public sealed partial class TiffDecoder : IImageDecoder
@@ -80,6 +82,8 @@ public sealed partial class TiffDecoder : IImageDecoder
     private const int CompressionPackBits = 32773;
 
     private const int TagXmp = 700;
+    private const int TagIptc = 33723;
+    private const int TagPhotoshop = 34377;
     private const int TagIccProfile = 34675;
 
     private const int MagicClassic = 42;
@@ -175,6 +179,8 @@ public sealed partial class TiffDecoder : IImageDecoder
         metadata.ExifProfile = firstPage.ExifProfile?.DeepClone();
         metadata.IccProfile = firstPage.IccProfile?.DeepClone();
         metadata.XmpProfile = firstPage.XmpProfile?.DeepClone();
+        metadata.IptcProfile = firstPage.IptcProfile?.DeepClone();
+        metadata.PhotoshopResources = firstPage.PhotoshopResources?.DeepClone();
         if (metadata.ExifProfile is not null)
         {
             metadata.ApplyExifResolution(metadata.ExifProfile);
@@ -185,16 +191,17 @@ public sealed partial class TiffDecoder : IImageDecoder
 
     /// <summary>
     /// Reads a page's directory into its frame metadata: the sample layout into <see cref="TiffFrameMetadata"/>,
-    /// ICC/XMP into their profiles, everything else (with the Exif/GPS sub-directories) into the page's EXIF profile.
-    /// Malformed ancillary entries are skipped; only the size caps abort the decode.
+    /// ICC/XMP into their profiles, IPTC (tag 33723, or resource 0x0404 of the Photoshop block when that tag is
+    /// absent) into the IPTC profile, the other Photoshop image resources (tag 34377) into
+    /// <see cref="ImageFrameMetadata.PhotoshopResources"/>, and everything else (with the Exif/GPS sub-directories)
+    /// into the page's EXIF profile. Malformed ancillary entries are skipped; only the size caps abort the decode.
     /// </summary>
     /// <param name="data">The whole buffered file.</param>
     /// <param name="ifdOffset">The already range-checked offset of the page's directory.</param>
     /// <param name="bigEndian">True when the file is big-endian.</param>
     /// <param name="bigTiff">
-    /// True when the file is BigTIFF, so the directory uses an 8-byte entry count, 20-byte entries and 8-byte
-    /// value offsets. Not consumed yet: the EXIF directory reader is still classic-only, so a BigTIFF page's
-    /// ancillary metadata is read with the classic layout until that reader is widened to take this flag.
+    /// True when the file is BigTIFF, so the directory and its Exif/GPS/Interop sub-directories use an 8-byte entry
+    /// count, 20-byte entries and 8-byte value offsets; passed through to the EXIF directory reader.
     /// </param>
     /// <param name="tags">The layout tags already read from the same directory.</param>
     /// <param name="frameMetadata">The page metadata to populate.</param>
@@ -232,11 +239,25 @@ public sealed partial class TiffDecoder : IImageDecoder
         }
 
         var profile = new ExifProfile();
+        byte[]? iptcBytes = null;
+        byte[]? photoshopBytes = null;
         foreach (IExifValue value in values)
         {
             int id = value.Tag.Id;
             if (value.Tag.Ifd == ExifIfd.Ifd0)
             {
+                if (id == TagIptc)
+                {
+                    iptcBytes ??= RawFieldBytes(value.GetValue(), bigEndian);
+                    continue;
+                }
+
+                if (id == TagPhotoshop)
+                {
+                    photoshopBytes ??= RawFieldBytes(value.GetValue(), bigEndian);
+                    continue;
+                }
+
                 if (id == TagIccProfile)
                 {
                     if (value.GetValue() is byte[] icc && icc.Length > 0)
@@ -269,6 +290,57 @@ public sealed partial class TiffDecoder : IImageDecoder
         if (profile.Values.Count > 0)
         {
             frameMetadata.ExifProfile = profile;
+        }
+
+        IptcProfile? iptc = iptcBytes is null ? null : IptcProfile.TryParse(iptcBytes);
+        if (photoshopBytes is not null)
+        {
+            (IptcProfile? embedded, PhotoshopResources? rest) = PhotoshopResources.SplitIptc(photoshopBytes);
+            frameMetadata.PhotoshopResources = rest;
+            iptc ??= embedded;
+        }
+
+        frameMetadata.IptcProfile = iptc;
+    }
+
+    /// <summary>
+    /// Recovers the bytes of a field that carries an opaque block whatever type its writer declared: IPTC-NAA is
+    /// commonly typed LONG (as Photoshop and libtiff write it) and the Photoshop block BYTE or UNDEFINED. Integer
+    /// values are put back in the file's byte order, which is the order the block's bytes were stored in.
+    /// </summary>
+    /// <returns>The raw bytes, or <see langword="null"/> for a field type that cannot hold such a block.</returns>
+    private static byte[]? RawFieldBytes(object? value, bool bigEndian)
+    {
+        switch (value)
+        {
+            case byte[] bytes:
+                return bytes;
+            case byte single:
+                return new[] { single };
+            case uint[] longs:
+                return LongsToBytes(longs, bigEndian);
+            case uint single:
+                return LongsToBytes(new[] { single }, bigEndian);
+            default:
+                return null;
+        }
+
+        static byte[] LongsToBytes(uint[] longs, bool bigEndian)
+        {
+            var result = new byte[longs.Length * 4];
+            for (int i = 0; i < longs.Length; i++)
+            {
+                if (bigEndian)
+                {
+                    BinaryPrimitives.WriteUInt32BigEndian(result.AsSpan(i * 4), longs[i]);
+                }
+                else
+                {
+                    BinaryPrimitives.WriteUInt32LittleEndian(result.AsSpan(i * 4), longs[i]);
+                }
+            }
+
+            return result;
         }
     }
 
@@ -508,11 +580,21 @@ public sealed partial class TiffDecoder : IImageDecoder
             if (wideSamples)
             {
                 ConvertRow16(row, wideRow!, width, layout, photometric, bigEndian);
+                if (layout.AssociatedAlpha)
+                {
+                    Unpremultiply(wideRow);
+                }
+
                 PixelOps.Convert<Rgba64, TPixel>(wideRow, destination);
             }
             else
             {
                 ConvertRow(row, rgbaRow, width, layout, photometric, palette, bigEndian);
+                if (layout.AssociatedAlpha)
+                {
+                    Unpremultiply(rgbaRow.AsSpan(0, width));
+                }
+
                 PixelOps.FromRgba32<TPixel>(rgbaRow, destination);
             }
         }
@@ -543,6 +625,11 @@ public sealed partial class TiffDecoder : IImageDecoder
         if (compression == CompressionJpeg)
         {
             return ValidateJpeg(bits, spp, photometric, planarConfig);
+        }
+
+        if (compression == TiffWebp.Compression)
+        {
+            return ValidateWebp(bits, spp, photometric, planarConfig, extraSamples);
         }
 
         if (bits is not (1 or 2 or 4 or 8 or 16 or 32))
@@ -623,7 +710,33 @@ public sealed partial class TiffDecoder : IImageDecoder
             throw new NotSupportedException("TIFF predictor 2 is only supported for 8- and 16-bit samples.");
         }
 
-        return new Layout((int)bits, (int)spp, hasAlpha, compression, applyPredictor, ccitt, planarConfig == 2, null);
+        // Associated alpha is undone for grey and RGB only; the colour converters for the other photometrics
+        // work on ink or opponent values, where dividing by alpha after conversion would not invert the premultiply.
+        return new Layout((int)bits, (int)spp, hasAlpha, compression, applyPredictor, ccitt, planarConfig == 2, null)
+        {
+            AssociatedAlpha = hasAlpha && extraSamples == 1 && photometric is 0 or 1 or 2,
+        };
+    }
+
+    /// <summary>
+    /// Checks a WebP-compressed page (compression 50001). WebP carries 8-bit RGB or RGBA only, so libtiff writes
+    /// exactly those layouts: chunky RGB with three samples, or four with the fourth as (unassociated) alpha.
+    /// </summary>
+    private static Layout ValidateWebp(long bits, long spp, int photometric, int planarConfig, int extraSamples)
+    {
+        if (bits != 8 || spp is not (3 or 4) || photometric != 2 || planarConfig != 1)
+        {
+            throw new NotSupportedException(
+                $"WebP-compressed TIFF pages must be chunky 8-bit RGB or RGBA, not {spp} samples of {bits} bits with photometric "
+                + $"{photometric} and planar configuration {planarConfig}.");
+        }
+
+        if (spp == 4 && extraSamples == 1)
+        {
+            throw new NotSupportedException("WebP-compressed TIFF pages with associated alpha are not supported; WebP stores straight alpha.");
+        }
+
+        return new Layout(8, (int)spp, spp == 4, TiffWebp.Compression, false, null, false, null);
     }
 
     /// <summary>
@@ -943,6 +1056,9 @@ public sealed partial class TiffDecoder : IImageDecoder
             case CompressionJpeg:
                 TiffJpeg.DecodeSegment(source, layout.Jpeg!, target, pixelWidth, rows);
                 break;
+            case TiffWebp.Compression:
+                TiffWebp.DecodeSegment(source, target, pixelWidth, rows, layout.SamplesPerPixel);
+                break;
             default:
                 throw new NotSupportedException($"TIFF compression {layout.Compression} is not supported.");
         }
@@ -1059,7 +1175,7 @@ public sealed partial class TiffDecoder : IImageDecoder
         {
             1 when layout.SamplesPerPixel == 1 && !layout.HasAlpha => TiffRowLayout.L8,
             2 when layout.SamplesPerPixel == 3 && !layout.HasAlpha => TiffRowLayout.Rgb24,
-            2 when layout.SamplesPerPixel == 4 && layout.HasAlpha => TiffRowLayout.Rgba32,
+            2 when layout.SamplesPerPixel == 4 && layout.HasAlpha && !layout.AssociatedAlpha => TiffRowLayout.Rgba32,
             3 => TiffRowLayout.Palette8,
             _ => TiffRowLayout.General,
         };
@@ -1206,6 +1322,46 @@ public sealed partial class TiffDecoder : IImageDecoder
             ushort a = layout.HasAlpha ? Sample16(row, i + 3, bigEndian) : ushort.MaxValue;
             dest[x] = new Rgba64(
                 Sample16(row, i, bigEndian), Sample16(row, i + 1, bigEndian), Sample16(row, i + 2, bigEndian), a);
+        }
+    }
+
+    /// <summary>
+    /// Divides premultiplied colour by alpha, rounding to nearest and clamping colour that exceeds its alpha (which a
+    /// valid premultiplied sample never does). Fully transparent and fully opaque pixels pass through unchanged, as
+    /// Pillow's un-premultiply leaves them.
+    /// </summary>
+    internal static void Unpremultiply(Span<Rgba32> row)
+    {
+        foreach (ref Rgba32 p in row)
+        {
+            int a = p.A;
+            if (a is 0 or 255)
+            {
+                continue;
+            }
+
+            int half = a / 2;
+            p.R = (byte)Math.Min(255, ((p.R * 255) + half) / a);
+            p.G = (byte)Math.Min(255, ((p.G * 255) + half) / a);
+            p.B = (byte)Math.Min(255, ((p.B * 255) + half) / a);
+        }
+    }
+
+    /// <inheritdoc cref="Unpremultiply(Span{Rgba32})"/>
+    internal static void Unpremultiply(Span<Rgba64> row)
+    {
+        foreach (ref Rgba64 p in row)
+        {
+            long a = p.A;
+            if (a is 0 or ushort.MaxValue)
+            {
+                continue;
+            }
+
+            long half = a / 2;
+            p.R = (ushort)Math.Min(ushort.MaxValue, ((p.R * 65535L) + half) / a);
+            p.G = (ushort)Math.Min(ushort.MaxValue, ((p.G * 65535L) + half) / a);
+            p.B = (ushort)Math.Min(ushort.MaxValue, ((p.B * 65535L) + half) / a);
         }
     }
 
@@ -1515,7 +1671,14 @@ public sealed partial class TiffDecoder : IImageDecoder
     /// <summary>The validated per-page sample layout.</summary>
     private readonly record struct Layout(
         int BitsPerSample, int SamplesPerPixel, bool HasAlpha, int Compression, bool ApplyPredictor, TiffCcittOptions? Ccitt,
-        bool Planar, TiffJpegState? Jpeg);
+        bool Planar, TiffJpegState? Jpeg)
+    {
+        /// <summary>
+        /// True when the alpha sample is associated (ExtraSamples = 1): the colour samples are premultiplied and are
+        /// divided by alpha on decode, so pixels come out straight like every other alpha source.
+        /// </summary>
+        public bool AssociatedAlpha { get; init; }
+    }
 
     /// <summary>The file header: byte order, container version and the offset of the first directory.</summary>
     /// <param name="BigEndian">True when multi-byte values in the file are big-endian.</param>

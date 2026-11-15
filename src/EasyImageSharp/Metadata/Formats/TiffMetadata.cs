@@ -69,8 +69,9 @@ public sealed class TiffMetadata : IFormatMetadata
     public ByteOrder ByteOrder { get; set; } = ByteOrder.LittleEndian;
 
     /// <summary>
-    /// True when the decoded file was BigTIFF (version 43: an 8-byte offset container). The encoder always writes
-    /// classic TIFF (version 42) regardless of this flag.
+    /// True when the decoded file was BigTIFF (version 43: an 8-byte offset container). The encoder does not consult
+    /// this flag: it writes the container <see cref="Formats.Tiff.TiffEncoder.Format"/> selects, which by default is
+    /// classic TIFF (version 42) unless the file would exceed 4 GiB.
     /// </summary>
     public bool BigTiff { get; set; }
 

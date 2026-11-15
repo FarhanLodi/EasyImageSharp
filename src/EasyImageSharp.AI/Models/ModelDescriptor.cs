@@ -26,6 +26,21 @@ public enum ImageModelTask
 
     /// <summary>Any other image-to-image network.</summary>
     ImageToImage,
+
+    /// <summary>Face detection: boxes, landmarks and confidences.</summary>
+    FaceDetection,
+
+    /// <summary>Image embedding: a feature vector for similarity search (for example CLIP).</summary>
+    Embedding,
+
+    /// <summary>Inpainting: fills masked regions of an image.</summary>
+    Inpainting,
+
+    /// <summary>Content moderation: probabilities of safe and unsafe classes.</summary>
+    ContentModeration,
+
+    /// <summary>Learned image quality assessment (technical or aesthetic score).</summary>
+    QualityAssessment,
 }
 
 /// <summary>

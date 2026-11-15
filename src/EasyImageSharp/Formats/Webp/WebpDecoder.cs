@@ -75,7 +75,8 @@ public sealed class WebpDecoder : IImageDecoder
 
     private static int ReadLe24(byte[] data, int offset) => data[offset] | (data[offset + 1] << 8) | (data[offset + 2] << 16);
 
-    private static Image<TPixel> DecodeCore<TPixel>(byte[] data, DecoderOptions options)
+    /// <summary>Decodes without opening an execution scope, for callers already inside one (WebP-in-TIFF segments).</summary>
+    internal static Image<TPixel> DecodeCore<TPixel>(byte[] data, DecoderOptions options)
         where TPixel : unmanaged, IPixel<TPixel>
     {
         WebpFile file = Parse(data);
@@ -86,6 +87,18 @@ public sealed class WebpDecoder : IImageDecoder
         {
             WebpFrame only = file.Frames[0];
             Rgba32[] pixels = DecodeFrame(data, only, options, out int width, out int height);
+            if (only.Lossless && !file.HasAlpha)
+            {
+                // The VP8L header declares the image opaque. A valid encoder only says so when every alpha is 255,
+                // but a damaged stream can still produce transparent pixels (an out-of-range colour index lands on
+                // the transparent-black padding of the palette). libwebp-based readers and browsers decode such a
+                // file to opaque RGB, so the declaration wins here too.
+                foreach (ref Rgba32 pixel in pixels.AsSpan())
+                {
+                    pixel.A = 255;
+                }
+            }
+
             var single = new List<ImageFrame<TPixel>> { CreateFrame<TPixel>(pixels, width, height) };
             AttachFrameMetadata(single[0], only, width, height);
             return new Image<TPixel>(single, metadata);

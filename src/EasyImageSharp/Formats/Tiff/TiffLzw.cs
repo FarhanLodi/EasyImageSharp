@@ -2,7 +2,8 @@ namespace EasyImageSharp.Formats.Tiff;
 
 /// <summary>
 /// TIFF-variant LZW (MSB-first code packing with early code-size change), as specified in
-/// TIFF 6.0 section 13.
+/// TIFF 6.0 section 13. Decoding also reads the pre-6.0 "compat" variant (see <see cref="IsCompat"/>);
+/// encoding always writes the TIFF 6.0 form.
 /// </summary>
 internal static class TiffLzw
 {
@@ -12,11 +13,23 @@ internal static class TiffLzw
     private const int MaxTableSize = 4096;
 
     /// <summary>
+    /// True for the pre-TIFF 6.0 ("compat") variant: codes packed LSB-first and widened one code later. A TIFF 6.0
+    /// stream starts with a clear code written MSB-first (first byte 0x80); the old variant writes the same clear
+    /// code LSB-first, giving 0x00 then a byte with bit 0 set. This is the test libtiff applies.
+    /// </summary>
+    internal static bool IsCompat(ReadOnlySpan<byte> input) => input.Length >= 2 && input[0] == 0 && (input[1] & 1) != 0;
+
+    /// <summary>
     /// Decodes one strip or tile into <paramref name="output"/>, which must be filled completely; a stream
     /// that ends (or signals EOI) early is reported as <see cref="InvalidImageContentException"/>.
     /// </summary>
     public static void Decode(ReadOnlySpan<byte> input, Span<byte> output)
     {
+        bool compat = IsCompat(input);
+
+        // The width grows when the next entry reaches the last code of the current width (TIFF 6.0 "early
+        // change"), or only when it no longer fits (compat).
+        int widenOffset = compat ? 0 : 1;
         int expectedSize = output.Length;
         int outPos = 0;
 
@@ -34,10 +47,10 @@ internal static class TiffLzw
 
         while (outPos < expectedSize)
         {
-            // Read the next code (MSB-first).
+            // Read the next code: MSB-first, or LSB-first for the compat variant.
             while (bitCount < codeSize && inPos < input.Length)
             {
-                bitBuffer = (bitBuffer << 8) | input[inPos++];
+                bitBuffer = compat ? bitBuffer | ((ulong)input[inPos++] << bitCount) : (bitBuffer << 8) | input[inPos++];
                 bitCount += 8;
             }
 
@@ -46,7 +59,17 @@ internal static class TiffLzw
                 break; // Input exhausted.
             }
 
-            int code = (int)((bitBuffer >> (bitCount - codeSize)) & (ulong)((1 << codeSize) - 1));
+            int code;
+            if (compat)
+            {
+                code = (int)(bitBuffer & (ulong)((1 << codeSize) - 1));
+                bitBuffer >>= codeSize;
+            }
+            else
+            {
+                code = (int)((bitBuffer >> (bitCount - codeSize)) & (ulong)((1 << codeSize) - 1));
+            }
+
             bitCount -= codeSize;
 
             if (code == EoiCode)
@@ -108,9 +131,9 @@ internal static class TiffLzw
                 suffix[nextCode] = FirstByteOf(code >= nextCode ? oldCode : code, prefix, suffix);
                 nextCode++;
 
-                // TIFF early change (matches libtiff behaviour): widen as soon as the
-                // next entry to create equals the last representable code of the current width.
-                if (nextCode == (1 << codeSize) - 1 && codeSize < 12)
+                // TIFF 6.0 early change (as libtiff): widen as soon as the next entry to create equals the last
+                // representable code of the current width; compat widens once it no longer fits.
+                if (nextCode == (1 << codeSize) - widenOffset && codeSize < 12)
                 {
                     codeSize++;
                 }

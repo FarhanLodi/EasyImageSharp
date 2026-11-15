@@ -1,6 +1,8 @@
+using EasyImageSharp.Diagnostics;
 using EasyImageSharp.Formats;
 using EasyImageSharp.Metadata;
 using EasyImageSharp.PixelFormats;
+using EasyImageSharp.Processing;
 
 namespace EasyImageSharp;
 
@@ -47,13 +49,14 @@ public abstract partial class Image : IDisposable
     {
         ArgumentNullException.ThrowIfNull(encoder);
         using var buffer = new MemoryStream();
-        this.AcceptEncoder(encoder, buffer);
+        ImageInstrumentation.Encode(this, encoder, buffer);
         return Convert.ToBase64String(buffer.GetBuffer(), 0, (int)buffer.Length);
     }
 
     /// <summary>
     /// Releases the image. Every later operation that touches its pixels throws
-    /// <see cref="ObjectDisposedException"/>; memory the caller wrapped is not freed.
+    /// <see cref="ObjectDisposedException"/>, and its pixel buffers go back to the <see cref="Memory.MemoryAllocator"/>
+    /// they came from; memory the caller wrapped is not freed.
     /// </summary>
     public abstract void Dispose();
 
@@ -65,13 +68,27 @@ public abstract partial class Image : IDisposable
         => Load<TPixel>(data, DecoderOptions.Default);
 
     /// <summary>Loads an image from encoded bytes, honouring the limits in <paramref name="options"/>.</summary>
+    /// <remarks>
+    /// With <see cref="DecoderOptions.ColorProfileHandling"/> set to
+    /// <see cref="ColorSpaces.ColorProfileHandling.ConvertToSrgb"/> the pixels are converted from an embedded RGB
+    /// matrix/TRC profile to sRGB before the image is returned.
+    /// </remarks>
     public static Image<TPixel> Load<TPixel>(ReadOnlySpan<byte> data, DecoderOptions options)
         where TPixel : unmanaged, IPixel<TPixel>
     {
         ArgumentNullException.ThrowIfNull(options);
-        using var execution = OperationExecution.Enter(options.ExecutionOptions);
-        options.EnsureEncodedWithinLimits(data.Length);
-        return ImageFormatDetector.DetectOrThrow(data, options).CreateDecoder().Decode<TPixel>(data, options);
+        OperationTelemetry telemetry = OperationTelemetry.Start<TPixel>(TelemetryOperation.Load);
+        try
+        {
+            Image<TPixel> image = LoadCore<TPixel>(data, options, ref telemetry);
+            telemetry.CompleteDecode(image, data.Length);
+            return image;
+        }
+        catch (Exception ex) when (telemetry.Fail(ex))
+        {
+            // Unreachable: Fail records the failure and returns false, so the exception propagates unwound.
+            throw;
+        }
     }
 
     public static Image<TPixel> Load<TPixel>(Stream stream)
@@ -80,7 +97,21 @@ public abstract partial class Image : IDisposable
 
     public static Image<TPixel> Load<TPixel>(Stream stream, DecoderOptions options)
         where TPixel : unmanaged, IPixel<TPixel>
-        => Load<TPixel>(BoundedImageInput.Read(stream, options).Span, options);
+    {
+        OperationTelemetry telemetry = OperationTelemetry.Start<TPixel>(TelemetryOperation.Load);
+        try
+        {
+            ReadOnlyMemory<byte> bytes = BoundedImageInput.Read(stream, options);
+            Image<TPixel> image = LoadCore<TPixel>(bytes.Span, options, ref telemetry);
+            telemetry.CompleteDecode(image, bytes.Length);
+            return image;
+        }
+        catch (Exception ex) when (telemetry.Fail(ex))
+        {
+            // Unreachable: Fail always returns false.
+            throw;
+        }
+    }
 
     public static Image<TPixel> Load<TPixel>(string path)
         where TPixel : unmanaged, IPixel<TPixel>
@@ -101,10 +132,21 @@ public abstract partial class Image : IDisposable
         where TPixel : unmanaged, IPixel<TPixel>
     {
         ArgumentNullException.ThrowIfNull(options);
-        using var execution = OperationExecution.Enter(options.ExecutionOptions, cancellationToken);
-        ReadOnlyMemory<byte> bytes = await BoundedImageInput.ReadAsync(stream, options, cancellationToken).ConfigureAwait(false);
-        OperationExecution.Checkpoint();
-        return Load<TPixel>(bytes.Span, options);
+        OperationTelemetry telemetry = OperationTelemetry.Start<TPixel>(TelemetryOperation.Load);
+        try
+        {
+            using var execution = OperationExecution.Enter(options.ExecutionOptions, cancellationToken);
+            ReadOnlyMemory<byte> bytes = await BoundedImageInput.ReadAsync(stream, options, cancellationToken).ConfigureAwait(false);
+            OperationExecution.Checkpoint();
+            Image<TPixel> image = LoadCore<TPixel>(bytes.Span, options, ref telemetry);
+            telemetry.CompleteDecode(image, bytes.Length);
+            return image;
+        }
+        catch (Exception ex) when (telemetry.Fail(ex))
+        {
+            // Unreachable: Fail always returns false.
+            throw;
+        }
     }
 
     public static async Task<Image<TPixel>> LoadAsync<TPixel>(string path, CancellationToken cancellationToken = default)
@@ -176,14 +218,38 @@ public abstract partial class Image : IDisposable
     public static ImageInfo Identify(ReadOnlySpan<byte> data, DecoderOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
-        using var execution = OperationExecution.Enter(options.ExecutionOptions);
-        options.EnsureEncodedWithinLimits(data.Length);
-        return ImageFormatDetector.DetectOrThrow(data, options).CreateDecoder().Identify(data, options);
+        OperationTelemetry telemetry = OperationTelemetry.Start(TelemetryOperation.Identify, pixelType: null);
+        try
+        {
+            ImageInfo info = IdentifyCore(data, options, ref telemetry);
+            telemetry.CompleteIdentify(info, data.Length);
+            return info;
+        }
+        catch (Exception ex) when (telemetry.Fail(ex))
+        {
+            // Unreachable: Fail always returns false.
+            throw;
+        }
     }
 
     public static ImageInfo Identify(Stream stream) => Identify(stream, DecoderOptions.Default);
 
-    public static ImageInfo Identify(Stream stream, DecoderOptions options) => Identify(BoundedImageInput.Read(stream, options).Span, options);
+    public static ImageInfo Identify(Stream stream, DecoderOptions options)
+    {
+        OperationTelemetry telemetry = OperationTelemetry.Start(TelemetryOperation.Identify, pixelType: null);
+        try
+        {
+            ReadOnlyMemory<byte> bytes = BoundedImageInput.Read(stream, options);
+            ImageInfo info = IdentifyCore(bytes.Span, options, ref telemetry);
+            telemetry.CompleteIdentify(info, bytes.Length);
+            return info;
+        }
+        catch (Exception ex) when (telemetry.Fail(ex))
+        {
+            // Unreachable: Fail always returns false.
+            throw;
+        }
+    }
 
     public static ImageInfo Identify(string path) => Identify(path, DecoderOptions.Default);
 
@@ -199,9 +265,20 @@ public abstract partial class Image : IDisposable
     public static async Task<ImageInfo> IdentifyAsync(Stream stream, DecoderOptions options, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(options);
-        using var execution = OperationExecution.Enter(options.ExecutionOptions, cancellationToken);
-        ReadOnlyMemory<byte> bytes = await BoundedImageInput.ReadAsync(stream, options, cancellationToken).ConfigureAwait(false);
-        return Identify(bytes.Span, options);
+        OperationTelemetry telemetry = OperationTelemetry.Start(TelemetryOperation.Identify, pixelType: null);
+        try
+        {
+            using var execution = OperationExecution.Enter(options.ExecutionOptions, cancellationToken);
+            ReadOnlyMemory<byte> bytes = await BoundedImageInput.ReadAsync(stream, options, cancellationToken).ConfigureAwait(false);
+            ImageInfo info = IdentifyCore(bytes.Span, options, ref telemetry);
+            telemetry.CompleteIdentify(info, bytes.Length);
+            return info;
+        }
+        catch (Exception ex) when (telemetry.Fail(ex))
+        {
+            // Unreachable: Fail always returns false.
+            throw;
+        }
     }
 
     public static async Task<ImageInfo> IdentifyAsync(string path, CancellationToken cancellationToken = default)
@@ -216,4 +293,28 @@ public abstract partial class Image : IDisposable
     /// <summary>Detects the format of encoded image bytes from their magic numbers.</summary>
     public static ImageFormat DetectFormat(ReadOnlySpan<byte> data) => ImageFormatDetector.DetectOrThrow(data);
 
+    /// <summary>
+    /// The body of every <c>Load</c> overload once the input is buffered: limits, detection, decode, and the colour
+    /// profile policy. Records the detected format on <paramref name="telemetry"/> so a failed decode is attributed.
+    /// </summary>
+    private static Image<TPixel> LoadCore<TPixel>(ReadOnlySpan<byte> data, DecoderOptions options, ref OperationTelemetry telemetry)
+        where TPixel : unmanaged, IPixel<TPixel>
+    {
+        using var execution = OperationExecution.Enter(options.ExecutionOptions);
+        options.EnsureEncodedWithinLimits(data.Length);
+        ImageFormat format = ImageFormatDetector.DetectOrThrow(data, options);
+        telemetry.SetFormat(format.Name);
+        Image<TPixel> image = format.CreateDecoder().Decode<TPixel>(data, options);
+        return ColorManagementOps.ApplyOnLoad(image, options);
+    }
+
+    /// <summary>The body of every <c>Identify</c> overload once the input is buffered.</summary>
+    private static ImageInfo IdentifyCore(ReadOnlySpan<byte> data, DecoderOptions options, ref OperationTelemetry telemetry)
+    {
+        using var execution = OperationExecution.Enter(options.ExecutionOptions);
+        options.EnsureEncodedWithinLimits(data.Length);
+        ImageFormat format = ImageFormatDetector.DetectOrThrow(data, options);
+        telemetry.SetFormat(format.Name);
+        return format.CreateDecoder().Identify(data, options);
+    }
 }

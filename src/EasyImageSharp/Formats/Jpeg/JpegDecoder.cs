@@ -1,25 +1,34 @@
 using System.Buffers;
 using System.Buffers.Binary;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Runtime.Intrinsics;
 using EasyImageSharp.Metadata;
 using EasyImageSharp.PixelFormats;
 
 namespace EasyImageSharp.Formats.Jpeg;
 
 /// <summary>
-/// Decodes Huffman-coded JPEG images with 8-bit samples: baseline and extended sequential frames (SOF0/SOF1)
-/// as well as progressive frames (SOF2, including successive approximation); grayscale, YCbCr and RGB color;
-/// Adobe CMYK and YCCK; every chroma subsampling layout (4:2:2 and 4:2:0 are reconstructed with libjpeg-style
-/// triangle "fancy" upsampling, other ratios by sample replication); restart markers; and multi-scan
-/// non-interleaved files. Arithmetic-coded, lossless, hierarchical and 12-bit frames are not supported.
+/// Decodes Huffman-coded JPEG images: baseline and extended sequential frames (SOF0/SOF1) and progressive frames
+/// (SOF2, including successive approximation) with 8-bit or 12-bit samples, and lossless frames (SOF3, ITU-T T.81
+/// Annex H: predictors 1-7, point transform, 2 to 16 bits per sample); grayscale, YCbCr and RGB color; Adobe CMYK
+/// and YCCK; every chroma subsampling layout (4:2:2 and 4:2:0 DCT frames are reconstructed with libjpeg-style
+/// triangle "fancy" upsampling, other ratios and lossless frames by sample replication, as libjpeg does); restart
+/// markers; and multi-scan non-interleaved files. Arithmetic-coded and hierarchical frames are not supported and
+/// throw <see cref="NotSupportedException"/>.
 /// </summary>
 /// <remarks>
+/// <para>
+/// Samples wider than 8 bits (12-bit DCT frames, lossless frames above 8 bits) keep their full precision when the
+/// image is decoded into a pixel format with 16-bit or floating-point components (<see cref="L16"/>,
+/// <see cref="La32"/>, <see cref="Rgb48"/>, <see cref="Rgba64"/>, <see cref="RgbaVector"/>): the largest code value
+/// of the file's precision maps to full scale. Every other pixel format receives the same values rounded to 8 bits.
+/// <see cref="JpegMetadata.BitsPerSample"/> reports the precision of the file.
+/// </para>
+/// <para>
 /// Progressive images keep the quantized coefficients of every block until the last scan has been read
 /// (two bytes per coefficient per component), so they need roughly three times the memory of a baseline
 /// image of the same size while decoding. A stream that ends before its EOI marker is treated as truncated
-/// and rejected with <see cref="InvalidImageContentException"/> for both frame types.
+/// and rejected with <see cref="InvalidImageContentException"/> for every frame type.
+/// </para>
 /// </remarks>
 public sealed class JpegDecoder : IImageDecoder
 {
@@ -29,9 +38,11 @@ public sealed class JpegDecoder : IImageDecoder
 
     /// <summary>
     /// Decodes directly at 1/2, 1/4, or 1/8 resolution using reduced inverse DCT blocks; 1 preserves full resolution.
-    /// Dimensions are rounded up. Baseline and progressive images, supported color spaces, and metadata are retained.
-    /// Source dimension limits still apply. Progressive coefficient storage remains at source resolution,
-    /// while decoded sample planes and the output image are reduced; this is not decode followed by resize.
+    /// Dimensions are rounded up. Baseline and progressive images (8-bit and 12-bit), supported color spaces, and
+    /// metadata are retained. Source dimension limits still apply. Progressive coefficient storage remains at source
+    /// resolution, while decoded sample planes and the output image are reduced; this is not decode followed by
+    /// resize. Lossless images have no DCT blocks to reduce and throw <see cref="NotSupportedException"/> for any
+    /// denominator other than 1.
     /// </summary>
     public Image<TPixel> DecodeReduced<TPixel>(ReadOnlySpan<byte> data, int scaleDenominator, DecoderOptions? options = null)
         where TPixel : unmanaged, IPixel<TPixel>
@@ -96,8 +107,10 @@ public sealed class JpegDecoder : IImageDecoder
         int width = 0;
         int height = 0;
         int components = 0;
+        int precision = 8;
         bool sawFrame = false;
         bool progressive = false;
+        bool lossless = false;
         int adobeTransform = -1;
         bool rgbIds = false;
 
@@ -138,10 +151,12 @@ public sealed class JpegDecoder : IImageDecoder
             bool isSof = marker is >= 0xC0 and <= 0xCF and not 0xC4 and not 0xC8 and not 0xCC;
             if (isSof && pos + 8 <= data.Length)
             {
+                precision = data[pos + 2];
                 height = BinaryPrimitives.ReadUInt16BigEndian(data[(pos + 3)..]);
                 width = BinaryPrimitives.ReadUInt16BigEndian(data[(pos + 5)..]);
                 components = data[pos + 7];
                 progressive = marker is 0xC2 or 0xC6 or 0xCA or 0xCE;
+                lossless = marker is 0xC3 or 0xC7 or 0xCB or 0xCF;
                 sawFrame = true;
                 if (components == 3 && pos + 8 + 9 <= data.Length)
                 {
@@ -160,7 +175,7 @@ public sealed class JpegDecoder : IImageDecoder
                 ReadOnlySpan<byte> payload = data.Slice(pos + 2, available);
                 switch (marker)
                 {
-                    case 0xE0 or 0xE1 or 0xE2 or 0xFE:
+                    case 0xE0 or 0xE1 or 0xE2 or 0xED or 0xFE:
                         metadataReader.ProcessSegment(marker, payload);
                         break;
                     case 0xEE when payload.Length >= 12 && payload[0] == 'A' && payload[1] == 'd' && payload[2] == 'o' && payload[3] == 'b' && payload[4] == 'e':
@@ -181,7 +196,17 @@ public sealed class JpegDecoder : IImageDecoder
         }
 
         metadataReader.SetFrame(progressive, ClassifyColorType(components, adobeTransform, rgbIds));
-        return new ImageInfo(width, height, components * 8, 1, ImageFormat.Jpeg, metadataReader.Finish());
+        ImageMetadata metadata = metadataReader.Finish();
+        RecordPrecision(metadata, precision, lossless);
+        return new ImageInfo(width, height, components * precision, 1, ImageFormat.Jpeg, metadata);
+    }
+
+    /// <summary>Stores the frame's sample precision and coding process in the JPEG metadata.</summary>
+    internal static void RecordPrecision(ImageMetadata metadata, int precision, bool lossless)
+    {
+        JpegMetadata jpeg = metadata.GetJpegMetadata();
+        jpeg.BitsPerSample = precision;
+        jpeg.Lossless = lossless;
     }
 
     /// <summary>Reads table 0 of a DQT payload in natural order, or null when the payload does not hold it intact.</summary>
@@ -229,15 +254,22 @@ public sealed class JpegDecoder : IImageDecoder
 }
 
 /// <summary>
-/// JPEG decode state machine: marker parsing, entropy decoding of sequential and progressive scans and the
-/// final color conversion. Progressive-specific block decoding lives in <c>JpegDecoder.Progressive.cs</c>.
+/// JPEG decode state machine: marker parsing, entropy decoding of sequential, progressive and lossless scans and
+/// block reconstruction. Progressive-specific block decoding lives in <c>JpegDecoder.Progressive.cs</c>, lossless
+/// scans in <c>JpegDecoder.Lossless.cs</c>, the conversion of the decoded planes to pixels in
+/// <c>JpegDecoder.Output.cs</c> and the row-at-a-time mode behind <see cref="JpegScanlineSource"/> in
+/// <c>JpegDecoder.Streaming.cs</c>.
 /// </summary>
 internal sealed partial class JpegDecoderCore
 {
-    private readonly byte[] data;
+    /// <summary>
+    /// The bytes being parsed. For an in-memory decode this is the whole file; for a streaming decode it is a window
+    /// over the input that <see cref="Refill"/> slides forward and grows on demand.
+    /// </summary>
+    private byte[] data;
 
-    /// <summary>Bytes of <see cref="data"/> that hold the image; the buffer itself may be longer (pooled).</summary>
-    private readonly int dataLength;
+    /// <summary>Bytes of <see cref="data"/> that hold input; the buffer itself may be longer (pooled or a window).</summary>
+    private int dataLength;
     private readonly DecoderOptions options;
     private readonly int scaleDenominator;
     private readonly int outputBlockSize;
@@ -258,6 +290,13 @@ internal sealed partial class JpegDecoderCore
     private int adobeTransform = -1;
     private bool frameParsed;
     private bool progressive;
+    private bool lossless;
+
+    /// <summary>Bits per sample of the frame (P in the frame header): 8 or 12 for DCT frames, 2-16 for lossless ones.</summary>
+    private int precision = 8;
+
+    /// <summary>Largest sample value of the frame's precision.</summary>
+    private int maxSample = 255;
     private int scansDecoded;
     private readonly JpegMetadataReader metadataReader = new();
 
@@ -294,350 +333,191 @@ internal sealed partial class JpegDecoderCore
         AcRefine,
     }
 
+    /// <summary>What <see cref="ProcessNextMarker"/> found.</summary>
+    private enum MarkerResult
+    {
+        /// <summary>A segment that was consumed; parsing continues.</summary>
+        Continue,
+
+        /// <summary>An SOS marker; the scan header has not been read yet.</summary>
+        StartOfScan,
+
+        /// <summary>The EOI marker of a file that has a frame and at least one scan.</summary>
+        EndOfImage,
+    }
+
     public int Width => this.width;
 
     public int Height => this.height;
 
-    internal long DecodedPlaneBytes => this.components.Sum(component => component.Plane.LongLength);
+    internal long DecodedPlaneBytes => this.components.Sum(component => component.Plane.LongLength + (component.WidePlane.LongLength * sizeof(ushort)));
 
     internal long CoefficientBytes => this.components.Sum(component => component.Coefficients.LongLength * sizeof(short));
 
-    private int OutputWidth => (this.width + this.scaleDenominator - 1) / this.scaleDenominator;
+    /// <summary>Width of the decoded image after any reduction.</summary>
+    internal int OutputWidth => (this.width + this.scaleDenominator - 1) / this.scaleDenominator;
 
-    private int OutputHeight => (this.height + this.scaleDenominator - 1) / this.scaleDenominator;
+    /// <summary>Height of the decoded image after any reduction.</summary>
+    internal int OutputHeight => (this.height + this.scaleDenominator - 1) / this.scaleDenominator;
+
+    /// <summary>True when the samples do not fit a byte plane: 12-bit DCT frames and every lossless frame.</summary>
+    private bool WideSamples => this.precision != 8 || this.lossless;
+
+    /// <summary>
+    /// Whether 2:1 subsampled components use the triangle filter. libjpeg applies it only when the IDCT produces
+    /// more than one sample per block (so not at 1/8 scale) and never to lossless frames, which have no blocks.
+    /// </summary>
+    private bool FancyUpsampling => !this.lossless && this.outputBlockSize > 1;
 
     public void ParseAndDecode()
     {
-        if (this.dataLength < 4 || this.data[0] != 0xFF || this.data[1] != 0xD8)
+        this.ReadStartOfImage();
+        while (true)
+        {
+            OperationExecution.Checkpoint();
+            switch (this.ProcessNextMarker())
+            {
+                case MarkerResult.StartOfScan:
+                    this.DecodeScan();
+                    break;
+
+                case MarkerResult.EndOfImage:
+                    if (this.progressive)
+                    {
+                        this.ReconstructProgressiveFrame();
+                    }
+
+                    return;
+            }
+        }
+    }
+
+    private void ReadStartOfImage()
+    {
+        if (!this.EnsureBuffered(4) || this.data[this.pos] != 0xFF || this.data[this.pos + 1] != 0xD8)
         {
             throw new InvalidImageContentException("Missing JPEG SOI marker.");
         }
 
-        this.pos = 2;
-        bool reachedEoi = false;
-        while (!reachedEoi)
-        {
-            OperationExecution.Checkpoint();
-            if (!this.TryNextMarker(out byte marker))
-            {
-                throw new InvalidImageContentException("Unexpected end of JPEG data while searching for a marker.");
-            }
-
-            switch (marker)
-            {
-                case 0xD9: // EOI
-                    if (!this.frameParsed)
-                    {
-                        throw new InvalidImageContentException("JPEG ended before any image data.");
-                    }
-
-                    if (this.scansDecoded == 0)
-                    {
-                        throw new InvalidImageContentException("JPEG frame header is not followed by any scan.");
-                    }
-
-                    reachedEoi = true;
-                    break;
-
-                case 0xC0: // SOF0 baseline
-                case 0xC1: // SOF1 extended sequential (identical handling)
-                case 0xC2: // SOF2 progressive
-                    this.ReadFrame(isProgressive: marker == 0xC2);
-                    break;
-
-                case 0xC3:
-                case >= 0xC5 and <= 0xC7:
-                case >= 0xC9 and <= 0xCB:
-                case >= 0xCD and <= 0xCF:
-                    throw new NotSupportedException(
-                        $"JPEG frame type 0x{marker:X2} (lossless, hierarchical or arithmetic-coded) is not supported.");
-
-                case 0xC4:
-                    this.ReadHuffmanTables();
-                    break;
-
-                case 0xDB:
-                    this.ReadQuantizationTables();
-                    break;
-
-                case 0xDD:
-                    this.ReadUInt16(); // Segment length (4).
-                    this.restartInterval = this.ReadUInt16();
-                    break;
-
-                case 0xDA:
-                    this.DecodeScan();
-                    break;
-
-                case 0xEE: // APP14 (Adobe)
-                    this.ReadAdobeMarker();
-                    break;
-
-                case 0xE0: // APP0 (JFIF)
-                case 0xE1: // APP1 (EXIF / XMP)
-                case 0xE2: // APP2 (ICC)
-                case 0xFE: // COM
-                    this.ReadMetadataSegment(marker);
-                    break;
-
-                case >= 0xD0 and <= 0xD7: // Stray restart marker
-                case 0x01:
-                case 0xD8:
-                    break;
-
-                default:
-                    this.SkipSegment();
-                    break;
-            }
-        }
-
-        if (this.progressive)
-        {
-            this.ReconstructProgressiveFrame();
-        }
+        this.pos += 2;
     }
 
-    public Image<TPixel> ToImage<TPixel>()
-        where TPixel : unmanaged, IPixel<TPixel>
+    /// <summary>Finds the next marker and consumes its segment, except for SOS, whose header the caller reads.</summary>
+    private MarkerResult ProcessNextMarker()
     {
-        if (!this.frameParsed)
+        if (!this.TryNextMarker(out byte marker))
         {
-            throw new InvalidImageContentException("JPEG image contains no frame.");
+            throw new InvalidImageContentException("Unexpected end of JPEG data while searching for a marker.");
         }
 
-        int componentCount = this.components.Length;
-        if (componentCount is not (1 or 3 or 4))
+        switch (marker)
         {
-            throw new NotSupportedException($"JPEG images with {componentCount} components are not supported.");
+            case 0xD9: // EOI
+                if (!this.frameParsed)
+                {
+                    throw new InvalidImageContentException("JPEG ended before any image data.");
+                }
+
+                if (this.scansDecoded == 0)
+                {
+                    throw new InvalidImageContentException("JPEG frame header is not followed by any scan.");
+                }
+
+                return MarkerResult.EndOfImage;
+
+            case 0xC0: // SOF0 baseline
+            case 0xC1: // SOF1 extended sequential (identical handling)
+                this.ReadFrame(isProgressive: false, isLossless: false);
+                break;
+
+            case 0xC2: // SOF2 progressive
+                this.ReadFrame(isProgressive: true, isLossless: false);
+                break;
+
+            case 0xC3: // SOF3 lossless
+                this.ReadFrame(isProgressive: false, isLossless: true);
+                break;
+
+            case >= 0xC5 and <= 0xC7:
+                throw new NotSupportedException(
+                    $"JPEG frame type 0x{marker:X2} (hierarchical, differential Huffman coding) is not supported.");
+
+            case 0xC9: // SOF9 extended sequential, arithmetic coding
+                this.arithmetic = true;
+                this.ReadFrame(isProgressive: false, isLossless: false);
+                break;
+
+            case 0xCA:
+                throw new NotSupportedException(
+                    "JPEG frame type 0xCA (progressive DCT, arithmetic coding) is not supported; sequential arithmetic-coded JPEG (SOF9) and Huffman-coded JPEG can be decoded.");
+
+            case 0xCB:
+                throw new NotSupportedException(
+                    "JPEG frame type 0xCB (lossless, arithmetic coding) is not supported; lossless JPEG must be Huffman-coded (SOF3).");
+
+            case >= 0xCD and <= 0xCF:
+                throw new NotSupportedException(
+                    $"JPEG frame type 0x{marker:X2} (hierarchical, differential arithmetic coding) is not supported.");
+
+            case 0xCC: // DAC
+                this.ReadArithmeticConditioning();
+                break;
+
+            case 0xC4:
+                this.ReadHuffmanTables();
+                break;
+
+            case 0xDB:
+                this.ReadQuantizationTables();
+                break;
+
+            case 0xDD:
+                this.ReadUInt16(); // Segment length (4).
+                this.restartInterval = this.ReadUInt16();
+                break;
+
+            case 0xDA:
+                return MarkerResult.StartOfScan;
+
+            case 0xEE: // APP14 (Adobe)
+                this.ReadAdobeMarker();
+                break;
+
+            case 0xE0: // APP0 (JFIF)
+            case 0xE1: // APP1 (EXIF / XMP)
+            case 0xE2: // APP2 (ICC)
+            case 0xED: // APP13 (Photoshop image resources / IPTC)
+            case 0xFE: // COM
+                this.ReadMetadataSegment(marker);
+                break;
+
+            case >= 0xD0 and <= 0xD7: // Stray restart marker
+            case 0x01:
+            case 0xD8:
+                break;
+
+            default:
+                this.SkipSegment();
+                break;
         }
 
-        ImageFrame<TPixel> frame = FrameFactory.CreateUninitialized<TPixel>(this.OutputWidth, this.OutputHeight);
-
-        bool rgbIds = componentCount == 3
-            && this.components[0].Id == 'R' && this.components[1].Id == 'G' && this.components[2].Id == 'B';
-        bool isRgb = componentCount == 3 && (this.adobeTransform == 0 || rgbIds);
-
-        // Four components: Adobe transform 0 is CMYK, 2 is YCCK (any other nonzero value is treated as YCCK,
-        // as libjpeg does); without an APP14 marker the data is plain CMYK.
-        bool isYcck = componentCount == 4 && this.adobeTransform > 0;
-
-        this.metadataReader.SetFrame(this.progressive, JpegDecoder.ClassifyColorType(componentCount, this.adobeTransform, rgbIds));
-        this.metadataReader.SetLuminanceQuantTable(this.quantTables[this.components[0].QuantId]);
-        ImageMetadata metadata = this.metadataReader.Finish();
-
-        // Adobe writers store CMYK "inverted" (255 - ink); the APP14 marker signals that convention.
-        bool adobeInverted = this.adobeTransform >= 0;
-
-        // Subsampled components are upsampled one full-resolution row at a time into a scratch row;
-        // full-resolution components are read straight from their plane. Rows are independent, so each
-        // batch gets its own scratch and they run in parallel.
-        int fullWidth = this.mcusX * this.maxH * this.outputBlockSize;
-        int imageWidth = this.OutputWidth;
-        ParallelRowIterator.IterateRows(imageWidth, this.OutputHeight, (startRow, endRow) =>
-        {
-            byte[]?[] scratch = new byte[componentCount][];
-            for (int i = 0; i < componentCount; i++)
-            {
-                JpegComponent c = this.components[i];
-                scratch[i] = c.SampleH == this.maxH && c.SampleV == this.maxV ? null : ArrayPool<byte>.Shared.Rent(fullWidth);
-            }
-
-            Rgba32[] rgbaRow = ArrayPool<Rgba32>.Shared.Rent(imageWidth);
-            try
-            {
-                Span<Rgba32> row = rgbaRow.AsSpan(0, imageWidth);
-                for (int y = startRow; y < endRow; y++)
-                {
-                    OperationExecution.Checkpoint();
-                    switch (componentCount)
-                    {
-                        case 1:
-                        {
-                            // A single component is luminance: reinterpreting it as L8 makes the write a
-                            // bulk broadcast straight into the destination row.
-                            ReadOnlySpan<byte> r0 = this.GetComponentRow(this.components[0], y, scratch[0]);
-                            PixelOps.Convert<L8, TPixel>(
-                                MemoryMarshal.Cast<byte, L8>(r0[..imageWidth]), frame.GetRowSpan(y));
-                            continue;
-                        }
-
-                        case 3:
-                        {
-                            ReadOnlySpan<byte> r0 = this.GetComponentRow(this.components[0], y, scratch[0]);
-                            ReadOnlySpan<byte> r1 = this.GetComponentRow(this.components[1], y, scratch[1]);
-                            ReadOnlySpan<byte> r2 = this.GetComponentRow(this.components[2], y, scratch[2]);
-                            if (isRgb)
-                            {
-                                for (int x = 0; x < imageWidth; x++)
-                                {
-                                    row[x] = new Rgba32(r0[x], r1[x], r2[x]);
-                                }
-                            }
-                            else
-                            {
-                                YCbCrRowToRgba(r0, r1, r2, row);
-                            }
-
-                            break;
-                        }
-
-                        default:
-                        {
-                            ReadOnlySpan<byte> r0 = this.GetComponentRow(this.components[0], y, scratch[0]);
-                            ReadOnlySpan<byte> r1 = this.GetComponentRow(this.components[1], y, scratch[1]);
-                            ReadOnlySpan<byte> r2 = this.GetComponentRow(this.components[2], y, scratch[2]);
-                            ReadOnlySpan<byte> r3 = this.GetComponentRow(this.components[3], y, scratch[3]);
-                            for (int x = 0; x < imageWidth; x++)
-                            {
-                                int s0 = r0[x];
-                                int s1 = r1[x];
-                                int s2 = r2[x];
-                                int s3 = r3[x];
-                                if (isYcck)
-                                {
-                                    // YCC -> RGB yields the inverted CMY channels of an Adobe CMYK image; K passes through.
-                                    Rgba32 cmy = YCbCrToRgb(s0, s1, s2);
-                                    row[x] = InvertedCmykToRgb(255 - cmy.R, 255 - cmy.G, 255 - cmy.B, s3);
-                                }
-                                else if (adobeInverted)
-                                {
-                                    row[x] = InvertedCmykToRgb(s0, s1, s2, s3);
-                                }
-                                else
-                                {
-                                    row[x] = InvertedCmykToRgb(255 - s0, 255 - s1, 255 - s2, 255 - s3);
-                                }
-                            }
-
-                            break;
-                        }
-                    }
-
-                    PixelOps.FromRgba32<TPixel>(row, frame.GetRowSpan(y));
-                }
-            }
-            finally
-            {
-                ArrayPool<Rgba32>.Shared.Return(rgbaRow);
-                for (int i = 0; i < componentCount; i++)
-                {
-                    if (scratch[i] is byte[] buffer)
-                    {
-                        ArrayPool<byte>.Shared.Return(buffer);
-                    }
-                }
-            }
-        });
-
-        return new Image<TPixel>(new List<ImageFrame<TPixel>> { frame }, metadata);
+        return MarkerResult.Continue;
     }
 
-    /// <summary>Returns row <paramref name="y"/> of the component at full image resolution.</summary>
-    private ReadOnlySpan<byte> GetComponentRow(JpegComponent c, int y, byte[]? scratch)
-    {
-        if (scratch is null)
-        {
-            return c.Plane.AsSpan(y * c.PlaneWidth, this.OutputWidth);
-        }
-
-        JpegUpsampler.UpsampleRow(
-            c.Plane, c.PlaneWidth, c.PlaneHeight, c.CompWidth, c.CompHeight,
-            c.SampleH, c.SampleV, this.maxH, this.maxV, y, this.OutputWidth, scratch, this.outputBlockSize > 1);
-        return scratch;
-    }
+    // ----- Input window -----
 
     /// <summary>
-    /// Converts a row of Y, Cb and Cr samples to RGB. The vector path evaluates exactly the expression
-    /// <see cref="YCbCrToRgb"/> uses, in the same order and with the same truncating conversion, so it
-    /// produces the same bytes.
+    /// True when at least <paramref name="count"/> unread bytes are buffered, refilling the window from the input
+    /// stream first when decoding a stream.
     /// </summary>
-    private static void YCbCrRowToRgba(ReadOnlySpan<byte> y, ReadOnlySpan<byte> cb, ReadOnlySpan<byte> cr, Span<Rgba32> destination)
-    {
-        int width = destination.Length;
-        int x = 0;
-
-        if (SimdConfig.Vector256Enabled && width >= Vector256<float>.Count)
-        {
-            ref byte yRef = ref MemoryMarshal.GetReference(y);
-            ref byte cbRef = ref MemoryMarshal.GetReference(cb);
-            ref byte crRef = ref MemoryMarshal.GetReference(cr);
-            ref uint destRef = ref Unsafe.As<Rgba32, uint>(ref MemoryMarshal.GetReference(destination));
-
-            Vector256<float> half = Vector256.Create(0.5f);
-            Vector256<float> offset = Vector256.Create(128f);
-            Vector256<int> zero = Vector256<int>.Zero;
-            Vector256<int> max = Vector256.Create(255);
-            Vector256<uint> opaque = Vector256.Create(0xFF000000u);
-
-            for (; x <= width - Vector256<float>.Count; x += Vector256<float>.Count)
-            {
-                Vector256<float> luma = WidenEight(ref yRef, x);
-                Vector256<float> blue = WidenEight(ref cbRef, x) - offset;
-                Vector256<float> red = WidenEight(ref crRef, x) - offset;
-
-                Vector256<float> r = luma + (red * Vector256.Create(1.402f)) + half;
-                Vector256<float> g = luma - (blue * Vector256.Create(0.344136f)) - (red * Vector256.Create(0.714136f)) + half;
-                Vector256<float> b = luma + (blue * Vector256.Create(1.772f)) + half;
-
-                Vector256<uint> packed = Clamp(r, zero, max)
-                    | Vector256.ShiftLeft(Clamp(g, zero, max), 8)
-                    | Vector256.ShiftLeft(Clamp(b, zero, max), 16)
-                    | opaque;
-                packed.StoreUnsafe(ref destRef, (nuint)x);
-            }
-        }
-
-        for (; x < width; x++)
-        {
-            destination[x] = YCbCrToRgb(y[x], cb[x], cr[x]);
-        }
-
-        static Vector256<uint> Clamp(Vector256<float> value, Vector256<int> zero, Vector256<int> max)
-            => Vector256.Max(Vector256.Min(Vector256.ConvertToInt32(value), max), zero).AsUInt32();
-    }
-
-    /// <summary>Widens eight consecutive bytes starting at <paramref name="index"/> to single precision.</summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static Vector256<float> WidenEight(ref byte source, int index)
-    {
-        ulong packed = Unsafe.ReadUnaligned<ulong>(ref Unsafe.Add(ref source, (uint)index));
-        (Vector128<ushort> low, _) = Vector128.Widen(Vector128.CreateScalar(packed).AsByte());
-        (Vector128<uint> first, Vector128<uint> second) = Vector128.Widen(low);
-        return Vector256.ConvertToSingle(Vector256.Create(first.AsInt32(), second.AsInt32()));
-    }
-    private static Rgba32 YCbCrToRgb(int y, int cb, int cr)
-    {
-        float yf = y;
-        float cbf = cb - 128f;
-        float crf = cr - 128f;
-        int r = (int)(yf + (1.402f * crf) + 0.5f);
-        int g = (int)(yf - (0.344136f * cbf) - (0.714136f * crf) + 0.5f);
-        int b = (int)(yf + (1.772f * cbf) + 0.5f);
-        return new Rgba32(
-            (byte)Math.Clamp(r, 0, 255),
-            (byte)Math.Clamp(g, 0, 255),
-            (byte)Math.Clamp(b, 0, 255));
-    }
-
-    /// <summary>
-    /// Converts inverted CMYK samples (each stored as 255 - ink coverage, the Adobe convention) to RGB with
-    /// the usual naive model R = (255 - C)(255 - K) / 255, rounded to nearest.
-    /// </summary>
-    private static Rgba32 InvertedCmykToRgb(int c, int m, int y, int k)
-        => new Rgba32(MulDiv255(c, k), MulDiv255(m, k), MulDiv255(y, k));
-
-    /// <summary>Computes round(a * b / 255) for a, b in 0..255.</summary>
-    private static byte MulDiv255(int a, int b)
-    {
-        int t = (a * b) + 128;
-        return (byte)((t + (t >> 8)) >> 8);
-    }
+    private bool EnsureBuffered(int count) => this.dataLength - this.pos >= count || this.Refill(count);
 
     // ----- Marker/segment parsing -----
 
     private bool TryNextMarker(out byte marker)
     {
-        while (this.pos + 1 < this.dataLength)
+        while (this.EnsureBuffered(2))
         {
             OperationExecution.Checkpoint();
             if (this.data[this.pos] == 0xFF)
@@ -660,7 +540,7 @@ internal sealed partial class JpegDecoderCore
 
     private int ReadUInt16()
     {
-        if (this.pos + 2 > this.dataLength)
+        if (!this.EnsureBuffered(2))
         {
             throw new InvalidImageContentException("Unexpected end of JPEG data.");
         }
@@ -672,7 +552,7 @@ internal sealed partial class JpegDecoderCore
 
     private byte ReadByte()
     {
-        if (this.pos >= this.dataLength)
+        if (!this.EnsureBuffered(1))
         {
             throw new InvalidImageContentException("Unexpected end of JPEG data.");
         }
@@ -683,7 +563,7 @@ internal sealed partial class JpegDecoderCore
     private void SkipSegment()
     {
         int length = this.ReadUInt16();
-        if (length < 2 || this.pos + length - 2 > this.dataLength)
+        if (length < 2 || !this.EnsureBuffered(length - 2))
         {
             throw new InvalidImageContentException("JPEG segment is truncated.");
         }
@@ -694,7 +574,7 @@ internal sealed partial class JpegDecoderCore
     private void ReadAdobeMarker()
     {
         int length = this.ReadUInt16();
-        if (length < 2 || this.pos + length - 2 > this.dataLength)
+        if (length < 2 || !this.EnsureBuffered(length - 2))
         {
             throw new InvalidImageContentException("JPEG APP14 segment is truncated.");
         }
@@ -713,7 +593,7 @@ internal sealed partial class JpegDecoderCore
     private void ReadMetadataSegment(byte marker)
     {
         int length = this.ReadUInt16();
-        if (length < 2 || this.pos + length - 2 > this.dataLength)
+        if (length < 2 || !this.EnsureBuffered(length - 2))
         {
             throw new InvalidImageContentException("JPEG metadata segment is truncated.");
         }
@@ -722,10 +602,14 @@ internal sealed partial class JpegDecoderCore
         this.pos += length - 2;
     }
 
+    /// <summary>
+    /// Reads a table segment's length and buffers the whole segment, so the absolute end position returned stays
+    /// valid while the segment is parsed.
+    /// </summary>
     private int ReadTableSegmentEnd(string segmentName)
     {
         int length = this.ReadUInt16();
-        if (length < 2 || this.pos + length - 2 > this.dataLength)
+        if (length < 2 || !this.EnsureBuffered(length - 2))
         {
             throw new InvalidImageContentException($"JPEG {segmentName} segment is truncated.");
         }
@@ -740,15 +624,15 @@ internal sealed partial class JpegDecoderCore
         {
             OperationExecution.Checkpoint();
             byte pqTq = this.ReadByte();
-            int precision = pqTq >> 4;
+            int tablePrecision = pqTq >> 4;
             int id = pqTq & 0x0F;
-            if (id > 3 || precision > 1)
+            if (id > 3 || tablePrecision > 1)
             {
                 throw new InvalidImageContentException($"Invalid quantization table specification: 0x{pqTq:X2}.");
             }
 
             // Every table must fit inside the segment length the file itself declared.
-            if (this.pos + (precision == 0 ? 64 : 128) > end)
+            if (this.pos + (tablePrecision == 0 ? 64 : 128) > end)
             {
                 throw new InvalidImageContentException("JPEG DQT segment length does not cover its table.");
             }
@@ -756,7 +640,7 @@ internal sealed partial class JpegDecoderCore
             var table = new ushort[64];
             for (int i = 0; i < 64; i++)
             {
-                table[JpegTables.ZigZag[i]] = precision == 0 ? this.ReadByte() : (ushort)this.ReadUInt16();
+                table[JpegTables.ZigZag[i]] = tablePrecision == 0 ? this.ReadByte() : (ushort)this.ReadUInt16();
             }
 
             this.quantTables[id] = table;
@@ -814,13 +698,21 @@ internal sealed partial class JpegDecoderCore
         }
     }
 
-    private void ReadFrame(bool isProgressive)
+    private void ReadFrame(bool isProgressive, bool isLossless)
     {
         this.ReadUInt16(); // Length
-        int precision = this.ReadByte();
-        if (precision != 8)
+        int framePrecision = this.ReadByte();
+        if (isLossless)
         {
-            throw new NotSupportedException($"JPEG sample precision {precision} is not supported (only 8-bit).");
+            // T.81 H.4.1: lossless frames carry 2 to 16 bits per sample.
+            if (framePrecision is < 2 or > 16)
+            {
+                throw new InvalidImageContentException($"Invalid lossless JPEG sample precision {framePrecision}.");
+            }
+        }
+        else if (framePrecision is not (8 or 12))
+        {
+            throw new NotSupportedException($"JPEG sample precision {framePrecision} is not supported (only 8-bit and 12-bit).");
         }
 
         this.height = this.ReadUInt16();
@@ -841,10 +733,19 @@ internal sealed partial class JpegDecoderCore
             throw new NotSupportedException($"JPEG images with {componentCount} components are not supported.");
         }
 
+        // A streaming decode declines every lossless frame once the header is read, so only a full decode throws.
+        if (isLossless && this.scaleDenominator != 1 && this.input is null)
+        {
+            throw new NotSupportedException("Reduced decoding is not supported for lossless JPEG, which has no DCT blocks to reduce.");
+        }
+
         // Reject oversized images before any plane memory is allocated.
         this.options.EnsureFrameWithinLimits(this.width, this.height, "JPEG");
 
         this.progressive = isProgressive;
+        this.lossless = isLossless;
+        this.precision = framePrecision;
+        this.maxSample = (1 << framePrecision) - 1;
         this.components = new JpegComponent[componentCount];
         for (int i = 0; i < componentCount; i++)
         {
@@ -863,7 +764,8 @@ internal sealed partial class JpegDecoderCore
                 throw new InvalidImageContentException("Invalid JPEG sampling factors.");
             }
 
-            if (tq > 3)
+            // Lossless frames have no quantization; their Tq field is meaningless and ignored, as libjpeg does.
+            if (tq > 3 && !isLossless)
             {
                 throw new InvalidImageContentException($"Invalid JPEG quantization table selector: {tq}.");
             }
@@ -873,6 +775,27 @@ internal sealed partial class JpegDecoderCore
             this.components[i] = component;
         }
 
+        if (isLossless)
+        {
+            this.LayOutLosslessFrame();
+        }
+        else
+        {
+            this.LayOutDctFrame();
+        }
+
+        // A streaming decode allocates a few MCU rows once it has seen the scan; everything else holds the frame.
+        if (this.input is null)
+        {
+            this.AllocateFramePlanes();
+        }
+
+        this.frameParsed = true;
+    }
+
+    /// <summary>Computes the block grid and the (possibly reduced) sample plane geometry of every component.</summary>
+    private void LayOutDctFrame()
+    {
         this.mcusX = (this.width + (8 * this.maxH) - 1) / (8 * this.maxH);
         this.mcusY = (this.height + (8 * this.maxV) - 1) / (8 * this.maxV);
 
@@ -884,6 +807,7 @@ internal sealed partial class JpegDecoderCore
             component.BlocksPerColumn = (component.CompHeight + 7) / 8;
             component.BlocksPerLineTotal = this.mcusX * component.H;
             component.BlocksPerColumnTotal = this.mcusY * component.V;
+
             // Use a larger chroma IDCT when it eliminates power-of-two upsampling at the requested scale.
             int blockSize = this.outputBlockSize;
             while (blockSize < 8 && (this.maxH * this.outputBlockSize) % (component.H * blockSize * 2) == 0
@@ -899,15 +823,51 @@ internal sealed partial class JpegDecoderCore
             component.CompHeight = ((this.height * component.V * blockSize) + (this.maxV * 8) - 1) / (this.maxV * 8);
             component.PlaneWidth = component.BlocksPerLineTotal * blockSize;
             component.PlaneHeight = component.BlocksPerColumnTotal * blockSize;
+        }
+    }
+
+    /// <summary>
+    /// Lossless frames have no blocks: an interleaved MCU holds H x V samples of each component (T.81 H.1.1), so the
+    /// planes are padded to whole MCUs and nothing is ever reduced.
+    /// </summary>
+    private void LayOutLosslessFrame()
+    {
+        this.mcusX = (this.width + this.maxH - 1) / this.maxH;
+        this.mcusY = (this.height + this.maxV - 1) / this.maxV;
+
+        foreach (JpegComponent component in this.components)
+        {
+            component.CompWidth = ((this.width * component.H) + this.maxH - 1) / this.maxH;
+            component.CompHeight = ((this.height * component.V) + this.maxV - 1) / this.maxV;
+            component.BlockSize = 1;
+            component.SampleH = component.H;
+            component.SampleV = component.V;
+            component.PlaneWidth = this.mcusX * component.H;
+            component.PlaneHeight = this.mcusY * component.V;
+        }
+    }
+
+    /// <summary>Allocates every component's whole sample plane (and progressive coefficient store).</summary>
+    private void AllocateFramePlanes()
+    {
+        foreach (JpegComponent component in this.components)
+        {
             long planeSize = (long)component.PlaneWidth * component.PlaneHeight;
             if (planeSize > int.MaxValue)
             {
                 throw new InvalidImageContentException("JPEG component plane is too large to decode.");
             }
 
-            component.Plane = new byte[planeSize];
+            if (this.WideSamples)
+            {
+                component.WidePlane = new ushort[planeSize];
+            }
+            else
+            {
+                component.Plane = new byte[planeSize];
+            }
 
-            if (isProgressive)
+            if (this.progressive)
             {
                 // Progressive scans refine coefficients across the whole image; every block's coefficients
                 // (in zigzag order) are kept until the frame is complete.
@@ -920,13 +880,30 @@ internal sealed partial class JpegDecoderCore
                 component.Coefficients = new short[coefficientCount];
             }
         }
-
-        this.frameParsed = true;
     }
 
     // ----- Scan decoding -----
 
     private void DecodeScan()
+    {
+        JpegComponent[] scanComponents = this.ReadScanHeader();
+        if (this.lossless)
+        {
+            this.DecodeLosslessScan(scanComponents);
+        }
+        else
+        {
+            this.DecodeDctScan(scanComponents);
+        }
+
+        this.scansDecoded++;
+    }
+
+    /// <summary>
+    /// Reads an SOS header (the marker has been consumed), resolves the tables of the components it names and resets
+    /// the entropy decoder for the scan's data.
+    /// </summary>
+    private JpegComponent[] ReadScanHeader()
     {
         if (!this.frameParsed)
         {
@@ -951,15 +928,21 @@ internal sealed partial class JpegDecoderCore
             match.AcTableId = tdTa & 0x0F;
             if (match.DcTableId > 3 || match.AcTableId > 3)
             {
-                throw new InvalidImageContentException("Invalid JPEG Huffman table selector in scan header.");
+                throw new InvalidImageContentException(
+                    this.arithmetic ? "Invalid JPEG arithmetic conditioning table selector in scan header." : "Invalid JPEG Huffman table selector in scan header.");
             }
 
             match.Pred = 0;
 
             // The quantization table is latched by the first scan that includes the component (as libjpeg does),
-            // so a DQT segment appearing between scans cannot retroactively change already-decoded data.
-            match.QuantTable ??= this.quantTables[match.QuantId]
-                ?? throw new InvalidImageContentException($"JPEG quantization table {match.QuantId} is undefined.");
+            // so a DQT segment appearing between scans cannot retroactively change already-decoded data. Lossless
+            // frames are not quantized.
+            if (!this.lossless && match.QuantTable is null)
+            {
+                match.QuantTable = this.quantTables[match.QuantId]
+                    ?? throw new InvalidImageContentException($"JPEG quantization table {match.QuantId} is undefined.");
+                match.Dequant = BuildDequant(match.QuantTable, match.BlockSize);
+            }
         }
 
         int ss = this.ReadByte();
@@ -968,7 +951,11 @@ internal sealed partial class JpegDecoderCore
         int ah = ahAl >> 4;
         int al = ahAl & 0x0F;
 
-        if (this.progressive)
+        if (this.lossless)
+        {
+            this.PrepareLosslessScan(scanComponents, ss, al);
+        }
+        else if (this.progressive)
         {
             this.PrepareProgressiveScan(scanComponents, ss, se, ah, al);
         }
@@ -979,6 +966,11 @@ internal sealed partial class JpegDecoderCore
             this.scanKind = ScanKind.Sequential;
             foreach (JpegComponent component in scanComponents)
             {
+                if (this.arithmetic)
+                {
+                    continue; // Arithmetic scans use adaptive statistics, not Huffman tables.
+                }
+
                 component.DcTable = this.dcTables[component.DcTableId]
                     ?? throw new InvalidImageContentException($"JPEG DC Huffman table {component.DcTableId} is undefined.");
                 component.AcTable = this.acTables[component.AcTableId]
@@ -990,8 +982,37 @@ internal sealed partial class JpegDecoderCore
         this.markerPending = false;
         this.insufficientData = false;
         this.eobRun = 0;
+        if (this.arithmetic)
+        {
+            this.ResetArithmeticDecoder(scanComponents);
+        }
 
-        if (scanComponentCount == 1)
+        return scanComponents;
+    }
+
+    /// <summary>
+    /// The multipliers that dequantize a block for its inverse transform: the AAN-scaled table of
+    /// <see cref="JpegIdct"/> for full 8x8 blocks, the plain quantization steps for the reduced transforms.
+    /// </summary>
+    private static float[] BuildDequant(ushort[] quant, int blockSize)
+    {
+        if (blockSize == 8)
+        {
+            return JpegIdct.BuildDequantTable(quant);
+        }
+
+        var table = new float[64];
+        for (int i = 0; i < 64; i++)
+        {
+            table[i] = quant[i];
+        }
+
+        return table;
+    }
+
+    private void DecodeDctScan(JpegComponent[] scanComponents)
+    {
+        if (scanComponents.Length == 1)
         {
             // Non-interleaved: the scan covers the component's own block grid (ceil(compWidth / 8) blocks per
             // line), which is narrower than the MCU-padded grid when H < maxH.
@@ -1000,13 +1021,8 @@ internal sealed partial class JpegDecoderCore
             int decoded = 0;
             for (int by = 0; by < component.BlocksPerColumn; by++)
             {
-            OperationExecution.Checkpoint();
-                for (int bx = 0; bx < component.BlocksPerLine; bx++)
-                {
-                    this.DecodeBlock(component, bx, by);
-                    decoded++;
-                    this.HandleRestart(decoded, totalBlocks, scanComponents);
-                }
+                OperationExecution.Checkpoint();
+                this.DecodeBlockRow(component, by, ref decoded, totalBlocks, scanComponents);
             }
         }
         else
@@ -1015,27 +1031,42 @@ internal sealed partial class JpegDecoderCore
             int decoded = 0;
             for (int my = 0; my < this.mcusY; my++)
             {
-            OperationExecution.Checkpoint();
-                for (int mx = 0; mx < this.mcusX; mx++)
-                {
-                    foreach (JpegComponent component in scanComponents)
-                    {
-                        for (int v = 0; v < component.V; v++)
-                        {
-                            for (int h = 0; h < component.H; h++)
-                            {
-                                this.DecodeBlock(component, (mx * component.H) + h, (my * component.V) + v);
-                            }
-                        }
-                    }
-
-                    decoded++;
-                    this.HandleRestart(decoded, totalMcus, scanComponents);
-                }
+                OperationExecution.Checkpoint();
+                this.DecodeMcuRow(scanComponents, my, ref decoded, totalMcus);
             }
         }
+    }
 
-        this.scansDecoded++;
+    /// <summary>Decodes one row of blocks of a non-interleaved scan; <paramref name="decoded"/> counts blocks for restarts.</summary>
+    private void DecodeBlockRow(JpegComponent component, int by, ref int decoded, int totalBlocks, JpegComponent[] scanComponents)
+    {
+        for (int bx = 0; bx < component.BlocksPerLine; bx++)
+        {
+            this.DecodeBlock(component, bx, by);
+            decoded++;
+            this.HandleRestart(decoded, totalBlocks, scanComponents);
+        }
+    }
+
+    /// <summary>Decodes one row of MCUs of an interleaved scan; <paramref name="decoded"/> counts MCUs for restarts.</summary>
+    private void DecodeMcuRow(JpegComponent[] scanComponents, int my, ref int decoded, int totalMcus)
+    {
+        for (int mx = 0; mx < this.mcusX; mx++)
+        {
+            foreach (JpegComponent component in scanComponents)
+            {
+                for (int v = 0; v < component.V; v++)
+                {
+                    for (int h = 0; h < component.H; h++)
+                    {
+                        this.DecodeBlock(component, (mx * component.H) + h, (my * component.V) + v);
+                    }
+                }
+            }
+
+            decoded++;
+            this.HandleRestart(decoded, totalMcus, scanComponents);
+        }
     }
 
     private void HandleRestart(int decodedUnits, int totalUnits, JpegComponent[] scanComponents)
@@ -1048,7 +1079,12 @@ internal sealed partial class JpegDecoderCore
         // Byte-align and consume the expected RSTn marker.
         this.bitCount = 0;
         this.markerPending = false;
-        if (this.pos + 1 < this.dataLength && this.data[this.pos] == 0xFF)
+        if (this.arithmetic)
+        {
+            this.SkipToMarkerAfterArithmeticSegment();
+        }
+
+        if (this.EnsureBuffered(2) && this.data[this.pos] == 0xFF)
         {
             byte marker = this.data[this.pos + 1];
             if (marker is >= 0xD0 and <= 0xD7)
@@ -1059,6 +1095,11 @@ internal sealed partial class JpegDecoderCore
                 foreach (JpegComponent component in scanComponents)
                 {
                     component.Pred = 0;
+                }
+
+                if (this.arithmetic)
+                {
+                    this.ResetArithmeticDecoder(scanComponents);
                 }
 
                 return;
@@ -1080,6 +1121,9 @@ internal sealed partial class JpegDecoderCore
 
         switch (this.scanKind)
         {
+            case ScanKind.Sequential when this.arithmetic:
+                this.DecodeSequentialBlockArithmetic(component, bx, by);
+                break;
             case ScanKind.Sequential:
                 this.DecodeSequentialBlock(component, bx, by);
                 break;
@@ -1100,7 +1144,7 @@ internal sealed partial class JpegDecoderCore
 
     private void DecodeSequentialBlock(JpegComponent component, int bx, int by)
     {
-        ushort[] quant = component.QuantTable!;
+        float[] dequant = component.Dequant!;
         HuffmanTable dc = component.DcTable!;
         HuffmanTable ac = component.AcTable!;
         Span<float> block = this.blockScratch;
@@ -1110,7 +1154,7 @@ internal sealed partial class JpegDecoderCore
         int t = this.DecodeHuffman(dc);
         int diff = t == 0 ? 0 : Extend(this.Receive(t), t);
         component.Pred += diff;
-        block[0] = component.Pred * quant[0];
+        block[0] = component.Pred * dequant[0];
 
         // AC coefficients.
         bool anyAc = false;
@@ -1138,7 +1182,7 @@ internal sealed partial class JpegDecoderCore
             }
 
             int natural = JpegTables.ZigZag[k];
-            block[natural] = Extend(this.Receive(size), size) * quant[natural];
+            block[natural] = Extend(this.Receive(size), size) * dequant[natural];
             anyAc = true;
             k++;
         }
@@ -1146,86 +1190,96 @@ internal sealed partial class JpegDecoderCore
         if (!anyAc)
         {
             // A flat block is by far the most common case in smooth areas and in chroma planes.
-            WriteFlatBlock(component, bx, by, JpegTables.DcOnlyValue(block[0]));
+            this.WriteFlatBlock(component, bx, by, FlatValue(component, block[0]));
             return;
         }
 
-        if (component.BlockSize == 8)
-        {
-            JpegTables.InverseDct(block, this.tempScratch);
-        }
-        else
-        {
-            JpegReducedIdct.Transform(block, this.tempScratch, component.BlockSize);
-        }
-
-        WriteBlock(component, bx, by, block);
+        this.WriteBlock(component, bx, by, block);
     }
 
-    /// <summary>Level-shifts, rounds and clamps an IDCT output block into the component's sample plane.</summary>
-    private static void WriteBlock(JpegComponent component, int bx, int by, ReadOnlySpan<float> block)
+    /// <summary>
+    /// The value every sample of a block takes when only its DC coefficient is non-zero, given the dequantized DC
+    /// coefficient. The AAN table already folds in the 1/8 of the two passes, and evaluating the factorised
+    /// transform on such a block reproduces its input exactly, so for full-size blocks this is the DC term itself;
+    /// the reduced transforms take plain quantization steps, so their flat value is DC / 8.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static float FlatValue(JpegComponent component, float dc) => component.BlockSize == 8 ? dc : dc * 0.125f;
+
+    /// <summary>
+    /// Inverse-transforms a dequantized block (clobbering it) and writes the level-shifted, rounded and clamped
+    /// samples into the component's sample plane.
+    /// </summary>
+    private void WriteBlock(JpegComponent component, int bx, int by, Span<float> block)
     {
-        if (component.BlockSize != 8)
+        int size = component.BlockSize;
+        int offset = component.RowOffset(by * size) + (bx * size);
+        int stride = component.PlaneWidth;
+
+        if (this.WideSamples)
         {
-            int size = component.BlockSize;
+            if (size == 8)
+            {
+                JpegIdct.TransformToWide(block, component.WidePlane.AsSpan(offset), stride, this.maxSample);
+                return;
+            }
+
+            JpegReducedIdct.Transform(block, this.tempScratch, size);
+            float center = ((this.maxSample + 1) >> 1) + 0.5f;
+            ushort[] widePlane = component.WidePlane;
             for (int y = 0; y < size; y++)
             {
-                Span<byte> target = component.Plane.AsSpan(((by * size + y) * component.PlaneWidth) + bx * size, size);
+                Span<ushort> target = widePlane.AsSpan(offset + (y * stride), size);
                 for (int x = 0; x < size; x++)
                 {
-                    target[x] = (byte)Math.Clamp((int)(block[y * size + x] + 128.5f), 0, 255);
+                    target[x] = (ushort)(int)Math.Clamp(block[(y * size) + x] + center, 0f, this.maxSample);
                 }
             }
 
             return;
         }
 
-        int baseX = bx * 8;
-        int baseY = by * 8;
-        byte[] plane = component.Plane;
-        int planeWidth = component.PlaneWidth;
-
-        if (SimdConfig.Vector256Enabled)
+        if (size == 8)
         {
-            ref float source = ref MemoryMarshal.GetReference(block);
-            ref byte destination = ref MemoryMarshal.GetArrayDataReference(plane);
-            Vector256<float> bias = Vector256.Create(128.5f);
-            Vector256<int> max = Vector256.Create(255);
-            for (int y = 0; y < 8; y++)
-            {
-                Vector256<int> samples = Vector256.ConvertToInt32(Vector256.LoadUnsafe(ref source, (nuint)(y * 8)) + bias);
-                samples = Vector256.Max(Vector256.Min(samples, max), Vector256<int>.Zero);
-                Vector128<short> narrowed = Vector128.Narrow(samples.GetLower(), samples.GetUpper());
-                ulong packed = Vector128.Narrow(narrowed.AsUInt16(), narrowed.AsUInt16()).AsUInt64().GetElement(0);
-                Unsafe.WriteUnaligned(ref Unsafe.Add(ref destination, (uint)(((baseY + y) * planeWidth) + baseX)), packed);
-            }
-
+            JpegIdct.TransformToBytes(block, component.Plane.AsSpan(offset), stride);
             return;
         }
 
-        for (int y = 0; y < 8; y++)
+        JpegReducedIdct.Transform(block, this.tempScratch, size);
+        byte[] plane = component.Plane;
+        for (int y = 0; y < size; y++)
         {
-            int rowOffset = ((baseY + y) * planeWidth) + baseX;
-            int blockOffset = y * 8;
-            for (int x = 0; x < 8; x++)
+            Span<byte> target = plane.AsSpan(offset + (y * stride), size);
+            for (int x = 0; x < size; x++)
             {
-                plane[rowOffset + x] = (byte)Math.Clamp((int)(block[blockOffset + x] + 128.5f), 0, 255);
+                target[x] = (byte)(int)Math.Clamp(block[(y * size) + x] + 128.5f, 0f, 255f);
             }
         }
     }
 
     /// <summary>Writes the constant a DC-only block reconstructs to, without running the transform.</summary>
-    private static void WriteFlatBlock(JpegComponent component, int bx, int by, float value)
+    private void WriteFlatBlock(JpegComponent component, int bx, int by, float value)
     {
-        byte sample = (byte)Math.Clamp((int)(value + 128.5f), 0, 255);
-        byte[] plane = component.Plane;
-        int planeWidth = component.PlaneWidth;
         int size = component.BlockSize;
-        int baseX = bx * size;
-        int baseY = by * size;
+        int offset = component.RowOffset(by * size) + (bx * size);
+        int stride = component.PlaneWidth;
+        if (this.WideSamples)
+        {
+            float center = ((this.maxSample + 1) >> 1) + 0.5f;
+            ushort wideSample = (ushort)(int)Math.Clamp(value + center, 0f, this.maxSample);
+            for (int y = 0; y < size; y++)
+            {
+                component.WidePlane.AsSpan(offset + (y * stride), size).Fill(wideSample);
+            }
+
+            return;
+        }
+
+        byte sample = (byte)(int)Math.Clamp(value + 128.5f, 0f, 255f);
+        byte[] plane = component.Plane;
         for (int y = 0; y < size; y++)
         {
-            plane.AsSpan((((baseY + y) * planeWidth) + baseX), size).Fill(sample);
+            plane.AsSpan(offset + (y * stride), size).Fill(sample);
         }
     }
 
@@ -1334,7 +1388,14 @@ internal sealed partial class JpegDecoderCore
     {
         while (this.bitCount <= 56)
         {
-            if (this.markerPending || this.pos >= this.dataLength)
+            if (this.markerPending)
+            {
+                return;
+            }
+
+            // Fewer than two bytes buffered: a streaming decode refills its window; at the true end of the data a
+            // lone final byte is still consumed below, with a missing successor read as the end of the image.
+            if (this.dataLength - this.pos < 2 && !this.Refill(2) && this.pos >= this.dataLength)
             {
                 return;
             }
@@ -1390,6 +1451,9 @@ internal sealed partial class JpegDecoderCore
         public int AcTableId;
         public int Pred;
 
+        /// <summary>The DC conditioning context of an arithmetic scan (T.81 F.1.4.4.1.2): 0, 4, 8, 12 or 16.</summary>
+        public int DcContext;
+
         /// <summary>Width of the component in samples: ceil(imageWidth * H / maxH).</summary>
         public int CompWidth;
 
@@ -1409,8 +1473,21 @@ internal sealed partial class JpegDecoderCore
         public int BlocksPerColumnTotal;
 
         public int PlaneWidth;
+
+        /// <summary>Rows of the MCU-padded plane, whether or not they are all held in memory at once.</summary>
         public int PlaneHeight;
+
+        /// <summary>
+        /// Zero when the whole plane is resident. In streaming mode, the rows one MCU row contributes
+        /// (V * BlockSize): the plane then holds just three such strips, MCU row m in slot m % 3.
+        /// </summary>
+        public int StripRows;
+
+        /// <summary>Decoded 8-bit samples (8-bit DCT frames).</summary>
         public byte[] Plane = Array.Empty<byte>();
+
+        /// <summary>Decoded samples of frames wider than 8 bits (12-bit DCT and every lossless frame).</summary>
+        public ushort[] WidePlane = Array.Empty<ushort>();
 
         /// <summary>Progressive only: quantized coefficients of every block, 64 per block in zigzag order.</summary>
         public short[] Coefficients = Array.Empty<short>();
@@ -1418,10 +1495,26 @@ internal sealed partial class JpegDecoderCore
         /// <summary>Quantization table latched by the first scan that includes this component.</summary>
         public ushort[]? QuantTable;
 
+        /// <summary>Dequantization multipliers for the inverse transform of <see cref="BlockSize"/>, natural order.</summary>
+        public float[]? Dequant;
+
         public HuffmanTable? DcTable;
         public HuffmanTable? AcTable;
 
         public int CoefficientOffset(int bx, int by) => ((by * this.BlocksPerLineTotal) + bx) * 64;
+
+        /// <summary>Offset of plane row <paramref name="row"/> (in full-plane coordinates) within the resident buffer.</summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int RowOffset(int row)
+        {
+            if (this.StripRows == 0)
+            {
+                return row * this.PlaneWidth;
+            }
+
+            int strip = row / this.StripRows;
+            return (((strip % 3) * this.StripRows) + (row - (strip * this.StripRows))) * this.PlaneWidth;
+        }
     }
 
     /// <summary>Canonical Huffman decoding table (ITU-T T.81 F.2.2.3) plus a short-code lookahead.</summary>

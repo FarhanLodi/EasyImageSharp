@@ -411,6 +411,7 @@ public class DecoderLimitsTests
         BinaryPrimitives.WriteInt32BigEndian(data.AsSpan(20), height);
         data[24] = 8; // bit depth
         data[25] = 6; // RGBA
+        BinaryPrimitives.WriteUInt32BigEndian(data.AsSpan(29), Crc32.Append(0, data.AsSpan(12, 4 + 13))); // CRCs are verified.
         return data;
     }
 }

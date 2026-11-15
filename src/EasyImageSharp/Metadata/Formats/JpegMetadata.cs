@@ -22,7 +22,10 @@ public enum JpegColorType
     Ycck,
 }
 
-/// <summary>JPEG-specific metadata: quality estimate, colour type, progressive flag and comment segments.</summary>
+/// <summary>
+/// JPEG-specific metadata: quality estimate, colour type, coding process (progressive, lossless), sample precision and
+/// comment segments.
+/// </summary>
 public sealed class JpegMetadata : IFormatMetadata
 {
     /// <summary>Creates JPEG metadata with default values.</summary>
@@ -35,6 +38,8 @@ public sealed class JpegMetadata : IFormatMetadata
         this.Quality = other.Quality;
         this.ColorType = other.ColorType;
         this.Progressive = other.Progressive;
+        this.BitsPerSample = other.BitsPerSample;
+        this.Lossless = other.Lossless;
         this.Comments = new List<string>(other.Comments);
     }
 
@@ -50,6 +55,17 @@ public sealed class JpegMetadata : IFormatMetadata
 
     /// <summary>True when the file used progressive (SOF2) encoding.</summary>
     public bool Progressive { get; set; }
+
+    /// <summary>
+    /// Bits per sample of the encoded frame: 8 for baseline files, 8 or 12 for extended sequential and progressive
+    /// files, and 2 to 16 for lossless files. Samples wider than 8 bits keep their full precision only when the image
+    /// is decoded into a pixel format with 16-bit or floating-point components (<c>L16</c>, <c>La32</c>,
+    /// <c>Rgb48</c>, <c>Rgba64</c>, <c>RgbaVector</c>); every other format receives them rounded to 8 bits.
+    /// </summary>
+    public int BitsPerSample { get; set; } = 8;
+
+    /// <summary>True when the file used the lossless process (SOF3, ITU-T T.81 Annex H).</summary>
+    public bool Lossless { get; set; }
 
     /// <summary>The COM (comment) segments in file order. Written back by the JPEG encoder.</summary>
     public IList<string> Comments { get; } = new List<string>();

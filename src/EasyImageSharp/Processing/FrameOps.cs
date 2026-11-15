@@ -765,7 +765,8 @@ internal static class FrameOps
                 nameof(bounds), bounds, $"Crop rectangle must lie inside the image bounds {source.Width}x{source.Height}.");
         }
 
-        var dest = new ImageFrame<TPixel>(bounds.Width, bounds.Height);
+        // Uninitialized is safe: every destination row is copied in full below.
+        ImageFrame<TPixel> dest = FrameFactory.CreateUninitialized<TPixel>(bounds.Width, bounds.Height);
         for (int y = 0; y < bounds.Height; y++)
         {
             source.GetRowSpan(bounds.Y + y).Slice(bounds.X, bounds.Width).CopyTo(dest.GetRowSpan(y));
@@ -792,7 +793,9 @@ internal static class FrameOps
         Guard.MustBePositive(width, nameof(width));
         Guard.MustBePositive(height, nameof(height));
 
-        var dest = new ImageFrame<TPixel>(width, height);
+        // Uninitialized is safe: either the background fill below covers the whole canvas, or the source covers
+        // it (copyWidth == width and copyHeight == height) and every row is copied in full.
+        ImageFrame<TPixel> dest = FrameFactory.CreateUninitialized<TPixel>(width, height);
         int srcStartX = Math.Max(0, -offsetX);
         int srcStartY = Math.Max(0, -offsetY);
         int destStartX = Math.Max(0, offsetX);

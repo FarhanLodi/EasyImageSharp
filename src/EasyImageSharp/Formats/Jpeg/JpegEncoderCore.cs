@@ -2,6 +2,7 @@ using System.Buffers;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using EasyImageSharp.Metadata;
 using EasyImageSharp.PixelFormats;
 
 namespace EasyImageSharp.Formats.Jpeg;
@@ -18,7 +19,13 @@ namespace EasyImageSharp.Formats.Jpeg;
 /// entropy coded, so memory stays bounded (a few MB) regardless of image size. Every other configuration
 /// (progressive, optimised tables, non-interleaved scans) needs all coefficients before the first scan can be
 /// written and therefore keeps one <c>short</c> per coefficient per component for the whole image, like libjpeg's
-/// full-image coefficient buffer.
+/// full-image coefficient buffer. Trellis quantisation with optimised tables runs the front end over that buffer
+/// twice, the second time with the trellis's rate model fitted to the first pass's coefficients.
+/// <para>
+/// The front end works one MCU row at a time on caller-supplied <see cref="BandBuffers"/>, fed one pixel row at a
+/// time; the whole-image paths drive it from an <see cref="ImageFrame{TPixel}"/> and <see cref="JpegScanlineSink"/>
+/// drives it from rows pushed by its caller, so both produce exactly the same coefficients.
+/// </para>
 /// </remarks>
 internal sealed class JpegEncoderCore
 {
@@ -29,6 +36,9 @@ internal sealed class JpegEncoderCore
     private const float Unscale = 1f / JpegColorConverter.SampleScale;
 
     private readonly int quality;
+    private readonly int chromaQuality;
+    private readonly JpegQuantizationPreset preset;
+    private readonly bool trellis;
     private readonly JpegEncodingColor colorType;
     private readonly bool interleaved;
     private readonly int restartInterval;
@@ -52,23 +62,62 @@ internal sealed class JpegEncoderCore
     private readonly bool[] dcTableWritten = new bool[2];
     private readonly bool[] acTableWritten = new bool[2];
 
-    public JpegEncoderCore(
-        int quality,
-        JpegEncodingColor colorType,
-        bool interleaved,
-        int restartInterval,
-        bool progressive,
-        int progressiveScans,
-        bool optimizeHuffman)
+    public JpegEncoderCore(Settings settings)
     {
-        this.quality = quality;
-        this.colorType = colorType;
-        this.interleaved = interleaved;
-        this.restartInterval = restartInterval;
-        this.progressive = progressive;
-        this.progressiveScans = progressiveScans;
-        this.optimizeHuffman = optimizeHuffman;
+        this.quality = settings.Quality;
+        this.chromaQuality = settings.ChromaQuality;
+        this.preset = settings.Preset;
+        this.trellis = settings.Trellis;
+        this.colorType = settings.ColorType;
+        this.interleaved = settings.Interleaved;
+        this.restartInterval = settings.RestartInterval;
+        this.progressive = settings.Progressive;
+        this.progressiveScans = settings.ProgressiveScans;
+        this.optimizeHuffman = settings.OptimizeHuffman;
     }
+
+    /// <summary>The resolved encoder options (colour type already adjusted for the pixel type).</summary>
+    internal readonly record struct Settings(
+        int Quality,
+        int ChromaQuality,
+        JpegQuantizationPreset Preset,
+        bool Trellis,
+        JpegEncodingColor ColorType,
+        bool Interleaved,
+        int RestartInterval,
+        bool Progressive,
+        int ProgressiveScans,
+        bool OptimizeHuffman);
+
+    /// <summary>The frame's components, in frame-header order (valid after <see cref="Initialize"/>).</summary>
+    internal Component[] Components => this.components;
+
+    /// <summary>Image width in pixels (valid after <see cref="Initialize"/>).</summary>
+    internal int Width => this.width;
+
+    /// <summary>Image height in pixels (valid after <see cref="Initialize"/>).</summary>
+    internal int Height => this.height;
+
+    /// <summary>MCUs per MCU row.</summary>
+    internal int McusPerRow => this.mcusX;
+
+    /// <summary>MCU rows in the frame.</summary>
+    internal int McuRows => this.mcusY;
+
+    /// <summary>Pixel rows per MCU row: 8 times the largest vertical sampling factor.</summary>
+    internal int McuHeight => 8 * this.maxV;
+
+    /// <summary>Restart interval in MCUs, 0 for none.</summary>
+    internal int RestartInterval => this.restartInterval;
+
+    /// <summary>Whether the frame is progressive (SOF2).</summary>
+    internal bool IsProgressive => this.progressive;
+
+    /// <summary>Whether Huffman tables are derived from the image's statistics.</summary>
+    internal bool OptimizesHuffmanTables => this.optimizeHuffman;
+
+    /// <summary>Whether all components share one interleaved scan (always true for a single component).</summary>
+    internal bool IsSingleScan => this.interleaved || this.components.Length == 1;
 
     /// <summary>One frame component: sampling factors, tables and (a window of) its quantised coefficient blocks.</summary>
     internal sealed class Component
@@ -104,6 +153,10 @@ internal sealed class JpegEncoderCore
         public int BlockRowBase;
 
         public float[] Reciprocals = Array.Empty<float>();
+
+        /// <summary>The rate-distortion quantiser for this component's tables, or null for plain rounding.</summary>
+        public JpegTrellisQuantizer? Trellis;
+
         public int[] DcLookup = Array.Empty<int>();
         public int[] AcLookup = Array.Empty<int>();
         public int Predictor;
@@ -119,8 +172,29 @@ internal sealed class JpegEncoderCore
     public void Encode<TPixel>(Image<TPixel> image, Stream stream)
         where TPixel : unmanaged, IPixel<TPixel>
     {
-        this.width = image.Width;
-        this.height = image.Height;
+        this.Initialize(image.Width, image.Height);
+        ImageFrame<TPixel> frame = image.Frames.RootFrame;
+        this.WriteFrameHeaders(stream, image.Metadata);
+
+        bool streaming = !this.progressive && !this.optimizeHuffman && this.IsSingleScan;
+        if (streaming)
+        {
+            this.EncodeStreaming(frame, stream);
+        }
+        else
+        {
+            this.EncodeBuffered(frame, stream);
+        }
+
+        WriteEndOfImage(stream);
+    }
+
+    /// <summary>Validates the dimensions, lays out the components and builds the quantisation tables.</summary>
+    /// <exception cref="NotSupportedException">Either dimension exceeds 65 535 pixels.</exception>
+    internal void Initialize(int imageWidth, int imageHeight)
+    {
+        this.width = imageWidth;
+        this.height = imageHeight;
         if (this.width > ushort.MaxValue || this.height > ushort.MaxValue)
         {
             throw new NotSupportedException(
@@ -129,14 +203,19 @@ internal sealed class JpegEncoderCore
 
         this.SetupComponents();
         this.SetupQuantization();
-        ImageFrame<TPixel> frame = image.Frames.RootFrame;
+    }
 
-        // ----- Headers up to (and excluding) the Huffman tables -----
+    /// <summary>
+    /// Writes everything up to (and excluding) the Huffman tables: SOI, the JFIF or Adobe segment, the metadata
+    /// segments, the quantisation tables, the frame header and the restart interval.
+    /// </summary>
+    internal void WriteFrameHeaders(Stream stream, ImageMetadata metadata)
+    {
         WriteMarker(stream, 0xD8); // SOI
 
         // APP0 (JFIF, density taken from the image resolution) followed by the EXIF/XMP/ICC/COM metadata
         // segments. JFIF only describes the JFIF colour models, so Adobe frames get the metadata without it.
-        JpegMetadataWriter.Write(stream, image.Metadata, this.colorType is JpegEncodingColor.Luminance || this.IsYCbCr);
+        JpegMetadataWriter.Write(stream, metadata, this.colorType is JpegEncodingColor.Luminance || this.IsYCbCr);
 
         if (this.colorType is JpegEncodingColor.Rgb or JpegEncodingColor.Cmyk or JpegEncodingColor.Ycck)
         {
@@ -156,19 +235,10 @@ internal sealed class JpegEncoderCore
         {
             WriteSegment(stream, 0xDD, new[] { (byte)(this.restartInterval >> 8), (byte)this.restartInterval });
         }
-
-        bool streaming = !this.progressive && !this.optimizeHuffman && (this.interleaved || this.components.Length == 1);
-        if (streaming)
-        {
-            this.EncodeStreaming(frame, stream);
-        }
-        else
-        {
-            this.EncodeBuffered(frame, stream);
-        }
-
-        WriteMarker(stream, 0xD9); // EOI
     }
+
+    /// <summary>Writes the EOI marker.</summary>
+    internal static void WriteEndOfImage(Stream stream) => WriteMarker(stream, 0xD9);
 
     private bool IsYCbCr => this.colorType is JpegEncodingColor.YCbCrRatio444 or JpegEncodingColor.YCbCrRatio422
         or JpegEncodingColor.YCbCrRatio420 or JpegEncodingColor.YCbCrRatio411 or JpegEncodingColor.YCbCrRatio410;
@@ -242,35 +312,95 @@ internal sealed class JpegEncoderCore
 
     private void SetupQuantization()
     {
-        this.quantTables[0] = ScaleQuantTable(JpegTables.StdLuminanceQuant, this.quality);
-        this.quantTables[1] = ScaleQuantTable(JpegTables.StdChrominanceQuant, this.quality);
+        this.quantTables[0] = JpegQuantizationTables.Scale(JpegQuantizationTables.GetBaseTable(this.preset, 0), this.quality);
+        this.quantTables[1] = JpegQuantizationTables.Scale(JpegQuantizationTables.GetBaseTable(this.preset, 1), this.chromaQuality);
         this.reciprocalTables[0] = JpegForwardDct.CreateReciprocalTable(this.quantTables[0]);
         this.reciprocalTables[1] = JpegForwardDct.CreateReciprocalTable(this.quantTables[1]);
+
+        // The trellis first models the rate with the standard AC tables: they are what baseline output without
+        // optimisation writes, and image-specific tables do not exist yet when the coefficients are first chosen.
+        // With optimised tables, EncodeBuffered then refits the model to the image and runs a second pass.
+        var trellisQuantizers = new JpegTrellisQuantizer?[2, 2];
         foreach (Component c in this.components)
         {
             c.Reciprocals = this.reciprocalTables[c.QuantIndex];
+            c.Trellis = null;
+            if (this.trellis)
+            {
+                c.Trellis = trellisQuantizers[c.QuantIndex, c.TableIndex] ??= new JpegTrellisQuantizer(
+                    this.quantTables[c.QuantIndex],
+                    this.reciprocalTables[c.QuantIndex],
+                    StandardAcTable(c.TableIndex));
+            }
         }
     }
 
-    /// <summary>Standard IJG quality scaling of the Annex K tables, clamped to the 8-bit range baseline JPEG requires.</summary>
-    internal static ushort[] ScaleQuantTable(byte[] baseTable, int quality)
+    /// <summary>
+    /// Replaces each component's trellis quantiser with one whose rate model is the code-length-optimal AC table
+    /// for the coefficients currently buffered (sequential coding statistics over every block of the components
+    /// sharing that table).
+    /// </summary>
+    private void FitTrellisToCoefficients()
     {
-        int scale = quality < 50 ? 5000 / quality : 200 - (quality * 2);
-        var result = new ushort[64];
-        for (int i = 0; i < 64; i++)
+        var acFreq = new long[2][];
+        var dcScratch = new long[257];
+        foreach (Component c in this.components)
         {
-            result[i] = (ushort)Math.Clamp(((baseTable[i] * scale) + 50) / 100, 1, 255);
+            long[] frequencies = acFreq[c.TableIndex] ??= new long[257];
+            int predictor = 0;
+            int blocks = c.BlocksPerColumnTotal * c.BlocksPerLineTotal;
+            for (int b = 0; b < blocks; b++)
+            {
+                GatherBlockSequential(c.Coefficients.AsSpan(b * 64, 64), ref predictor, dcScratch, frequencies);
+            }
         }
 
-        return result;
+        var fitted = new JpegTrellisQuantizer?[2, 2];
+        foreach (Component c in this.components)
+        {
+            c.Trellis = fitted[c.QuantIndex, c.TableIndex] ??= new JpegTrellisQuantizer(
+                this.quantTables[c.QuantIndex],
+                this.reciprocalTables[c.QuantIndex],
+                JpegHuffmanTable.FromFrequencies(acFreq[c.TableIndex]));
+        }
     }
 
-    private void UseStandardHuffmanTables()
+    /// <summary>The quantisation table (natural order) a table slot was given, for tests and diagnostics.</summary>
+    internal ReadOnlySpan<ushort> QuantTable(int slot) => this.quantTables[slot];
+
+    /// <summary>The Annex K AC Huffman table for a table slot (0 = luminance, 1 = chrominance).</summary>
+    internal static JpegHuffmanTable StandardAcTable(int tableIndex)
+        => tableIndex == 0
+            ? new JpegHuffmanTable(JpegTables.StdAcBits, JpegTables.StdAcValues)
+            : new JpegHuffmanTable(JpegTables.StdAcChrominanceBits, JpegTables.StdAcChrominanceValues);
+
+    internal void UseStandardHuffmanTables()
     {
         this.dcTables[0] = new JpegHuffmanTable(JpegTables.StdDcBits, JpegTables.StdDcValues);
-        this.acTables[0] = new JpegHuffmanTable(JpegTables.StdAcBits, JpegTables.StdAcValues);
+        this.acTables[0] = StandardAcTable(0);
         this.dcTables[1] = new JpegHuffmanTable(JpegTables.StdDcChrominanceBits, JpegTables.StdDcChrominanceValues);
-        this.acTables[1] = new JpegHuffmanTable(JpegTables.StdAcChrominanceBits, JpegTables.StdAcChrominanceValues);
+        this.acTables[1] = StandardAcTable(1);
+        this.BindTables();
+    }
+
+    /// <summary>Replaces the tables of every slot that has statistics with the code-length-optimal ones and binds them.</summary>
+    internal void UseOptimizedTables(long[]?[] dcFreq, long[]?[] acFreq)
+    {
+        for (int t = 0; t < 2; t++)
+        {
+            if (dcFreq[t] is long[] dc)
+            {
+                this.dcTables[t] = JpegHuffmanTable.FromFrequencies(dc);
+                this.dcTableWritten[t] = false;
+            }
+
+            if (acFreq[t] is long[] ac)
+            {
+                this.acTables[t] = JpegHuffmanTable.FromFrequencies(ac);
+                this.acTableWritten[t] = false;
+            }
+        }
+
         this.BindTables();
     }
 
@@ -351,6 +481,18 @@ internal sealed class JpegEncoderCore
             this.width * 8 * this.maxV,
             this.mcusY,
             (start, end) => this.FillBlocks(frame, start, end));
+
+        if (this.trellis && this.optimizeHuffman)
+        {
+            // The first trellis pass priced its choices with the standard AC tables. The file will carry tables
+            // fitted to the image instead, so run the trellis once more with tables fitted to the first pass's
+            // choices: its rate estimates then match the codes actually written.
+            this.FitTrellisToCoefficients();
+            ParallelRowIterator.IterateRows(
+                this.width * 8 * this.maxV,
+                this.mcusY,
+                (start, end) => this.FillBlocks(frame, start, end));
+        }
 
         if (!this.optimizeHuffman)
         {
@@ -478,22 +620,7 @@ internal sealed class JpegEncoderCore
             c.Predictor = 0;
         }
 
-        for (int t = 0; t < 2; t++)
-        {
-            if (dcFreq[t] is not null)
-            {
-                this.dcTables[t] = JpegHuffmanTable.FromFrequencies(dcFreq[t]);
-                this.dcTableWritten[t] = false;
-            }
-
-            if (acFreq[t] is not null)
-            {
-                this.acTables[t] = JpegHuffmanTable.FromFrequencies(acFreq[t]);
-                this.acTableWritten[t] = false;
-            }
-        }
-
-        this.BindTables();
+        this.UseOptimizedTables(dcFreq, acFreq);
     }
 
     private void OptimizeProgressiveTables(JpegProgressiveEncoder encoder, JpegScanDescriptor scan)
@@ -521,22 +648,7 @@ internal sealed class JpegEncoderCore
         }
 
         encoder.EncodeScan(null, scan, dcFreq, acFreq);
-        for (int t = 0; t < 2; t++)
-        {
-            if (dcFreq[t] is not null)
-            {
-                this.dcTables[t] = JpegHuffmanTable.FromFrequencies(dcFreq[t]);
-                this.dcTableWritten[t] = false;
-            }
-
-            if (acFreq[t] is not null)
-            {
-                this.acTables[t] = JpegHuffmanTable.FromFrequencies(acFreq[t]);
-                this.acTableWritten[t] = false;
-            }
-        }
-
-        this.BindTables();
+        this.UseOptimizedTables(dcFreq, acFreq);
     }
 
     // =====================================================================================================
@@ -550,118 +662,166 @@ internal sealed class JpegEncoderCore
     private void FillBlocks<TPixel>(ImageFrame<TPixel> frame, int mcuRowStart, int mcuRowEnd)
         where TPixel : unmanaged, IPixel<TPixel>
     {
-        int mcuHeight = 8 * this.maxV;
-        int paddedWidth = this.mcusX * 8 * this.maxH;
-        int compCount = this.components.Length;
-
-        // Full-resolution band (one per component) plus a subsampled band for components below full resolution.
-        var fullBands = new short[compCount][];
-        var subBands = new short[compCount][];
-        for (int i = 0; i < compCount; i++)
+        int mcuHeight = this.McuHeight;
+        using BandBuffers bands = this.RentBands();
+        for (int my = mcuRowStart; my < mcuRowEnd; my++)
         {
-            fullBands[i] = ArrayPool<short>.Shared.Rent(mcuHeight * paddedWidth);
-            Component c = this.components[i];
-            if (c.H != this.maxH || c.V != this.maxV)
+            for (int r = 0; r < mcuHeight; r++)
             {
-                subBands[i] = ArrayPool<short>.Shared.Rent(8 * c.V * this.mcusX * 8 * c.H);
-            }
-        }
-
-        Rgba32[] scratch = ArrayPool<Rgba32>.Shared.Rent(this.width);
-        float[] block = new float[64];
-        try
-        {
-            for (int my = mcuRowStart; my < mcuRowEnd; my++)
-            {
-                this.ConvertBand(frame, my, fullBands, paddedWidth, mcuHeight, scratch);
-                for (int i = 0; i < compCount; i++)
+                int y = (my * mcuHeight) + r;
+                if (y < this.height)
                 {
-                    Component c = this.components[i];
-                    short[] band;
-                    int bandWidth;
-                    if (subBands[i] is null)
-                    {
-                        band = fullBands[i];
-                        bandWidth = paddedWidth;
-                    }
-                    else
-                    {
-                        band = subBands[i];
-                        bandWidth = this.mcusX * 8 * c.H;
-                        Downsample(fullBands[i], paddedWidth, band, bandWidth, 8 * c.V, this.maxH / c.H, this.maxV / c.V);
-                    }
-
-                    this.TransformBand(c, band, bandWidth, my, block);
+                    this.ConvertRow(frame.GetRowSpan(y), bands, r);
+                }
+                else
+                {
+                    this.ReplicateRow(bands, r);
                 }
             }
+
+            this.TransformMcuRow(bands, my);
         }
-        finally
+    }
+
+    /// <summary>
+    /// Pooled working storage for one MCU row of the front end: a full-resolution sample band per component, a
+    /// subsampled band for each component below full resolution, a pixel conversion scratch row and a DCT block.
+    /// </summary>
+    internal sealed class BandBuffers : IDisposable
+    {
+        public BandBuffers(short[][] full, short[]?[] sub, int paddedWidth, Rgba32[] scratch)
         {
-            ArrayPool<Rgba32>.Shared.Return(scratch);
-            for (int i = 0; i < compCount; i++)
+            this.Full = full;
+            this.Sub = sub;
+            this.PaddedWidth = paddedWidth;
+            this.Scratch = scratch;
+        }
+
+        public short[][] Full { get; }
+
+        public short[]?[] Sub { get; }
+
+        public int PaddedWidth { get; }
+
+        public Rgba32[] Scratch { get; }
+
+        public float[] Block { get; } = new float[64];
+
+        public void Dispose()
+        {
+            ArrayPool<Rgba32>.Shared.Return(this.Scratch);
+            for (int i = 0; i < this.Full.Length; i++)
             {
-                ArrayPool<short>.Shared.Return(fullBands[i]);
-                if (subBands[i] is not null)
+                ArrayPool<short>.Shared.Return(this.Full[i]);
+                if (this.Sub[i] is short[] sub)
                 {
-                    ArrayPool<short>.Shared.Return(subBands[i]);
+                    ArrayPool<short>.Shared.Return(sub);
                 }
             }
         }
     }
 
-    /// <summary>Converts the pixel rows of one MCU row into full-resolution component samples with edge replication.</summary>
-    private void ConvertBand<TPixel>(ImageFrame<TPixel> frame, int mcuRow, short[][] bands, int paddedWidth, int mcuHeight, Rgba32[] scratch)
+    /// <summary>Rents the working storage for converting and transforming one MCU row at a time.</summary>
+    internal BandBuffers RentBands()
+    {
+        int mcuHeight = this.McuHeight;
+        int paddedWidth = this.mcusX * 8 * this.maxH;
+        int compCount = this.components.Length;
+        var full = new short[compCount][];
+        var sub = new short[compCount][];
+        for (int i = 0; i < compCount; i++)
+        {
+            full[i] = ArrayPool<short>.Shared.Rent(mcuHeight * paddedWidth);
+            Component c = this.components[i];
+            if (c.H != this.maxH || c.V != this.maxV)
+            {
+                sub[i] = ArrayPool<short>.Shared.Rent(8 * c.V * this.mcusX * 8 * c.H);
+            }
+        }
+
+        return new BandBuffers(full, sub, paddedWidth, ArrayPool<Rgba32>.Shared.Rent(this.width));
+    }
+
+    /// <summary>
+    /// Converts one pixel row (exactly the image width) into full-resolution component samples at row
+    /// <paramref name="bandRow"/> of the band, replicating the last sample up to the MCU boundary.
+    /// </summary>
+    internal void ConvertRow<TPixel>(ReadOnlySpan<TPixel> src, BandBuffers bands, int bandRow)
         where TPixel : unmanaged, IPixel<TPixel>
     {
-        int compCount = this.components.Length;
-        for (int r = 0; r < mcuHeight; r++)
+        short[][] full = bands.Full;
+        int paddedWidth = bands.PaddedWidth;
+        int rowOffset = bandRow * paddedWidth;
+        Rgba32[] scratch = bands.Scratch;
+        switch (this.colorType)
         {
-            int y = (mcuRow * mcuHeight) + r;
-            int rowOffset = r * paddedWidth;
-            if (y >= this.height)
-            {
-                // Bottom edge: replicate the previous (already converted) row.
-                for (int i = 0; i < compCount; i++)
-                {
-                    Array.Copy(bands[i], rowOffset - paddedWidth, bands[i], rowOffset, paddedWidth);
-                }
+            case JpegEncodingColor.Luminance:
+                JpegColorConverter.ToLuminance(src, full[0].AsSpan(rowOffset, this.width), scratch);
+                break;
+            case JpegEncodingColor.Rgb:
+                JpegColorConverter.ToRgb(src, full[0].AsSpan(rowOffset, this.width), full[1].AsSpan(rowOffset, this.width), full[2].AsSpan(rowOffset, this.width), scratch);
+                break;
+            case JpegEncodingColor.Cmyk:
+                JpegColorConverter.ToInvertedCmyk(
+                    src, full[0].AsSpan(rowOffset, this.width), full[1].AsSpan(rowOffset, this.width),
+                    full[2].AsSpan(rowOffset, this.width), full[3].AsSpan(rowOffset, this.width), scratch);
+                break;
+            case JpegEncodingColor.Ycck:
+                JpegColorConverter.ToYcck(
+                    src, full[0].AsSpan(rowOffset, this.width), full[1].AsSpan(rowOffset, this.width),
+                    full[2].AsSpan(rowOffset, this.width), full[3].AsSpan(rowOffset, this.width), scratch);
+                break;
+            default:
+                JpegColorConverter.ToYCbCr(src, full[0].AsSpan(rowOffset, this.width), full[1].AsSpan(rowOffset, this.width), full[2].AsSpan(rowOffset, this.width), scratch);
+                break;
+        }
 
-                continue;
+        // Right edge: replicate the last sample up to the MCU boundary.
+        if (paddedWidth > this.width)
+        {
+            for (int i = 0; i < full.Length; i++)
+            {
+                short[] band = full[i];
+                band.AsSpan(rowOffset + this.width, paddedWidth - this.width).Fill(band[rowOffset + this.width - 1]);
+            }
+        }
+    }
+
+    /// <summary>Bottom edge: fills band row <paramref name="bandRow"/> (at least 1) with a copy of the row above it.</summary>
+    internal void ReplicateRow(BandBuffers bands, int bandRow)
+    {
+        int paddedWidth = bands.PaddedWidth;
+        int rowOffset = bandRow * paddedWidth;
+        foreach (short[] band in bands.Full)
+        {
+            Array.Copy(band, rowOffset - paddedWidth, band, rowOffset, paddedWidth);
+        }
+    }
+
+    /// <summary>
+    /// Subsamples the converted band where needed and forward-transforms and quantises every block of MCU row
+    /// <paramref name="mcuRow"/> into each component's coefficient buffer.
+    /// </summary>
+    internal void TransformMcuRow(BandBuffers bands, int mcuRow)
+    {
+        for (int i = 0; i < this.components.Length; i++)
+        {
+            Component c = this.components[i];
+            short[] band;
+            int bandWidth;
+            if (bands.Sub[i] is short[] sub)
+            {
+                band = sub;
+                bandWidth = this.mcusX * 8 * c.H;
+                Downsample(bands.Full[i], bands.PaddedWidth, band, bandWidth, 8 * c.V, this.maxH / c.H, this.maxV / c.V);
+            }
+            else
+            {
+                band = bands.Full[i];
+                bandWidth = bands.PaddedWidth;
             }
 
-            ReadOnlySpan<TPixel> src = frame.GetRowSpan(y);
-            switch (this.colorType)
-            {
-                case JpegEncodingColor.Luminance:
-                    JpegColorConverter.ToLuminance(src, bands[0].AsSpan(rowOffset, this.width), scratch);
-                    break;
-                case JpegEncodingColor.Rgb:
-                    JpegColorConverter.ToRgb(src, bands[0].AsSpan(rowOffset, this.width), bands[1].AsSpan(rowOffset, this.width), bands[2].AsSpan(rowOffset, this.width), scratch);
-                    break;
-                case JpegEncodingColor.Cmyk:
-                    JpegColorConverter.ToInvertedCmyk(
-                        src, bands[0].AsSpan(rowOffset, this.width), bands[1].AsSpan(rowOffset, this.width),
-                        bands[2].AsSpan(rowOffset, this.width), bands[3].AsSpan(rowOffset, this.width), scratch);
-                    break;
-                case JpegEncodingColor.Ycck:
-                    JpegColorConverter.ToYcck(
-                        src, bands[0].AsSpan(rowOffset, this.width), bands[1].AsSpan(rowOffset, this.width),
-                        bands[2].AsSpan(rowOffset, this.width), bands[3].AsSpan(rowOffset, this.width), scratch);
-                    break;
-                default:
-                    JpegColorConverter.ToYCbCr(src, bands[0].AsSpan(rowOffset, this.width), bands[1].AsSpan(rowOffset, this.width), bands[2].AsSpan(rowOffset, this.width), scratch);
-                    break;
-            }
-
-            // Right edge: replicate the last sample up to the MCU boundary.
-            if (paddedWidth > this.width)
-            {
-                for (int i = 0; i < compCount; i++)
-                {
-                    short[] band = bands[i];
-                    band.AsSpan(rowOffset + this.width, paddedWidth - this.width).Fill(band[rowOffset + this.width - 1]);
-                }
-            }
+            this.TransformBand(c, band, bandWidth, mcuRow, bands.Block);
         }
     }
 
@@ -727,6 +887,7 @@ internal sealed class JpegEncoderCore
     {
         short[] coefficients = c.Coefficients;
         float[] reciprocals = c.Reciprocals;
+        JpegTrellisQuantizer? trellis = c.Trellis;
         int blocksPerLine = c.BlocksPerLineTotal;
         Span<float> work = block;
         for (int v = 0; v < c.V; v++)
@@ -737,23 +898,17 @@ internal sealed class JpegEncoderCore
             {
                 // Widen the 8x8 block into the float work area. Samples arrive level-shifted already; all that
                 // is left is to undo the fixed-point scale the colour converter applied.
-                ref short src = ref band[(bandRow * bandWidth) + (bx * 8)];
-                ref float dst = ref MemoryMarshal.GetArrayDataReference(block);
-                for (int y = 0; y < 8; y++)
+                JpegForwardDct.LoadBlock(ref band[(bandRow * bandWidth) + (bx * 8)], bandWidth, work, Unscale);
+                JpegForwardDct.Transform(work);
+                Span<short> destination = coefficients.AsSpan(c.BlockOffset(bx, by), 64);
+                if (trellis is null)
                 {
-                    ref short s = ref Unsafe.Add(ref src, y * bandWidth);
-                    ref float d = ref Unsafe.Add(ref dst, y * 8);
-                    d = s * Unscale;
-                    Unsafe.Add(ref d, 1) = Unsafe.Add(ref s, 1) * Unscale;
-                    Unsafe.Add(ref d, 2) = Unsafe.Add(ref s, 2) * Unscale;
-                    Unsafe.Add(ref d, 3) = Unsafe.Add(ref s, 3) * Unscale;
-                    Unsafe.Add(ref d, 4) = Unsafe.Add(ref s, 4) * Unscale;
-                    Unsafe.Add(ref d, 5) = Unsafe.Add(ref s, 5) * Unscale;
-                    Unsafe.Add(ref d, 6) = Unsafe.Add(ref s, 6) * Unscale;
-                    Unsafe.Add(ref d, 7) = Unsafe.Add(ref s, 7) * Unscale;
+                    JpegForwardDct.Quantize(work, reciprocals, destination);
                 }
-
-                JpegForwardDct.TransformAndQuantize(work, reciprocals, coefficients.AsSpan(c.BlockOffset(bx, by), 64));
+                else
+                {
+                    trellis.Quantize(work, destination);
+                }
             }
         }
     }
@@ -802,7 +957,7 @@ internal sealed class JpegEncoderCore
         }
     }
 
-    private void EncodeSequentialMcuRows(JpegBitWriter writer, Component[] scanComponents, int mcuRowStart, int mcuRowEnd, ScanState state)
+    internal void EncodeSequentialMcuRows(JpegBitWriter writer, Component[] scanComponents, int mcuRowStart, int mcuRowEnd, ScanState state)
     {
         for (int my = mcuRowStart; my < mcuRowEnd; my++)
         {
@@ -917,7 +1072,7 @@ internal sealed class JpegEncoderCore
     }
 
     /// <summary>Counts the symbols <see cref="EncodeBlockSequential"/> would emit for the block.</summary>
-    private static void GatherBlockSequential(ReadOnlySpan<short> block, ref int predictor, long[] dcFreq, long[] acFreq)
+    internal static void GatherBlockSequential(ReadOnlySpan<short> block, ref int predictor, long[] dcFreq, long[] acFreq)
     {
         int dc = block[0];
         int diff = dc - predictor;
@@ -996,7 +1151,7 @@ internal sealed class JpegEncoderCore
     }
 
     /// <summary>Writes DHT segments for the tables the given components use that have not been written since they were (re)defined.</summary>
-    private void WriteHuffmanTables(Stream stream, Component[] scanComponents, bool dc = true, bool ac = true)
+    internal void WriteHuffmanTables(Stream stream, Component[] scanComponents, bool dc = true, bool ac = true)
     {
         foreach (Component c in scanComponents)
         {
@@ -1015,7 +1170,7 @@ internal sealed class JpegEncoderCore
         }
     }
 
-    private void WriteScanHeader(Stream stream, Component[] scanComponents, int ss, int se, int ah, int al)
+    internal void WriteScanHeader(Stream stream, Component[] scanComponents, int ss, int se, int ah, int al)
     {
         // A progressive scan codes either DC or AC coefficients, never both, and a DC refinement scan emits raw
         // bits with no table at all. Naming a table that the scan does not use would oblige us to define it up

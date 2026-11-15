@@ -1,0 +1,17 @@
+# libFuzzer/AFL dictionary for QOI (specification 1.0).
+
+magic="qoif"
+end_marker="\x00\x00\x00\x00\x00\x00\x00\x01"
+channels_rgb="\x03"
+channels_rgba="\x04"
+srgb="\x00"
+linear="\x01"
+op_rgb="\xfe"
+op_rgba="\xff"
+op_run_max="\xfd"
+op_index0="\x00"
+op_diff="\x40"
+op_luma="\x80"
+dim_one="\x00\x00\x00\x01"
+dim_big="\x00\x01\x00\x00"
+dim_max="\xff\xff\xff\xff"

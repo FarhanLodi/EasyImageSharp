@@ -1,0 +1,59 @@
+# libFuzzer/AFL dictionary for BMP/DIB (BITMAPCOREHEADER to BITMAPV5HEADER, and the OS/2 variants).
+
+bm="BM"
+os2_array="BA"
+os2_icon="CI"
+os2_pointer="CP"
+os2_icon2="IC"
+os2_pointer2="PT"
+
+# DIB header sizes, little-endian
+core_12="\x0c\x00\x00\x00"
+info_40="\x28\x00\x00\x00"
+v2_52="\x34\x00\x00\x00"
+v3_56="\x38\x00\x00\x00"
+os2v2_64="\x40\x00\x00\x00"
+v4_108="\x6c\x00\x00\x00"
+v5_124="\x7c\x00\x00\x00"
+
+# Compression, little-endian DWORD
+bi_rgb="\x00\x00\x00\x00"
+bi_rle8="\x01\x00\x00\x00"
+bi_rle4="\x02\x00\x00\x00"
+bi_bitfields="\x03\x00\x00\x00"
+bi_jpeg="\x04\x00\x00\x00"
+bi_png="\x05\x00\x00\x00"
+bi_alphabitfields="\x06\x00\x00\x00"
+
+# Bits per pixel, little-endian WORD
+bpp1="\x01\x00"
+bpp2="\x02\x00"
+bpp4="\x04\x00"
+bpp8="\x08\x00"
+bpp16="\x10\x00"
+bpp24="\x18\x00"
+bpp32="\x20\x00"
+bpp64="\x40\x00"
+
+# Colour masks: 5-6-5, 5-5-5, 8-8-8-8
+mask_565_r="\x00\xf8\x00\x00"
+mask_565_g="\xe0\x07\x00\x00"
+mask_565_b="\x1f\x00\x00\x00"
+mask_555_r="\x00\x7c\x00\x00"
+mask_888_r="\x00\x00\xff\x00"
+mask_alpha="\x00\x00\x00\xff"
+
+# V4/V5 colour space types, as stored (little-endian FourCC)
+lcs_srgb="BGRs"
+lcs_windows="niW "
+profile_linked="KNIL"
+profile_embedded="DEBM"
+
+# RLE escapes: end of line, end of bitmap, delta
+rle_eol="\x00\x00"
+rle_eob="\x00\x01"
+rle_delta="\x00\x02"
+
+# Negative height (top-down), and the one value whose absolute value overflows
+height_neg1="\xff\xff\xff\xff"
+height_min="\x00\x00\x00\x80"

@@ -188,7 +188,8 @@ public sealed class ModelHub : IDisposable
     /// <summary>
     /// Resolves a model to a local file, reporting which variant and source were used. Order: path override,
     /// cache hit, download (unless offline). With <see cref="ImageAiOptions.Quantize"/> the int8 variant is
-    /// preferred when it is overridden, cached, or published; otherwise the fp32 file is used.
+    /// preferred when it is overridden, cached, or published, and the fp32 file is the fallback; the exact order and
+    /// every fallback are listed on <see cref="ImageAiOptions.Quantize"/>.
     /// </summary>
     public async Task<ResolvedModel> ResolveAsync(ModelDescriptor descriptor, CancellationToken cancellationToken = default)
     {
@@ -213,6 +214,28 @@ public sealed class ModelHub : IDisposable
         }
 
         (string fileName, string? sha256, bool isInt8) = this.SelectVariant(descriptor);
+        if (isInt8)
+        {
+            try
+            {
+                return await this.ResolveFileAsync(descriptor, fileName, sha256, isInt8: true, cancellationToken).ConfigureAwait(false);
+            }
+            catch (HttpRequestException ex) when (ex.StatusCode is HttpStatusCode.NotFound or HttpStatusCode.Gone)
+            {
+                // A pinned int8 variant that the source does not (yet) serve: the fp32 file is still verified, so
+                // falling back costs speed or size, never integrity.
+                this.Options.Log?.Invoke(
+                    $"Model {descriptor.Name}: the int8 variant {fileName} is not served by the model source (HTTP {(int)ex.StatusCode.GetValueOrDefault()}); using fp32.");
+            }
+        }
+
+        return await this.ResolveFileAsync(descriptor, descriptor.FileName, descriptor.Sha256, isInt8: false, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>Serves one variant from the cache, or downloads and verifies it (unless offline).</summary>
+    private async Task<ResolvedModel> ResolveFileAsync(
+        ModelDescriptor descriptor, string fileName, string? sha256, bool isInt8, CancellationToken cancellationToken)
+    {
         string finalPath = Path.Combine(this.CacheDirectory, fileName);
         if (File.Exists(finalPath))
         {
@@ -302,12 +325,28 @@ public sealed class ModelHub : IDisposable
         if (this.Options.Quantize && descriptor.Int8FileName is not null)
         {
             bool cached = File.Exists(Path.Combine(this.CacheDirectory, descriptor.Int8FileName));
-            if (cached || descriptor.Int8Sha256 is not null || this.Options.AllowUnverifiedModels)
+            if (cached)
             {
                 return (descriptor.Int8FileName, descriptor.Int8Sha256, true);
             }
 
-            this.Options.Log?.Invoke($"Model {descriptor.Name}: no published int8 variant; using fp32.");
+            if (this.Options.Offline)
+            {
+                // Offline, only a cached file can be used: let the fp32 path serve it (or report it missing).
+                this.Options.Log?.Invoke($"Model {descriptor.Name}: the int8 variant is not cached and offline mode is on; using fp32.");
+            }
+            else if (descriptor.Int8Sha256 is not null || this.Options.AllowUnverifiedModels)
+            {
+                return (descriptor.Int8FileName, descriptor.Int8Sha256, true);
+            }
+            else
+            {
+                this.Options.Log?.Invoke($"Model {descriptor.Name}: no published int8 variant; using fp32.");
+            }
+        }
+        else if (this.Options.Quantize)
+        {
+            this.Options.Log?.Invoke($"Model {descriptor.Name}: no int8 variant exists; using fp32.");
         }
 
         return (descriptor.FileName, descriptor.Sha256, false);
@@ -513,6 +552,7 @@ public sealed class ModelHub : IDisposable
     private static bool IsTransient(Exception ex) => ex switch
     {
         ImageAiException => false, // checksum / policy failures: retrying cannot help
+        HttpRequestException { StatusCode: HttpStatusCode.NotFound or HttpStatusCode.Gone } => false, // the file is not there
         HttpRequestException => true,
         IOException => true,
         TaskCanceledException => true, // HttpClient timeout (user cancellation is filtered by the caller)

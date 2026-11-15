@@ -1,0 +1,62 @@
+# Weekly dependency updates, grouped so related packages move together and a week's updates arrive
+# as a handful of pull requests rather than one per package. Every update still has to pass CI, which
+# includes package validation and the check that the core package stays dependency-free.
+version: 2
+updates:
+  - package-ecosystem: nuget
+    # Each project directory, plus the root for .config/dotnet-tools.json (DocFX and CycloneDX).
+    directories:
+      - "/"
+      - "/src/*"
+      - "/tests/*"
+      - "/samples/*"
+      - "/tools/*"
+      - "/benchmarks/*"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Etc/UTC
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "deps"
+    groups:
+      # The managed wrapper and the native runtime packages must stay on one version.
+      onnxruntime:
+        patterns:
+          - "Microsoft.ML.OnnxRuntime*"
+      # SkiaSharp, SkiaSharp.HarfBuzz and their native asset packages are released together.
+      skiasharp:
+        patterns:
+          - "SkiaSharp*"
+          - "HarfBuzzSharp*"
+      test-tooling:
+        patterns:
+          - "Microsoft.NET.Test.Sdk"
+          - "xunit*"
+      build-analyzers:
+        patterns:
+          - "Microsoft.CodeAnalysis.*"
+      benchmarking:
+        patterns:
+          - "BenchmarkDotNet*"
+      repository-tools:
+        patterns:
+          - "docfx"
+          - "cyclonedx"
+
+  - package-ecosystem: github-actions
+    # "/" covers every workflow under .github/workflows. The actions are pinned by commit SHA with the
+    # version in a trailing comment; Dependabot updates both.
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Etc/UTC
+    commit-message:
+      prefix: "ci"
+    groups:
+      github-actions:
+        patterns:
+          - "*"

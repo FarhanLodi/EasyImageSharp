@@ -31,14 +31,17 @@ image.Mutate(ctx => ctx.AutoOrient().Resize(800, 0));
 image.SaveAsWebp("thumbnail.webp");
 ```
 
-## Next release: advanced OCR and imaging
+## Next release: 1.3.0
 
-The working tree targets **1.2.0**; these additions have not been published to NuGet. It adds reusable
-and fused tensors, adaptive document diagnostics, precision-preserving geometry, bounded execution,
-lazy TIFF pages and seekable BigTIFF regions, reduced-IDCT JPEG decoding, and optional LittleCMS and Skia/HarfBuzz adapters.
+1.2.0 (tensors, adaptive document preprocessing, precision geometry, bounded execution, TIFF regions,
+reduced-IDCT JPEG, LittleCMS and Skia/HarfBuzz adapters) is published on NuGet. The working tree targets
+**1.3.0**, which has not been published. It adds HDR and OpenEXR codecs, 12-bit and lossless JPEG, BigTIFF
+writing, IPTC metadata, row-streaming `Image.Transcode`, managed vector drawing and font text, tone mapping,
+LUTs, denoising, smart crop, watermarks, placeholder hashes, quality metrics, telemetry, new AI operations,
+and new DI, ASP.NET Core, AVIF and JPEG XL packages.
 
 Start with the [capability matrix and recipes](docs/ADVANCED_IMAGING.md),
-[implementation/validation status](IMPLEMENTATION_PLAN.md), and
+the [changelog](CHANGELOG.md), and the
 [offline OCR export tool](tools/OcrCorpusExport/README.md). The matrix states format, memory,
 precision, mapping and native dependency limits; no library can guarantee correct OCR for every image.
 
@@ -328,8 +331,10 @@ and the rest of the metadata read at 64 bits. The encoder always writes classic 
 including tiny regions from multi-gigabyte and gigapixel sources without materializing the entire page.
 
 **Not implemented**, and reported as `NotSupportedException` with a message naming the feature:
-arithmetic-coded, lossless and 12-bit JPEG; old-style JPEG-in-TIFF (compression 6); JBIG. HEIC/HEIF is
-not planned (patent-encumbered), and AVIF would only ever ship as an opt-in add-on.
+progressive, lossless and hierarchical arithmetic-coded JPEG (sequential arithmetic coding, 12-bit and lossless
+Huffman JPEG are decoded from 1.3.0); old-style JPEG-in-TIFF (compression 6); JBIG. HEIC/HEIF is not planned
+(patent-encumbered). AVIF and JPEG XL ship as the opt-in native `EasyImageSharp.Avif` and `EasyImageSharp.JpegXl`
+packages.
 
 ## Processing
 
@@ -593,11 +598,16 @@ when none is present. Full details in the
 |---|---|---|
 | **EasyImageSharp** | Codecs, `Image<TPixel>`, processing pipeline, document operators, drawing, metadata, pixel formats, tensor bridges | None beyond the framework |
 | **EasyImageSharp.AI** | ONNX-powered orientation, dewarping, super-resolution, denoising, background removal and binarisation; model hub | `Microsoft.ML.OnnxRuntime` |
-| **EasyImageSharp.SkiaSharp** (planned 1.2.0) | Native bitmap interop, paths, brushes, gradients and HarfBuzz shaped text runs | SkiaSharp, SkiaSharp.HarfBuzz |
-| **EasyImageSharp.LittleCms** (planned 1.2.0) | ICC matrix/LUT transforms, RGB/CMYK/Gray/Lab/XYZ, intents and BPC | Native LittleCMS; packaged win-x64 runtime, system library elsewhere |
+| **EasyImageSharp.SkiaSharp** | Native bitmap interop, paths, brushes, gradients and HarfBuzz shaped text runs | SkiaSharp, SkiaSharp.HarfBuzz |
+| **EasyImageSharp.LittleCms** | ICC matrix/LUT transforms, RGB/CMYK/Gray/Lab/XYZ, intents and BPC | Native LittleCMS; packaged win-x64 runtime, system library elsewhere |
+| **EasyImageSharp.Extensions.DependencyInjection** (new in 1.3.0) | `AddEasyImageSharp`, options binding and validation, `IImageOptionsFactory` | Microsoft.Extensions.DependencyInjection.Abstractions, Options, Configuration.Binder |
+| **EasyImageSharp.Web** (new in 1.3.0) | ASP.NET Core image-processing middleware: signed URLs, format negotiation, caching, limits | ASP.NET Core shared framework |
+| **EasyImageSharp.Avif** (new in 1.3.0) | AVIF decode/encode provider | Native libavif |
+| **EasyImageSharp.JpegXl** (new in 1.3.0) | JPEG XL decode/encode provider | Native libjxl |
 
-The unreleased 1.2.0 core includes Lab/LCh/HSL/HSV/XYZ converters. Paragraph text layout, a separate
-managed vector rasterizer, bundled document rasterizers and int8 AI model variants remain outside this release.
+The core includes Lab/LCh/HSL/HSV/XYZ converters and, from 1.3.0, a managed vector rasterizer with
+left-to-right font text. Complex-script shaping and bidi (use the Skia/HarfBuzz adapter), bundled
+document rasterizers and int8 AI model variants remain outside the core.
 The native adapters are optional; the core annotation API remains available without them.
 
 **Dependency policy.** The core package uses framework APIs only, and CI fails if it ever gains a
@@ -640,8 +650,10 @@ pixel-accessing member throws `ObjectDisposedException`.
   the [Performance](#performance) table can be regenerated rather than taken on trust.
 - **Documentation that cannot drift.** The C# examples in this file are transcribed into the test suite
   and compiled, so a rename breaks the build rather than the docs.
-- **Scale.** The current 1.2.0 Windows run passes 9,270 tests across both frameworks and all four packages.
-  Linux core/native checks and native deployment smoke are recorded in the [validation plan](IMPLEMENTATION_PLAN.md).
+- **Scale.** The current 1.3.0 Windows run passes 14,004 tests across both frameworks and all eight packages,
+  with the AVIF and JPEG XL tests running against the real native libraries; only tests that need an absent AI
+  model file are reported as skipped. Linux core/native
+  checks and native deployment smoke are recorded in [platform verification](docs/platform-verification.md).
   CI is configured for Windows, Ubuntu and macOS; local execution and remote CI evidence are distinguished.
 
 ## Building from source

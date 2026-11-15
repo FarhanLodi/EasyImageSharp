@@ -13,6 +13,22 @@ public enum HorizontalAlignment
     Right,
 }
 
+/// <summary>Vertical placement of a block of text lines relative to its anchor point (used by font text layout).</summary>
+public enum VerticalAlignment
+{
+    /// <summary>The anchor is the top of the first line (its ascent).</summary>
+    Top,
+
+    /// <summary>The anchor is the vertical centre of the block, from the first line's ascent to the last line's descent.</summary>
+    Center,
+
+    /// <summary>The anchor is the bottom of the last line (its descent).</summary>
+    Bottom,
+
+    /// <summary>The anchor is the baseline of the first line.</summary>
+    Baseline,
+}
+
 /// <summary>
 /// Options for text rendered with a <see cref="BitmapFont"/>: integer scale, optional filled background
 /// box, padding and alignment.

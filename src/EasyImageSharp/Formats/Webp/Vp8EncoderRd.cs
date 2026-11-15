@@ -303,45 +303,12 @@ internal sealed class Vp8Matrix
     /// will dequantise, and writes the zig-zag ordered magnitudes to <paramref name="levels"/>. Returns the
     /// index of the last non-zero level, or -1.
     /// </summary>
+    /// <remarks>
+    /// Runs the vector kernel when <see cref="SimdConfig"/> allows it; it is bit-exact with the scalar reference
+    /// <see cref="Vp8EncoderDsp.QuantizeBlockScalar"/>.
+    /// </remarks>
     public int Quantize(short[] coefficients, int coeffOff, short[] levels, int levelOff)
-    {
-        ReadOnlySpan<byte> zigzag = Vp8EncoderTables.Zigzag;
-        int last = -1;
-        for (int n = 0; n < 16; n++)
-        {
-            int j = zigzag[n];
-            int value = coefficients[coeffOff + j];
-            bool negative = value < 0;
-            int magnitude = (negative ? -value : value) + this.sharpen[j];
-            if (magnitude > this.zeroThreshold[j])
-            {
-                int level = ((magnitude * this.iq[j]) + this.bias[j]) >> QFix;
-                if (level > Vp8Cost.MaxLevel)
-                {
-                    level = Vp8Cost.MaxLevel;
-                }
-
-                if (negative)
-                {
-                    level = -level;
-                }
-
-                coefficients[coeffOff + j] = (short)(level * this.q[j]);
-                levels[levelOff + n] = (short)level;
-                if (level != 0)
-                {
-                    last = n;
-                }
-            }
-            else
-            {
-                levels[levelOff + n] = 0;
-                coefficients[coeffOff + j] = 0;
-            }
-        }
-
-        return last;
-    }
+        => Vp8EncoderDsp.QuantizeBlock(coefficients, coeffOff, levels, levelOff, this.q, this.iq, this.bias, this.zeroThreshold, this.sharpen);
 }
 
 /// <summary>

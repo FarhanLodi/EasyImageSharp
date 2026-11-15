@@ -1,0 +1,24 @@
+# libFuzzer/AFL dictionary for Truevision TGA 2.0. TGA has no leading signature; the footer is its only magic.
+
+footer="TRUEVISION-XFILE.\x00"
+footer_full="\x00\x00\x00\x00\x00\x00\x00\x00TRUEVISION-XFILE.\x00"
+
+# Header prefixes: ID length 0, colour map type, image type (1 mapped, 2 truecolor, 3 gray, 9/10/11 RLE)
+hdr_mapped="\x00\x01\x01"
+hdr_truecolor="\x00\x00\x02"
+hdr_gray="\x00\x00\x03"
+hdr_rle_mapped="\x00\x01\x09"
+hdr_rle_truecolor="\x00\x00\x0a"
+hdr_rle_gray="\x00\x00\x0b"
+
+# Image descriptor: top-left origin with 8 alpha bits, bottom-left without alpha, right-to-left
+desc_top_left_a8="\x28"
+desc_bottom_left="\x00"
+desc_right_to_left="\x10"
+
+# RLE packet headers: a run of 128, a raw packet of 128
+rle_run_128="\xff"
+rle_raw_128="\x7f"
+
+# Extension area size (495)
+extension_size="\xef\x01"

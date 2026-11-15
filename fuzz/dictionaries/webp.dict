@@ -1,0 +1,33 @@
+# libFuzzer/AFL dictionary for WebP (RIFF container, VP8, VP8L, the extended format and animation).
+
+riff="RIFF"
+webp="WEBP"
+riff_webp_header="RIFF\x00\x00\x00\x00WEBP"
+vp8="VP8 "
+vp8l="VP8L"
+vp8x="VP8X"
+alph="ALPH"
+anim="ANIM"
+anmf="ANMF"
+iccp="ICCP"
+exif="EXIF"
+xmp="XMP "
+frgm="FRGM"
+
+# VP8 key-frame start code, and a 1x1 key-frame dimension field
+vp8_start_code="\x9d\x01\x2a"
+vp8_dims_1x1="\x01\x00\x01\x00"
+
+# VP8L signature byte, and a 1x1 header without alpha
+vp8l_signature="/"
+vp8l_1x1="/\x00\x00\x00\x00"
+
+# VP8X feature flags: alpha, animation, and every flag
+vp8x_flags_alpha="\x10\x00\x00\x00"
+vp8x_flags_anim="\x02\x00\x00\x00"
+vp8x_flags_all="\x3e\x00\x00\x00"
+
+# Chunk sizes at the edges
+size_zero="\x00\x00\x00\x00"
+size_odd="\x01\x00\x00\x00"
+size_max="\xff\xff\xff\xff"

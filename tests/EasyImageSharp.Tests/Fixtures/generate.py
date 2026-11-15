@@ -1690,8 +1690,17 @@ def gen_tiff(out_dir: str) -> None:
     hand("hand_rgb8_last_strip_short", rgb, 8, 3, 2, rgba_from_rgb(rgb), "RowsPerStrip 5 over 12 rows: last strip has 2 rows",
          rows_per_strip=5, compression=32773)
     rgba_assoc = np.dstack([gradient_rgb(9, 8, seed=328), noise((8, 9), seed=329)])
-    hand("hand_rgba8_assoc_alpha", rgba_assoc, 8, 4, 2, rgba_assoc, "RGBA with ExtraSamples=1 (associated alpha); samples are "
-         "passed through unchanged (no un-premultiplication)", extra={338: (3, [1])}, verify=False)
+    # Associated alpha is undone on decode: colour divided by alpha, rounded to nearest, clamped at 255 (the noise
+    # alpha makes some samples exceed their alpha, which no valid premultiplied image does); alpha 0 and 255 pass
+    # through. Pillow truncates instead of rounding, so its decode is not an exact oracle here; the libtiff
+    # conformance suite cross-checks the behaviour against Pillow within one level.
+    assoc_a = rgba_assoc[..., 3:4].astype(np.int64)
+    assoc_rgb = rgba_assoc[..., :3].astype(np.int64)
+    unpremultiplied = np.where((assoc_a == 0) | (assoc_a == 255), assoc_rgb,
+                               np.minimum(255, (assoc_rgb * 255 + assoc_a // 2) // np.maximum(assoc_a, 1)))
+    assoc_expected = np.dstack([unpremultiplied, assoc_a]).astype(np.uint8)
+    hand("hand_rgba8_assoc_alpha", rgba_assoc, 8, 4, 2, assoc_expected, "RGBA with ExtraSamples=1 (associated alpha); "
+         "colour is un-premultiplied on decode (rounded to nearest, clamped)", extra={338: (3, [1])}, verify=False)
     hand("hand_rgba8_lzw_pred2", rgba_assoc, 8, 4, 2, rgba_assoc, "RGBA LZW with predictor 2 (spp 4)", compression=5,
          predictor=2, extra={338: (3, [2])})
     pal = palette_rgb(256, seed=330)

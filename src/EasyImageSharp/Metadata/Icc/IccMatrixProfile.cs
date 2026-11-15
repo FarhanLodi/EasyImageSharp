@@ -19,6 +19,12 @@ public sealed class IccMatrixProfile
     private readonly Curve green;
     private readonly Curve blue;
 
+    /// <summary>Lazily built per-channel TRC tables for 8-bit input; see <see cref="LinearTables8"/>.</summary>
+    private float[]? linearTables8;
+
+    /// <summary>0 = not yet measured, 1 = equivalent to sRGB, 2 = not equivalent.</summary>
+    private int srgbEquivalence;
+
     private IccMatrixProfile(Matrix4x4 matrix, Matrix4x4 inverse, Curve red, Curve green, Curve blue)
     {
         this.matrix = matrix;
@@ -29,7 +35,14 @@ public sealed class IccMatrixProfile
     }
 
     /// <summary>Validates and reads the supported matrix/TRC subset; unsupported profiles throw NotSupportedException.</summary>
-    public static IccMatrixProfile Create(IccProfile profile)
+    public static IccMatrixProfile Create(IccProfile profile) => Create(profile, ignoreLutTags: false);
+
+    /// <summary>
+    /// Reads the matrix/TRC subset. With <paramref name="ignoreLutTags"/> a profile that also carries A2B/B2A/D2B/B2D
+    /// transforms is read from its matrix/TRC tags instead of being rejected; the library only does that to recognise
+    /// such a profile as plain sRGB, never to convert pixels through it.
+    /// </summary>
+    internal static IccMatrixProfile Create(IccProfile profile, bool ignoreLutTags)
     {
         ArgumentNullException.ThrowIfNull(profile);
         ReadOnlySpan<byte> bytes = profile.RawData;
@@ -54,8 +67,9 @@ public sealed class IccMatrixProfile
             uint size = BinaryPrimitives.ReadUInt32BigEndian(bytes[(entry + 8)..]);
             if (offset < end || (long)offset + size > bytes.Length || size < 8)
                 throw new ArgumentException("Invalid ICC tag extent.", nameof(profile));
-            if (name.StartsWith("A2B", StringComparison.Ordinal) || name.StartsWith("B2A", StringComparison.Ordinal)
-                || name.StartsWith("D2B", StringComparison.Ordinal) || name.StartsWith("B2D", StringComparison.Ordinal))
+            if (!ignoreLutTags
+                && (name.StartsWith("A2B", StringComparison.Ordinal) || name.StartsWith("B2A", StringComparison.Ordinal)
+                || name.StartsWith("D2B", StringComparison.Ordinal) || name.StartsWith("B2D", StringComparison.Ordinal)))
                 throw new NotSupportedException("LUT and multi-process ICC transforms require a full color-management engine.");
             if (!tags.TryAdd(name, ((int)offset, (int)size)))
                 throw new ArgumentException("Duplicate ICC tag signature.", nameof(profile));
@@ -65,12 +79,18 @@ public sealed class IccMatrixProfile
         var matrix = new Matrix4x4(r.X, r.Y, r.Z, 0, g.X, g.Y, g.Z, 0, b.X, b.Y, b.Z, 0, 0, 0, 0, 1);
         if (!Matrix4x4.Invert(matrix, out Matrix4x4 inverse) || MathF.Abs(matrix.GetDeterminant()) < 1e-10f)
             throw new ArgumentException("The ICC colorant matrix is singular.", nameof(profile));
-        return new(matrix, inverse, Curve.Parse(Tag("rTRC")), Curve.Parse(Tag("gTRC")), Curve.Parse(Tag("bTRC")));
+        return new(matrix, inverse, Curve.Parse(Tag("rTRC")), Curve.Parse(Tag("gTRC")), Curve.Parse(Tag("bTRC")))
+        {
+            Description = profile.Header.Description,
+        };
 
         ReadOnlySpan<byte> Tag(string name) => tags.TryGetValue(name, out var extent)
             ? profile.RawData.Slice(extent.Offset, extent.Size)
             : throw new NotSupportedException($"Required matrix/TRC tag '{name}' is missing.");
     }
+
+    /// <summary>The description tag of the profile this converter was read from, or <see langword="null"/>.</summary>
+    internal string? Description { get; private init; }
 
     /// <summary>Converts encoded device RGB to media-relative D50 XYZ (Y=1 for reference white).</summary>
     public Vector3 ToXyzD50(Vector3 rgb)
@@ -129,6 +149,105 @@ public sealed class IccMatrixProfile
             result.Dispose();
             throw;
         }
+    }
+
+    /// <summary>
+    /// True when converting through this profile would leave every sampled colour within half an 8-bit code value of
+    /// where it started: the profile is sRGB in all but its encoding (an ICC v2 table curve, s15Fixed16 rounding of
+    /// the colorants). Measured once over the full 8-bit ramp of each channel and of grey, plus a 9x9x9 lattice.
+    /// </summary>
+    internal bool IsSrgbEquivalent
+    {
+        get
+        {
+            int state = Volatile.Read(ref this.srgbEquivalence);
+            if (state == 0)
+            {
+                state = this.MaxDeviationFromSrgb() <= SrgbEquivalenceTolerance ? 1 : 2;
+                Volatile.Write(ref this.srgbEquivalence, state);
+            }
+
+            return state == 1;
+        }
+    }
+
+    /// <summary>The largest per-channel deviation, in encoded 0-1 units, that still counts as sRGB: half an 8-bit step.</summary>
+    internal const float SrgbEquivalenceTolerance = 0.5f / 255f;
+
+    /// <summary>
+    /// Per-channel TRC lookup for 8-bit input, red then green then blue, 256 entries each: entry <c>i</c> is the
+    /// curve evaluated at <c>i / 255f</c>, which is exactly what the per-pixel path evaluates for an 8-bit
+    /// component, so the table is a bit-exact shortcut rather than an approximation.
+    /// </summary>
+    internal float[] LinearTables8
+    {
+        get
+        {
+            float[]? tables = Volatile.Read(ref this.linearTables8);
+            if (tables is null)
+            {
+                tables = new float[3 * 256];
+                for (int i = 0; i < 256; i++)
+                {
+                    float value = i / 255f;
+                    tables[i] = this.red.Evaluate(value);
+                    tables[256 + i] = this.green.Evaluate(value);
+                    tables[512 + i] = this.blue.Evaluate(value);
+                }
+
+                // A racing thread builds an identical table; either copy may win.
+                Volatile.Write(ref this.linearTables8, tables);
+            }
+
+            return tables;
+        }
+    }
+
+    /// <summary>
+    /// The per-pixel form of <see cref="ToSrgb"/>: bit-identical for finite input, but without the finiteness
+    /// checks, and a NaN component is read as 0 instead of throwing. Out-of-range input is clamped by the curves.
+    /// </summary>
+    internal Vector3 ToSrgbCore(Vector3 rgb)
+        => this.LinearToSrgbCore(new Vector3(
+            this.red.Evaluate(float.IsNaN(rgb.X) ? 0 : rgb.X),
+            this.green.Evaluate(float.IsNaN(rgb.Y) ? 0 : rgb.Y),
+            this.blue.Evaluate(float.IsNaN(rgb.Z) ? 0 : rgb.Z)));
+
+    /// <summary>Converts device RGB whose TRCs have already been applied (see <see cref="LinearTables8"/>) to encoded sRGB.</summary>
+    internal Vector3 LinearToSrgbCore(Vector3 linear)
+        => ColorSpaceConverter.XyzD50ToSrgbCore(Vector3.Transform(linear, this.matrix));
+
+    private float MaxDeviationFromSrgb()
+    {
+        float worst = 0;
+        for (int i = 0; i <= 255; i++)
+        {
+            float v = i / 255f;
+            worst = MathF.Max(worst, this.Deviation(new Vector3(v, 0, 0)));
+            worst = MathF.Max(worst, this.Deviation(new Vector3(0, v, 0)));
+            worst = MathF.Max(worst, this.Deviation(new Vector3(0, 0, v)));
+            worst = MathF.Max(worst, this.Deviation(new Vector3(v)));
+        }
+
+        for (int r = 0; r <= 8; r++)
+        {
+            for (int g = 0; g <= 8; g++)
+            {
+                for (int b = 0; b <= 8; b++)
+                {
+                    worst = MathF.Max(worst, this.Deviation(new Vector3(r, g, b) / 8f));
+                }
+            }
+        }
+
+        return worst;
+    }
+
+    private float Deviation(Vector3 rgb)
+    {
+        Vector3 difference = Vector3.Abs(this.ToSrgbCore(rgb) - rgb);
+        float result = MathF.Max(difference.X, MathF.Max(difference.Y, difference.Z));
+        return float.IsNaN(result) ? float.PositiveInfinity : result;
     }
 
     private static Vector3 Xyz(ReadOnlySpan<byte> data)

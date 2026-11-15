@@ -1,4 +1,5 @@
 using System.Collections;
+using EasyImageSharp.Memory;
 using EasyImageSharp.PixelFormats;
 
 namespace EasyImageSharp;
@@ -84,9 +85,11 @@ public sealed class ImageFrameCollection<TPixel> : IReadOnlyList<ImageFrame<TPix
         }
 
         OperationExecution.ReservePixelBuffer<TPixel>(required);
-        var buffer = new TPixel[required];
-        pixels[..required].CopyTo(buffer);
-        var frame = new ImageFrame<TPixel>(width, height, buffer);
+
+        // Uninitialized is safe: the copy writes every pixel before the frame is added.
+        PixelBuffer<TPixel> buffer = PixelBuffer<TPixel>.Allocate(required, AllocationOptions.None);
+        pixels[..required].CopyTo(buffer.Memory.Span);
+        var frame = new ImageFrame<TPixel>(width, height, buffer, null);
         this.frames.Add(frame);
         return frame;
     }
@@ -184,7 +187,9 @@ public sealed class ImageFrameCollection<TPixel> : IReadOnlyList<ImageFrame<TPix
     /// runs first: on a single-frame image every index, valid or not, reports
     /// <see cref="InvalidOperationException"/>. Otherwise an index outside 0 to <see cref="Count"/> - 1
     /// reports <see cref="ArgumentOutOfRangeException"/>, and the frames after the removed one move
-    /// down by one, which makes frame 1 the new root frame when index 0 is removed.
+    /// down by one, which makes frame 1 the new root frame when index 0 is removed. The removed frame
+    /// keeps its pixels, so a reference to it stays usable; its buffer is left to the garbage collector
+    /// rather than handed back to the memory allocator.
     /// </remarks>
     /// <exception cref="InvalidOperationException">The image has only one frame.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The index is outside the collection.</exception>

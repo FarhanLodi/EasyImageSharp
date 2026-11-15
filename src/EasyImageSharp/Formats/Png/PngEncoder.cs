@@ -240,7 +240,7 @@ public sealed class PngEncoder : IImageEncoder
 
     // ----- Setup -----
 
-    private static PngColorType DefaultColorType<TPixel>()
+    internal static PngColorType DefaultColorType<TPixel>()
         where TPixel : unmanaged, IPixel<TPixel>
     {
         if (typeof(TPixel) == typeof(L8))
@@ -270,7 +270,7 @@ public sealed class PngEncoder : IImageEncoder
             PngColorType other => other,
         };
 
-    private static void ValidateBitDepth(PngColorType colorType, int bitDepth)
+    internal static void ValidateBitDepth(PngColorType colorType, int bitDepth)
     {
         bool valid = colorType switch
         {
@@ -636,8 +636,17 @@ public sealed class PngEncoder : IImageEncoder
 
     /// <summary>Filters one scanline into <paramref name="best"/> and returns the filter type byte.</summary>
     private int Filter(ReadOnlySpan<byte> current, ReadOnlySpan<byte> previous, int bpp, Span<byte> scratch, Span<byte> best)
+        => FilterScanline(this.FilterMethod, current, previous, bpp, scratch, best);
+
+    /// <summary>
+    /// Filters one scanline with <paramref name="method"/> into <paramref name="best"/> and returns the filter
+    /// type byte. Shared with <see cref="PngScanlineSink"/>, so a row filters to the same bytes whether the
+    /// image is encoded whole or streamed.
+    /// </summary>
+    internal static int FilterScanline(
+        PngFilterMethod method, ReadOnlySpan<byte> current, ReadOnlySpan<byte> previous, int bpp, Span<byte> scratch, Span<byte> best)
     {
-        switch (this.FilterMethod)
+        switch (method)
         {
             case PngFilterMethod.None:
                 current.CopyTo(best);

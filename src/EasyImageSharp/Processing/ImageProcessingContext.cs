@@ -55,7 +55,15 @@ internal sealed partial class ImageProcessingContext<TPixel> : IImageProcessingC
                 return resized;
             }
 
-            return FrameOps.PlaceOnCanvas(resized, plan.CanvasWidth, plan.CanvasHeight, plan.OffsetX, plan.OffsetY, options.PadColor);
+            ImageFrame<TPixel> placed = FrameOps.PlaceOnCanvas(
+                resized, plan.CanvasWidth, plan.CanvasHeight, plan.OffsetX, plan.OffsetY, options.PadColor);
+            if (!ReferenceEquals(resized, frame))
+            {
+                // The scaled intermediate is nobody's frame; hand its buffer straight back to the allocator.
+                resized.ReleaseBuffer();
+            }
+
+            return placed;
         });
     }
 
@@ -202,7 +210,7 @@ internal sealed partial class ImageProcessingContext<TPixel> : IImageProcessingC
             ImageFrame<TPixel> result = operation(frame);
             if (!ReferenceEquals(result, frame))
             {
-                frame.ReplaceBuffer(result.PixelArray, result.Width, result.Height);
+                frame.TakeBuffer(result);
             }
         }
 
@@ -221,7 +229,7 @@ internal sealed partial class ImageProcessingContext<TPixel> : IImageProcessingC
             ImageFrame<TPixel> result = operation(frame);
             if (!ReferenceEquals(result, frame))
             {
-                frame.ReplaceBuffer(result.PixelArray, result.Width, result.Height);
+                frame.TakeBuffer(result);
             }
             else
             {

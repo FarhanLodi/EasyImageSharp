@@ -1,0 +1,77 @@
+#nullable enable
+EasyImageSharp.JpegXl.JpegXlDecoder
+EasyImageSharp.JpegXl.JpegXlDecoder.Decode<TPixel>(System.ReadOnlySpan<byte> data, EasyImageSharp.Formats.DecoderOptions! options) -> EasyImageSharp.Image<TPixel>!
+EasyImageSharp.JpegXl.JpegXlDecoder.Identify(System.ReadOnlySpan<byte> data, EasyImageSharp.Formats.DecoderOptions! options) -> EasyImageSharp.ImageInfo!
+EasyImageSharp.JpegXl.JpegXlDecoder.JpegXlDecoder() -> void
+EasyImageSharp.JpegXl.JpegXlEncoder
+EasyImageSharp.JpegXl.JpegXlEncoder.BitsPerSample.get -> int?
+EasyImageSharp.JpegXl.JpegXlEncoder.BitsPerSample.init -> void
+EasyImageSharp.JpegXl.JpegXlEncoder.CompressMetadataBoxes.get -> bool
+EasyImageSharp.JpegXl.JpegXlEncoder.CompressMetadataBoxes.init -> void
+EasyImageSharp.JpegXl.JpegXlEncoder.Distance.get -> float
+EasyImageSharp.JpegXl.JpegXlEncoder.Distance.init -> void
+EasyImageSharp.JpegXl.JpegXlEncoder.Effort.get -> int
+EasyImageSharp.JpegXl.JpegXlEncoder.Effort.init -> void
+EasyImageSharp.JpegXl.JpegXlEncoder.Encode<TPixel>(EasyImageSharp.Image<TPixel>! image, System.IO.Stream! stream) -> void
+EasyImageSharp.JpegXl.JpegXlEncoder.FrameDuration.get -> System.TimeSpan?
+EasyImageSharp.JpegXl.JpegXlEncoder.FrameDuration.init -> void
+EasyImageSharp.JpegXl.JpegXlEncoder.JpegXlEncoder() -> void
+EasyImageSharp.JpegXl.JpegXlEncoder.LoopCount.get -> int?
+EasyImageSharp.JpegXl.JpegXlEncoder.LoopCount.init -> void
+EasyImageSharp.JpegXl.JpegXlEncoder.Lossless.get -> bool
+EasyImageSharp.JpegXl.JpegXlEncoder.Lossless.init -> void
+EasyImageSharp.JpegXl.JpegXlEncoder.MaxThreads.get -> int?
+EasyImageSharp.JpegXl.JpegXlEncoder.MaxThreads.init -> void
+EasyImageSharp.JpegXl.JpegXlEncoder.SkipMetadata.get -> bool
+EasyImageSharp.JpegXl.JpegXlEncoder.SkipMetadata.init -> void
+EasyImageSharp.JpegXl.JpegXlFormat
+EasyImageSharp.JpegXl.JpegXlFrameMetadata
+EasyImageSharp.JpegXl.JpegXlFrameMetadata.DeepClone() -> EasyImageSharp.JpegXl.JpegXlFrameMetadata!
+EasyImageSharp.JpegXl.JpegXlFrameMetadata.Duration.get -> System.TimeSpan
+EasyImageSharp.JpegXl.JpegXlFrameMetadata.Duration.set -> void
+EasyImageSharp.JpegXl.JpegXlFrameMetadata.DurationTicks.get -> uint
+EasyImageSharp.JpegXl.JpegXlFrameMetadata.DurationTicks.set -> void
+EasyImageSharp.JpegXl.JpegXlFrameMetadata.JpegXlFrameMetadata() -> void
+EasyImageSharp.JpegXl.JpegXlImageExtensions
+EasyImageSharp.JpegXl.JpegXlMetadata
+EasyImageSharp.JpegXl.JpegXlMetadata.AlphaPremultiplied.get -> bool
+EasyImageSharp.JpegXl.JpegXlMetadata.AlphaPremultiplied.set -> void
+EasyImageSharp.JpegXl.JpegXlMetadata.BitsPerSample.get -> int
+EasyImageSharp.JpegXl.JpegXlMetadata.BitsPerSample.set -> void
+EasyImageSharp.JpegXl.JpegXlMetadata.DeepClone() -> EasyImageSharp.JpegXl.JpegXlMetadata!
+EasyImageSharp.JpegXl.JpegXlMetadata.ExponentBitsPerSample.get -> int
+EasyImageSharp.JpegXl.JpegXlMetadata.ExponentBitsPerSample.set -> void
+EasyImageSharp.JpegXl.JpegXlMetadata.HasAlpha.get -> bool
+EasyImageSharp.JpegXl.JpegXlMetadata.HasAlpha.set -> void
+EasyImageSharp.JpegXl.JpegXlMetadata.HasContainer.get -> bool
+EasyImageSharp.JpegXl.JpegXlMetadata.HasContainer.set -> void
+EasyImageSharp.JpegXl.JpegXlMetadata.IntensityTarget.get -> float
+EasyImageSharp.JpegXl.JpegXlMetadata.IntensityTarget.set -> void
+EasyImageSharp.JpegXl.JpegXlMetadata.IsAnimated.get -> bool
+EasyImageSharp.JpegXl.JpegXlMetadata.IsAnimated.set -> void
+EasyImageSharp.JpegXl.JpegXlMetadata.IsGray.get -> bool
+EasyImageSharp.JpegXl.JpegXlMetadata.IsGray.set -> void
+EasyImageSharp.JpegXl.JpegXlMetadata.JpegXlMetadata() -> void
+EasyImageSharp.JpegXl.JpegXlMetadata.LoopCount.get -> int
+EasyImageSharp.JpegXl.JpegXlMetadata.LoopCount.set -> void
+EasyImageSharp.JpegXl.JpegXlMetadata.TicksPerSecondDenominator.get -> uint
+EasyImageSharp.JpegXl.JpegXlMetadata.TicksPerSecondDenominator.set -> void
+EasyImageSharp.JpegXl.JpegXlMetadata.TicksPerSecondNumerator.get -> uint
+EasyImageSharp.JpegXl.JpegXlMetadata.TicksPerSecondNumerator.set -> void
+EasyImageSharp.JpegXl.JpegXlMetadata.UsesOriginalProfile.get -> bool
+EasyImageSharp.JpegXl.JpegXlMetadata.UsesOriginalProfile.set -> void
+static EasyImageSharp.JpegXl.JpegXlFormat.Instance.get -> EasyImageSharp.Formats.ImageFormat!
+static EasyImageSharp.JpegXl.JpegXlFormat.IsJpegXl(System.ReadOnlySpan<byte> data) -> bool
+static EasyImageSharp.JpegXl.JpegXlFormat.IsNativeLibraryAvailable.get -> bool
+static EasyImageSharp.JpegXl.JpegXlFormat.IsThreadRunnerAvailable.get -> bool
+static EasyImageSharp.JpegXl.JpegXlFormat.NativeVersion.get -> string!
+static EasyImageSharp.JpegXl.JpegXlImageExtensions.SaveAsJxl(this EasyImageSharp.Image! image, System.IO.Stream! stream) -> void
+static EasyImageSharp.JpegXl.JpegXlImageExtensions.SaveAsJxl(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.JpegXl.JpegXlEncoder! encoder) -> void
+static EasyImageSharp.JpegXl.JpegXlImageExtensions.SaveAsJxl(this EasyImageSharp.Image! image, string! path) -> void
+static EasyImageSharp.JpegXl.JpegXlImageExtensions.SaveAsJxl(this EasyImageSharp.Image! image, string! path, EasyImageSharp.JpegXl.JpegXlEncoder! encoder) -> void
+static EasyImageSharp.JpegXl.JpegXlImageExtensions.SaveAsJxlAsync(this EasyImageSharp.Image! image, System.IO.Stream! stream) -> System.Threading.Tasks.Task!
+static EasyImageSharp.JpegXl.JpegXlImageExtensions.SaveAsJxlAsync(this EasyImageSharp.Image! image, System.IO.Stream! stream, EasyImageSharp.JpegXl.JpegXlEncoder! encoder, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
+static EasyImageSharp.JpegXl.JpegXlImageExtensions.SaveAsJxlAsync(this EasyImageSharp.Image! image, System.IO.Stream! stream, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
+static EasyImageSharp.JpegXl.JpegXlImageExtensions.SaveAsJxlAsync(this EasyImageSharp.Image! image, string! path) -> System.Threading.Tasks.Task!
+static EasyImageSharp.JpegXl.JpegXlImageExtensions.SaveAsJxlAsync(this EasyImageSharp.Image! image, string! path, EasyImageSharp.JpegXl.JpegXlEncoder! encoder, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
+static EasyImageSharp.JpegXl.JpegXlImageExtensions.SaveAsJxlAsync(this EasyImageSharp.Image! image, string! path, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!

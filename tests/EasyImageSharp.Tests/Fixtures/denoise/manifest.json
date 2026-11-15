@@ -1,0 +1,50 @@
+{
+  "cases": [
+    {
+      "expected": "bilateral_r3.png",
+      "source": "noisy.png",
+      "kind": "bilateral",
+      "radius": 3,
+      "sigma_spatial": 2.0,
+      "sigma_range": 0.15
+    },
+    {
+      "expected": "bilateral_r5.png",
+      "source": "noisy.png",
+      "kind": "bilateral",
+      "radius": 5,
+      "sigma_spatial": 3.0,
+      "sigma_range": 0.3
+    },
+    {
+      "expected": "bilateral_large_r12.png",
+      "source": "noisy_large.png",
+      "kind": "bilateral",
+      "radius": 12,
+      "sigma_spatial": 6.0,
+      "sigma_range": 0.12
+    },
+    {
+      "expected": "guided_r2.png",
+      "source": "noisy.png",
+      "kind": "guided",
+      "radius": 2,
+      "epsilon": 0.01
+    },
+    {
+      "expected": "guided_r4.png",
+      "source": "noisy.png",
+      "kind": "guided",
+      "radius": 4,
+      "epsilon": 0.04
+    },
+    {
+      "expected": "guided_joint_r3.png",
+      "source": "noisy.png",
+      "kind": "guided_joint",
+      "radius": 3,
+      "epsilon": 0.005,
+      "guide": "guide.png"
+    }
+  ]
+}

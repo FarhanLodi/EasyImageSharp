@@ -5,6 +5,118 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - Unreleased
+
+Additive release: new codecs, managed drawing and text, row-streaming transcode, new processing operations,
+four new packages and more AI operations. Package validation against the published 1.2.0 packages passes;
+no public API was removed. New `IImageProcessingContext` members have default implementations that throw
+`NotSupportedException`, so third-party implementations of the interface keep compiling and loading.
+
+### Added
+
+- **Formats.** Radiance HDR (`.hdr`) and OpenEXR decoding and encoding (`SaveAsHdr`, `SaveAsExr`). EXR covers
+  half, float and uint channels and None, RLE, ZIPS, ZIP, PIZ, DWAA and DWAB compression. The decoder reads
+  scanline and tiled parts; the encoder writes scanline parts. `HdrMetadata` and `ExrMetadata` carry the format headers.
+- **JPEG.** 12-bit sequential and progressive decoding, and lossless (SOF3) decoding, at full sample
+  precision. Sequential arithmetic-coded JPEG (SOF9, with DAC conditioning tables and restart intervals), through
+  both the buffered decoder and the row-streaming source; libjpeg-turbo's `testimgari.jpg` decodes at 64.4 dB
+  against libjpeg-turbo, the same accuracy as its Huffman-coded twin. Progressive (SOF10) and lossless (SOF11)
+  arithmetic coding remain unsupported and say so precisely. Encoder quantization presets
+  (`JpegQuantizationPreset`: Annex K, flat and five perceptual tables) and opt-in trellis quantization.
+  A row-by-row `JpegScanlineSource` and `JpegScanlineSink`. Separable IDCT and upsampler rewrites.
+- **TIFF.** BigTIFF writing (`TiffFormatType`). WebP-compressed pages (compression 50001, libtiff's
+  `COMPRESSION_WEBP`): lossy or lossless, 8-bit RGB or RGBA, strips or tiles, each segment decoded by the built-in
+  WebP decoder within the request's execution scope and limited to the segment's own size.
+- **Metadata.** IPTC-IIM (`IptcProfile`, `IptcTag`) and Photoshop image resources (`PhotoshopResources`,
+  `8BIM`), read from and written to JPEG and TIFF.
+- **Streaming transcode.** `Image.Transcode`/`TranscodeAsync` and `Image.Thumbnail`/`ThumbnailAsync`
+  decode, auto-orient, resize and encode row by row for PNG and JPEG sources and sinks, without
+  materializing the full frame. Other formats fall back to a buffered decode or encode transparently, and
+  `TranscodeResult` reports which ends streamed. JPEG sources that are resized down decode through the
+  reduced IDCT. This is close to, but by design not bit-identical with, decode-then-resize.
+- **Managed vector drawing and text (core, no native dependency).** `VectorPath`/`PathBuilder`; solid,
+  linear, radial, conic and image brushes; pens with joins, caps and dashes; non-zero and even-odd fills;
+  clipping. A managed font stack (`FontCollection`, `SystemFonts`, `Font`, `TextMeasurer`) reading
+  TrueType, CFF/OpenType, WOFF and WOFF2 with kerning. `DrawText` supports wrapping and alignment.
+- **Processing.** `ToneMap` (Clip, Reinhard, extended Reinhard, Hable, ACES filmic). `ApplyLut` with
+  `.cube` 3D LUTs (`ColorLut`). `BilateralFilter` (exact and grid) and `GuidedFilter`. `SmartCrop`,
+  `Watermark` and dominant colors. `BlurHash` and `ThumbHash` placeholders. `ImageQuality` full-reference
+  and no-reference metrics.
+- **Color management on load.** `DecoderOptions` color-profile handling: keep, preserve, convert to sRGB
+  or throw. `ConvertToSrgb` processing. Conversion status is recorded in `ColorProfileConversionMetadata`.
+- **Memory and diagnostics.** Pluggable `MemoryAllocator` (`PooledMemoryAllocator`,
+  `UnmanagedMemoryAllocator`, GC) through `Configuration.MemoryAllocator`. `ImageTelemetry`:
+  `ActivitySource` and `Meter` named `EasyImageSharp`, emitting decode/encode/process durations, bytes,
+  pixels and rejection counts.
+- **Performance.** SIMD paths for VP8/VP8L WebP decode/encode DSP and transforms, YUV conversion,
+  integral images and morphology, each with scalar differential tests.
+- **EasyImageSharp.AI.** Face detection, landmarks and redaction; mask-based inpainting with tiling;
+  content moderation; image embeddings; aesthetic/technical quality assessment. Batched ONNX inference
+  and quantized-model resolution in `ModelRegistry`. All need user-supplied or registry models.
+- **New packages.**
+  - `EasyImageSharp.Extensions.DependencyInjection`: `AddEasyImageSharp` with code and
+    `IConfiguration` overloads, `ValidateOnStart` and `IImageOptionsFactory`.
+  - `EasyImageSharp.Web`: ASP.NET Core middleware for on-the-fly processing, signed URLs, format
+    negotiation, HTTP and server-side caching, limits, concurrency limiting and a health check.
+    `samples/WebSample` shows it in use.
+  - `EasyImageSharp.Avif` (libavif) and `EasyImageSharp.JpegXl` (libjxl): optional native codec providers.
+    Packing them requires building the pinned native runtimes with `scripts/build-libavif.ps1` and
+    `scripts/build-libjxl.ps1`.
+- **Verification.** Third-party conformance suites (PngSuite, libjpeg-turbo, libtiff, plus locally built
+  libwebp-test-data) checked against independent decoders. A SharpFuzz/libFuzzer harness with
+  dictionaries and an OSS-Fuzz project definition (`fuzz/`). A coverlet coverage collector
+  ([docs/COVERAGE.md](docs/COVERAGE.md)).
+- **Repository.** CodeQL, OpenSSF Scorecard, Dependabot and DocFX site workflows; release workflow with
+  dry run, CycloneDX SBOMs, build-provenance attestations and optional NuGet author signing;
+  `SUPPORT.md`.
+
+### Changed
+
+- **PNG chunk CRCs are verified.** A file with a bad CRC on a critical chunk (IHDR, PLTE, IDAT, IEND, or
+  APNG acTL/fcTL/fdAT) now throws `InvalidImageContentException` where it previously loaded. An ancillary
+  chunk with a bad CRC (text, EXIF, ICC, tRNS, and so on) is discarded rather than trusted, as libpng does
+  by default. The buffered decoder and the streaming `Image.Transcode` path apply the same rule. Measured
+  cost: about 3% of decode time for a 10 MB 4000x3000 PNG on one machine.
+- **TIFF associated alpha is un-premultiplied.** Grey and RGB pages with `ExtraSamples = 1` previously
+  returned the premultiplied samples unchanged. They now return straight colour (divided by alpha, rounded
+  to nearest), matching libtiff and Pillow and every other alpha source in the library. Semi-transparent
+  pixels from such files therefore decode lighter than before.
+- Package validation now uses 1.2.0 as the baseline for all four previously published packages
+  (SkiaSharp and LittleCms had no baseline before).
+
+### Fixed
+
+- `PngDecoder` validates the PNG signature itself, so calling the decoder directly or through a format
+  provider rejects a corrupt signature instead of relying on format detection.
+- Pre-TIFF 6.0 "compat" LZW (LSB-first codes, late code-width change) is decoded instead of being reported
+  as corrupt. It is detected from the stream's first two bytes, as libtiff detects it.
+- All 176 PngSuite files now pass, including the 14 invalid-by-design files. libtiff's `quad-lzw-compat`
+  and `32bpp-None` now match their references.
+- A still lossless WebP whose header declares no alpha is decoded opaque even where a damaged stream produces
+  transparent pixels (an out-of-range colour index), as libwebp-based readers and browsers show it.
+- `EasyImageSharp.JpegXl`: limiting an animation with `MaxFrames` no longer fails with "decoding failed while
+  skipping a frame"; libjxl only accepts the skip once it asks for the frame's output buffer.
+- `scripts/build-libavif.ps1` failed with "Unknown argument -" when `-Jobs` was not given: a one-element
+  argument array was unwrapped to a string and splatted character by character.
+
+### Verification
+
+- The PngSuite, libjpeg-turbo, libtiff and (locally built) libwebp conformance suites pass with no known failures
+  and no skips. JPEG-compressed TIFF pages are held to the same 40 dB PSNR floor as standalone JPEG (lossy
+  decoders may round the IDCT and upsampling differently); the tiled libtiff sample decodes at 67.8 dB.
+- `EasyImageSharp.Avif` has its own test project: round trips (exact lossless, wide bit depths, animation,
+  metadata, limits, malformed input) and fixtures written and decoded by an independent libavif build (Pillow's),
+  matched within one level at 4:4:4 and above 50 dB when chroma is subsampled.
+- `EasyImageSharp.JpegXl` and `EasyImageSharp.Avif` tests now run against the real native libraries. Both native
+  packages pack with their win-x64 runtimes, README and verbatim third-party licence notices.
+
+### Known limits
+
+- JPEG: progressive (SOF10), lossless (SOF11) and hierarchical arithmetic coding are unsupported. No independent
+  encoder for them was available to verify a decoder against, so none is claimed.
+- The bundled `avif.dll` is built without libaom's assembly SIMD, so AVIF encoding is slower than distribution
+  builds of libavif.
+
 ## [1.2.0] - 2026-10-14
 
 ### Added

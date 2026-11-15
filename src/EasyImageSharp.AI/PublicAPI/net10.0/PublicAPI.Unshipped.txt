@@ -1,46 +1,127 @@
 #nullable enable
-EasyImageSharp.AI.DocumentAiPreprocessingOptions
-EasyImageSharp.AI.DocumentAiPreprocessingOptions.AutoOrient.get -> bool
-EasyImageSharp.AI.DocumentAiPreprocessingOptions.AutoOrient.set -> void
-EasyImageSharp.AI.DocumentAiPreprocessingOptions.Dewarp.get -> bool
-EasyImageSharp.AI.DocumentAiPreprocessingOptions.Dewarp.set -> void
-EasyImageSharp.AI.DocumentAiPreprocessingOptions.DewarpContract.get -> EasyImageSharp.AI.DocumentDewarpContract!
-EasyImageSharp.AI.DocumentAiPreprocessingOptions.DewarpContract.set -> void
-EasyImageSharp.AI.DocumentAiPreprocessingOptions.DocumentAiPreprocessingOptions() -> void
-EasyImageSharp.AI.DocumentAiPreprocessingOptions.MinimumOrientationConfidence.get -> float
-EasyImageSharp.AI.DocumentAiPreprocessingOptions.MinimumOrientationConfidence.set -> void
-EasyImageSharp.AI.DocumentAiPreprocessingOptions.Preprocessing.get -> EasyImageSharp.Processing.DocumentPreprocessingOptions!
-EasyImageSharp.AI.DocumentAiPreprocessingOptions.Preprocessing.set -> void
-EasyImageSharp.AI.DocumentAiProcessingExtensions
-EasyImageSharp.AI.DocumentDewarpContract
-EasyImageSharp.AI.DocumentDewarpContract.<Clone>$() -> EasyImageSharp.AI.DocumentDewarpContract!
-EasyImageSharp.AI.DocumentDewarpContract.Channels.get -> EasyImageSharp.Tensors.TensorChannels
-EasyImageSharp.AI.DocumentDewarpContract.Channels.init -> void
-EasyImageSharp.AI.DocumentDewarpContract.DocumentDewarpContract() -> void
-EasyImageSharp.AI.DocumentDewarpContract.Equals(EasyImageSharp.AI.DocumentDewarpContract? other) -> bool
-EasyImageSharp.AI.DocumentDewarpContract.FixedInputSize.get -> EasyImageSharp.Size
-EasyImageSharp.AI.DocumentDewarpContract.FixedInputSize.init -> void
-EasyImageSharp.AI.DocumentDewarpContract.GridAlignCorners.get -> bool
-EasyImageSharp.AI.DocumentDewarpContract.GridAlignCorners.init -> void
-EasyImageSharp.AI.DocumentDewarpContract.InputName.get -> string?
-EasyImageSharp.AI.DocumentDewarpContract.InputName.init -> void
-EasyImageSharp.AI.DocumentDewarpContract.MaximumInputPixels.get -> long
-EasyImageSharp.AI.DocumentDewarpContract.MaximumInputPixels.init -> void
-EasyImageSharp.AI.DocumentDewarpContract.OutputKind.get -> EasyImageSharp.AI.DocumentDewarpOutputKind
-EasyImageSharp.AI.DocumentDewarpContract.OutputKind.init -> void
-EasyImageSharp.AI.DocumentDewarpContract.OutputName.get -> string?
-EasyImageSharp.AI.DocumentDewarpContract.OutputName.init -> void
-EasyImageSharp.AI.DocumentDewarpContract.SizeMultiple.get -> int
-EasyImageSharp.AI.DocumentDewarpContract.SizeMultiple.init -> void
-EasyImageSharp.AI.DocumentDewarpOutputKind
-EasyImageSharp.AI.DocumentDewarpOutputKind.NormalizedSamplingGrid = 1 -> EasyImageSharp.AI.DocumentDewarpOutputKind
-EasyImageSharp.AI.DocumentDewarpOutputKind.RectifiedImage = 0 -> EasyImageSharp.AI.DocumentDewarpOutputKind
-EasyImageSharp.AI.ImageModelContract.UseBgrChannelOrder.get -> bool
-EasyImageSharp.AI.ImageModelContract.UseBgrChannelOrder.init -> void
-override EasyImageSharp.AI.DocumentDewarpContract.Equals(object? obj) -> bool
-override EasyImageSharp.AI.DocumentDewarpContract.GetHashCode() -> int
-override EasyImageSharp.AI.DocumentDewarpContract.ToString() -> string!
-static EasyImageSharp.AI.DocumentAiProcessingExtensions.DewarpDocumentWithContractAsync<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageAiSession! ai, EasyImageSharp.AI.DocumentDewarpContract! contract, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
-static EasyImageSharp.AI.DocumentAiProcessingExtensions.PreprocessDocumentAIAsync<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageAiSession! ai, EasyImageSharp.AI.DocumentAiPreprocessingOptions? options = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<EasyImageSharp.Processing.DocumentPreprocessingResult<TPixel>!>!
-static EasyImageSharp.AI.DocumentDewarpContract.operator !=(EasyImageSharp.AI.DocumentDewarpContract? left, EasyImageSharp.AI.DocumentDewarpContract? right) -> bool
-static EasyImageSharp.AI.DocumentDewarpContract.operator ==(EasyImageSharp.AI.DocumentDewarpContract? left, EasyImageSharp.AI.DocumentDewarpContract? right) -> bool
+EasyImageSharp.AI.DetectedFace
+EasyImageSharp.AI.DetectedFace.Bounds.get -> EasyImageSharp.RectangleF
+EasyImageSharp.AI.DetectedFace.Confidence.get -> float
+EasyImageSharp.AI.DetectedFace.DetectedFace(EasyImageSharp.RectangleF bounds, float confidence, EasyImageSharp.AI.FaceLandmarks landmarks) -> void
+EasyImageSharp.AI.DetectedFace.Landmarks.get -> EasyImageSharp.AI.FaceLandmarks
+EasyImageSharp.AI.FaceDetectionOptions
+EasyImageSharp.AI.FaceDetectionOptions.FaceDetectionOptions() -> void
+EasyImageSharp.AI.FaceDetectionOptions.MaxCandidates.get -> int
+EasyImageSharp.AI.FaceDetectionOptions.MaxCandidates.set -> void
+EasyImageSharp.AI.FaceDetectionOptions.MaxInputSize.get -> int
+EasyImageSharp.AI.FaceDetectionOptions.MaxInputSize.set -> void
+EasyImageSharp.AI.FaceDetectionOptions.NmsThreshold.get -> float
+EasyImageSharp.AI.FaceDetectionOptions.NmsThreshold.set -> void
+EasyImageSharp.AI.FaceDetectionOptions.ScoreThreshold.get -> float
+EasyImageSharp.AI.FaceDetectionOptions.ScoreThreshold.set -> void
+EasyImageSharp.AI.FaceDetectionOptions.TileOverlap.get -> int
+EasyImageSharp.AI.FaceDetectionOptions.TileOverlap.set -> void
+EasyImageSharp.AI.FaceDetectionOptions.TileSize.get -> int
+EasyImageSharp.AI.FaceDetectionOptions.TileSize.set -> void
+EasyImageSharp.AI.FaceDetectionOptions.Validate() -> void
+EasyImageSharp.AI.FaceImageExtensions
+EasyImageSharp.AI.FaceLandmarks
+EasyImageSharp.AI.FaceLandmarks.FaceLandmarks() -> void
+EasyImageSharp.AI.FaceLandmarks.FaceLandmarks(EasyImageSharp.PointF rightEye, EasyImageSharp.PointF leftEye, EasyImageSharp.PointF noseTip, EasyImageSharp.PointF rightMouthCorner, EasyImageSharp.PointF leftMouthCorner) -> void
+EasyImageSharp.AI.FaceLandmarks.LeftEye.get -> EasyImageSharp.PointF
+EasyImageSharp.AI.FaceLandmarks.LeftMouthCorner.get -> EasyImageSharp.PointF
+EasyImageSharp.AI.FaceLandmarks.NoseTip.get -> EasyImageSharp.PointF
+EasyImageSharp.AI.FaceLandmarks.RightEye.get -> EasyImageSharp.PointF
+EasyImageSharp.AI.FaceLandmarks.RightMouthCorner.get -> EasyImageSharp.PointF
+EasyImageSharp.AI.FaceProcessingExtensions
+EasyImageSharp.AI.FaceRedactionOptions
+EasyImageSharp.AI.FaceRedactionOptions.BlurSigma.get -> float?
+EasyImageSharp.AI.FaceRedactionOptions.BlurSigma.set -> void
+EasyImageSharp.AI.FaceRedactionOptions.Detection.get -> EasyImageSharp.AI.FaceDetectionOptions!
+EasyImageSharp.AI.FaceRedactionOptions.Detection.set -> void
+EasyImageSharp.AI.FaceRedactionOptions.FaceRedactionOptions() -> void
+EasyImageSharp.AI.FaceRedactionOptions.FillColor.get -> EasyImageSharp.Color
+EasyImageSharp.AI.FaceRedactionOptions.FillColor.set -> void
+EasyImageSharp.AI.FaceRedactionOptions.Padding.get -> float
+EasyImageSharp.AI.FaceRedactionOptions.Padding.set -> void
+EasyImageSharp.AI.FaceRedactionOptions.PixelSize.get -> int?
+EasyImageSharp.AI.FaceRedactionOptions.PixelSize.set -> void
+EasyImageSharp.AI.FaceRedactionOptions.Style.get -> EasyImageSharp.AI.FaceRedactionStyle
+EasyImageSharp.AI.FaceRedactionOptions.Style.set -> void
+EasyImageSharp.AI.FaceRedactionOptions.Validate() -> void
+EasyImageSharp.AI.FaceRedactionStyle
+EasyImageSharp.AI.FaceRedactionStyle.Blur = 0 -> EasyImageSharp.AI.FaceRedactionStyle
+EasyImageSharp.AI.FaceRedactionStyle.Fill = 2 -> EasyImageSharp.AI.FaceRedactionStyle
+EasyImageSharp.AI.FaceRedactionStyle.Pixelate = 1 -> EasyImageSharp.AI.FaceRedactionStyle
+EasyImageSharp.AI.ImageAiOptions.MaxBatchSize.get -> int
+EasyImageSharp.AI.ImageAiOptions.MaxBatchSize.set -> void
+EasyImageSharp.AI.ImageAiSession.DetectOrientationBatch<TPixel>(System.Collections.Generic.IReadOnlyList<EasyImageSharp.Image<TPixel>!>! images, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> EasyImageSharp.AI.OrientationResult![]!
+EasyImageSharp.AI.ImageAiSession.DetectOrientationBatchAsync<TPixel>(System.Collections.Generic.IReadOnlyList<EasyImageSharp.Image<TPixel>!>! images, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<EasyImageSharp.AI.OrientationResult![]!>!
+EasyImageSharp.AI.ImageAiSession.RunImageToImageBatch<TPixel>(EasyImageSharp.AI.IImageModel! model, System.Collections.Generic.IReadOnlyList<EasyImageSharp.Image<TPixel>!>! images, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> EasyImageSharp.Image<TPixel>![]!
+EasyImageSharp.AI.ImageAiSession.RunImageToImageBatchAsync<TPixel>(EasyImageSharp.AI.IImageModel! model, System.Collections.Generic.IReadOnlyList<EasyImageSharp.Image<TPixel>!>! images, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<EasyImageSharp.Image<TPixel>![]!>!
+EasyImageSharp.AI.ImageModelTask.FaceDetection = 8 -> EasyImageSharp.AI.ImageModelTask
+const EasyImageSharp.AI.ImageModelRunner.DefaultMaxBatchSize = 8 -> int
+override EasyImageSharp.AI.DetectedFace.ToString() -> string!
+override EasyImageSharp.AI.FaceLandmarks.ToString() -> string!
+static EasyImageSharp.AI.FaceImageExtensions.DetectFaces<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageAiSession! ai, EasyImageSharp.AI.FaceDetectionOptions? options = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Collections.Generic.IReadOnlyList<EasyImageSharp.AI.DetectedFace!>!
+static EasyImageSharp.AI.FaceImageExtensions.DetectFacesAsync<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageAiSession! ai, EasyImageSharp.AI.FaceDetectionOptions? options = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyList<EasyImageSharp.AI.DetectedFace!>!>!
+static EasyImageSharp.AI.FaceImageExtensions.RedactFaceRegions<TPixel>(this EasyImageSharp.Image<TPixel>! image, System.Collections.Generic.IReadOnlyList<EasyImageSharp.AI.DetectedFace!>! faces, EasyImageSharp.AI.FaceRedactionOptions? options = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> void
+static EasyImageSharp.AI.FaceImageExtensions.RedactFaces<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageAiSession! ai, EasyImageSharp.AI.FaceRedactionOptions? options = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Collections.Generic.IReadOnlyList<EasyImageSharp.AI.DetectedFace!>!
+static EasyImageSharp.AI.FaceImageExtensions.RedactFacesAsync<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageAiSession! ai, EasyImageSharp.AI.FaceRedactionOptions? options = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<System.Collections.Generic.IReadOnlyList<EasyImageSharp.AI.DetectedFace!>!>!
+static EasyImageSharp.AI.FaceProcessingExtensions.RedactFaces(this EasyImageSharp.Processing.IImageProcessingContext! context, EasyImageSharp.AI.ImageAiSession! ai) -> EasyImageSharp.Processing.IImageProcessingContext!
+static EasyImageSharp.AI.FaceProcessingExtensions.RedactFaces(this EasyImageSharp.Processing.IImageProcessingContext! context, EasyImageSharp.AI.ImageAiSession! ai, EasyImageSharp.AI.FaceRedactionOptions! options) -> EasyImageSharp.Processing.IImageProcessingContext!
+static EasyImageSharp.AI.ImageModelRunner.RunBatch<TPixel>(Microsoft.ML.OnnxRuntime.InferenceSession! session, System.Collections.Generic.IReadOnlyList<EasyImageSharp.Image<TPixel>!>! images, EasyImageSharp.AI.ImageModelContract! contract, int maxBatchSize = 8, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> EasyImageSharp.Image<TPixel>![]!
+static EasyImageSharp.AI.ModelRegistry.FaceDetection.get -> EasyImageSharp.AI.ModelDescriptor!
+const EasyImageSharp.AI.ContentClassification.SafeLabel = "SFW" -> string!
+const EasyImageSharp.AI.ContentClassification.UnsafeLabel = "NSFW" -> string!
+EasyImageSharp.AI.ContentClassification
+EasyImageSharp.AI.ContentClassification.GetProbability(string! label) -> float
+EasyImageSharp.AI.ContentClassification.IsUnsafe(float threshold = 0.5) -> bool
+EasyImageSharp.AI.ContentClassification.Labels.get -> System.Collections.Generic.IReadOnlyList<string!>!
+EasyImageSharp.AI.ContentClassification.Probabilities.get -> System.Collections.Generic.IReadOnlyList<float>!
+EasyImageSharp.AI.ContentClassification.TopLabel.get -> string!
+EasyImageSharp.AI.ContentClassification.TopProbability.get -> float
+EasyImageSharp.AI.ContentClassification.UnsafeProbability.get -> float
+EasyImageSharp.AI.ContentModerationExtensions
+EasyImageSharp.AI.ImageEmbeddingExtensions
+EasyImageSharp.AI.ImageEmbeddings
+EasyImageSharp.AI.InpaintingExtensions
+EasyImageSharp.AI.InpaintingOptions
+EasyImageSharp.AI.InpaintingOptions.ContextMargin.get -> float
+EasyImageSharp.AI.InpaintingOptions.ContextMargin.init -> void
+EasyImageSharp.AI.InpaintingOptions.InpaintingOptions() -> void
+EasyImageSharp.AI.InpaintingOptions.MaskDilation.get -> int
+EasyImageSharp.AI.InpaintingOptions.MaskDilation.init -> void
+EasyImageSharp.AI.InpaintingOptions.MaskThreshold.get -> byte
+EasyImageSharp.AI.InpaintingOptions.MaskThreshold.init -> void
+EasyImageSharp.AI.InpaintingOptions.WorkingSize.get -> int
+EasyImageSharp.AI.InpaintingOptions.WorkingSize.init -> void
+EasyImageSharp.AI.InpaintingProcessingExtensions
+EasyImageSharp.AI.QualityAssessment
+EasyImageSharp.AI.QualityAssessment.AestheticDistribution.get -> System.Collections.Generic.IReadOnlyList<float>!
+EasyImageSharp.AI.QualityAssessment.AestheticScore.get -> float
+EasyImageSharp.AI.QualityAssessment.AestheticStandardDeviation.get -> float
+EasyImageSharp.AI.QualityAssessment.TechnicalDistribution.get -> System.Collections.Generic.IReadOnlyList<float>!
+EasyImageSharp.AI.QualityAssessment.TechnicalScore.get -> float
+EasyImageSharp.AI.QualityAssessment.TechnicalStandardDeviation.get -> float
+EasyImageSharp.AI.QualityAssessmentExtensions
+override EasyImageSharp.AI.ContentClassification.ToString() -> string!
+override EasyImageSharp.AI.QualityAssessment.ToString() -> string!
+static EasyImageSharp.AI.ContentModerationExtensions.ClassifyContent<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageAiSession! ai, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> EasyImageSharp.AI.ContentClassification!
+static EasyImageSharp.AI.ContentModerationExtensions.ClassifyContentAsync<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageAiSession! ai, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<EasyImageSharp.AI.ContentClassification!>!
+static EasyImageSharp.AI.ImageEmbeddingExtensions.GetImageEmbedding<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageAiSession! ai, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> float[]!
+static EasyImageSharp.AI.ImageEmbeddingExtensions.GetImageEmbeddingAsync<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageAiSession! ai, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<float[]!>!
+static EasyImageSharp.AI.ImageEmbeddings.CosineSimilarity(System.ReadOnlySpan<float> first, System.ReadOnlySpan<float> second) -> float
+static EasyImageSharp.AI.ImageEmbeddings.Normalize(System.ReadOnlySpan<float> vector) -> float[]!
+static EasyImageSharp.AI.InpaintingExtensions.Inpaint<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageAiSession! ai, EasyImageSharp.Image<EasyImageSharp.PixelFormats.L8>! mask, EasyImageSharp.AI.InpaintingOptions? options = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> void
+static EasyImageSharp.AI.InpaintingExtensions.InpaintAsync<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageAiSession! ai, EasyImageSharp.Image<EasyImageSharp.PixelFormats.L8>! mask, EasyImageSharp.AI.InpaintingOptions? options = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+static EasyImageSharp.AI.InpaintingExtensions.InpaintRegions<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageAiSession! ai, System.Collections.Generic.IEnumerable<EasyImageSharp.Rectangle>! regions, EasyImageSharp.AI.InpaintingOptions? options = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> void
+static EasyImageSharp.AI.InpaintingExtensions.InpaintRegionsAsync<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageAiSession! ai, System.Collections.Generic.IEnumerable<EasyImageSharp.Rectangle>! regions, EasyImageSharp.AI.InpaintingOptions? options = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+static EasyImageSharp.AI.InpaintingOptions.Default.get -> EasyImageSharp.AI.InpaintingOptions!
+static EasyImageSharp.AI.InpaintingProcessingExtensions.Inpaint(this EasyImageSharp.Processing.IImageProcessingContext! context, EasyImageSharp.AI.ImageAiSession! ai, EasyImageSharp.Image<EasyImageSharp.PixelFormats.L8>! mask, EasyImageSharp.AI.InpaintingOptions? options = null) -> EasyImageSharp.Processing.IImageProcessingContext!
+static EasyImageSharp.AI.InpaintingProcessingExtensions.InpaintRegions(this EasyImageSharp.Processing.IImageProcessingContext! context, EasyImageSharp.AI.ImageAiSession! ai, System.Collections.Generic.IEnumerable<EasyImageSharp.Rectangle>! regions, EasyImageSharp.AI.InpaintingOptions? options = null) -> EasyImageSharp.Processing.IImageProcessingContext!
+static EasyImageSharp.AI.ModelRegistry.ContentModeration.get -> EasyImageSharp.AI.ModelDescriptor!
+static EasyImageSharp.AI.ModelRegistry.ImageEmbedding.get -> EasyImageSharp.AI.ModelDescriptor!
+static EasyImageSharp.AI.ModelRegistry.Inpainting.get -> EasyImageSharp.AI.ModelDescriptor!
+static EasyImageSharp.AI.ModelRegistry.QualityAssessment.get -> EasyImageSharp.AI.ModelDescriptor!
+static EasyImageSharp.AI.QualityAssessmentExtensions.AssessQuality<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageAiSession! ai, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> EasyImageSharp.AI.QualityAssessment!
+static EasyImageSharp.AI.QualityAssessmentExtensions.AssessQualityAsync<TPixel>(this EasyImageSharp.Image<TPixel>! image, EasyImageSharp.AI.ImageAiSession! ai, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<EasyImageSharp.AI.QualityAssessment!>!
+EasyImageSharp.AI.ImageModelTask.Embedding = 9 -> EasyImageSharp.AI.ImageModelTask
+EasyImageSharp.AI.ImageModelTask.Inpainting = 10 -> EasyImageSharp.AI.ImageModelTask
+EasyImageSharp.AI.ImageModelTask.ContentModeration = 11 -> EasyImageSharp.AI.ImageModelTask
+EasyImageSharp.AI.ImageModelTask.QualityAssessment = 12 -> EasyImageSharp.AI.ImageModelTask

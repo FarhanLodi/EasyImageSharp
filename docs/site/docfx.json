@@ -1,0 +1,72 @@
+{
+  "$schema": "https://raw.githubusercontent.com/dotnet/docfx/main/schemas/docfx.schema.json",
+  "metadata": [
+    {
+      "src": [
+        {
+          "src": "../../src",
+          "files": [
+            "EasyImageSharp/EasyImageSharp.csproj",
+            "EasyImageSharp.AI/EasyImageSharp.AI.csproj",
+            "EasyImageSharp.SkiaSharp/EasyImageSharp.SkiaSharp.csproj",
+            "EasyImageSharp.LittleCms/EasyImageSharp.LittleCms.csproj"
+          ]
+        }
+      ],
+      "dest": "api",
+      "properties": {
+        "TargetFramework": "net10.0"
+      },
+      "namespaceLayout": "flattened",
+      "memberLayout": "samePage",
+      "enumSortOrder": "declaringOrder"
+    }
+  ],
+  "build": {
+    "content": [
+      {
+        "files": [
+          "index.md",
+          "toc.yml",
+          "api/index.md",
+          "api/**.yml",
+          "articles/**.md",
+          "articles/**/toc.yml"
+        ]
+      },
+      {
+        "src": "_repo",
+        "files": [
+          "**/*.md"
+        ]
+      }
+    ],
+    "resource": [
+      {
+        "src": "_repo",
+        "files": [
+          "**/*.png",
+          "**/*.json"
+        ]
+      }
+    ],
+    "output": "_site",
+    "template": [
+      "default",
+      "modern"
+    ],
+    "globalMetadata": {
+      "_appName": "EasyImageSharp",
+      "_appTitle": "EasyImageSharp",
+      "_appLogoPath": "src/EasyImageSharp/Assets/icon.png",
+      "_appFaviconPath": "src/EasyImageSharp/Assets/icon.png",
+      "_appFooter": "EasyImageSharp is MIT licensed. Built with DocFX from the repository's XML documentation and Markdown.",
+      "_enableSearch": true,
+      "_disableContribution": true,
+      "pdf": false
+    },
+    "sitemap": {
+      "baseUrl": "https://farhanlodi.github.io/EasyImageSharp/"
+    }
+  }
+}

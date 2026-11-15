@@ -1,0 +1,56 @@
+Test fonts for the managed font engine (tests/EasyImageSharp.Tests/Fonts)
+=========================================================================
+
+Source
+------
+DejaVu Fonts 2.37, official release archive:
+  https://github.com/dejavu-fonts/dejavu-fonts/releases/download/version_2_37/dejavu-fonts-ttf-2.37.zip
+  SHA-256 of the archive:          7576310b219e04159d35ff61dd4a4ec4cdba4f35c00e002a136f00e96a908b0a
+  SHA-256 of ttf/DejaVuSans.ttf:      7da195a74c55bef988d0d48f9508bd5d849425c1770dba5d7bfc6ce9ed848954
+  SHA-256 of ttf/DejaVuSans-Bold.ttf: e6476c1b80502924294eed40894c5b18e06c181444ca953e5334262df9c27724
+
+Licence
+-------
+Bitstream Vera Fonts licence plus the Arev Fonts licence; the DejaVu changes are in the public domain. The full
+text, copied unmodified from the archive's LICENSE file, is in LICENSE-DejaVu.txt. The licence permits copying,
+modification and redistribution (including as part of a larger software package) provided the notices are
+kept and modified fonts are not distributed under names containing "Bitstream" or "Vera". None of the files
+below use either word in their names or name tables.
+
+Derived files (all produced by gen_fonts.py with fontTools 4.60.1 and freetype-py / FreeType 2.13.2)
+------------------------------------------------------------------------------------------------------
+DejaVuSans-Subset.ttf        Subset of DejaVuSans.ttf: ASCII, Latin-1 and a few typographic, Greek and Cyrillic
+                             characters; hinting removed; GPOS 'kern' and the legacy 'kern' table kept; an extra
+                             (3,10) format 12 cmap subtable that also maps U+1D400 to the glyph of 'A'.
+DejaVuSans-Bold-Subset.ttf   The same subset of DejaVuSans-Bold.ttf plus U+2665 and U+263A (for fallback tests).
+DejaVuSans-Subset.otf        DejaVuSans-Subset.ttf converted to CFF outlines (quadratics become exact cubics, with
+                             fractional 16.16 operands), renamed "DejaVu Sans CFF Test", with hand-made local and
+                             global subroutines, a nested subroutine call and stem hints/hintmasks.
+DejaVuSans-Subset-CID.otf    The same, rebuilt as a CID-keyed CFF ("DejaVu Sans CID Test") with two Font DICTs and
+                             a format 3 FDSelect.
+DejaVuSans-Subset.ttc        TrueType collection of the regular and bold subsets.
+DejaVuSans-Subset.woff       WOFF 1.0 packaging of DejaVuSans-Subset.ttf.
+DejaVuSans-Subset.woff2      WOFF 2.0 packaging of DejaVuSans-Subset.ttf with the glyf/loca and hmtx transforms.
+reference.json               Independent expectations: metrics, names, cmap, advances, control bounds and GPOS /
+                             legacy kerning read with fontTools, and unhinted glyph coverage rendered by FreeType
+                             (FT_LOAD_NO_HINTING, FT_RENDER_MODE_NORMAL) at 12, 24 and 48 px.
+
+Regenerating
+------------
+Download and unpack the archive above into a scratch directory, create a virtual environment with
+fonttools==4.60.1, brotli and freetype-py, then run:
+
+    python gen_fonts.py <archive>/dejavu-fonts-ttf-2.37/ttf
+
+The files are written next to the script and their SHA-256 sums are printed. Generation is deterministic (the
+source fonts' timestamps are kept), so a regeneration with the same tool versions reproduces these sums:
+
+  c117da6a0007e372bd4337090770f81d175657b2e2f9ece9eb3fc0b7aa104e55  DejaVuSans-Subset.ttf
+  79bea4179fb51e778d8eb9c2b6c21be12618f95f4a01c92db459f0a81963a3f1  DejaVuSans-Bold-Subset.ttf
+  fdf8f332574dbb38427ae300308a65145bd4ad940fe9a620fd3f98b649d461a1  DejaVuSans-Subset.otf
+  b2f84ca2d7d73e59e8f4d85efd6542d05697c170c6842861d17126188f78a7f6  DejaVuSans-Subset-CID.otf
+  4328c958c476e7274df4eadb3d4ac45cc2d46a2850d0ea20209c2e29f254646b  DejaVuSans-Subset.ttc
+  30aa2adc1fa630ddc4e503fc5d7a1eade4274447d6ef187f6e3364ec82be813a  DejaVuSans-Subset.woff
+  dd217ad8674f8899cc8f093a130ecdbf2531a9449135e0952e809ba0874227a9  DejaVuSans-Subset.woff2
+  1aa26716ba7023224693db73de3eadea2197ac762935a577d602596e4a7796a0  reference.json
+  7a083b136e64d064794c3419751e5c7dd10d2f64c108fe5ba161eae5e5958a93  LICENSE-DejaVu.txt (unmodified copy)

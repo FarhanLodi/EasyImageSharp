@@ -36,11 +36,11 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
         with:
           # 10.0.x builds everything; 8.0.x supplies the runtime for the net8.0 test leg.
           dotnet-version: |
@@ -48,7 +48,7 @@ jobs:
             10.0.x
 
       - name: Cache NuGet packages
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: ${{ env.NUGET_PACKAGES }}
           key: nuget-${{ matrix.os }}-${{ hashFiles('**/*.csproj', '**/Directory.Build.props') }}
@@ -61,7 +61,7 @@ jobs:
 
       - name: Upload reproducible Windows Little CMS runtime
         if: runner.os == 'Windows'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: littlecms-win-x64
           path: .artifacts/native/lcms2/win-x64/lcms2.dll
@@ -100,7 +100,7 @@ jobs:
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: test-results-${{ matrix.os }}
           path: TestResults
@@ -112,8 +112,8 @@ jobs:
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
         with:
           dotnet-version: |
             8.0.x
@@ -150,9 +150,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           # The generators need 3.11 or newer.
           python-version: "3.11"
@@ -190,7 +190,7 @@ jobs:
       # from. The report is only written once the comparison ran, so a setup failure uploads nothing.
       - name: Upload the determinism report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: fixture-determinism-report
           path: ${{ runner.temp }}/fixture-determinism.json
@@ -209,9 +209,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
         with:
           # samples/AotSmoke is single-target net10.0, so the publish below passes no -f and this is the
           # only SDK it needs.
@@ -263,9 +263,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
         with:
           # samples/Thumbnailer is single-target net10.0 for the same reason samples/AotSmoke is.
           dotnet-version: 10.0.x
@@ -307,9 +307,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
         with:
           dotnet-version: 10.0.x
 
@@ -343,9 +343,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
         with:
           # The project multi-targets, because the inflate-backend comparison is only meaningful when
           # both frameworks can be measured, so the restore needs both.
@@ -353,7 +353,7 @@ jobs:
             8.0.x
             10.0.x
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.11"
 
@@ -399,6 +399,11 @@ jobs:
   # -------------------------------------------------------------------------------------------------
   # Pack validation for all four packages. A package that is missing its README, licence, icon or symbol
   # file is a package that looks abandoned on NuGet, so the contents are asserted, not just listed.
+  #
+  # Every `dotnet pack` below also runs .NET package validation, switched on by EnablePackageValidation
+  # in each csproj: the net8.0 and net10.0 assets must expose compatible APIs, and EasyImageSharp and
+  # EasyImageSharp.AI must stay binary compatible with the release their PackageValidationBaselineVersion
+  # names, which restore downloads from nuget.org. A breaking change fails here, not after a release.
   # -------------------------------------------------------------------------------------------------
   pack:
     name: Pack validation
@@ -406,21 +411,44 @@ jobs:
     needs: build-test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
         with:
           dotnet-version: |
             8.0.x
             10.0.x
 
       - name: Download reproducible Windows Little CMS runtime
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: littlecms-win-x64
           path: .artifacts/native/lcms2/win-x64
+
+      # Package validation runs only when a project asks for it, so a property deleted from a csproj would
+      # let every pack below pass without comparing anything. The configuration is asserted first.
+      - name: Package validation is configured
+        run: |
+          set -euo pipefail
+          fail=0
+          # name:baseline - "required" for a package with a published history to compare against.
+          for entry in EasyImageSharp:required EasyImageSharp.AI:required EasyImageSharp.SkiaSharp:optional EasyImageSharp.LittleCms:optional; do
+            name="${entry%%:*}"
+            project="src/$name/$name.csproj"
+            props=$(dotnet msbuild "$project" -getProperty:EnablePackageValidation -getProperty:PackageValidationBaselineVersion)
+            enabled=$(echo "$props" | jq -r '.Properties.EnablePackageValidation')
+            baseline=$(echo "$props" | jq -r '.Properties.PackageValidationBaselineVersion')
+            echo "$name: EnablePackageValidation=$enabled, baseline=${baseline:-none}"
+            [ "$enabled" = "true" ] \
+              || { echo "::error file=$project::EnablePackageValidation must be true"; fail=1; }
+            if [ "${entry##*:}" = "required" ] && [ -z "$baseline" ]; then
+              echo "::error file=$project::PackageValidationBaselineVersion must name a published release"
+              fail=1
+            fi
+          done
+          exit $fail
 
       - name: Pack EasyImageSharp
         run: dotnet pack src/EasyImageSharp -c Release -o artifacts -p:ContinuousIntegrationBuild=true
@@ -501,7 +529,7 @@ jobs:
           exit $fail
 
       - name: Upload packages
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: nuget-packages
           path: |
@@ -531,9 +559,9 @@ jobs:
       EASYIMAGESHARP_FUZZ_MUTATIONS: "20000"
       EASYIMAGESHARP_FUZZ_SEED: ${{ github.run_id }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
         with:
           dotnet-version: |
             8.0.x
@@ -554,7 +582,7 @@ jobs:
       # message. Collect it so a nightly failure is reproducible without guessing.
       - name: Collect failing inputs
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: fuzz-failures-${{ matrix.os }}-${{ matrix.tfm }}
           path: |

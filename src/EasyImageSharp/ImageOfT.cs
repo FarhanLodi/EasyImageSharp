@@ -2,6 +2,7 @@ using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using EasyImageSharp.Formats;
+using EasyImageSharp.Memory;
 using EasyImageSharp.Metadata;
 using EasyImageSharp.PixelFormats;
 
@@ -19,11 +20,17 @@ namespace EasyImageSharp;
 /// Distinct images are independent: decoding, encoding, cloning and processing several images in
 /// parallel is safe, and that is the intended way to use the library from a server.
 /// </para>
+/// <para>
+/// Pixel memory comes from <see cref="Configuration.MemoryAllocator"/>, by default a pool that reuses the
+/// buffers of disposed images. Dispose images when you are done with them - a <c>using</c> declaration is
+/// enough - so their buffers go back to the pool instead of to the garbage collector.
+/// </para>
 /// </remarks>
 public sealed class Image<TPixel> : Image
     where TPixel : unmanaged, IPixel<TPixel>
 {
-    private bool isDisposed;
+    /// <summary>1 once <see cref="Dispose"/> has run; an int so that disposal is claimed atomically.</summary>
+    private int disposed;
 
     /// <summary>Creates a new image with all pixels set to their default (zero) value.</summary>
     public Image(int width, int height)
@@ -33,8 +40,9 @@ public sealed class Image<TPixel> : Image
 
     /// <summary>Creates a new image with all pixels set to <paramref name="backgroundColor"/>.</summary>
     public Image(int width, int height, TPixel backgroundColor)
-        : this(new ImageFrame<TPixel>(width, height))
+        : this(new ImageFrame<TPixel>(width, height, AllocationOptions.None))
     {
+        // Uninitialized is safe: the fill writes every pixel before the constructor returns the image.
         this.Frames.RootFrame.PixelSpan.Fill(backgroundColor);
     }
 
@@ -271,32 +279,40 @@ public sealed class Image<TPixel> : Image
     {
         this.EnsureNotDisposed();
         encoder.Encode(this, stream);
+
+        // An encoder may hold nothing but a span of the pixels while it works. With native memory that span does
+        // not keep the buffer alive, so the image must stay reachable until the encoder is done with it.
+        GC.KeepAlive(this);
     }
 
     internal void EnsureNotDisposed()
     {
-        if (this.isDisposed)
+        if (Volatile.Read(ref this.disposed) != 0)
         {
             throw new ObjectDisposedException(nameof(Image<TPixel>), "Trying to execute an operation on a disposed image.");
         }
     }
 
     /// <summary>
-    /// Releases the image. Buffers the library allocated are left to the garbage collector, and memory
-    /// wrapped with <see cref="WrapMemory(Memory{TPixel}, int, int)"/> stays owned by the caller; what
-    /// disposal does is make every further operation on the image throw.
+    /// Releases the image: every further operation on it throws, and the pixel buffers of its frames go back
+    /// to the <see cref="MemoryAllocator"/> they came from - except a buffer another image still shares, which
+    /// goes back when that image lets go of it. Memory wrapped with
+    /// <see cref="WrapMemory(Memory{TPixel}, int, int)"/> stays owned by the caller. Calling it again does nothing.
     /// </summary>
+    /// <remarks>
+    /// Spans and memory obtained from the image must not be used after it is disposed: with a pooling allocator
+    /// the buffer is soon reused for another image.
+    /// </remarks>
     public override void Dispose()
     {
-        if (this.isDisposed)
+        if (Interlocked.Exchange(ref this.disposed, 1) != 0)
         {
             return;
         }
 
-        this.isDisposed = true;
         foreach (ImageFrame<TPixel> frame in this.Frames.InnerList)
         {
-            frame.MarkDisposed();
+            frame.ReleaseBuffer();
         }
     }
 

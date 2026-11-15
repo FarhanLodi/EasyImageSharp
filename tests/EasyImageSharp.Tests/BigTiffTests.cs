@@ -431,8 +431,9 @@ public class BigTiffTests
     }
 
     /// <summary>
-    /// The decoder reads BigTIFF; the encoder always writes classic TIFF. Re-encoding a decoded BigTIFF must
-    /// therefore produce a version-42 file whose flag has flipped back, with the pixels untouched.
+    /// The decoder reads BigTIFF; by default (<c>TiffFormatType.Auto</c>) the encoder writes classic TIFF for files
+    /// that fit 32-bit offsets. Re-encoding a small decoded BigTIFF must therefore produce a version-42 file whose
+    /// flag has flipped back, with the pixels untouched.
     /// </summary>
     [Fact]
     public void BigTiff_ReEncodesAsClassicTiff()

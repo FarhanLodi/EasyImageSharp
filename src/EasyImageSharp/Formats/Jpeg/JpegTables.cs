@@ -1,7 +1,3 @@
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Runtime.Intrinsics;
-
 namespace EasyImageSharp.Formats.Jpeg;
 
 /// <summary>Constants shared by the JPEG decoder and encoder.</summary>
@@ -20,7 +16,10 @@ internal static class JpegTables
         53, 60, 61, 54, 47, 55, 62, 63,
     };
 
-    /// <summary>DCT basis: CosTable[(u * 8) + x] = 0.5 * c(u) * cos((2x + 1) * u * PI / 16).</summary>
+    /// <summary>
+    /// DCT basis: CosTable[(u * 8) + x] = 0.5 * c(u) * cos((2x + 1) * u * PI / 16). The decoder's inverse transform
+    /// is the factorised <see cref="JpegIdct"/>; this matrix form remains for code that wants the plain basis.
+    /// </summary>
     public static readonly float[] CosTable = CreateCosTable();
 
     private static float[] CreateCosTable()
@@ -131,145 +130,4 @@ internal static class JpegTables
         0xEA, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8,
         0xF9, 0xFA,
     };
-
-    /// <summary>
-    /// The value every sample of a block takes when only its DC coefficient is non-zero.
-    /// </summary>
-    /// <remarks>
-    /// With a single non-zero coefficient the separable transform collapses: the row pass leaves
-    /// <c>CosTable[x] * dc</c> in row 0 and zeros elsewhere, and the column pass then multiplies that by
-    /// <c>CosTable[y]</c>, which is the same constant for every x and y. Evaluating it directly gives the
-    /// same float as running the full transform, and skips 1024 multiply-adds.
-    /// </remarks>
-    public static float DcOnlyValue(float dc) => CosTable[0] * (CosTable[0] * dc);
-
-    /// <summary>Performs an in-place 8x8 inverse DCT: block holds coefficients in natural order.</summary>
-    /// <remarks>
-    /// Both passes accumulate over the same index in the same ascending order as the straightforward triple
-    /// loop; only the iteration is turned inside out so the eight outputs of a row share one broadcast
-    /// coefficient. Float multiplication is commutative and the additions keep their order, so the vector
-    /// and scalar paths produce identical results.
-    /// </remarks>
-    public static void InverseDct(Span<float> block, Span<float> temp)
-    {
-        if (SimdConfig.Vector256Enabled)
-        {
-            InverseDct256(block, temp);
-            return;
-        }
-
-        if (SimdConfig.Vector128Enabled)
-        {
-            InverseDct128(block, temp);
-            return;
-        }
-
-        InverseDctScalar(block, temp);
-    }
-
-    private static void InverseDct256(Span<float> block, Span<float> temp)
-    {
-        ref float t = ref MemoryMarshal.GetArrayDataReference(CosTable);
-        ref float b = ref MemoryMarshal.GetReference(block);
-        ref float g = ref MemoryMarshal.GetReference(temp);
-
-        // Row pass: g(v, .) = sum over u of F(v, u) * T[u, .].
-        for (int v = 0; v < 8; v++)
-        {
-            int rowOffset = v * 8;
-            Vector256<float> sum = Vector256<float>.Zero;
-            for (int u = 0; u < 8; u++)
-            {
-                sum += Vector256.Create(Unsafe.Add(ref b, rowOffset + u)) * Vector256.LoadUnsafe(ref t, (nuint)(u * 8));
-            }
-
-            sum.StoreUnsafe(ref g, (nuint)rowOffset);
-        }
-
-        // Column pass: f(., y) = sum over v of T[v, y] * g(v, .).
-        for (int y = 0; y < 8; y++)
-        {
-            Vector256<float> sum = Vector256<float>.Zero;
-            for (int v = 0; v < 8; v++)
-            {
-                sum += Vector256.Create(Unsafe.Add(ref t, (v * 8) + y)) * Vector256.LoadUnsafe(ref g, (nuint)(v * 8));
-            }
-
-            sum.StoreUnsafe(ref b, (nuint)(y * 8));
-        }
-    }
-
-    private static void InverseDct128(Span<float> block, Span<float> temp)
-    {
-        ref float t = ref MemoryMarshal.GetArrayDataReference(CosTable);
-        ref float b = ref MemoryMarshal.GetReference(block);
-        ref float g = ref MemoryMarshal.GetReference(temp);
-
-        for (int v = 0; v < 8; v++)
-        {
-            int rowOffset = v * 8;
-            Vector128<float> low = Vector128<float>.Zero;
-            Vector128<float> high = Vector128<float>.Zero;
-            for (int u = 0; u < 8; u++)
-            {
-                Vector128<float> coefficient = Vector128.Create(Unsafe.Add(ref b, rowOffset + u));
-                low += coefficient * Vector128.LoadUnsafe(ref t, (nuint)(u * 8));
-                high += coefficient * Vector128.LoadUnsafe(ref t, (nuint)((u * 8) + 4));
-            }
-
-            low.StoreUnsafe(ref g, (nuint)rowOffset);
-            high.StoreUnsafe(ref g, (nuint)(rowOffset + 4));
-        }
-
-        for (int y = 0; y < 8; y++)
-        {
-            Vector128<float> low = Vector128<float>.Zero;
-            Vector128<float> high = Vector128<float>.Zero;
-            for (int v = 0; v < 8; v++)
-            {
-                Vector128<float> basis = Vector128.Create(Unsafe.Add(ref t, (v * 8) + y));
-                low += basis * Vector128.LoadUnsafe(ref g, (nuint)(v * 8));
-                high += basis * Vector128.LoadUnsafe(ref g, (nuint)((v * 8) + 4));
-            }
-
-            low.StoreUnsafe(ref b, (nuint)(y * 8));
-            high.StoreUnsafe(ref b, (nuint)((y * 8) + 4));
-        }
-    }
-
-    private static void InverseDctScalar(Span<float> block, Span<float> temp)
-    {
-        float[] t = CosTable;
-
-        // Row pass: g(v, x) = sum over u of T[u, x] * F(v, u).
-        for (int v = 0; v < 8; v++)
-        {
-            int rowOffset = v * 8;
-            for (int x = 0; x < 8; x++)
-            {
-                float s = 0;
-                for (int u = 0; u < 8; u++)
-                {
-                    s += t[(u * 8) + x] * block[rowOffset + u];
-                }
-
-                temp[rowOffset + x] = s;
-            }
-        }
-
-        // Column pass: f(x, y) = sum over v of T[v, y] * g(v, x).
-        for (int x = 0; x < 8; x++)
-        {
-            for (int y = 0; y < 8; y++)
-            {
-                float s = 0;
-                for (int v = 0; v < 8; v++)
-                {
-                    s += t[(v * 8) + y] * temp[(v * 8) + x];
-                }
-
-                block[(y * 8) + x] = s;
-            }
-        }
-    }
 }

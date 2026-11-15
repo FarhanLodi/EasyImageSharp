@@ -6,6 +6,10 @@ namespace EasyImageSharp.Formats.Webp;
 /// decision scores with. The forward transforms follow the integer approximation given in RFC 6386's
 /// reference encoder, which round-trips through the normative inverse transform to within a fraction of a
 /// quantizer step.
+/// <para>
+/// The transforms, the error metric and the block quantiser dispatch to <see cref="Vp8EncoderDspSimd"/> when
+/// vectors are enabled; the scalar bodies here (the <c>*Scalar</c> methods) are the reference implementation.
+/// </para>
 /// </summary>
 internal static class Vp8EncoderDsp
 {
@@ -16,6 +20,18 @@ internal static class Vp8EncoderDsp
     /// producing sixteen coefficients in raster order.
     /// </summary>
     public static void FTransform(byte[] src, int srcOff, byte[] pred, int predOff, short[] output, int outOff)
+    {
+        if (Vp8EncoderDspSimd.IsEnabled)
+        {
+            Vp8EncoderDspSimd.FTransform(src, srcOff, pred, predOff, output, outOff);
+            return;
+        }
+
+        FTransformScalar(src, srcOff, pred, predOff, output, outOff);
+    }
+
+    /// <summary>Scalar reference implementation of <see cref="FTransform"/>.</summary>
+    internal static void FTransformScalar(byte[] src, int srcOff, byte[] pred, int predOff, short[] output, int outOff)
     {
         Span<int> tmp = stackalloc int[16];
         for (int i = 0; i < 4; i++, srcOff += Bps, predOff += Bps)
@@ -83,6 +99,17 @@ internal static class Vp8EncoderDsp
     /// <summary>Sum of squared differences over a <paramref name="size"/> square block of stride 32.</summary>
     public static int Sse(byte[] a, int aOff, byte[] b, int bOff, int size)
     {
+        if ((size == 4 || size == 8 || size == 16) && Vp8EncoderDspSimd.IsEnabled)
+        {
+            return Vp8EncoderDspSimd.Sse(a, aOff, b, bOff, size);
+        }
+
+        return SseScalar(a, aOff, b, bOff, size);
+    }
+
+    /// <summary>Scalar reference implementation of <see cref="Sse"/>.</summary>
+    internal static int SseScalar(byte[] a, int aOff, byte[] b, int bOff, int size)
+    {
         int sum = 0;
         for (int y = 0; y < size; y++)
         {
@@ -96,5 +123,69 @@ internal static class Vp8EncoderDsp
         }
 
         return sum;
+    }
+
+    /// <summary>
+    /// Quantises the sixteen raster-order coefficients at <paramref name="coeffOff"/> in place - each entry becomes
+    /// the value the decoder will dequantise - and writes the zig-zag ordered levels to <paramref name="levels"/>.
+    /// The per-position tables are those of a quantisation matrix: step <paramref name="q"/>, reciprocal
+    /// <paramref name="iq"/> (17 fractional bits), rounding <paramref name="bias"/>, the magnitude at or below which a
+    /// coefficient quantises to zero, and the frequency <paramref name="sharpen"/>ing added to every magnitude.
+    /// Returns the zig-zag index of the last non-zero level, or -1.
+    /// </summary>
+    public static int QuantizeBlock(
+        short[] coefficients, int coeffOff, short[] levels, int levelOff,
+        ushort[] q, int[] iq, int[] bias, int[] zeroThreshold, int[] sharpen)
+    {
+        if (Vp8EncoderDspSimd.IsEnabled)
+        {
+            return Vp8EncoderDspSimd.QuantizeBlock(coefficients, coeffOff, levels, levelOff, q, iq, bias, zeroThreshold, sharpen);
+        }
+
+        return QuantizeBlockScalar(coefficients, coeffOff, levels, levelOff, q, iq, bias, zeroThreshold, sharpen);
+    }
+
+    /// <summary>Scalar reference implementation of <see cref="QuantizeBlock"/>.</summary>
+    internal static int QuantizeBlockScalar(
+        short[] coefficients, int coeffOff, short[] levels, int levelOff,
+        ushort[] q, int[] iq, int[] bias, int[] zeroThreshold, int[] sharpen)
+    {
+        const int QFix = 17;
+        ReadOnlySpan<byte> zigzag = Vp8EncoderTables.Zigzag;
+        int last = -1;
+        for (int n = 0; n < 16; n++)
+        {
+            int j = zigzag[n];
+            int value = coefficients[coeffOff + j];
+            bool negative = value < 0;
+            int magnitude = (negative ? -value : value) + sharpen[j];
+            if (magnitude > zeroThreshold[j])
+            {
+                int level = ((magnitude * iq[j]) + bias[j]) >> QFix;
+                if (level > Vp8Cost.MaxLevel)
+                {
+                    level = Vp8Cost.MaxLevel;
+                }
+
+                if (negative)
+                {
+                    level = -level;
+                }
+
+                coefficients[coeffOff + j] = (short)(level * q[j]);
+                levels[levelOff + n] = (short)level;
+                if (level != 0)
+                {
+                    last = n;
+                }
+            }
+            else
+            {
+                levels[levelOff + n] = 0;
+                coefficients[coeffOff + j] = 0;
+            }
+        }
+
+        return last;
     }
 }

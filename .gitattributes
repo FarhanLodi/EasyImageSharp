@@ -17,11 +17,24 @@
 *.pgm binary
 *.ppm binary
 *.pam binary
+*.hdr binary
+*.pic binary
+*.exr binary
+
+# Fonts and ICC profiles: binary tables with NUL bytes in their headers.
+*.ttf binary
+*.otf binary
+*.ttc binary
+*.woff binary
+*.woff2 binary
+*.icc binary
 
 # Ground-truth pixel dumps, opaque blobs and ONNX weights. These carry no text at all, but git's
 # heuristic only inspects the first 8000 bytes, so an .rgba that happens to open with printable
 # bytes would otherwise be EOL-mangled on checkout and silently corrupt what every fixture
 # assertion compares against.
 *.rgba binary
+*.f32 binary
+*.gz binary
 *.bin binary
 *.onnx binary

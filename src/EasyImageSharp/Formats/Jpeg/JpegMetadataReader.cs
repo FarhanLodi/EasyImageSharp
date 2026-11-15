@@ -3,14 +3,16 @@ using System.Text;
 using EasyImageSharp.Metadata;
 using EasyImageSharp.Metadata.Exif;
 using EasyImageSharp.Metadata.Icc;
+using EasyImageSharp.Metadata.Iptc;
 using EasyImageSharp.Metadata.Xmp;
 
 namespace EasyImageSharp.Formats.Jpeg;
 
 /// <summary>
-/// Accumulates the metadata segments of a JPEG stream (APP0 JFIF, APP1 EXIF/XMP, APP2 ICC, COM, DQT quality)
-/// into an <see cref="ImageMetadata"/>. Shared by <see cref="JpegDecoder"/>'s decode and identify paths.
-/// Segments that are malformed are ignored; only the size caps raise <see cref="InvalidImageContentException"/>.
+/// Accumulates the metadata segments of a JPEG stream (APP0 JFIF, APP1 EXIF/XMP, APP2 ICC, APP13 Photoshop image
+/// resources with IPTC, COM, DQT quality) into an <see cref="ImageMetadata"/>. Shared by <see cref="JpegDecoder"/>'s
+/// decode and identify paths. Segments that are malformed are ignored; only the size caps raise
+/// <see cref="InvalidImageContentException"/>.
 /// </summary>
 internal sealed class JpegMetadataReader
 {
@@ -18,12 +20,15 @@ internal sealed class JpegMetadataReader
     private static readonly byte[] ExifIdentifier = { (byte)'E', (byte)'x', (byte)'i', (byte)'f', 0, 0 };
     private static readonly byte[] XmpIdentifier = Encoding.ASCII.GetBytes("http://ns.adobe.com/xap/1.0/\0");
     private static readonly byte[] IccIdentifier = Encoding.ASCII.GetBytes("ICC_PROFILE\0");
+    private static readonly byte[] PhotoshopIdentifier = Encoding.ASCII.GetBytes("Photoshop 3.0\0");
 
     private readonly ImageMetadata metadata = new();
     private readonly JpegMetadata jpeg;
     private readonly SortedDictionary<int, byte[]> iccChunks = new();
     private int iccChunkCount = -1;
     private long iccTotal;
+    private List<byte[]>? photoshopChunks;
+    private long photoshopTotal;
     private bool exifSeen;
     private bool xmpSeen;
 
@@ -56,6 +61,13 @@ internal sealed class JpegMetadataReader
                 if (StartsWith(payload, IccIdentifier))
                 {
                     this.ReadIccChunk(payload[IccIdentifier.Length..]);
+                }
+
+                break;
+            case 0xED:
+                if (StartsWith(payload, PhotoshopIdentifier))
+                {
+                    this.ReadPhotoshopChunk(payload[PhotoshopIdentifier.Length..]);
                 }
 
                 break;
@@ -108,6 +120,21 @@ internal sealed class JpegMetadataReader
 
                 this.metadata.IccProfile = new IccProfile(icc);
             }
+        }
+
+        if (this.photoshopChunks is not null)
+        {
+            // A resource block too large for one segment continues in the next APP13 segment, so the chunks are
+            // joined before parsing. Writers that split on resource boundaries produce the same joined block.
+            var block = new byte[this.photoshopTotal];
+            int pos = 0;
+            foreach (byte[] chunk in this.photoshopChunks)
+            {
+                chunk.CopyTo(block, pos);
+                pos += chunk.Length;
+            }
+
+            (this.metadata.IptcProfile, this.metadata.PhotoshopResources) = PhotoshopResources.SplitIptc(block);
         }
 
         // The EXIF resolution tags win over the JFIF density when both are present.
@@ -243,6 +270,18 @@ internal sealed class JpegMetadataReader
         }
 
         this.iccChunks[sequence] = payload[2..].ToArray();
+    }
+
+    private void ReadPhotoshopChunk(ReadOnlySpan<byte> payload)
+    {
+        this.photoshopTotal += payload.Length;
+        if (this.photoshopTotal > ExifReader.MaxExifBytes)
+        {
+            throw new InvalidImageContentException(
+                $"Photoshop image resources exceed the {ExifReader.MaxExifBytes:N0} byte limit.");
+        }
+
+        (this.photoshopChunks ??= new List<byte[]>()).Add(payload.ToArray());
     }
 
     private static bool StartsWith(ReadOnlySpan<byte> payload, byte[] identifier)

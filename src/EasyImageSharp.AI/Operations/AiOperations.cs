@@ -12,7 +12,6 @@ namespace EasyImageSharp.AI;
 /// </summary>
 internal static class AiOperations
 {
-    private const int OrientationSize = 224;
     private const int SaliencySize = 320;
 
     // ----- Orientation -----
@@ -38,22 +37,12 @@ internal static class AiOperations
     private static OrientationResult DetectOrientationCore<TPixel>(InferenceSession session, Image<TPixel> singleFrame, CancellationToken cancellationToken = default)
         where TPixel : unmanaged, IPixel<TPixel>
     {
-        ModelDescriptor descriptor = ModelRegistry.DocumentOrientation;
-        double scale = 256.0 / Math.Min(singleFrame.Width, singleFrame.Height);
-        double scaledWidth = Math.Round(singleFrame.Width * scale), scaledHeight = Math.Round(singleFrame.Height * scale);
-        if (scaledWidth > int.MaxValue || scaledHeight > int.MaxValue || scaledWidth * scaledHeight > 16_000_000)
-        {
-            throw new ModelContractException("Orientation aspect-ratio resize exceeds the supported working pixel budget.");
-        }
+        // Shared with the batched path so single and batched orientation see exactly the same network input.
+        float[] input = OrientationBatch.Preprocess(singleFrame);
 
-        int width = (int)scaledWidth, height = (int)scaledHeight;
-        using Image<TPixel> resized = FrameUtil.ResizeCopy(singleFrame, width, height, KnownResamplers.Bilinear);
-        using Image<TPixel> cropped = FrameUtil.CropCopy(resized, new Rectangle((width - OrientationSize) / 2, (height - OrientationSize) / 2, OrientationSize, OrientationSize));
-        float[] input = cropped.ToChwTensor(descriptor.Normalization.Mean, descriptor.Normalization.Std);
-
-        string inputName = OrtRunner.ResolveInputName(session, descriptor.InputName);
+        string inputName = OrtRunner.ResolveInputName(session, ModelRegistry.DocumentOrientation.InputName);
         string outputName = OrtRunner.ResolveOutputName(session, null);
-        TensorResult result = DocumentDewarpRunner.RunCancelable(session, inputName, input, [1, 3, OrientationSize, OrientationSize], outputName, cancellationToken);
+        TensorResult result = DocumentDewarpRunner.RunCancelable(session, inputName, input, [1, 3, OrientationBatch.InputSize, OrientationBatch.InputSize], outputName, cancellationToken);
         if (result.Shape.Length != 2 || result.Shape[0] != 1 || result.Shape[1] != 4 || result.Data.Length != 4 || result.Data.Any(value => !float.IsFinite(value)))
         {
             throw new ModelContractException(

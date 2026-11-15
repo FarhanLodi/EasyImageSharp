@@ -9,18 +9,57 @@ name: Release
 # is parsed, the changelog section is located, and the full test suite runs on both target
 # frameworks. Only then are the packages built and pushed.
 #
+# Run it by hand with dry_run (the default for a manual run) before tagging: that builds, tests, packs,
+# validates the packages against their baselines and writes the SBOMs, and publishes nothing.
+#
+# ---------------------------------------------------------------------------------------------------
+# WHAT A RELEASE PUBLISHES
+# ---------------------------------------------------------------------------------------------------
+#   - EasyImageSharp, EasyImageSharp.AI, EasyImageSharp.SkiaSharp and EasyImageSharp.LittleCms, each as a
+#     .nupkg with its .snupkg symbol package, pushed to nuget.org.
+#   - One CycloneDX 1.6 SBOM per package (<id>.<version>.cdx.json), attached to the GitHub release. The
+#     LittleCms SBOM also lists the native lcms2.dll the package carries, with its SHA-256.
+#   - A signed SLSA build-provenance attestation for every .nupkg and .snupkg, stored by GitHub. It
+#     covers the exact files attached to the GitHub release, which are the bytes pushed to nuget.org.
+#     nuget.org then adds its own repository signature, which changes the file, so a package downloaded
+#     from nuget.org has a different digest and is checked with `dotnet nuget verify` instead. To check
+#     a release asset:
+#         gh release download v1.2.0 --repo FarhanLodi/EasyImageSharp --pattern "*.nupkg"
+#         gh attestation verify EasyImageSharp.1.2.0.nupkg --repo FarhanLodi/EasyImageSharp
+#
 # ---------------------------------------------------------------------------------------------------
 # REQUIRED REPOSITORY SECRET
 # ---------------------------------------------------------------------------------------------------
 #   NUGET_API_KEY   An API key from https://www.nuget.org/account/apikeys with the "Push" scope,
-#                   globbed to `EasyImageSharp*` so it covers both packages and any future add-on.
+#                   globbed to `EasyImageSharp*` so it covers every package and any future add-on.
 #                   Add it under Settings > Secrets and variables > Actions > New repository secret.
 #                   Prefer a key scoped to those package IDs with the shortest workable expiry, and
 #                   set a calendar reminder: an expired key fails this workflow after the GitHub
 #                   release has already been created, which is a confusing state to debug.
 #
-# No other secret is needed. GITHUB_TOKEN is provided automatically and is used only to create the
-# release, which is why `contents: write` is granted below.
+# ---------------------------------------------------------------------------------------------------
+# OPTIONAL: NUGET AUTHOR SIGNING
+# ---------------------------------------------------------------------------------------------------
+#   NUGET_SIGNING_CERT_BASE64     (secret) A code-signing certificate from a public CA, with its private
+#                                 key, as a PKCS#12 (.pfx) file encoded in base64:
+#                                     base64 -w0 signing.pfx            (Linux)
+#                                     [Convert]::ToBase64String([IO.File]::ReadAllBytes('signing.pfx'))
+#                                 The certificate must also be registered on the nuget.org account that
+#                                 owns the packages (Account settings > Certificates), or nuget.org
+#                                 rejects the signed push.
+#   NUGET_SIGNING_CERT_PASSWORD   (secret) The .pfx password, when it has one.
+#   NUGET_SIGNING_TIMESTAMPER     (variable, optional) RFC 3161 timestamp server. Defaults to
+#                                 http://timestamp.digicert.com.
+#   NUGET_SIGNING_CERT_FINGERPRINT (variable, optional) SHA-256 fingerprint of that certificate. When set,
+#                                 the signed packages must carry exactly that certificate.
+#
+# Without NUGET_SIGNING_CERT_BASE64 the signing step is skipped with a notice and the packages are
+# published without an author signature, exactly as before; nuget.org repository-signs every package
+# either way. Only .nupkg files are author-signed: symbol packages are bound to their assemblies by the
+# PDB checksum, and the provenance attestation covers both.
+#
+# GITHUB_TOKEN is provided automatically. Each job requests only the permissions it uses; the publish
+# job is the only one that can write, and it runs in the `nuget` environment.
 # ---------------------------------------------------------------------------------------------------
 
 on:
@@ -60,7 +99,7 @@ jobs:
       prerelease: ${{ steps.version.outputs.prerelease }}
       dry_run: ${{ steps.version.outputs.dry_run }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.tag || github.ref }}
           fetch-depth: 0
@@ -121,10 +160,11 @@ jobs:
 
       # A mismatch is not fatal (the tag wins, and the packed version comes from it), but it almost
       # always means someone forgot to bump the csproj, so make it visible in the run summary.
-      - name: Compare the tag against the project version
+      - name: Compare the tag against the project versions
         run: |
           version="${{ steps.version.outputs.version }}"
-          for proj in src/EasyImageSharp/EasyImageSharp.csproj src/EasyImageSharp.AI/EasyImageSharp.AI.csproj; do
+          for name in EasyImageSharp EasyImageSharp.AI EasyImageSharp.SkiaSharp EasyImageSharp.LittleCms; do
+            proj="src/$name/$name.csproj"
             declared=$(grep -oPm1 '(?<=<Version>)[^<]+' "$proj" || echo "")
             if [ "$declared" != "$version" ]; then
               echo "::warning file=$proj::Declared version '$declared' does not match the tag version '$version'. The tag wins; consider bumping the csproj so local packs match."
@@ -132,14 +172,18 @@ jobs:
           done
 
       - name: Upload the release notes
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: release-notes
           path: release-notes.md
           if-no-files-found: error
+          # Artifact names are unique per run, so re-running a failed release would otherwise collide
+          # with the artifact the first attempt uploaded. The same applies to every upload below.
+          overwrite: true
 
   # -------------------------------------------------------------------------------------------------
   # Never publish something that was not tested. The full suite, on every OS, on both frameworks.
+  # The Windows leg also builds the pinned Little CMS runtime that the LittleCms package carries.
   # -------------------------------------------------------------------------------------------------
   verify:
     name: Build & test (${{ matrix.os }})
@@ -150,12 +194,12 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ needs.prepare.outputs.tag }}
           fetch-depth: 0
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
         with:
           dotnet-version: |
             8.0.x
@@ -165,6 +209,15 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: ./scripts/build-littlecms.ps1
+
+      - name: Upload the Windows Little CMS runtime for packing
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: littlecms-win-x64
+          path: .artifacts/native/lcms2/win-x64/lcms2.dll
+          if-no-files-found: error
+          overwrite: true
 
       - name: Install Linux Little CMS runtime
         if: runner.os == 'Linux'
@@ -184,30 +237,39 @@ jobs:
         run: dotnet test EasyImageSharp.slnx -c Release --no-build -f net10.0
 
   # -------------------------------------------------------------------------------------------------
-  # Pack both packages at the tag version, with symbols and a deterministic, source-linked build.
+  # Pack every package at the tag version, with symbols and a deterministic, source-linked build.
+  # Each pack also runs .NET package validation (EnablePackageValidation in the csproj files), so a
+  # package that breaks binary compatibility with its baseline release fails here. Then one SBOM per
+  # package. Nothing in this job can write to the repository or reach a secret.
   # -------------------------------------------------------------------------------------------------
   pack:
-    name: Pack
+    name: Pack, validate and describe
     needs: [prepare, verify]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ needs.prepare.outputs.tag }}
           # Full history so SourceLink can resolve the commit the packages were built from.
           fetch-depth: 0
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
         with:
           dotnet-version: |
             8.0.x
             10.0.x
 
-      - name: Pack both packages
+      - name: Download the Windows Little CMS runtime
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: littlecms-win-x64
+          path: .artifacts/native/lcms2/win-x64
+
+      - name: Pack every package
         run: |
           set -euo pipefail
-          for project in src/EasyImageSharp src/EasyImageSharp.AI; do
-            dotnet pack "$project" \
+          for name in EasyImageSharp EasyImageSharp.AI EasyImageSharp.SkiaSharp EasyImageSharp.LittleCms; do
+            dotnet pack "src/$name/$name.csproj" \
               -c Release \
               -o artifacts \
               -p:Version=${{ needs.prepare.outputs.version }} \
@@ -225,7 +287,7 @@ jobs:
           version="${{ needs.prepare.outputs.version }}"
           fail=0
 
-          for name in EasyImageSharp EasyImageSharp.AI; do
+          for name in EasyImageSharp EasyImageSharp.AI EasyImageSharp.SkiaSharp EasyImageSharp.LittleCms; do
             nupkg="artifacts/$name.$version.nupkg"
             snupkg="artifacts/$name.$version.snupkg"
 
@@ -242,51 +304,227 @@ jobs:
             done
           done
 
+          lcms="artifacts/EasyImageSharp.LittleCms.$version.nupkg"
+          if [ -f "$lcms" ]; then
+            for required in runtimes/win-x64/native/lcms2.dll THIRD_PARTY_NOTICES.txt; do
+              unzip -Z1 "$lcms" | grep -qx "$required" || { echo "::error::$lcms is missing $required"; fail=1; }
+            done
+          fi
+
+          # The core package must stay dependency-free.
+          core="artifacts/EasyImageSharp.$version.nupkg"
+          if [ -f "$core" ] && unzip -p "$core" EasyImageSharp.nuspec | grep -q "<dependency "; then
+            echo "::error::The core package gained a package dependency:"
+            unzip -p "$core" EasyImageSharp.nuspec | grep "<dependency "
+            fail=1
+          fi
+
+          exit $fail
+
+      - name: Restore the SBOM tool
+        run: dotnet tool restore
+
+      # CycloneDX reads each project's restore graph (obj/project.assets.json), which the packs above just
+      # wrote with the tag version, so restore is disabled to keep the SBOM describing exactly that graph.
+      # Build-only dependencies such as analyzers are recorded with scope "excluded"; everything a consumer
+      # receives is "required".
+      - name: Generate one SBOM per package
+        run: |
+          set -euo pipefail
+          version="${{ needs.prepare.outputs.version }}"
+          mkdir -p sbom
+          for name in EasyImageSharp EasyImageSharp.AI EasyImageSharp.SkiaSharp EasyImageSharp.LittleCms; do
+            dotnet CycloneDX "src/$name/$name.csproj" \
+              --output sbom \
+              --filename "$name.$version.cdx.json" \
+              --output-format Json \
+              --spec-version 1.6 \
+              --disable-package-restore \
+              --include-project-references \
+              --set-nuget-purl \
+              --set-name "$name" \
+              --set-version "$version" \
+              --set-type Library
+          done
+
+      # lcms2.dll is compiled from source by scripts/build-littlecms.ps1, so no NuGet dependency describes
+      # it. Its upstream release and commit are read from that script, which is the only place they are
+      # pinned, and the hash is taken from the DLL inside the package that is about to ship.
+      - name: Add the bundled Little CMS runtime to its SBOM
+        run: |
+          set -euo pipefail
+          version="${{ needs.prepare.outputs.version }}"
+          # "|| true" so a pattern that no longer matches reaches the explanatory error below.
+          tag=$(grep -oE 'Little-CMS/zipball/lcms2\.[0-9.]+' scripts/build-littlecms.ps1 | head -n1 | sed 's#.*/zipball/##' || true)
+          commit=$(grep -oE 'upstream commit [0-9a-f]{40}' scripts/build-littlecms.ps1 | head -n1 | awk '{print $3}' || true)
+          if [ -z "$tag" ] || [ -z "$commit" ]; then
+            echo "::error file=scripts/build-littlecms.ps1::Could not read the pinned Little CMS release and commit"
+            exit 1
+          fi
+
+          sha=$(unzip -p "artifacts/EasyImageSharp.LittleCms.$version.nupkg" runtimes/win-x64/native/lcms2.dll | sha256sum | cut -d' ' -f1)
+          sbom="sbom/EasyImageSharp.LittleCms.$version.cdx.json"
+          root="pkg:nuget/EasyImageSharp.LittleCms@$version"
+          purl="pkg:github/mm2/Little-CMS@$tag"
+
+          jq -e --arg root "$root" 'any(.dependencies[]?; .ref == $root)' "$sbom" > /dev/null \
+            || { echo "::error::$sbom has no dependency entry for $root"; exit 1; }
+
+          jq --arg root "$root" --arg purl "$purl" --arg version "${tag#lcms2.}" --arg sha "$sha" --arg commit "$commit" '
+            .components += [{
+              "type": "library",
+              "bom-ref": $purl,
+              "name": "lcms2",
+              "version": $version,
+              "purl": $purl,
+              "scope": "required",
+              "description": ("Little CMS, compiled for win-x64 from upstream commit " + $commit + " by scripts/build-littlecms.ps1 and shipped as runtimes/win-x64/native/lcms2.dll"),
+              "licenses": [{ "license": { "id": "MIT" } }],
+              "hashes": [{ "alg": "SHA-256", "content": $sha }],
+              "externalReferences": [{ "type": "vcs", "url": "https://github.com/mm2/Little-CMS" }]
+            }]
+            | .dependencies |= map(if .ref == $root then .dependsOn = ((.dependsOn // []) + [$purl]) else . end)
+            | .dependencies += [{ "ref": $purl }]
+          ' "$sbom" > "$sbom.tmp"
+          mv "$sbom.tmp" "$sbom"
+          echo "Added lcms2 ${tag#lcms2.} (sha256 $sha) to $sbom"
+
+      # Each SBOM must describe the package at the tag version, and every reference to the core package
+      # must name that same version. The core SBOM additionally proves the package has no runtime
+      # dependency: anything it lists has to be build-only.
+      - name: Check the SBOMs
+        run: |
+          set -euo pipefail
+          version="${{ needs.prepare.outputs.version }}"
+          fail=0
+          for name in EasyImageSharp EasyImageSharp.AI EasyImageSharp.SkiaSharp EasyImageSharp.LittleCms; do
+            sbom="sbom/$name.$version.cdx.json"
+            [ -s "$sbom" ] || { echo "::error::$sbom was not produced"; fail=1; continue; }
+            jq -e --arg name "$name" --arg v "$version" '
+              .bomFormat == "CycloneDX"
+              and .metadata.component.name == $name
+              and .metadata.component.version == $v
+              and ([.components[]? | select(.name == "EasyImageSharp") | .version] | all(. == $v))
+            ' "$sbom" > /dev/null || { echo "::error::$sbom does not describe $name $version"; fail=1; }
+            echo "== $name"
+            jq -r '.components[]? | "    \(.name) \(.version) (\(.scope // "required"))"' "$sbom"
+          done
+
+          core="sbom/EasyImageSharp.$version.cdx.json"
+          if [ -s "$core" ] && ! jq -e '[.components[]? | select((.scope // "required") != "excluded")] | length == 0' "$core" > /dev/null; then
+            echo "::error::$core lists a runtime dependency; the core package must have none"
+            fail=1
+          fi
           exit $fail
 
       - name: Upload the packages
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: packages
           path: |
             artifacts/*.nupkg
             artifacts/*.snupkg
           if-no-files-found: error
+          overwrite: true
+
+      - name: Upload the SBOMs
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: sbom
+          path: sbom/*.cdx.json
+          if-no-files-found: error
+          overwrite: true
 
   # -------------------------------------------------------------------------------------------------
-  # Push to NuGet, then create the GitHub release. In that order: if the push fails, no release is
-  # created claiming a version that is not on NuGet.
+  # Sign (when a certificate is configured), attest, push to NuGet, then create the GitHub release. In
+  # that order: the attestation has to describe the exact bytes that are pushed, so it comes after
+  # signing, and if the push fails no release is created claiming a version that is not on NuGet.
   #
   # --skip-duplicate makes the push idempotent, so re-running a partially failed release (for example
-  # when the core package pushed and the AI package did not) succeeds instead of erroring on the half
-  # that already went out.
+  # when the core package pushed and an add-on did not) succeeds instead of erroring on the part that
+  # already went out.
   # -------------------------------------------------------------------------------------------------
   publish:
-    name: Publish
+    name: Sign, attest and publish
     needs: [prepare, pack]
     if: needs.prepare.outputs.dry_run != 'true'
     runs-on: ubuntu-latest
     environment: nuget
     permissions:
-      contents: write
+      contents: write # create the GitHub release
+      id-token: write # OIDC token for the Sigstore certificate that signs the attestation
+      attestations: write # store the attestation with the repository
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ needs.prepare.outputs.tag }}
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
         with:
           dotnet-version: 10.0.x
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: packages
           path: artifacts
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: sbom
+          path: sbom
+
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: release-notes
           path: notes
+
+      - name: Author-sign the packages (optional)
+        env:
+          SIGNING_CERT_BASE64: ${{ secrets.NUGET_SIGNING_CERT_BASE64 }}
+          SIGNING_CERT_PASSWORD: ${{ secrets.NUGET_SIGNING_CERT_PASSWORD }}
+          TIMESTAMPER: ${{ vars.NUGET_SIGNING_TIMESTAMPER || 'http://timestamp.digicert.com' }}
+          EXPECTED_FINGERPRINT: ${{ vars.NUGET_SIGNING_CERT_FINGERPRINT }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SIGNING_CERT_BASE64:-}" ]; then
+            echo "::notice title=Author signing skipped::NUGET_SIGNING_CERT_BASE64 is not set, so the packages are published without an author signature. nuget.org still repository-signs them. See the header of release.yml to enable signing."
+            exit 0
+          fi
+
+          cert="$RUNNER_TEMP/nuget-signing.pfx"
+          trap 'rm -f "$cert"' EXIT
+          umask 077
+          printf '%s' "$SIGNING_CERT_BASE64" | tr -d ' \r\n' | base64 --decode > "$cert"
+
+          password=()
+          if [ -n "${SIGNING_CERT_PASSWORD:-}" ]; then
+            password=(--certificate-password "$SIGNING_CERT_PASSWORD")
+          fi
+
+          for nupkg in artifacts/*.nupkg; do
+            dotnet nuget sign "$nupkg" \
+              --certificate-path "$cert" \
+              "${password[@]}" \
+              --timestamper "$TIMESTAMPER" \
+              --hash-algorithm SHA256 \
+              --timestamp-hash-algorithm SHA256
+          done
+
+          # nuget.org would only reject a bad signature at push time, after the attestation has recorded these
+          # bytes, so verify here first, against the expected certificate when one is named.
+          if [ -n "${EXPECTED_FINGERPRINT:-}" ]; then
+            dotnet nuget verify --all artifacts/*.nupkg --certificate-fingerprint "$EXPECTED_FINGERPRINT"
+          else
+            dotnet nuget verify --all artifacts/*.nupkg
+          fi
+          echo "::notice title=Author signing::Signed and verified $(ls artifacts/*.nupkg | wc -l) packages."
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: |
+            artifacts/*.nupkg
+            artifacts/*.snupkg
 
       - name: Push to NuGet
         env:
@@ -298,6 +536,7 @@ jobs:
             exit 1
           fi
 
+          # Each .snupkg next to its .nupkg is pushed with it.
           dotnet nuget push "artifacts/*.nupkg" \
             --source https://api.nuget.org/v3/index.json \
             --api-key "$NUGET_API_KEY" \
@@ -318,16 +557,19 @@ jobs:
             --notes-file notes/release-notes.md \
             --verify-tag \
             $prerelease \
-            artifacts/*.nupkg artifacts/*.snupkg
+            artifacts/*.nupkg artifacts/*.snupkg sbom/*.cdx.json
 
       - name: Summary
         run: |
+          version="${{ needs.prepare.outputs.version }}"
           {
             echo "### Released ${{ needs.prepare.outputs.tag }}"
             echo
-            echo "- Version: \`${{ needs.prepare.outputs.version }}\`"
+            echo "- Version: \`$version\`"
             echo "- Prerelease: ${{ needs.prepare.outputs.prerelease }}"
-            echo "- Packages: EasyImageSharp, EasyImageSharp.AI (with .snupkg symbols)"
+            echo "- Packages: EasyImageSharp, EasyImageSharp.AI, EasyImageSharp.SkiaSharp, EasyImageSharp.LittleCms (with .snupkg symbols)"
+            echo "- SBOMs: one CycloneDX file per package, attached to the GitHub release"
+            echo "- Provenance: \`gh attestation verify EasyImageSharp.$version.nupkg --repo ${{ github.repository }}\` against the release assets"
             echo
-            echo "https://www.nuget.org/packages/EasyImageSharp/${{ needs.prepare.outputs.version }}"
+            echo "https://www.nuget.org/packages/EasyImageSharp/$version"
           } >> "$GITHUB_STEP_SUMMARY"

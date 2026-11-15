@@ -1,0 +1,53 @@
+# The Guides sidebar. Apart from introduction.md, every entry is a repository file that
+# docs/site/build.ps1 stages into ../_repo with its relative path intact; nothing is copied into source
+# control. Paths are relative to this file.
+- name: Introduction
+  href: introduction.md
+- name: Imaging guides
+  items:
+    - name: Advanced imaging capability matrix
+      href: ../_repo/docs/ADVANCED_IMAGING.md
+    - name: Reduced-size JPEG decoding
+      href: ../_repo/docs/reduced-jpeg-decoding.md
+    - name: TIFF region decoding
+      href: ../_repo/docs/tiff-region-decoding.md
+    - name: Platform verification
+      href: ../_repo/docs/platform-verification.md
+- name: Add-on packages
+  items:
+    - name: EasyImageSharp.AI
+      href: ../_repo/src/EasyImageSharp.AI/README.md
+    - name: EasyImageSharp.SkiaSharp
+      href: ../_repo/src/EasyImageSharp.SkiaSharp/README.md
+    - name: EasyImageSharp.LittleCms
+      href: ../_repo/src/EasyImageSharp.LittleCms/README.md
+- name: Tools and benchmarks
+  items:
+    - name: Isolated image worker
+      href: ../_repo/tools/IsolatedImageWorker/README.md
+    - name: OCR corpus export
+      href: ../_repo/tools/OcrCorpusExport/README.md
+    - name: Core throughput
+      href: ../_repo/tools/CoreThroughput/README.md
+    - name: Document model smoke
+      href: ../_repo/tools/DocumentModelSmoke/README.md
+    - name: Orientation calibration
+      href: ../_repo/tools/OrientationCalibration/README.md
+    - name: Benchmarks
+      href: ../_repo/benchmarks/README.md
+    - name: OCR benchmarks
+      href: ../_repo/benchmarks/ocr/README.md
+- name: Project
+  items:
+    - name: Support policy
+      href: ../_repo/SUPPORT.md
+    - name: Security policy
+      href: ../_repo/SECURITY.md
+    - name: Contributing
+      href: ../_repo/CONTRIBUTING.md
+    - name: Public API baselines
+      href: ../_repo/src/EasyImageSharp/PublicAPI/README.md
+    - name: Code of conduct
+      href: ../_repo/CODE_OF_CONDUCT.md
+    - name: Changelog
+      href: ../_repo/CHANGELOG.md

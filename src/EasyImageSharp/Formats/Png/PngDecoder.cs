@@ -40,7 +40,47 @@ public sealed class PngDecoder : IImageDecoder
     private static readonly int[] PassXStep = { 8, 8, 4, 4, 2, 2, 1 };
     private static readonly int[] PassYStep = { 8, 8, 8, 4, 4, 2, 2 };
 
-    private const int MaxPaletteEntries = 256;
+    internal const int MaxPaletteEntries = 256;
+
+    /// <summary>The eight-byte PNG file signature.</summary>
+    internal static ReadOnlySpan<byte> Signature => [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
+
+    /// <summary>
+    /// Throws unless <paramref name="data"/> starts with the PNG signature. The format detector checks it too, but
+    /// the decoder can be called directly (or through a custom format provider) and must not trust that.
+    /// </summary>
+    internal static void EnsureSignature(ReadOnlySpan<byte> data)
+    {
+        if (data.Length < 8 || !data[..8].SequenceEqual(Signature))
+        {
+            throw new InvalidImageContentException("PNG signature is missing or corrupt.");
+        }
+    }
+
+    /// <summary>
+    /// True for chunks whose loss would change the decoded image: the critical chunks (upper-case first letter:
+    /// IHDR, PLTE, IDAT, IEND and any unknown critical chunk) and the APNG control and frame-data chunks. A bad
+    /// CRC on one of these rejects the file; any other chunk with a bad CRC is discarded, as libpng does by default.
+    /// </summary>
+    internal static bool IsCrcCritical(uint type)
+        => (type & 0x20000000u) == 0 || type is PngAnimation.ActlType or PngAnimation.FctlType or PngAnimation.FdatType;
+
+    /// <summary>The CRC-32 of a chunk's type and payload, as stored after the payload.</summary>
+    internal static uint ChunkCrc(uint type, ReadOnlySpan<byte> payload)
+    {
+        Span<byte> typeBytes = stackalloc byte[4];
+        BinaryPrimitives.WriteUInt32BigEndian(typeBytes, type);
+        return Crc32.Append(Crc32.Append(0, typeBytes), payload);
+    }
+
+    /// <summary>The exception for a critical chunk whose stored CRC does not match its contents.</summary>
+    internal static InvalidImageContentException CrcMismatch(uint type)
+    {
+        Span<byte> typeBytes = stackalloc byte[4];
+        BinaryPrimitives.WriteUInt32BigEndian(typeBytes, type);
+        string name = System.Text.Encoding.ASCII.GetString(typeBytes);
+        return new InvalidImageContentException($"PNG {name} chunk has an incorrect CRC.");
+    }
 
     public Image<TPixel> Decode<TPixel>(ReadOnlySpan<byte> data, DecoderOptions options)
         where TPixel : unmanaged, IPixel<TPixel>
@@ -77,7 +117,8 @@ public sealed class PngDecoder : IImageDecoder
         var frameData = new List<List<(int Start, int Length)>>();
 
         // ----- Chunk parsing -----
-        int pos = 8; // Skip signature (already validated by the format detector).
+        EnsureSignature(data);
+        int pos = 8;
         bool sawHeader = false;
         bool sawIdat = false;
         while (pos + 8 <= data.Length)
@@ -95,6 +136,17 @@ public sealed class PngDecoder : IImageDecoder
             if (!sawHeader && type != 0x49484452u)
             {
                 throw new InvalidImageContentException("PNG file does not start with an IHDR chunk.");
+            }
+
+            if (ChunkCrc(type, chunk) != BinaryPrimitives.ReadUInt32BigEndian(data[(pos + length)..]))
+            {
+                if (IsCrcCritical(type))
+                {
+                    throw CrcMismatch(type);
+                }
+
+                pos += length + 4; // A damaged ancillary chunk is discarded, not trusted.
+                continue;
             }
 
             switch (type)
@@ -598,14 +650,14 @@ public sealed class PngDecoder : IImageDecoder
     }
 
     /// <summary>Longest filtered scanline any pass of this image can produce.</summary>
-    private static int MaxBytesPerRow(in PngHeader header)
+    internal static int MaxBytesPerRow(in PngHeader header)
     {
         int bitsPerPixel = header.BitDepth * header.Channels;
         return (int)((((long)header.Width * bitsPerPixel) + 7) / 8);
     }
 
     /// <summary>The palette as the destination pixel format, so a palette row is one table lookup per pixel.</summary>
-    private static TPixel[] BuildPaletteLut<TPixel>(Rgba32[] palette)
+    internal static TPixel[] BuildPaletteLut<TPixel>(Rgba32[] palette)
         where TPixel : unmanaged, IPixel<TPixel>
     {
         var lut = new TPixel[palette.Length];
@@ -623,7 +675,7 @@ public sealed class PngDecoder : IImageDecoder
     /// of a per-pixel round trip through <see cref="Rgba32"/>. Returns false when the layout needs the
     /// general path (sub-byte depths, 16-bit samples, colour keys).
     /// </summary>
-    private static bool TryConvertRowDirect<TPixel>(
+    internal static bool TryConvertRowDirect<TPixel>(
         ReadOnlySpan<byte> row, int pixelCount, in PngHeader header, Rgba32[]? palette, TPixel[]? paletteLut, Span<TPixel> destination)
         where TPixel : unmanaged, IPixel<TPixel>
     {
@@ -698,6 +750,7 @@ public sealed class PngDecoder : IImageDecoder
         bool sawRootFrameControl = false;
         int frameCount = 1;
 
+        EnsureSignature(data);
         long pos = 8;
         while (pos + 8 <= data.Length)
         {
@@ -784,7 +837,7 @@ public sealed class PngDecoder : IImageDecoder
             header.Width, header.Height, header.BitDepth * header.Channels, frameCount, ImageFormat.Png, metadata);
     }
 
-    private static PngHeader ParseHeader(ReadOnlySpan<byte> chunk, bool strictLength)
+    internal static PngHeader ParseHeader(ReadOnlySpan<byte> chunk, bool strictLength)
     {
         if (chunk.Length < 13 || (strictLength && chunk.Length != 13))
         {
@@ -862,7 +915,7 @@ public sealed class PngDecoder : IImageDecoder
     }
 
     /// <summary>Applies a tRNS chunk: palette alpha for colour type 3, a colour key for types 0 and 2.</summary>
-    private static void ParseTransparency(ReadOnlySpan<byte> chunk, ref PngHeader header, Rgba32[]? palette)
+    internal static void ParseTransparency(ReadOnlySpan<byte> chunk, ref PngHeader header, Rgba32[]? palette)
     {
         switch (header.ColorType)
         {
@@ -906,7 +959,7 @@ public sealed class PngDecoder : IImageDecoder
 
     internal static int PaethPredictor(int a, int b, int c) => PngFilters.Paeth(a, b, c);
 
-    private static void ConvertScanline(
+    internal static void ConvertScanline(
         ReadOnlySpan<byte> row, Span<Rgba32> dest, int pixelCount, in PngHeader header, Rgba32[]? palette)
     {
         int depth = header.BitDepth;
@@ -1024,7 +1077,7 @@ public sealed class PngDecoder : IImageDecoder
     /// <see cref="Rgba64"/> image without being narrowed to 8 bits first. Palette images cannot use
     /// 16-bit samples, so only the colour types that can are handled.
     /// </summary>
-    private static void ConvertScanline16(
+    internal static void ConvertScanline16(
         ReadOnlySpan<byte> row, Span<Rgba64> dest, int pixelCount, in PngHeader header)
     {
         bool hasKey = header.HasColorKey;
@@ -1088,7 +1141,12 @@ public sealed class PngDecoder : IImageDecoder
         return (row[bitIndex >> 3] >> (8 - depth - (bitIndex & 7))) & ((1 << depth) - 1);
     }
 
-    private struct PngHeader
+    /// <summary>
+    /// The IHDR facts plus any tRNS colour key. Internal, together with the header, transparency and scanline
+    /// conversion helpers above, so <see cref="PngScanlineSource"/> decodes rows with exactly this decoder's
+    /// semantics instead of a copy of them.
+    /// </summary>
+    internal struct PngHeader
     {
         public int Width;
         public int Height;

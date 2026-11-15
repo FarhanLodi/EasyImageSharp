@@ -389,9 +389,11 @@ internal static class TransformOps
     private static Rgba32[] ToRgba32Array<TPixel>(ImageFrame<TPixel> source)
         where TPixel : unmanaged, IPixel<TPixel>
     {
-        if (typeof(TPixel) == typeof(Rgba32))
+        // The frame's own array, read in place while the warp runs; a pooled one may be longer than the frame,
+        // which the samplers never notice because they index by coordinates inside the source.
+        if (typeof(TPixel) == typeof(Rgba32) && source.TryGetBackingArray(out TPixel[]? backing))
         {
-            return (Rgba32[])(object)source.PixelArray;
+            return (Rgba32[])(object)backing;
         }
 
         var result = new Rgba32[source.Width * source.Height];

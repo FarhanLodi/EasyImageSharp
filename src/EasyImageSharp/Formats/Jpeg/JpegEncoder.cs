@@ -10,19 +10,26 @@ namespace EasyImageSharp.Formats.Jpeg;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Quality maps to the Annex K quantisation tables with the usual IJG scaling (5000/q below 50, 200 - 2q above),
-/// clamped to 1..255. Chroma is subsampled by box averaging; RGB is converted with the JFIF (BT.601 full-range)
-/// matrix. YCbCr and grayscale files carry a JFIF APP0 segment, RGB/CMYK/YCCK files an Adobe APP14 segment.
+/// Quality scales the quantisation tables of <see cref="QuantizationPreset"/> (the Annex K tables by default) with
+/// the usual IJG scaling (5000/q below 50, 200 - 2q above), clamped to 1..255; <see cref="ChromaQuality"/> can scale
+/// the chrominance table separately, and <see cref="TrellisQuantization"/> replaces plain rounding by
+/// rate-distortion optimisation. Chroma is subsampled by box averaging; RGB is converted with the JFIF (BT.601
+/// full-range) matrix. YCbCr and grayscale files carry a JFIF APP0 segment, RGB/CMYK/YCCK files an Adobe APP14
+/// segment.
 /// </para>
 /// <para>
 /// Baseline interleaved output with the standard tables is streamed strip by strip, so memory use stays constant
 /// in the image size; progressive, optimised-table and non-interleaved output buffer the quantised coefficients
-/// of the whole image (two bytes per coefficient per component) before the first scan is written.
+/// of the whole image (two bytes per coefficient per component) before the first scan is written. The forward
+/// DCT runs on 256-bit or 128-bit vectors where the hardware has them, with results bit-identical to the scalar
+/// code, so the output never depends on the machine.
 /// </para>
 /// </remarks>
 public sealed class JpegEncoder : IImageEncoder
 {
     private int quality = 90;
+    private int? chromaQuality;
+    private JpegQuantizationPreset quantizationPreset = JpegQuantizationPreset.AnnexK;
     private JpegEncodingColor colorType = JpegEncodingColor.YCbCrRatio444;
     private bool colorTypeSet;
     private int? restartInterval;
@@ -35,6 +42,56 @@ public sealed class JpegEncoder : IImageEncoder
         get => this.quality;
         init => this.quality = Math.Clamp(value, 1, 100);
     }
+
+    /// <summary>
+    /// Quality (1..100, clamped) for the chrominance quantisation table, or null (the default) to use
+    /// <see cref="Quality"/> for both tables. Only the colour models with a chrominance table use it: the Cb and Cr
+    /// components of the YCbCr layouts and of <see cref="JpegEncodingColor.Ycck"/>. Luminance, RGB and CMYK frames
+    /// quantise every component with the luminance table and ignore it. Lowering it below <see cref="Quality"/>
+    /// trades colour fidelity for size, which photographs usually tolerate well.
+    /// </summary>
+    public int? ChromaQuality
+    {
+        get => this.chromaQuality;
+        init => this.chromaQuality = value is int q ? Math.Clamp(q, 1, 100) : null;
+    }
+
+    /// <summary>
+    /// The base quantisation tables that <see cref="Quality"/> (and <see cref="ChromaQuality"/>) scale. Defaults to
+    /// <see cref="JpegQuantizationPreset.AnnexK"/>, the standard tables. Presets differ in how bits are spread over
+    /// frequencies, so the same quality number gives a different size per preset.
+    /// </summary>
+    public JpegQuantizationPreset QuantizationPreset
+    {
+        get => this.quantizationPreset;
+        init
+        {
+            if (!Enum.IsDefined(value))
+            {
+                throw new ArgumentOutOfRangeException(nameof(value), value, "Unknown JPEG quantisation preset.");
+            }
+
+            this.quantizationPreset = value;
+        }
+    }
+
+    /// <summary>
+    /// Whether to choose each block's AC coefficients by rate-distortion optimisation ("trellis quantisation")
+    /// instead of plain rounding. Defaults to false. For every block a dynamic programme weighs the Huffman bits a
+    /// choice costs against the error it adds (measured in quantiser steps, so the quantisation table doubles as
+    /// a visibility model), typically zeroing isolated small coefficients and ending blocks earlier. Activity
+    /// masking is built in: busy blocks are quantised harder than flat ones. Files get smaller at the same quality
+    /// setting and lose a little fidelity; the output is an ordinary JPEG bitstream any decoder reads.
+    /// </summary>
+    /// <remarks>
+    /// Combine it with <see cref="OptimizeHuffmanTables"/> (or <see cref="Progressive"/>, which optimises by
+    /// default): the trellis then runs twice, the second time pricing its choices with Huffman tables fitted to the
+    /// first pass, so its rate estimates match the codes actually written. That combination is where it pays off,
+    /// giving smaller files than plain rounding at the same SSIM or PSNR; with the standard tables the gain at
+    /// matched fidelity is small. It costs roughly one and a half to two and a half times the encode time of the
+    /// same options without it.
+    /// </remarks>
+    public bool TrellisQuantization { get; init; }
 
     /// <summary>
     /// The colour model and chroma subsampling to write. Defaults to <see cref="JpegEncodingColor.YCbCrRatio444"/>;
@@ -130,20 +187,27 @@ public sealed class JpegEncoder : IImageEncoder
         ArgumentNullException.ThrowIfNull(image);
         ArgumentNullException.ThrowIfNull(stream);
 
-        JpegEncodingColor effectiveColor = this.colorType;
-        if (!this.colorTypeSet && typeof(TPixel) == typeof(L8))
-        {
-            effectiveColor = JpegEncodingColor.Luminance;
-        }
-
-        var core = new JpegEncoderCore(
-            this.quality,
-            effectiveColor,
-            this.Interleaved,
-            this.restartInterval ?? 0,
-            this.Progressive,
-            this.progressiveScans,
-            this.OptimizeHuffmanTables);
-        core.Encode(image, stream);
+        this.CreateCore<TPixel>().Encode(image, stream);
     }
+
+    /// <summary>The colour model actually written for <typeparamref name="TPixel"/> images: L8 defaults to luminance.</summary>
+    internal JpegEncodingColor EffectiveColorType<TPixel>()
+        where TPixel : unmanaged, IPixel<TPixel>
+        => !this.colorTypeSet && typeof(TPixel) == typeof(L8) ? JpegEncodingColor.Luminance : this.colorType;
+
+    /// <summary>Creates the encoding pipeline configured with these options for <typeparamref name="TPixel"/> images.</summary>
+    internal JpegEncoderCore CreateCore<TPixel>()
+        where TPixel : unmanaged, IPixel<TPixel>
+        => new(
+            new JpegEncoderCore.Settings(
+                this.quality,
+                this.chromaQuality ?? this.quality,
+                this.quantizationPreset,
+                this.TrellisQuantization,
+                this.EffectiveColorType<TPixel>(),
+                this.Interleaved,
+                this.restartInterval ?? 0,
+                this.Progressive,
+                this.progressiveScans,
+                this.OptimizeHuffmanTables));
 }

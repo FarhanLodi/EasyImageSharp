@@ -1223,7 +1223,7 @@
   "height": 8,
   "frames": 1,
   "writer": "hand",
-  "notes": "RGBA with ExtraSamples=1 (associated alpha); samples are passed through unchanged (no un-premultiplication)",
+  "notes": "RGBA with ExtraSamples=1 (associated alpha); colour is un-premultiplied on decode (rounded to nearest, clamped)",
   "compression": 1,
   "photometric": 2,
   "bits_per_sample": [

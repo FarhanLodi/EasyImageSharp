@@ -11,15 +11,19 @@ hostile file.
 
 | Version | Supported | Notes |
 |---|---|---|
-| 1.0.x | Yes | current stable line; security fixes ship here |
-| 0.x | No | pre-release; upgrade to 1.0.x |
+| 1.2.x | Yes | current stable line; security and bug fixes ship here |
+| 1.1.x | Security fixes only | until 2027-04-14, six months after 1.2.0 shipped |
+| 1.0.x | Security fixes only | until 2027-03-03, six months after 1.1.0 shipped |
+| 0.x | No | pre-release; upgrade to 1.2.x |
 
-Security fixes are released as a new patch of the newest minor line. When a 1.1 line ships, 1.0 will
-continue to receive security patches for six months from that date, and this table will say so
-explicitly with the end-of-support date.
+Security fixes are released as a new patch of the newest minor line, and of every older line that is
+still inside its window. When a new minor line ships, the previous line continues to receive security
+patches for six months from that date, and this table says so explicitly with the end-of-support date. When a new major version ships, the last minor line of the
+previous major receives security patches for twelve months. [SUPPORT.md](SUPPORT.md) has the rest of the
+support policy: which .NET versions are targeted and for how long, and how APIs are deprecated.
 
-Both packages — `EasyImageSharp` and `EasyImageSharp.AI` — are covered by this policy and version in
-lockstep.
+All four packages — `EasyImageSharp`, `EasyImageSharp.AI`, `EasyImageSharp.SkiaSharp` and
+`EasyImageSharp.LittleCms` — are covered by this policy and version in lockstep.
 
 ---
 

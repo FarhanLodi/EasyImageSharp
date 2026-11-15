@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using EasyImageSharp.Memory;
 
 namespace EasyImageSharp;
 
@@ -25,6 +26,7 @@ internal sealed class OperationExecution : IDisposable
         {
             MaxDegreeOfParallelism = settings.MaxDegreeOfParallelism,
             MinimumPixelsPerTask = settings.MinimumPixelsPerTask,
+            MemoryAllocator = settings.MemoryAllocator,
         };
         CancellationToken[] tokens = new[] { options?.CancellationToken ?? default,
             this.parent?.CancellationToken ?? default, cancellationToken }.Where(t => t.CanBeCanceled).Distinct().ToArray();
@@ -48,6 +50,10 @@ internal sealed class OperationExecution : IDisposable
     }
 
     internal static OperationExecution? Current => Ambient.Value;
+
+    /// <summary>The allocator pixel buffers come from: the current operation's, otherwise the process default's.</summary>
+    internal static MemoryAllocator CurrentMemoryAllocator
+        => Ambient.Value?.Configuration.MemoryAllocator ?? Configuration.Default.MemoryAllocator;
     internal Configuration Configuration { get; }
     internal CancellationToken CancellationToken { get; }
     internal long AllocatedPixelBytes => Interlocked.Read(ref this.allocated);

@@ -24,6 +24,8 @@ By participating you agree to abide by the [Code of Conduct](CODE_OF_CONDUCT.md)
 10. [Samples and deployment smokes](#samples-and-deployment-smokes)
 11. [Benchmarks](#benchmarks)
 12. [Submitting a pull request](#submitting-a-pull-request)
+13. [Documentation site](#documentation-site)
+14. [Releasing](#releasing)
 
 ---
 
@@ -569,3 +571,72 @@ Open an issue before starting on: a new public type or namespace, a new package 
 to the exception contract or `DecoderOptions`, anything that changes the byte output of an existing
 encoder, and anything that would make the library depend on native code. These are cheap to discuss
 and expensive to unwind.
+
+---
+
+## Documentation site
+
+The site in `docs/site` is built with [DocFX](https://dotnet.github.io/docfx/), pinned as a local tool
+in `.config/dotnet-tools.json`. It has two halves: an API reference generated from the XML documentation
+comments of all four packages (built for `net10.0`), and the repository's own Markdown — `README.md`,
+`docs/*.md`, the package and tool READMEs, `CHANGELOG.md` and the policy files — rendered as it is.
+Nothing is copied into source control. DocFX cannot build files that live above its own folder, so
+`docs/site/build.ps1` stages them into the gitignored `docs/site/_repo/` with their relative paths intact,
+which keeps the links between them working, and then runs DocFX:
+
+```powershell
+./docs/site/build.ps1          # builds docs/site/_site
+./docs/site/build.ps1 -Serve   # builds, then serves it on http://localhost:8080
+```
+
+The script runs on Windows PowerShell 5.1 and on PowerShell 7 (`pwsh`) on Linux and macOS, and it needs
+network access the first time, to restore DocFX and the packages of the projects it documents.
+
+- **Adding a page.** A new Markdown file appears on the site once its path is in the list at the top of
+  `build.ps1` and it has an entry in `docs/site/articles/toc.yml`. Pages written only for the site (the
+  landing page and the guides introduction) live in `docs/site` itself.
+- **Links.** DocFX reports a link it cannot resolve as an `InvalidFileLink` warning. A link to something
+  the site does not publish — a directory, a deleted file, a file type other than Markdown, PNG or JSON —
+  works on GitHub and is broken on the site, so link to a Markdown file or use a full GitHub URL.
+  Warnings do not fail the build yet; `./docs/site/build.ps1 -WarningsAsErrors` shows whether they would.
+- **API reference.** It is only as good as the XML documentation comments, which every public member
+  needs anyway (see [Public API changes](#public-api-changes)).
+
+`.github/workflows/docs.yml` builds the site on pull requests that touch Markdown, `src/` or `docs/`, and
+deploys it to GitHub Pages from `main`.
+
+---
+
+## Releasing
+
+Releases are tag-driven through `.github/workflows/release.yml`. The header of that file is the reference
+for the secrets and variables it uses. The steps:
+
+1. **Version.** Set `<Version>` and `<PackageReleaseNotes>` in all four `src/*/*.csproj` files. The
+   packages are released together with one version number.
+2. **Changelog.** Move the `## [Unreleased]` entries under `## [X.Y.Z] - YYYY-MM-DD`. The workflow refuses
+   a tag that has no such section.
+3. **Public API.** Promote `PublicAPI.Unshipped.txt` into `PublicAPI.Shipped.txt`, as described in
+   [`src/EasyImageSharp/PublicAPI/README.md`](src/EasyImageSharp/PublicAPI/README.md).
+4. **Rehearse if the pipeline changed.** Running the Release workflow by hand keeps `dry_run` on by
+   default: it builds, tests, packs, validates and writes the SBOMs for an existing tag, and publishes
+   nothing. The CI `pack` job already packs and validates every push to `main`.
+5. **Tag.** `git tag vX.Y.Z && git push origin vX.Y.Z`. The workflow tests on Windows, Linux and macOS,
+   packs the four packages (each pack runs package validation), writes one CycloneDX SBOM per package,
+   author-signs the `.nupkg` files when a signing certificate is configured, records a build-provenance
+   attestation for every `.nupkg` and `.snupkg`, pushes to NuGet, and creates the GitHub release with
+   the packages and SBOMs attached.
+6. **Check.** Download a package from the GitHub release (`gh release download vX.Y.Z --pattern "*.nupkg"`)
+   and run `gh attestation verify EasyImageSharp.X.Y.Z.nupkg --repo FarhanLodi/EasyImageSharp`: it proves
+   the file is the one this workflow built. The copy on nuget.org carries an extra repository signature
+   that nuget.org adds after the push, so its digest differs; `dotnet nuget verify` checks that copy.
+7. **Move the baselines.** After a stable release, set `PackageValidationBaselineVersion` in each
+   `src/*/*.csproj` to the version just published, so the next release is compared against it. An add-on
+   that has no baseline yet gets one the first time its project version moves past a published release.
+
+**Package validation** runs on every `dotnet pack`, locally as well as in CI. It fails the pack when the
+`net8.0` and `net10.0` assets disagree, or when the package breaks binary compatibility with its baseline
+release, which restore downloads from nuget.org. A break that is intended can only ship in a major
+version; record it by packing once with `-p:ApiCompatGenerateSuppressionFile=true`, which writes
+`CompatibilitySuppressions.xml` next to the project, and commit that file with the change so the
+decision is reviewed.

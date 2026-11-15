@@ -220,16 +220,23 @@ internal sealed partial class JpegDecoderCore
     private void ReconstructProgressiveFrame()
     {
         Span<float> block = this.blockScratch;
-        Span<float> temp = this.tempScratch;
         int[] zigzag = JpegTables.ZigZag;
 
         foreach (JpegComponent component in this.components)
         {
-            ushort[]? quant = component.QuantTable;
-            if (quant is null)
+            float[]? dequant = component.Dequant;
+            if (dequant is null)
             {
                 // The component never appeared in a scan: all coefficients are zero, which reconstructs to mid-gray.
-                Array.Fill(component.Plane, (byte)128);
+                if (this.WideSamples)
+                {
+                    Array.Fill(component.WidePlane, (ushort)((this.maxSample + 1) >> 1));
+                }
+                else
+                {
+                    Array.Fill(component.Plane, (byte)128);
+                }
+
                 continue;
             }
 
@@ -240,22 +247,23 @@ internal sealed partial class JpegDecoderCore
                 OperationExecution.Checkpoint();
                 for (int bx = 0; bx < component.BlocksPerLineTotal; bx++)
                 {
-                    for (int k = 0; k < 64; k++)
+                    ReadOnlySpan<short> zigzagBlock = coefficients.AsSpan(offset, 64);
+                    if (zigzagBlock[1..].IndexOfAnyExcept((short)0) < 0)
                     {
-                        int natural = zigzag[k];
-                        block[natural] = coefficients[offset + k] * quant[natural];
-                    }
-
-                    if (component.BlockSize == 8)
-                    {
-                        JpegTables.InverseDct(block, temp);
+                        // Only the DC term survived every scan: the block is flat, as in the sequential path.
+                        this.WriteFlatBlock(component, bx, by, FlatValue(component, zigzagBlock[0] * dequant[0]));
                     }
                     else
                     {
-                        JpegReducedIdct.Transform(block, temp, component.BlockSize);
+                        for (int k = 0; k < 64; k++)
+                        {
+                            int natural = zigzag[k];
+                            block[natural] = zigzagBlock[k] * dequant[natural];
+                        }
+
+                        this.WriteBlock(component, bx, by, block);
                     }
 
-                    WriteBlock(component, bx, by, block);
                     offset += 64;
                 }
             }

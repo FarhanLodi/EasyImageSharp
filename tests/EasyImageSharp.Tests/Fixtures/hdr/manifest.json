@@ -1,0 +1,287 @@
+[
+ {
+  "name": "rle_rgbe",
+  "file": "rle_rgbe.hdr",
+  "notes": "new-style RLE, #?RADIANCE, standard orientation",
+  "width": 61,
+  "height": 23,
+  "f32": "rle_rgbe.f32",
+  "xyze": false,
+  "opencv": true,
+  "orientation": "-Y +X",
+  "encoding": "rle"
+ },
+ {
+  "name": "rle_long_runs",
+  "file": "rle_long_runs.hdr",
+  "notes": "new-style RLE with runs split at 127 and literal stretches of exactly 128",
+  "width": 300,
+  "height": 6,
+  "f32": "rle_long_runs.f32",
+  "xyze": false,
+  "opencv": true,
+  "orientation": "-Y +X",
+  "encoding": "rle"
+ },
+ {
+  "name": "rle_short_literals",
+  "file": "rle_short_literals.hdr",
+  "notes": "new-style RLE with literal records of at most five bytes",
+  "width": 40,
+  "height": 9,
+  "f32": "rle_short_literals.f32",
+  "xyze": false,
+  "opencv": true,
+  "orientation": "-Y +X",
+  "encoding": "rle"
+ },
+ {
+  "name": "flat_rgbe",
+  "file": "flat_rgbe.hdr",
+  "notes": "flat RGBE quads, no RLE",
+  "width": 45,
+  "height": 11,
+  "f32": "flat_rgbe.f32",
+  "xyze": false,
+  "opencv": true,
+  "orientation": "-Y +X",
+  "encoding": "flat"
+ },
+ {
+  "name": "flat_narrow",
+  "file": "flat_narrow.hdr",
+  "notes": "5-pixel scanlines, which new-style RLE does not cover",
+  "width": 5,
+  "height": 13,
+  "f32": "flat_narrow.f32",
+  "xyze": false,
+  "opencv": true,
+  "orientation": "-Y +X",
+  "encoding": "flat"
+ },
+ {
+  "name": "old_rle",
+  "file": "old_rle.hdr",
+  "notes": "old-style RLE: (1, 1, 1, n) repeat markers, consecutive markers shifted by 8 bits",
+  "width": 400,
+  "height": 5,
+  "f32": "old_rle.f32",
+  "xyze": false,
+  "opencv": false,
+  "orientation": "-Y +X",
+  "encoding": "old-rle"
+ },
+ {
+  "name": "old_rle_cross_scanline",
+  "file": "old_rle_cross_scanline.hdr",
+  "notes": "an old-style run that opens a scanline repeats the previous scanline's last pixel",
+  "width": 12,
+  "height": 4,
+  "f32": "old_rle_cross_scanline.f32",
+  "xyze": false,
+  "opencv": false,
+  "orientation": "-Y +X",
+  "encoding": "old-rle"
+ },
+ {
+  "name": "mixed_scanlines",
+  "file": "mixed_scanlines.hdr",
+  "notes": "alternating new-style RLE and flat scanlines",
+  "width": 33,
+  "height": 6,
+  "f32": "mixed_scanlines.f32",
+  "xyze": false,
+  "opencv": false,
+  "orientation": "-Y +X",
+  "encoding": "mixed"
+ },
+ {
+  "name": "xyze",
+  "file": "xyze.hdr",
+  "notes": "XYZE pixels, converted from equal-energy XYZ to linear sRGB",
+  "width": 29,
+  "height": 7,
+  "f32": "xyze.f32",
+  "xyze": true,
+  "opencv": false,
+  "orientation": "-Y +X",
+  "encoding": "rle"
+ },
+ {
+  "name": "header_variants",
+  "file": "header_variants.hdr",
+  "notes": "#?RGBE, comments, cumulative EXPOSURE (0.5), COLORCORR, PIXASPECT, PRIMARIES, SOFTWARE",
+  "width": 16,
+  "height": 8,
+  "f32": "header_variants.f32",
+  "xyze": false,
+  "opencv": true,
+  "orientation": "-Y +X",
+  "encoding": "rle",
+  "exposure": 0.5,
+  "colorcorr": [
+   1,
+   0.5,
+   2
+  ],
+  "pixaspect": 1.5,
+  "software": "gen_hdr.py",
+  "program": "RGBE"
+ },
+ {
+  "name": "no_format_line",
+  "file": "no_format_line.hdr",
+  "notes": "no FORMAT line: RGBE is assumed",
+  "width": 9,
+  "height": 3,
+  "f32": "no_format_line.f32",
+  "xyze": false,
+  "opencv": false,
+  "orientation": "-Y +X",
+  "encoding": "flat"
+ },
+ {
+  "name": "orient_mYpX",
+  "file": "orient_mYpX.hdr",
+  "notes": "orientation -Y +X, RLE scanlines",
+  "width": 19,
+  "height": 11,
+  "f32": "orient_mYpX.f32",
+  "xyze": false,
+  "opencv": true,
+  "orientation": "-Y +X",
+  "encoding": "rle"
+ },
+ {
+  "name": "orient_mYmX",
+  "file": "orient_mYmX.hdr",
+  "notes": "orientation -Y -X, flat scanlines",
+  "width": 19,
+  "height": 11,
+  "f32": "orient_mYmX.f32",
+  "xyze": false,
+  "opencv": false,
+  "orientation": "-Y -X",
+  "encoding": "flat"
+ },
+ {
+  "name": "orient_pYmX",
+  "file": "orient_pYmX.hdr",
+  "notes": "orientation +Y -X, RLE scanlines",
+  "width": 19,
+  "height": 11,
+  "f32": "orient_pYmX.f32",
+  "xyze": false,
+  "opencv": false,
+  "orientation": "+Y -X",
+  "encoding": "rle"
+ },
+ {
+  "name": "orient_pYpX",
+  "file": "orient_pYpX.hdr",
+  "notes": "orientation +Y +X, flat scanlines",
+  "width": 19,
+  "height": 11,
+  "f32": "orient_pYpX.f32",
+  "xyze": false,
+  "opencv": false,
+  "orientation": "+Y +X",
+  "encoding": "flat"
+ },
+ {
+  "name": "orient_pXpY",
+  "file": "orient_pXpY.hdr",
+  "notes": "orientation +X +Y, RLE scanlines",
+  "width": 19,
+  "height": 11,
+  "f32": "orient_pXpY.f32",
+  "xyze": false,
+  "opencv": false,
+  "orientation": "+X +Y",
+  "encoding": "rle"
+ },
+ {
+  "name": "orient_mXpY",
+  "file": "orient_mXpY.hdr",
+  "notes": "orientation -X +Y, flat scanlines",
+  "width": 19,
+  "height": 11,
+  "f32": "orient_mXpY.f32",
+  "xyze": false,
+  "opencv": false,
+  "orientation": "-X +Y",
+  "encoding": "flat"
+ },
+ {
+  "name": "orient_mXmY",
+  "file": "orient_mXmY.hdr",
+  "notes": "orientation -X -Y, RLE scanlines",
+  "width": 19,
+  "height": 11,
+  "f32": "orient_mXmY.f32",
+  "xyze": false,
+  "opencv": false,
+  "orientation": "-X -Y",
+  "encoding": "rle"
+ },
+ {
+  "name": "orient_pXmY",
+  "file": "orient_pXmY.hdr",
+  "notes": "orientation +X -Y, flat scanlines",
+  "width": 19,
+  "height": 11,
+  "f32": "orient_pXmY.f32",
+  "xyze": false,
+  "opencv": false,
+  "orientation": "+X -Y",
+  "encoding": "flat"
+ },
+ {
+  "name": "bad_truncated",
+  "file": "bad_truncated.hdr",
+  "notes": "pixel data ends early",
+  "expect": "InvalidImageContentException"
+ },
+ {
+  "name": "bad_rle_length",
+  "file": "bad_rle_length.hdr",
+  "notes": "run-length marker declares 19 pixels in a 20-pixel scanline",
+  "expect": "InvalidImageContentException"
+ },
+ {
+  "name": "bad_rle_overrun",
+  "file": "bad_rle_overrun.hdr",
+  "notes": "a run longer than the scanline",
+  "expect": "InvalidImageContentException"
+ },
+ {
+  "name": "bad_no_resolution",
+  "file": "bad_no_resolution.hdr",
+  "notes": "header ends before the resolution line",
+  "expect": "InvalidImageContentException"
+ },
+ {
+  "name": "bad_zero_width",
+  "file": "bad_zero_width.hdr",
+  "notes": "zero width",
+  "expect": "InvalidImageContentException"
+ },
+ {
+  "name": "bad_resolution_axes",
+  "file": "bad_resolution_axes.hdr",
+  "notes": "two Y axes",
+  "expect": "InvalidImageContentException"
+ },
+ {
+  "name": "bad_old_rle_first_pixel",
+  "file": "bad_old_rle_first_pixel.hdr",
+  "notes": "an old-style run with no pixel before it",
+  "expect": "InvalidImageContentException"
+ },
+ {
+  "name": "unsupported_format",
+  "file": "unsupported_format.hdr",
+  "notes": "a FORMAT the decoder does not implement",
+  "expect": "NotSupportedException"
+ }
+]

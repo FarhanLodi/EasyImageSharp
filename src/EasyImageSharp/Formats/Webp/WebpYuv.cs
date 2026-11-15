@@ -6,6 +6,11 @@ namespace EasyImageSharp.Formats.Webp;
 /// Converts the 4:2:0 planes of a decoded VP8 key frame to RGBA with libwebp's "fancy" upsampler: every
 /// output pixel takes a bilinear blend of the four surrounding chroma samples (weights 9/3/3/1) and the
 /// YCbCr to RGB matrix is evaluated in the same fixed-point arithmetic as the reference decoder.
+/// <para>
+/// The interior of every row pair is converted by <see cref="WebpYuvSimd"/> when vectors are available; the
+/// first and last pixels of a row, and whatever a whole vector step does not cover, use the scalar code here,
+/// which is also the reference the vector kernel is tested against.
+/// </para>
 /// </summary>
 internal static class WebpYuv
 {
@@ -23,6 +28,13 @@ internal static class WebpYuv
 
     /// <summary>Converts the visible part of <paramref name="planes"/> into <paramref name="destination"/> as opaque pixels.</summary>
     public static void ToRgba(Vp8Planes planes, Span<Rgba32> destination)
+        => ToRgba(planes, destination, WebpYuvSimd.IsEnabled, allow256: true);
+
+    /// <summary>
+    /// <see cref="ToRgba(Vp8Planes, Span{Rgba32})"/> with an explicit choice of path, so tests can compare the
+    /// vector kernels (128- and 256-bit) against the scalar reference regardless of the global switch.
+    /// </summary>
+    internal static void ToRgba(Vp8Planes planes, Span<Rgba32> destination, bool vector, bool allow256)
     {
         int width = planes.Width;
         int height = planes.Height;
@@ -33,7 +45,7 @@ internal static class WebpYuv
         int uvStride = planes.UvStride;
 
         // First output row: the chroma samples are mirrored across the top edge.
-        UpsamplePair(y, 0, -1, u, v, 0, 0, destination, 0, -1, width);
+        UpsamplePair(y, 0, -1, u, v, 0, 0, destination, 0, -1, width, vector, allow256);
 
         int uvRow = 0;
         int row = 0;
@@ -44,14 +56,14 @@ internal static class WebpYuv
             int cur = uvRow * uvStride;
             UpsamplePair(
                 y, (row + 1) * yStride, (row + 2) * yStride, u, v, top, cur,
-                destination, (row + 1) * width, (row + 2) * width, width);
+                destination, (row + 1) * width, (row + 2) * width, width, vector, allow256);
         }
 
         if ((height & 1) == 0)
         {
             // Even height: the last row is mirrored across the bottom edge.
             int cur = uvRow * uvStride;
-            UpsamplePair(y, (height - 1) * yStride, -1, u, v, cur, cur, destination, (height - 1) * width, -1, width);
+            UpsamplePair(y, (height - 1) * yStride, -1, u, v, cur, cur, destination, (height - 1) * width, -1, width, vector, allow256);
         }
     }
 
@@ -74,7 +86,7 @@ internal static class WebpYuv
     private static void UpsamplePair(
         byte[] y, int topY, int bottomY,
         byte[] u, byte[] v, int topUv, int curUv,
-        Span<Rgba32> destination, int topDst, int bottomDst, int width)
+        Span<Rgba32> destination, int topDst, int bottomDst, int width, bool vector, bool allow256)
     {
         int lastPair = (width - 1) >> 1;
         uint tlUv = LoadUv(u[topUv], v[topUv]);
@@ -88,7 +100,15 @@ internal static class WebpYuv
             destination[bottomDst] = YuvToRgba(y[bottomY], (byte)firstBottom, (byte)(firstBottom >> 16));
         }
 
-        for (int x = 1; x <= lastPair; x++)
+        int x = 1;
+        if (vector)
+        {
+            x = WebpYuvSimd.UpsamplePairInterior(y, topY, bottomY, u, v, topUv, curUv, destination, topDst, bottomDst, lastPair, allow256);
+            tlUv = LoadUv(u[topUv + x - 1], v[topUv + x - 1]);
+            lUv = LoadUv(u[curUv + x - 1], v[curUv + x - 1]);
+        }
+
+        for (; x <= lastPair; x++)
         {
             uint tUv = LoadUv(u[topUv + x], v[topUv + x]);
             uint uv = LoadUv(u[curUv + x], v[curUv + x]);

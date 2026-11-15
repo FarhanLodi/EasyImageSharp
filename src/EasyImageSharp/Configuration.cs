@@ -1,8 +1,11 @@
+using EasyImageSharp.Memory;
+
 namespace EasyImageSharp;
 
 /// <summary>
 /// Library-wide execution settings. <see cref="Default"/> is consulted by every operation that can run in
-/// parallel; set <see cref="MaxDegreeOfParallelism"/> to 1 for fully single-threaded behaviour.
+/// parallel or allocates pixel memory; set <see cref="MaxDegreeOfParallelism"/> to 1 for fully single-threaded
+/// behaviour.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -27,6 +30,7 @@ public sealed class Configuration
 {
     private int maxDegreeOfParallelism = Environment.ProcessorCount;
     private int minimumPixelsPerTask = 4096 * 8;
+    private MemoryAllocator memoryAllocator = MemoryAllocator.Shared;
 
     /// <summary>The configuration used when none is supplied.</summary>
     public static Configuration Default { get; } = new();
@@ -49,5 +53,34 @@ public sealed class Configuration
     {
         get => this.minimumPixelsPerTask;
         set => this.minimumPixelsPerTask = Math.Max(1, value);
+    }
+
+    /// <summary>
+    /// Where pixel buffers come from. Defaults to <see cref="MemoryAllocator.Shared"/>, a process-wide
+    /// <see cref="PooledMemoryAllocator"/> that reuses the buffers of disposed images.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Every frame buffer the library allocates - decoded images, new images, clones and the destinations of
+    /// size-changing operations - is taken from the allocator of the configuration in effect when it is allocated,
+    /// and handed back to that same allocator when the image is disposed or the buffer replaced. Disposing images
+    /// is what makes pooling pay off: a buffer of an image that is never disposed is left to the garbage collector.
+    /// </para>
+    /// <para>
+    /// Set <see cref="GCMemoryAllocator"/> to allocate a fresh managed array per frame, as releases before pooling
+    /// did, or <see cref="UnmanagedMemoryAllocator"/> to keep pixel memory off the managed heap. A request-local
+    /// <see cref="ImageExecutionOptions.Configuration"/> can carry its own allocator, for example a bounded pool per
+    /// tenant.
+    /// </para>
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">The value is <see langword="null"/>.</exception>
+    public MemoryAllocator MemoryAllocator
+    {
+        get => this.memoryAllocator;
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+            this.memoryAllocator = value;
+        }
     }
 }

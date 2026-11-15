@@ -1,3 +1,5 @@
+using EasyImageSharp.ColorSpaces;
+
 namespace EasyImageSharp.Formats;
 
 /// <summary>
@@ -60,6 +62,50 @@ public sealed class DecoderOptions
     }
 
     private readonly IReadOnlyList<ImageFormat> additionalFormats = Array.Empty<ImageFormat>();
+
+    private ColorProfileHandling colorProfileHandling;
+    private UnsupportedColorProfileHandling unsupportedColorProfileHandling;
+
+    /// <summary>
+    /// What <c>Image.Load</c>, <c>Image.LoadAsync</c> and <c>Image.LoadTiffPages</c> do with an embedded ICC profile.
+    /// The default, <see cref="ColorProfileHandling.Preserve"/>, returns the pixels exactly as encoded and keeps the
+    /// profile. <see cref="ColorProfileHandling.ConvertToSrgb"/> converts RGB matrix/TRC profiles (Display P3, Adobe RGB,
+    /// ProPhoto and the like) to sRGB right after decoding and removes them; see
+    /// <see cref="UnsupportedColorProfileHandling"/> for every other kind of profile.
+    /// </summary>
+    /// <remarks>
+    /// The conversion runs in single-precision float on the decoded pixel format, so load into
+    /// <see cref="PixelFormats.Rgba64"/> or <see cref="PixelFormats.RgbaVector"/> to keep the precision of a 16-bit or
+    /// float source. Pixel formats without colour channels are converted as neutral greys. <c>Identify</c> is not
+    /// affected: it reports the embedded profile as stored. The outcome is recorded in a
+    /// <see cref="ColorProfileConversionMetadata"/> on the image and on every frame.
+    /// </remarks>
+    /// <exception cref="ArgumentOutOfRangeException">The value is not a defined <see cref="ColorSpaces.ColorProfileHandling"/>.</exception>
+    public ColorProfileHandling ColorProfileHandling
+    {
+        get => this.colorProfileHandling;
+        init => this.colorProfileHandling = value is ColorProfileHandling.Preserve or ColorProfileHandling.ConvertToSrgb
+            ? value
+            : throw new ArgumentOutOfRangeException(nameof(value), value, "Unknown colour profile handling.");
+    }
+
+    /// <summary>
+    /// What a <see cref="ColorProfileHandling.ConvertToSrgb"/> load does with a profile the managed engine cannot
+    /// apply: a LUT-based profile, a CMYK, grey or Lab profile, or a malformed one. The default,
+    /// <see cref="UnsupportedColorProfileHandling.Keep"/>, leaves those frames' pixels and profile as decoded and records
+    /// the reason; <see cref="UnsupportedColorProfileHandling.Throw"/> fails the load with
+    /// <see cref="NotSupportedException"/> (unsupported) or <see cref="InvalidImageContentException"/> (malformed).
+    /// Ignored when <see cref="ColorProfileHandling"/> is <see cref="ColorProfileHandling.Preserve"/>.
+    /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException">The value is not a defined <see cref="ColorSpaces.UnsupportedColorProfileHandling"/>.</exception>
+    public UnsupportedColorProfileHandling UnsupportedColorProfileHandling
+    {
+        get => this.unsupportedColorProfileHandling;
+        init => this.unsupportedColorProfileHandling =
+            value is UnsupportedColorProfileHandling.Keep or UnsupportedColorProfileHandling.Throw
+                ? value
+                : throw new ArgumentOutOfRangeException(nameof(value), value, "Unknown unsupported colour profile handling.");
+    }
 
     internal void EnsureEncodedWithinLimits(long length)
     {

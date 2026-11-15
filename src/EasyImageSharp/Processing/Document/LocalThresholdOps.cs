@@ -6,6 +6,11 @@ namespace EasyImageSharp.Processing;
 /// Local (adaptive) thresholds built on the shared <see cref="IntegralImage"/> engine, plus the automatic
 /// Otsu-vs-Sauvola selector used by <c>Binarize</c>. Every method classifies a pixel as white when its
 /// luminance is at or above the local threshold, so a perfectly uniform region stays white.
+/// <para>
+/// The statistics are computed a row at a time into row buffers. When vectors are enabled the interior windows
+/// and the Niblack, Wolf-Jolion and NICK formulas run through <see cref="IntegralImageSimd"/>; the masks are
+/// bit-identical to the scalar path, which evaluates <see cref="Threshold"/> pixel by pixel.
+/// </para>
 /// </summary>
 internal static class LocalThresholdOps
 {
@@ -29,6 +34,13 @@ internal static class LocalThresholdOps
 
     /// <summary>Evaluates the local threshold and returns an ink mask (1 = below threshold = black).</summary>
     public static byte[] ComputeInkMask(byte[] luminance, int width, int height, Kind kind, int windowSize, float k, float p, float q)
+        => ComputeInkMask(luminance, width, height, kind, windowSize, k, p, q, IntegralImageSimd.IsEnabled);
+
+    /// <summary>
+    /// <see cref="ComputeInkMask(byte[], int, int, Kind, int, float, float, float)"/> with an explicit choice between the
+    /// vector kernels and the scalar reference, so the two can be compared directly.
+    /// </summary>
+    internal static byte[] ComputeInkMask(byte[] luminance, int width, int height, Kind kind, int windowSize, float k, float p, float q, bool vector)
     {
         if (windowSize <= 0)
         {
@@ -57,19 +69,13 @@ internal static class LocalThresholdOps
             double[] rowMax = new double[height];
             ParallelRowIterator.IterateRows(width, height, (start, end) =>
             {
+                var means = new double[width];
+                var variances = new double[width];
+                var areas = new int[width];
                 for (int y = start; y < end; y++)
                 {
-                    double best = 0;
-                    for (int x = 0; x < width; x++)
-                    {
-                        integral.WindowStats(x, y, half, out _, out double variance, out _);
-                        if (variance > best)
-                        {
-                            best = variance;
-                        }
-                    }
-
-                    rowMax[y] = best;
+                    integral.RowWindowStats(y, half, means, variances, areas, vector);
+                    rowMax[y] = IntegralImageSimd.Max(variances, 0);
                 }
             });
 
@@ -90,27 +96,41 @@ internal static class LocalThresholdOps
         double r = maxStd;
         ParallelRowIterator.IterateRows(width, height, (start, end) =>
         {
+            var means = new double[width];
+            var variances = new double[width];
+            var areas = new int[width];
+            var thresholds = new double[width];
             for (int y = start; y < end; y++)
             {
-                int offset = y * width;
-                for (int x = 0; x < width; x++)
+                integral.RowWindowStats(y, half, means, variances, areas, vector);
+                int x = vector ? IntegralImageSimd.Thresholds(kind, means, variances, areas, k, 1 - k, minM, r, thresholds) : 0;
+                for (; x < width; x++)
                 {
-                    integral.WindowStats(x, y, half, out double mean, out double variance, out int area);
-                    double std = Math.Sqrt(variance);
-                    double threshold = kind switch
-                    {
-                        Kind.Niblack => mean + (k * std),
-                        Kind.WolfJolion => ((1 - k) * mean) + (k * minM) + (k * (std / r) * (mean - minM)),
-                        Kind.Phansalkar => Phansalkar(mean, std, k, p, q),
-                        _ => Nick(mean, variance, area, k),
-                    };
+                    thresholds[x] = Threshold(kind, means[x], variances[x], areas[x], k, p, q, minM, r);
+                }
 
-                    mask[offset + x] = luminance[offset + x] >= threshold ? (byte)0 : (byte)1;
+                int offset = y * width;
+                for (x = 0; x < width; x++)
+                {
+                    mask[offset + x] = luminance[offset + x] >= thresholds[x] ? (byte)0 : (byte)1;
                 }
             }
         });
 
         return mask;
+    }
+
+    /// <summary>The scalar threshold formula of one pixel, the reference the vector kernels reproduce bit for bit.</summary>
+    internal static double Threshold(Kind kind, double mean, double variance, int area, float k, float p, float q, double minM, double r)
+    {
+        double std = Math.Sqrt(variance);
+        return kind switch
+        {
+            Kind.Niblack => mean + (k * std),
+            Kind.WolfJolion => ((1 - k) * mean) + (k * minM) + (k * (std / r) * (mean - minM)),
+            Kind.Phansalkar => Phansalkar(mean, std, k, p, q),
+            _ => Nick(mean, variance, area, k),
+        };
     }
 
     /// <summary>Phansalkar et al. 2011: on intensities normalised to [0, 1], T = m (1 + p e^(-q m) + k (s / R - 1)) with R = 0.5.</summary>
