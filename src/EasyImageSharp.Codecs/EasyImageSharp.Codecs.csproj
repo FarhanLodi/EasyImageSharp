@@ -25,6 +25,14 @@
     <NativeJxlDirectory>$(MSBuildThisFileDirectory)../../.artifacts/native/libjxl/win-x64/</NativeJxlDirectory>
     <NativeLcmsPath>$(MSBuildThisFileDirectory)../../.artifacts/native/lcms2/win-x64/lcms2.dll</NativeLcmsPath>
   </PropertyGroup>
+  <!--
+    Package validation runs on every `dotnet pack`. There is no published release to compare against yet;
+    set PackageValidationBaselineVersion to 1.3.1 once it is on nuget.org so later releases are checked
+    for binary compatibility with it.
+  -->
+  <PropertyGroup Label="Package validation">
+    <EnablePackageValidation>true</EnablePackageValidation>
+  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../EasyImageSharp/EasyImageSharp.csproj" />
     <None Include="README.md" Pack="true" PackagePath="" />
